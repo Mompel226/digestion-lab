@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Digestion Lab — IGCSE Biology 0610 Topic 7</title>
+<meta name="description" content="An interactive revision simulation of human nutrition and the digestive system for Cambridge IGCSE Biology 0610.">
+<meta name="theme-color" content="#14572B">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🫁</text></svg>">
+<link rel="stylesheet" href="css/app.css?v=1788179470">
+</head>
+<body>
+<div class="app">
+
+  <header class="hdr">
+    <div class="hdr__mark">
+      <h1 class="hdr__title">Digestion Lab</h1>
+      <span class="hdr__sub">Topic 7 · Human nutrition</span>
+    </div>
+    <span class="badge">IGCSE 0610</span>
+    <div class="hdr__spacer"></div>
+    <div class="hdr__stats">
+      <span class="stat" title="Questions answered correctly">
+        <svg class="ring" viewBox="0 0 26 26">
+          <circle class="bg" cx="13" cy="13" r="11"></circle>
+          <circle id="ringFg" class="fg" cx="13" cy="13" r="11"
+                  transform="rotate(-90 13 13)" stroke-dasharray="0 69.1"></circle>
+        </svg>
+        <b><span id="qDone">0</span>/<span id="qTotal">0</span></b> <span class="stat__lbl">questions</span>
+      </span>
+      <span class="stat stat--stations" title="Stations finished">
+        <b><span id="stDone">0</span>/<span id="stTotal">14</span></b> <span class="stat__lbl">stations</span>
+      </span>
+      <button class="hbtn" id="btnHelp"><span class="hbtn__long">How to use</span><span class="hbtn__short" aria-hidden="true">?</span></button>
+      <button class="hbtn" id="btnReset" title="Clear every answer and start again">Reset</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <section class="bodycol" aria-label="The digestive system">
+      <div class="bodycol__tools">
+        <button class="tool" id="tJourney" title="Send a meal along the whole alimentary canal">
+          <span class="tool__dot"></span><span class="tool__txt">Follow the food</span>
+        </button>
+        <button class="tool" id="tLabels" aria-pressed="true" title="Show or hide the organ names">Labels</button>
+        <button class="tool" id="tBeyond" aria-pressed="true" title="Show organs that are useful but not on the 0610 syllabus">Beyond syllabus</button>
+        <span class="hdr__spacer"></span>
+      </div>
+      <div class="bodywrap">
+        <svg id="bodySvg" role="group" aria-label="Click an organ to open it"></svg>
+      </div>
+    </section>
+
+    <section class="panel" id="panel">
+      <div class="panel__inner" id="panelInner"></div>
+    </section>
+  </main>
+
+  <nav class="rail" aria-label="Journey through the alimentary canal">
+    <div class="rail__track" id="railTrack"></div>
+  </nav>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="modal lb" id="lightbox" hidden role="dialog" aria-modal="true" aria-label="Enlarged image">
+  <figure class="lb__box"><img alt=""><figcaption class="lb__cap"></figcaption>
+  <div class="lb__hint">Click anywhere to close</div></figure>
+</div>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-label="How to use Digestion Lab">
+  <div class="modal__box">
+    <button class="modal__close" id="modalClose" aria-label="Close">×</button>
+    <h2>Digestion Lab</h2>
+    <p class="st-sub">Cambridge IGCSE Biology 0610 · Topic 7, Human nutrition</p>
+
+    <h3>How to use it</h3>
+    <ul>
+      <li><b>Click any organ</b> on the body, or any step on the bar along the bottom.</li>
+      <li>Each station has three tabs: <b>Learn</b> (what you must know), <b>See it</b> (diagrams and real images) and <b>Practise</b> (the questions).</li>
+      <li><b>Follow the food</b> sends a meal along the whole canal and opens each station as it arrives.</li>
+      <li>Your answers are saved in this browser. <b>Reset</b> clears them.</li>
+    </ul>
+
+    <h3>What the colours mean</h3>
+    <ul>
+      <li>The coloured chips at the top of a station show which of the <b>five processes</b> happen there — ingestion, digestion, absorption, assimilation, egestion.</li>
+      <li>A <b>green-bordered box</b> is the mistake students most often make at that station.</li>
+      <li>A <b>blue box marked “Real science”</b> is true but <i>not</i> examined — read it only once the exam answer is secure.</li>
+      <li>A station badged <b>“Beyond the syllabus”</b> (the epiglottis) is worth knowing but is not named in 0610. Turn those off with the “Beyond syllabus” button.</li>
+    </ul>
+
+    <h3>What is simplified here</h3>
+    <ul>
+      <li>The body is a real anatomical plate, so the organs are in their true positions. The <b>liver is on your left as you look at the screen</b>, which is the patient's right — that is the standard convention, and it is how the diagram will be drawn in the exam.</li>
+      <li>The <b>gall bladder</b> station lights up the gall bladder <i>and</i> the bile ducts running through the liver, because they are drawn as one piece. That is deliberate: it shows the whole route bile takes — liver → ducts → gall bladder → bile duct → duodenum.</li>
+      <li>Optimum pH values are given as single figures (pepsin ≈ 2, amylase ≈ 7, trypsin and lipase ≈ 8). Real enzymes work across a range; the figure is the peak.</li>
+      <li>The food particle shrinks and changes colour as it travels. That is a visual aid, not a measurement.</li>
+      <li>The small intestine is drawn as a few tidy coils. In life it is 6–7 m of tightly packed loops.</li>
+    </ul>
+
+    <h3>Where the content comes from</h3>
+    <ul>
+      <li>The wording follows Dr&nbsp;Mompel's own 7.1–7.5 lesson slides and Topic&nbsp;7 notes, and the phrasing used in Cambridge 0610 mark schemes.</li>
+      <li>The photographs and micrographs under <b>See it</b> are the same images used in class, so what you revise here matches what you were taught.</li>
+      <li>It covers Topic&nbsp;7 in full, and deliberately reaches back into Topic&nbsp;4 (biological molecules), Topic&nbsp;5 (enzymes) and Topic&nbsp;3 (movement in and out of cells).</li>
+    </ul>
+
+    <h3>Artwork credits</h3>
+    <ul>
+      <li>Body plate: <i>Digestive system without labels</i> by Mariana Ruiz (LadyofHats) and Jmarchn — Wikimedia Commons, public domain.</li>
+      <li>Tooth section: <i>Tooth Section numbered</i> by Jak — Wikimedia Commons, public domain.</li>
+      <li>Villus: <i>Intestinal villus simplified</i> by Snow93 — Wikimedia Commons, public domain.</li>
+      <li>All labels, animations, questions and page design are original to this simulation.</li>
+    </ul>
+  </div>
+</div>
+
+<script src="js/data/stations.js?v=1788179470"></script>
+<script src="js/data/photos.js?v=1788179470"></script>
+<script src="js/data/figure-art.js?v=1788179470"></script>
+<script src="js/data/anatomy-art.js?v=1788179470"></script>
+<script src="js/anatomy.js?v=1788179470"></script>
+<script src="js/figures.js?v=1788179470"></script>
+<script src="js/engine.js?v=1788179470"></script>
+<script src="js/app.js?v=1788179470"></script>
+</body>
+</html>
