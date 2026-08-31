@@ -17,23 +17,43 @@ window.PHOTOS = {
  "mouth": [
   {
    "src": "teeth-in-mouth.jpg",
-   "cap": "The four types of tooth in a living mouth — incisor, canine, pre-molar and molar.",
-   "kind": "Photograph"
+   "kind": "Photograph",
+   "cap": "All four types in one mouth, labelled. Work along from the front: incisor, canine, pre-molar, then molar."
+  },
+  {
+   "src": "premolars-molars-real.jpg",
+   "kind": "Photograph",
+   "cap": "Looking along the tooth row — this is the view exam questions use. The premolars come first, then the larger molars behind them."
+  },
+  {
+   "src": "jaw-model-xray.jpg",
+   "kind": "Model and radiograph",
+   "cap": "A jaw model against an X-ray. In the X-ray you can count roots: premolars have one (sometimes two), molars have two or three."
+  },
+  {
+   "src": "incisors-real.jpg",
+   "kind": "Photograph",
+   "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge."
+  },
+  {
+   "src": "canine-real.jpg",
+   "kind": "Photograph",
+   "cap": "The canine — one pointed cusp, sitting just behind the incisors."
   },
   {
    "src": "tooth-cut-open.jpg",
-   "cap": "A real molar cut in half: enamel, dentine, pulp, cementum and the root canal.",
-   "kind": "Photograph"
+   "kind": "Photograph",
+   "cap": "A real molar cut in half: enamel, dentine, pulp, cementum and the root canal."
   },
   {
    "src": "tooth-xray.jpg",
-   "cap": "A dental X-ray of the same structures, with the tooth in its socket.",
-   "kind": "Radiograph"
+   "kind": "Radiograph",
+   "cap": "The same structures on an X-ray, with the tooth in its socket in the jaw bone."
   },
   {
    "src": "tooth-decay.jpg",
-   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp.",
-   "kind": "Photographs"
+   "kind": "Photographs",
+   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp."
   }
  ],
  "salivary-glands": [

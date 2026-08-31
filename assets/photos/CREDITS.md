@@ -35,3 +35,7 @@ drop a new file with the same name into this folder and it will appear automatic
 | `villi-and-microvilli-em.jpg` | 7.5 Absorption | `image17.png` |
 | `villi-carpet.jpg` | 7.5 Absorption | `image16.jpeg` |
 | `villi-micrograph-set.jpg` | 7.5 Absorption | `image14.jpeg` |
+| `incisors-real.jpg` | 7.3 Physical digestion | `image11.png` |
+| `canine-real.jpg` | 7.3 Physical digestion | `image13.png` |
+| `premolars-molars-real.jpg` | 7.3 Physical digestion | `image17.png` |
+| `jaw-model-xray.jpg` | 7.3 Physical digestion | `image16.png` |
