@@ -149,6 +149,13 @@ needs to change.
   British spellings throughout.
 - Labels are laid out at runtime with a collision pass, so **no two labels can
   overlap** on the plate or on any diagram, whatever is shown or hidden.
+- **Colour coding never stands alone.** Each of the five processes wears a chip
+  carrying its number in the sequence, so the coding survives colour blindness and
+  greyscale printing — and the number teaches the order, which is examinable.
+  Green is not used for meaning anywhere, because green is the app's own colour.
+  Seven categories, inside the six-to-eight limit the research supports. Every ink
+  clears WCAG AA on both backgrounds; the weakest measured on the live page is
+  5.78:1. See the notes at the top of `js/terms.js`.
 - Anything simplified is disclosed in the **How to use** panel.
 
 ## Credits
