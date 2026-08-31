@@ -10,8 +10,8 @@
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
-    overview:['peristalsis'], mouth:['toothTypes','tooth','chewing'],
-    'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:['peristalsis'],
+    overview:[], mouth:['toothTypes','tooth','chewing'],
+    'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:[],
     stomach:['churn'], liver:['emulsify'], 'gall-bladder':['emulsify'], pancreas:['emulsify'],
     duodenum:['emulsify','starchPath'], 'ileum-villi':['villus','surfaceArea'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
@@ -177,6 +177,15 @@
     pane.className = 'tabpane';
     host.appendChild(pane);
 
+    /* The colour key sits above the text, always visible. Hiding it behind a
+       toggle meant nobody found it, and a code you cannot decode is noise. */
+    if (tab === 'learn' && window.Terms) {
+      var key = document.createElement('div');
+      key.className = 'keybar';
+      key.innerHTML = window.Terms.legend();
+      pane.appendChild(key);
+    }
+
     if (tab === 'learn') paintLearn(pane, st);
     else if (tab === 'see') paintSee(pane, st);
     else paintDo(pane, st);
@@ -204,11 +213,14 @@
     card.innerHTML = html;
     pane.appendChild(card);
 
-    if (window.Terms) {
-      var lg = document.createElement('details');
-      lg.className = 'legendbox';
-      lg.innerHTML = '<summary>What do the colours mean?</summary>' + window.Terms.legend();
-      pane.appendChild(lg);
+    if ((st.later || []).length) {
+      var L = document.createElement('div');
+      L.className = 'card later';
+      L.innerHTML = '<div class="card__h">Where this comes back later in the course</div>' +
+        '<ul class="later__list">' + st.later.map(function (x) {
+          return '<li><span class="later__ref">' + esc(x.ref) + '</span>' + M(x.text) + '</li>';
+        }).join('') + '</ul>';
+      pane.appendChild(L);
     }
 
     if ((st.keywords || []).length) {
@@ -244,30 +256,45 @@
 
     var head = document.createElement('div');
     head.className = 'gallery__h';
-    head.innerHTML = '<span>From your lesson slides</span>' +
-      '<span class="gallery__n">' + shots.length + (shots.length === 1 ? ' image' : ' images') + '</span>';
+    var nVid = shots.filter(function (x) { return x.t === 'video'; }).length;
+    head.innerHTML = '<span>From your lesson slides</span><span class="gallery__n">' +
+      (nVid ? nVid + (nVid === 1 ? ' animation, ' : ' animations, ') : '') +
+      (shots.length - nVid) + ' image' + (shots.length - nVid === 1 ? '' : 's') + '</span>';
     pane.appendChild(head);
 
     shots.forEach(function (ph) {
       var box = document.createElement('div');
       box.className = 'figbox figbox--photo';
-      var img = new Image();
-      img.className = 'photo';
-      img.alt = ph.cap;
-      img.loading = 'lazy';
-      img.src = 'assets/photos/' + ph.src;
-      img.title = 'Click to see it full size';
-      img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind); });
-      img.addEventListener('error', function () {
-        var miss = document.createElement('div');
-        miss.className = 'photo-missing';
-        miss.textContent = 'Image not found: assets/photos/' + ph.src;
-        if (img.parentNode) img.parentNode.replaceChild(miss, img);
-      });
       var cap = document.createElement('div');
       cap.className = 'figbox__cap';
-      cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + esc(ph.cap);
-      box.appendChild(img); box.appendChild(cap);
+      cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + ph.cap;
+
+      if (ph.t === 'video') {
+        var v = document.createElement('video');
+        v.className = 'photo photo--video';
+        v.src = 'assets/video/' + ph.src + '.mp4';
+        v.poster = 'assets/video/' + ph.src + '.jpg';
+        v.controls = true; v.loop = true; v.muted = true; v.playsInline = true;
+        v.preload = 'metadata';
+        v.setAttribute('aria-label', ph.kind + ': ' + ph.src.replace(/-/g, ' '));
+        box.appendChild(v);
+      } else {
+        var img = new Image();
+        img.className = 'photo';
+        img.alt = String(ph.cap).replace(/<[^>]+>/g, '');
+        img.loading = 'lazy';
+        img.src = 'assets/photos/' + ph.src;
+        img.title = 'Click to see it full size';
+        img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind); });
+        img.addEventListener('error', function () {
+          var miss = document.createElement('div');
+          miss.className = 'photo-missing';
+          miss.textContent = 'Image not found: assets/photos/' + ph.src;
+          if (img.parentNode) img.parentNode.replaceChild(miss, img);
+        });
+        box.appendChild(img);
+      }
+      box.appendChild(cap);
       pane.appendChild(box);
     });
   }
@@ -277,7 +304,7 @@
     var lb = document.getElementById('lightbox');
     lb.querySelector('img').src = src;
     lb.querySelector('.lb__cap').innerHTML =
-      '<span class="kindtag">' + esc(kind) + '</span> ' + esc(cap);
+      '<span class="kindtag">' + esc(kind) + '</span> ' + cap;
     lb.hidden = false;
   }
 

@@ -30,6 +30,10 @@ into Topics 3, 4 and 5.
 | Sort into groups | e.g. physical vs chemical digestion, egestion vs excretion |
 | Set the pH | moves a slider and watches the active site distort and denature |
 
+**Two real animations** lifted from the lesson slides — a bolus travelling by
+peristalsis, and absorption at the villi — converted from ~5 MB GIFs to H.264
+video under 300 KB each.
+
 **Ten animated diagrams** — peristalsis, churning, emulsification, the villus,
 the surface-area multiplier, starch digestion, swallowing, water reabsorption,
 egestion vs excretion, and the tooth section.
@@ -123,6 +127,7 @@ js/data/photos.js     which photographs appear at which station
 js/data/anatomy-art.js  the body plate (public domain)
 js/data/figure-art.js   the tooth and villus plates (public domain)
 assets/photos/        the images, with CREDITS.md recording where each came from
+assets/video/         the two animations, each with a poster frame
 ```
 
 ### To change a question or a piece of wording
