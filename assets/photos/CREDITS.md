@@ -7,7 +7,7 @@ drop a new file with the same name into this folder and it will appear automatic
 
 | File | Source deck | Original name in deck |
 |---|---|---|
-| `abdomen-in-place.jpg` | 7.5 Absorption | `image6.jpeg` |
+| `mesentery-lymph.jpg` | 7.5 Absorption | `image6.jpeg` |
 | `bile-summary.jpg` | 7.3 Physical digestion | `image27.jpg` |
 | `canal-regions.jpg` | 7.4 Chemical digestion | `image3.jpeg` |
 | `carbohydrate-chain.jpg` | 7.4 Chemical digestion | `image18.jpeg` |
@@ -39,3 +39,12 @@ drop a new file with the same name into this folder and it will appear automatic
 | `canine-real.jpg` | 7.3 Physical digestion | `image13.png` |
 | `premolars-molars-real.jpg` | 7.3 Physical digestion | `image17.png` |
 | `jaw-model-xray.jpg` | 7.3 Physical digestion | `image16.png` |
+
+## Animations (`assets/video/`)
+
+| File | Source deck | Original name in deck |
+|---|---|---|
+| `peristalsis.mp4` | 7.2 The Digestive System | `image13.gif` (slide 13) |
+| `villus-absorption.mp4` | 7.5 Absorption | `image27.gif` (slide 21) |
+
+Both were converted from GIF to H.264 to cut them from about 5 MB each to under 300 KB.
