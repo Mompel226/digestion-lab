@@ -129,23 +129,44 @@
 
   /* ---------------- four tooth types ---------------- */
   function toothTypes() {
-    var kinds = [
-      { x:56,  name:'Incisor',  fn:'Cutting and biting',  d:'M30,120 C30,74 38,58 56,58 C74,58 82,74 82,120 C82,132 74,138 56,138 C38,138 30,132 30,120 Z', root:'M44,138 L40,196 M68,138 L72,196' },
-      { x:166, name:'Canine',   fn:'Holding and tearing', d:'M144,124 C144,72 156,44 166,44 C176,44 188,72 188,124 C188,134 180,140 166,140 C152,140 144,134 144,124 Z', root:'M154,140 L150,200 M178,140 L182,200' },
-      { x:276, name:'Premolar', fn:'Crushing and grinding', d:'M250,120 C250,84 258,68 276,68 C294,68 302,84 302,120 C302,134 294,140 276,140 C258,140 250,134 250,120 Z M262,74 L268,84 M284,74 L290,84', root:'M264,140 L260,192 M288,140 L292,192' },
-      { x:386, name:'Molar',    fn:'Chewing and grinding hard food', d:'M354,120 C354,86 364,70 386,70 C408,70 418,86 418,120 C418,134 408,140 386,140 C364,140 354,134 354,120 Z M366,76 L372,88 M386,74 L386,88 M406,76 L400,88', root:'M366,140 L358,196 M386,140 L386,196 M406,140 L414,196' }
+    /* Drawn to the two things that actually separate a premolar from a molar:
+       the number of cusps on the biting surface, and the number of roots. */
+    var K = [
+      { x:66,  name:'Incisor',  job:'Cutting and biting',
+        crown:'M40,116 C40,72 48,58 66,58 C84,58 92,72 92,116 C92,130 84,136 66,136 C48,136 40,130 40,116 Z',
+        top:'M40,66 L92,66', roots:'M54,136 L50,206', cusps:'1 chisel edge', nroot:'1 root' },
+      { x:196, name:'Canine',   job:'Holding and tearing',
+        crown:'M172,120 C172,68 186,40 196,40 C206,40 220,68 220,120 C220,132 212,138 196,138 C180,138 172,132 172,120 Z',
+        top:'', roots:'M188,138 L184,212', cusps:'1 point', nroot:'1 long root' },
+      { x:326, name:'Premolar', job:'Crushing and grinding',
+        crown:'M300,118 C300,80 308,64 326,64 C344,64 352,80 352,118 C352,132 344,138 326,138 C308,138 300,132 300,118 Z',
+        top:'M304,74 C310,62 316,62 322,74 M330,74 C336,62 342,62 348,74', roots:'M316,138 L312,202',
+        cusps:'2 cusps', nroot:'1 root (sometimes 2)' },
+      { x:456, name:'Molar',    job:'Chewing and grinding',
+        crown:'M424,118 C424,80 434,62 456,62 C478,62 488,80 488,118 C488,132 478,138 456,138 C434,138 424,132 424,118 Z',
+        top:'M428,74 C433,62 439,62 444,74 M448,74 C453,62 459,62 464,74 M468,74 C473,62 479,62 484,74',
+        roots:'M436,138 L428,200 M456,138 L456,204 M476,138 L484,200',
+        cusps:'4 cusps', nroot:'2–3 roots' }
     ];
-    var g = kinds.map(function (k) {
-      return '<g><path d="' + k.root + '" stroke="#E4D3B4" stroke-width="9" fill="none" stroke-linecap="round"/>' +
-             '<path d="' + k.d + '" fill="#FBFAF4" stroke="#C1B39B" stroke-width="2" stroke-linejoin="round"/>' +
-             '<text class="fb" x="' + k.x + '" y="228" text-anchor="middle">' + k.name + '</text>' +
-             '<text class="fs" x="' + k.x + '" y="246" text-anchor="middle">' + k.fn.split(' ').slice(0, 3).join(' ') + '</text>' +
-             (k.fn.split(' ').length > 3 ? '<text class="fs" x="' + k.x + '" y="260" text-anchor="middle">' + k.fn.split(' ').slice(3).join(' ') + '</text>' : '') +
-             '</g>';
+    var g = K.map(function (k) {
+      return '<g>' +
+        (k.roots ? '<path d="' + k.roots + '" stroke="#E6D5B7" stroke-width="10" fill="none" stroke-linecap="round"/>' : '') +
+        '<path d="' + k.crown + '" fill="#FCFBF6" stroke="#B9AB92" stroke-width="2.2" stroke-linejoin="round"/>' +
+        (k.top ? '<path d="' + k.top + '" fill="none" stroke="#B9AB92" stroke-width="2"/>' : '') +
+        '<text class="fb" x="' + k.x + '" y="242" text-anchor="middle">' + k.name + '</text>' +
+        '<text class="fs" x="' + k.x + '" y="259" text-anchor="middle">' + k.job + '</text>' +
+        '<text class="fl" x="' + k.x + '" y="282" text-anchor="middle" fill="#A16207">' + k.cusps + '</text>' +
+        '<text class="fl" x="' + k.x + '" y="299" text-anchor="middle" fill="#0F6E8C">' + k.nroot + '</text>' +
+        '</g>';
     }).join('');
     return {
-      svg: svg('0 0 448 276', '<rect x="10" y="196" width="428" height="10" rx="5" fill="#EBD3D3"/>' + g),
-      cap:'<b>Incisors</b> cut and bite. <b>Canines</b> hold and tear. <b>Premolars</b> crush and grind soft food. <b>Molars</b> chew and grind hard food. All four are physical digestion — the food molecules are unchanged.'
+      svg: svg('16 30 524 340',
+        '<rect x="26" y="204" width="500" height="11" rx="5.5" fill="#EBD3D3"/>' + g +
+        '<rect x="26" y="312" width="500" height="46" rx="10" fill="#FBF3E3" stroke="#A16207" stroke-width="1.6"/>' +
+        '<text class="fl" x="276" y="332" text-anchor="middle">Premolar or molar? Count the bumps on the biting surface:</text>' +
+        '<text class="fl" x="276" y="350" text-anchor="middle"><tspan fill="#A16207" font-weight="700">2 = premolar</tspan>, ' +
+        '<tspan fill="#A16207" font-weight="700">4 = molar</tspan>. Molars are also bigger and further back.</text>'),
+      cap:'<b>Incisors</b> cut and bite. <b>Canines</b> hold and tear. <b>Premolars</b> crush and grind. <b>Molars</b> chew and grind. The pair students confuse is premolar and molar — a premolar has <b>two</b> cusps and usually one root; a molar has <b>four</b> cusps and two or three roots. All four are physical digestion: the food molecules are unchanged.'
     };
   }
 

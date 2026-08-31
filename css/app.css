@@ -74,6 +74,50 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 }
 .hbtn:hover{background:rgba(255,255,255,.24)}
 
+/* ---------- mode selector, hand-in, dialogs ---------- */
+.modewrap{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);border-radius:var(--r-pill);padding:3px 5px 3px 12px}
+.modewrap__lbl{font-size:12px;opacity:.75;white-space:nowrap}
+.modesel{
+  background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.26);
+  border-radius:var(--r-pill);padding:4px 10px;font:inherit;font-size:13px;cursor:pointer
+}
+.modesel option{color:#1A1A1A;background:#fff}
+.hbtn--go{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8;font-weight:700}
+.hbtn--go:hover:not(:disabled){background:#A6EBBC}
+.hbtn--go:disabled{background:rgba(255,255,255,.10);color:rgba(255,255,255,.55);
+  border-color:rgba(255,255,255,.2);cursor:not-allowed;font-weight:600}
+/* a quiet banner so nobody forgets which mode they are in */
+body[data-mode="test"] .panel__inner::before,
+body[data-mode="practice"] .panel__inner::before{
+  content:attr(data-modenote);display:block;font-size:12.5px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;padding:7px 13px;border-radius:var(--r);margin-bottom:14px
+}
+body[data-mode="test"] .panel__inner::before{
+  content:"Test mode — one attempt per question";background:var(--red-tint);color:var(--red);
+  border:1px solid #E3B4AC}
+body[data-mode="practice"] .panel__inner::before{
+  content:"Practice mode — answers and explanations are shown";background:var(--purple-tint);
+  color:var(--purple);border:1px solid #D6C6EC}
+
+.modal__box--sm{max-width:460px}
+.fld{display:block;margin:14px 0}
+.fld span{display:block;font-size:13px;font-weight:600;color:#3C3C3C;margin-bottom:5px}
+.fld input,.fld select{
+  width:100%;font:inherit;font-size:15.5px;padding:9px 12px;border:1.5px solid var(--edge);
+  border-radius:var(--r);background:var(--card-2);color:var(--ink)
+}
+.fld input:focus,.fld select:focus{outline:2px solid var(--green);outline-offset:1px;background:#fff}
+.dlgrow{display:flex;gap:9px;justify-content:flex-end;margin-top:18px}
+.submsg{font-size:14px;line-height:1.5;margin-top:8px}
+.submsg.no{color:var(--bad)} .submsg.ok{color:var(--ok)}
+.submsg .code{
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:22px;font-weight:700;letter-spacing:.08em;
+  color:var(--green);background:var(--green-tint);border:1.5px dashed var(--green);border-radius:var(--r);
+  padding:12px;text-align:center;margin:12px 0;user-select:all
+}
+.fineprint{font-size:12.5px;color:var(--grey);margin-top:14px;line-height:1.5}
+
 /* ---------- Stage ---------- */
 .stage{display:grid;grid-template-columns:minmax(340px,40%) minmax(0,1fr);min-height:0}
 
@@ -156,9 +200,8 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   font-size:11.5px;font-weight:700;letter-spacing:.03em;color:#fff;padding:4px 11px;border-radius:var(--r-pill);
   background:var(--grey);white-space:nowrap
 }
-.chip--ingestion{background:var(--amber)} .chip--digestion{background:var(--red)}
-.chip--absorption{background:var(--teal)} .chip--assimilation{background:var(--purple)}
-.chip--egestion{background:#6B6B6B}
+.chip--ingestion,.chip--digestion,.chip--absorption,
+.chip--assimilation,.chip--egestion{background:var(--green)}
 .chip--beyond{background:#fff;color:var(--purple);border:1.5px dashed var(--purple)}
 
 /* tabs */
@@ -202,6 +245,29 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .golden__h{font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:var(--green);
            margin-bottom:6px;display:flex;align-items:center;gap:7px}
 .golden p{margin:0;font-size:16px;font-weight:600}
+
+/* ---------- the colour language of the Learn tab ---------- */
+.t{font-weight:700}
+.t--process  {color:var(--green)}
+.t--physical {color:var(--amber)}
+.t--chemical {color:var(--red)}
+.t--transport{color:var(--teal)}
+.t--molecule {color:var(--purple)}
+.kw dt .t{font-weight:700}
+.legendbox{
+  border:1px solid var(--edge);background:var(--card-2);border-radius:var(--r);
+  padding:0 14px;margin-bottom:16px;font-size:13.5px
+}
+.legendbox summary{padding:11px 0;cursor:pointer;color:var(--grey);font-weight:600;list-style:none}
+.legendbox summary::-webkit-details-marker{display:none}
+.legendbox summary::before{content:"▸ ";color:var(--green)}
+.legendbox[open] summary::before{content:"▾ "}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:2px 0 14px}
+.legend__i{display:flex;align-items:center;gap:8px;font-size:13px;color:#3C3C3C}
+.legend__i i{width:13px;height:13px;border-radius:4px;flex:none;background:currentColor}
+.legend__i i.t--process{color:var(--green)} .legend__i i.t--physical{color:var(--amber)}
+.legend__i i.t--chemical{color:var(--red)}  .legend__i i.t--transport{color:var(--teal)}
+.legend__i i.t--molecule{color:var(--purple)}
 
 /* keywords */
 .kw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:9px}
@@ -456,6 +522,7 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
   .stat--stations{display:none}
   .hbtn{padding:6px 11px}
   .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700}
+  .modewrap__lbl{display:none} .modewrap{padding:3px 4px}
   #btnHelp{width:32px;padding:0;display:grid;place-items:center;height:30px}
   .st-title{font-size:21px}
   .match{grid-template-columns:1fr}

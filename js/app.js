@@ -19,27 +19,35 @@
   };
 
   var S = {};                       /* stations by id */
+  var MODES = { mastery:'Mastery', test:'Test', practice:'Practice' };
+  var mode = localStorage.getItem('digestion-lab.mode') || 'mastery';
+  if (mode === 'practice') mode = 'mastery';        /* practice needs the password again each session */
   var progress = load();
   var current = null;
   var tab = 'learn';
 
   /* ---------- progress ---------- */
   function load() {
-    try { return JSON.parse(localStorage.getItem('digestion-lab.v1') || '{}'); } catch (e) { return {}; }
+    var d;
+    try { d = JSON.parse(localStorage.getItem('digestion-lab.v2') || '{}'); } catch (e) { d = {}; }
+    Object.keys(MODES).forEach(function (m) { if (!d[m]) d[m] = {}; });
+    return d;
   }
   function save() {
-    try { localStorage.setItem('digestion-lab.v1', JSON.stringify(progress)); } catch (e) {}
+    try { localStorage.setItem('digestion-lab.v2', JSON.stringify(progress)); } catch (e) {}
   }
-  function p(id) {
-    if (!progress[id]) progress[id] = { done:{}, opened:false };
-    return progress[id];
+  function p(id, m) {
+    var bag = progress[m || mode];
+    if (!bag[id]) bag[id] = { done:{}, tried:{} };
+    return bag[id];
   }
-  function stationScore(id) {
+  function stationScore(id, m) {
     var st = S[id];
-    if (!st) return { done:0, total:0 };
-    var d = p(id).done, n = 0;
-    Object.keys(d).forEach(function (k) { if (d[k]) n++; });
-    return { done:n, total:(st.activities || []).length };
+    if (!st) return { done:0, total:0, tried:0 };
+    var rec = p(id, m), n = 0, t = 0;
+    Object.keys(rec.done).forEach(function (k) { if (rec.done[k]) n++; });
+    Object.keys(rec.tried).forEach(function (k) { if (rec.tried[k]) t++; });
+    return { done:n, total:(st.activities || []).length, tried:t };
   }
   function totals() {
     var done = 0, total = 0;
@@ -50,6 +58,17 @@
   /* ---------- header ---------- */
   function paintHeader() {
     var t = totals(), pct = t.total ? t.done / t.total : 0, C = 2 * Math.PI * 11;
+    var sel = document.getElementById('modeSel');
+    if (sel && sel.value !== mode) sel.value = mode;
+    document.body.setAttribute('data-mode', mode);
+    var sub = document.getElementById('btnSubmit');
+    if (sub) {
+      var ready = mode === 'mastery' && t.total > 0 && t.done === t.total;
+      sub.hidden = mode !== 'mastery';
+      sub.disabled = !ready;
+      sub.title = ready ? 'Hand in your completed work'
+        : 'Answer all ' + t.total + ' questions correctly in Mastery mode to hand in';
+    }
     document.getElementById('ringFg').setAttribute('stroke-dasharray',
       (C * pct).toFixed(1) + ' ' + C.toFixed(1));
     document.getElementById('qDone').textContent = t.done;
@@ -160,29 +179,38 @@
   }
 
   function paintLearn(pane, st) {
+    var M = window.Terms ? window.Terms.mark : esc;
+
     if (st.learn && st.learn.golden) {
       var g = document.createElement('div');
       g.className = 'golden';
-      g.innerHTML = '<div class="golden__h">⬤ The mistake to avoid</div><p>' +
-        esc(st.learn.golden) + '</p>';
+      g.innerHTML = '<div class="golden__h">⬤ The mistake to avoid</div><p>' + M(st.learn.golden) + '</p>';
       pane.appendChild(g);
     }
+
     var card = document.createElement('div');
     card.className = 'card';
     var html = '<div class="card__h">What you need to know</div><ul class="exam-list">' +
-      (st.learn.exam || []).map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul>';
+      (st.learn.exam || []).map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul>';
     if ((st.learn.real || []).length)
       html += '<div class="real"><div class="real__h">Real science — not examined</div><ul>' +
-        st.learn.real.map(function (b) { return '<li>' + esc(b) + '</li>'; }).join('') + '</ul></div>';
+        st.learn.real.map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul></div>';
     card.innerHTML = html;
     pane.appendChild(card);
+
+    if (window.Terms) {
+      var lg = document.createElement('details');
+      lg.className = 'legendbox';
+      lg.innerHTML = '<summary>What do the colours mean?</summary>' + window.Terms.legend();
+      pane.appendChild(lg);
+    }
 
     if ((st.keywords || []).length) {
       var k = document.createElement('div');
       k.className = 'card';
       k.innerHTML = '<div class="card__h">Key words</div><dl class="kw-grid">' +
         st.keywords.map(function (w) {
-          return '<div class="kw"><dt>' + esc(w.term) + '</dt><dd>' + esc(w.def) + '</dd></div>';
+          return '<div class="kw"><dt>' + M(w.term) + '</dt><dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
       pane.appendChild(k);
     }
@@ -249,7 +277,7 @@
 
   function paintDo(pane, st) {
     (st.activities || []).forEach(function (a, i) {
-      var card = window.Engine.render(a, i);
+      var card = window.Engine.render(a, i, st.id + ':' + i);
       if (p(st.id).done[i]) {
         var tick = document.createElement('span');
         tick.className = 'verdict ok';
@@ -258,11 +286,13 @@
         card.querySelector('.act__top').appendChild(tick);
       }
       card.addEventListener('result', function (e) {
-        if (!e.detail || !e.detail.correct) return;
-        p(st.id).done[i] = true;
+        if (!e.detail) return;
+        var rec = p(st.id);
+        rec.tried[i] = true;
+        if (e.detail.correct) rec.done[i] = true;
         save(); paintHeader(); paintRail(); refreshTabCount();
         var s = stationScore(st.id);
-        if (s.done === s.total) {
+        if (e.detail.correct && s.done === s.total) {
           window.Anatomy.state.done[st.id] = true;
           window.Anatomy.render(document.getElementById('bodySvg'));
           toast('Station complete: ' + st.name);
@@ -348,6 +378,118 @@
     });
   }
 
+
+  /* ---------- modes ---------- */
+  function setMode(m, opts) {
+    if (m === 'practice' && !window.Marking.isUnlocked()) { askPassword(); return; }
+    mode = m;
+    localStorage.setItem('digestion-lab.mode', m);
+    window.Engine.setMode(m);
+    if (m !== 'practice') window.Marking.lock();
+    paintHeader(); paintRail(); paintPanel();
+    if (!opts || !opts.quiet) toast(MODES[m] + ' mode');
+  }
+
+  function askPassword() {
+    var dlg = document.getElementById('pwDlg');
+    var inp = document.getElementById('pwInput');
+    var err = document.getElementById('pwErr');
+    err.textContent = ''; inp.value = '';
+    dlg.hidden = false;
+    setTimeout(function () { inp.focus(); }, 30);
+
+    function close() {
+      dlg.hidden = true;
+      document.getElementById('modeSel').value = mode;
+      go.removeEventListener('click', submit);
+      inp.removeEventListener('keydown', onKey);
+    }
+    function onKey(e) { if (e.key === 'Enter') submit(); }
+    function submit() {
+      err.textContent = 'Checking…';
+      window.Marking.unlock(inp.value).then(function () {
+        close();
+        mode = 'practice';
+        localStorage.setItem('digestion-lab.mode', 'practice');
+        window.Engine.setMode('practice');
+        paintHeader(); paintRail(); paintPanel();
+        toast('Practice mode — answers and explanations are shown');
+      }).catch(function () {
+        err.textContent = 'That password does not open the answers. Check with Dr Mompel.';
+        inp.select();
+      });
+    }
+    var go = document.getElementById('pwGo');
+    go.addEventListener('click', submit);
+    inp.addEventListener('keydown', onKey);
+    document.getElementById('pwCancel').onclick = close;
+    dlg.onclick = function (e) { if (e.target === dlg) close(); };
+  }
+
+  /* ---------- handing in ---------- */
+  function completionCode(name, form, score) {
+    var raw = name.trim().toLowerCase() + '|' + form + '|' + score + '|digestion-lab';
+    var s1 = 0, s2 = 0;
+    for (var i = 0; i < raw.length; i++) { s1 = (s1 * 31 + raw.charCodeAt(i)) >>> 0; s2 = (s2 ^ (s1 + i)) >>> 0; }
+    var A = 'ACDEFGHJKLMNPQRTUVWXY3479';
+    function chunk(n) { var o = ''; for (var i = 0; i < 4; i++) { o += A[n % A.length]; n = Math.floor(n / A.length); } return o; }
+    return 'DL-' + chunk(s1) + '-' + chunk(s2);
+  }
+
+  function openSubmit() {
+    var t = totals();
+    var dlg = document.getElementById('subDlg');
+    var body = document.getElementById('subBody');
+    var cfg = window.LAB_CONFIG || {};
+    body.innerHTML =
+      '<p class="st-sub">You have answered all <b>' + t.total + '</b> questions correctly in Mastery mode. ' +
+      'Fill this in to hand your work to Dr Mompel.</p>' +
+      '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
+      '<label class="fld"><span>Your class</span><select id="subForm">' +
+      (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
+      '</select></label><div id="subMsg" class="submsg"></div>';
+    dlg.hidden = false;
+    document.getElementById('subGo').onclick = doSubmit;
+    document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
+    dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
+    setTimeout(function () { document.getElementById('subName').focus(); }, 30);
+  }
+
+  function doSubmit() {
+    var name = (document.getElementById('subName') || {}).value || '';
+    var form = (document.getElementById('subForm') || {}).value || '';
+    var msg = document.getElementById('subMsg');
+    var go = document.getElementById('subGo');
+    if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
+    var t = totals();
+    var code = completionCode(name, form, t.done + '/' + t.total);
+    var perStation = {};
+    ORDER.forEach(function (id) { var s = stationScore(id); perStation[id] = s.done + '/' + s.total; });
+    var payload = { app:'digestion-lab', name:name.trim(), form:form, mode:'mastery',
+                    score:t.done, total:t.total, code:code,
+                    stations:perStation, at:new Date().toISOString() };
+    var url = (window.LAB_CONFIG || {}).submitUrl;
+    go.disabled = true;
+    msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';
+
+    function finish(sent) {
+      go.disabled = false;
+      go.style.display = 'none';
+      msg.className = 'submsg ok';
+      msg.innerHTML = (sent ? '<b>Sent to Dr Mompel.</b> ' : '<b>Could not reach the server.</b> ') +
+        'Your completion code is<div class="code">' + code + '</div>' +
+        (sent ? 'Keep it as your receipt.' : 'Paste this into the Google Classroom assignment to hand in.');
+      var rec = { name:name.trim(), form:form, code:code, at:payload.at, sent:sent };
+      try { localStorage.setItem('digestion-lab.submitted', JSON.stringify(rec)); } catch (e) {}
+    }
+    if (!url) { finish(false); return; }
+    fetch(url, { method:'POST', mode:'no-cors',
+                 headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+                 body:JSON.stringify(payload) })
+      .then(function () { finish(true); })
+      .catch(function () { finish(false); });
+  }
+
   /* ---------- toast ---------- */
   var toastT = null;
   function toast(msg) {
@@ -387,6 +529,10 @@
       if (this.dataset.running === '1') stopTourUI(); else startTour();
     });
 
+    window.Engine.setMode(mode);
+    document.getElementById('modeSel').addEventListener('change', function () { setMode(this.value); });
+    document.getElementById('btnSubmit').addEventListener('click', openSubmit);
+
     var lb = document.getElementById('lightbox');
     lb.addEventListener('click', function () { lb.hidden = true; });
     document.getElementById('btnHelp').addEventListener('click', function () {
@@ -401,12 +547,14 @@
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       document.getElementById('modal').hidden = true;
+      document.getElementById('pwDlg').hidden = true;
+      document.getElementById('subDlg').hidden = true;
       lb.hidden = true;
     });
     document.getElementById('btnReset').addEventListener('click', function () {
       if (!confirm('Clear all your answers and start again? This cannot be undone.')) return;
-      progress = {};
-      try { localStorage.removeItem('digestion-lab.v1'); } catch (e) {}
+      progress = { mastery:{}, test:{}, practice:{} };
+      try { localStorage.removeItem('digestion-lab.v2'); } catch (e) {}
       window.Anatomy.state.done = {};
       window.Anatomy.render(svg);
       paintHeader(); paintRail(); paintPanel();
