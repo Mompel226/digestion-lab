@@ -132,10 +132,16 @@
 
     var chips = document.createElement('div');
     chips.className = 'chips';
+    var STAGE_N = { ingestion:'1', digestion:'2', absorption:'3', assimilation:'4', egestion:'5' };
     (st.processes || []).forEach(function (pr) {
       var c = document.createElement('span');
       c.className = 'chip chip--' + pr;
-      c.textContent = pr.charAt(0).toUpperCase() + pr.slice(1);
+      if (STAGE_N[pr]) {
+        var n = document.createElement('i');
+        n.className = 'chip__n'; n.style.fontStyle = 'normal'; n.textContent = STAGE_N[pr];
+        c.appendChild(n);
+      }
+      c.appendChild(document.createTextNode(pr.charAt(0).toUpperCase() + pr.slice(1)));
       chips.appendChild(c);
     });
     if (st.beyond) {
