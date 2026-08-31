@@ -265,7 +265,7 @@
   /* ---------------- egestion vs excretion ---------------- */
   function egestVsExcrete() {
     return {
-      svg: svg('0 0 440 230',
+      svg: svg('-28 0 496 236',
         '<rect x="14" y="20" width="196" height="176" rx="12" fill="#FBF3E3" stroke="#A16207" stroke-width="2"/>' +
         '<rect x="230" y="20" width="196" height="176" rx="12" fill="#E5F0F4" stroke="#0F6E8C" stroke-width="2"/>' +
         '<text class="fb" x="112" y="44" text-anchor="middle" fill="#A16207">EGESTION</text>' +
@@ -343,8 +343,9 @@
         '<circle cx="358" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
         '<circle cx="380" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
         '<circle cx="402" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<text class="fs" x="286" y="60">Only glucose is small enough</text>' +
-        '<text class="fs" x="286" y="76">and soluble enough to be absorbed.</text>'),
+        '<text class="fs" x="286" y="56">Only glucose is small</text>' +
+        '<text class="fs" x="286" y="72">enough — and soluble</text>' +
+        '<text class="fs" x="286" y="88">enough — to be absorbed.</text>'),
       cap:'<b>Two enzymes, two steps.</b> Amylase breaks starch into maltose — it does <b>not</b> make glucose. Maltase, sitting on the membranes of the microvilli, then breaks maltose into glucose.'
     };
   }
@@ -388,7 +389,7 @@
                A + '"opacity" values="0;.9;0" dur="2.4s" begin="' + (i * 0.3) + 's" repeatCount="indefinite"/></circle>';
     }
     return {
-      svg: svg('0 0 440 200',
+      svg: svg('-14 0 468 204',
         '<rect x="14" y="14" width="412" height="26" rx="13" fill="#FAE0DC" stroke="#C0392B" stroke-width="1.6"/>' +
         '<text class="fs" x="220" y="32" text-anchor="middle" fill="#8A2A20">blood — water and mineral salts absorbed</text>' +
         '<path d="M40,72 L400,72 M40,126 L400,126" stroke="#C08A72" stroke-width="14" fill="none" stroke-linecap="round"/>' +
