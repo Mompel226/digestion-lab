@@ -388,6 +388,14 @@ body[data-mode="practice"] .panel__inner::before{
    side-by-side would make each half too small to read. */
 /* centred, because one half is often much taller than the other and a
    short photograph stranded at the top of a tall diagram reads as a mistake */
+/* A figure that will not fit its column scrolls inside its own box rather
+   than shrinking its labels away. min-width:0 is the part that matters: without
+   it a flex or grid ancestor happily grows to fit the wide child, and the page
+   goes wider than the phone instead of the figure scrolling. */
+.figscroll{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;min-width:0;max-width:100%}
+.figscroll::-webkit-scrollbar{height:7px}
+.figscroll::-webkit-scrollbar-thumb{background:#CFC7B6;border-radius:4px}
+.media--fig,.pair__half{min-width:0;max-width:100%}
 .pair{display:flex;gap:14px;align-items:center}
 .pair__half{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center}
 .pair__half img{width:100%;height:auto;display:block;border-radius:var(--r-sm)}
@@ -696,7 +704,10 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* ---------- Responsive ---------- */
 @media (max-width:1000px){
-  .stage{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);overflow-y:auto}
+  /* minmax(0,1fr), not 1fr: a bare 1fr track has a min of auto, so it grows to
+     fit its widest child. One wide diagram would then stretch the whole column
+     past the phone screen and the station heading would need scrolling to read. */
+  .stage{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);overflow-y:auto}
   .bodycol{border-right:none;border-bottom:1px solid var(--edge);height:min(58vh,520px)}
   .panel{overflow:visible}
   .panel__inner{padding:16px 16px 32px}
