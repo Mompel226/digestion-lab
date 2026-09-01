@@ -178,6 +178,11 @@ needs to change.
 
 ## Credits
 
+The high-fibre foods photograph is by **formulatehealth** from Wikimedia Commons,
+**CC BY 2.0** — attribution required, and it is credited both in
+`assets/photos/CREDITS.md` and inside the pop-up where the image appears.
+
+
 Anatomical plates are public domain from Wikimedia Commons: the body by
 Mariana Ruiz (LadyofHats) and Jmarchn, the tooth section by Jak, the villus by
 Snow93. Photographs and micrographs come from the class lesson slides — see
