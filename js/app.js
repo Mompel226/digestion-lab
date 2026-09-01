@@ -327,6 +327,30 @@
     }
   }
 
+  /* A diagram carries its own labels, and those labels are drawn in the
+     figure's own coordinates — so squeezing the figure into a phone column
+     squeezes the type with it, down to about 5px, which is not readable by
+     anybody. A figure therefore has a floor: it may not be drawn below the
+     width its labels need, and if the column is narrower than that the
+     figure scrolls sideways inside its own box. The page itself never
+     scrolls sideways. */
+  var FIG_MIN_SCALE = 0.92;          /* 12-unit label -> ~11px on screen */
+  function keepFigureReadable(box) {
+    Array.prototype.forEach.call(box.querySelectorAll('svg[viewBox]'), function (sv) {
+      var w = parseFloat((sv.getAttribute('viewBox') || '').split(/\s+/)[2]);
+      if (!w) return;
+      /* The scroller has to be a box of its own. Marking up the existing
+         parent does not work: a wide child then sizes its ancestors instead
+         of scrolling inside them, and the whole panel grows past the phone
+         screen — which is exactly what happened the first time. */
+      var wrap = document.createElement('div');
+      wrap.className = 'figscroll';
+      sv.parentNode.insertBefore(wrap, sv);
+      wrap.appendChild(sv);
+      sv.style.minWidth = Math.round(w * FIG_MIN_SCALE) + 'px';
+    });
+  }
+
   /* a drawn diagram, in the same frame as the photographs */
   function figBox(name) {
     var f = window.Figures.get(name);
@@ -340,6 +364,7 @@
       var paths = sv.querySelectorAll('.plate path');
       idx.forEach(function (i) { if (paths[+i]) paths[+i].style.display = 'none'; });
     });
+    keepFigureReadable(box);
     return box;
   }
 
@@ -387,6 +412,7 @@
       row.appendChild(cell);
     });
     box.appendChild(row);
+    keepFigureReadable(box);
     var cap = document.createElement('figcaption');
     cap.className = 'media__cap';
     cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + ph.cap;
@@ -929,7 +955,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788268425') {
+        if (v && v !== '1788268904') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
