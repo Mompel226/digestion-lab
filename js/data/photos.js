@@ -15,19 +15,39 @@ window.PHOTOS = {
    "kind": "Photograph",
    "maxw": 640,
    "after": 3,
-   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back, and the bumps on the biting surface are the <b>cusps</b>: a premolar has <b>two</b>, a molar has <b>four</b>. Counting cusps is the reliable test, and you can do it on this photograph.",
+   "cap": "Looking along the tooth row — the view exam questions use. The bumps arrowed here are the <b>cusps</b>: the raised points on the biting surface that do the crushing. A premolar has <b>two</b>; a molar has <b>four</b>, though from this angle you can only see the two on the cheek side. Counting cusps is the reliable way to tell the two apart — root number is not, because it depends on which jaw the tooth is in.",
    "annot": [
     {
-     "x": 27,
-     "y": 63,
-     "t": "Molars — broad tops, 4 cusps",
-     "big": true
+     "x": 25,
+     "y": 66,
+     "t": "cusps of a molar",
+     "big": true,
+     "to": [
+      [
+       54.5,
+       27
+      ],
+      [
+       61.5,
+       20.5
+      ]
+     ]
     },
     {
-     "x": 60,
-     "y": 83,
-     "t": "Premolars — narrower, 2 cusps",
-     "big": true
+     "x": 72,
+     "y": 78,
+     "t": "cusps of a premolar",
+     "big": true,
+     "to": [
+      [
+       72,
+       26
+      ],
+      [
+       78.5,
+       30.5
+      ]
+     ]
     }
    ]
   },
@@ -41,12 +61,12 @@ window.PHOTOS = {
      "photo": "tooth-cut-open.jpg",
      "label": "A real molar, cut in half",
      "maxw": 360,
-     "w": 34
+     "w": 30
     },
     {
      "fig": "toothCompact",
      "label": "The same structures, drawn",
-     "w": 66
+     "w": 70
     }
    ]
   },

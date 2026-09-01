@@ -337,6 +337,11 @@
   var FIG_MIN_SCALE = 0.92;          /* 12-unit label -> ~11px on screen */
   function keepFigureReadable(box) {
     Array.prototype.forEach.call(box.querySelectorAll('svg[viewBox]'), function (sv) {
+      /* Only the figure's own outermost svg. A pie chart is a nested <svg>,
+         and wrapping one in a <div> puts an HTML element inside SVG content,
+         where it does not render — which silently deleted all three pie
+         charts from the balanced-diet figure. */
+      if (sv.parentNode && sv.parentNode.closest && sv.parentNode.closest('svg')) return;
       var w = parseFloat((sv.getAttribute('viewBox') || '').split(/\s+/)[2]);
       if (!w) return;
       /* The scroller has to be a box of its own. Marking up the existing
@@ -472,9 +477,15 @@
   function annotLayer(list) {
     var out = '<svg class="annot__svg" viewBox="0 0 100 100" preserveAspectRatio="none">';
     list.forEach(function (a) {
-      if (a.to) out += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + a.to[0] + '" y2="' + a.to[1] +
-                       '" vector-effect="non-scaling-stroke"/>';
-      if (a.to) out += '<circle cx="' + a.to[0] + '" cy="' + a.to[1] + '" r="0.9" vector-effect="non-scaling-stroke"/>';
+      if (!a.to) return;
+      /* one label may point at several things — four cusps are four places on
+         the same tooth, and they should not need four labels saying "cusp" */
+      var pts = Array.isArray(a.to[0]) ? a.to : [a.to];
+      pts.forEach(function (pt) {
+        out += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + pt[0] + '" y2="' + pt[1] +
+               '" vector-effect="non-scaling-stroke"/>' +
+               '<circle cx="' + pt[0] + '" cy="' + pt[1] + '" r="0.9" vector-effect="non-scaling-stroke"/>';
+      });
     });
     out += '</svg>';
     list.forEach(function (a) {
@@ -955,7 +966,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788268904') {
+        if (v && v !== '1788270314') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
