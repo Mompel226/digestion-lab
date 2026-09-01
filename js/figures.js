@@ -22,6 +22,24 @@
   }
   var A = '<animate attributeName=';
 
+  /* Arrows, in one place and one size.
+
+     SVG scales a marker by the line's stroke width unless told otherwise —
+     markerUnits defaults to strokeWidth — so a 9-unit head on a 2.5-wide line
+     was drawn 22 units long. That is why every arrowhead in here looked
+     oversized. userSpaceOnUse pins the head to the figure's own coordinates,
+     so it is the same modest size whatever the line weight. */
+  function arrowDefs(id, colour) {
+    return '<defs><marker id="' + id + '" markerUnits="userSpaceOnUse" ' +
+           'markerWidth="9" markerHeight="7" refX="8.6" refY="3.5" orient="auto">' +
+           '<path d="M0,0 L9,3.5 L0,7 Z" fill="' + colour + '"/></marker></defs>';
+  }
+  function arrow(id, colour, d, width) {
+    return '<path d="' + d + '" stroke="' + colour + '" stroke-width="' + (width || 2.2) +
+           '" fill="none" stroke-linecap="round" marker-end="url(#' + id + ')"/>';
+  }
+
+
   /* ---------------------------------------------------------------
      Muscle movement, done by morphing the wall itself.
 
@@ -178,10 +196,8 @@
         '<text class="fb" x="115" y="28" text-anchor="middle">One large piece</text>' +
         '<text class="fb" x="317" y="28" text-anchor="middle">Four smaller pieces</text>' +
         one.svg + manySvg +
-        '<path d="M186,124 L228,124" stroke="#14572B" stroke-width="2.5" marker-end="url(#ar)"/>' +
-        '<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
-        '<path d="M0,0 L9,4.5 L0,9 Z" fill="#14572B"/></marker></defs>' +
-        '<text class="fs" x="207" y="116" text-anchor="middle">teeth</text>' +
+        arrowDefs('ar', '#14572B') + arrow('ar', '#14572B', 'M186,126 L228,126', 2.4) +
+        '<text class="fs" x="207" y="112" text-anchor="middle">teeth</text>' +
         '<text class="fs" x="115" y="232" text-anchor="middle">same food: 72 &#215; 72</text>' +
         '<text class="fs" x="317" y="232" text-anchor="middle">same food: 4 &#215; (36 &#215; 36)</text>' +
         '<text class="fb" x="115" y="252" text-anchor="middle" style="fill:#0F6E8C">' + one.count + ' enzymes fit round it</text>' +
@@ -337,11 +353,10 @@
         arriving + small +
         /* the arrow and its label only appear while the splitting happens */
         '<g opacity="0">' +
-        '<path d="M160,104 L214,104" stroke="#4E7D4A" stroke-width="3.4" marker-end="url(#arB)"/>' +
+        arrow('arB', '#4E7D4A', 'M160,104 L214,104', 2.6) +
         '<text class="fb" x="187" y="92" text-anchor="middle" style="fill:#4E7D4A">bile</text>' +
         A + '"opacity" values="0;0;1;1;0" keyTimes="0;0.4;0.5;0.92;1" dur="' + CYCLE + '" repeatCount="indefinite"/></g>' +
-        '<defs><marker id="arB" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
-        '<path d="M0,0 L9,4.5 L0,9 Z" fill="#4E7D4A"/></marker></defs>' +
+        arrowDefs('arB', '#4E7D4A') +
         /* what a bile salt is */
         '<g transform="translate(24,214)">' +
         '<line x1="0" y1="0" x2="0" y2="11" stroke="#4E7D4A" stroke-width="2.4" stroke-linecap="round"/>' +
@@ -406,9 +421,7 @@
         '<path d="M316,110 l0,-42 M324,110 l0,-42 M332,110 l0,-42 M340,110 l0,-42 M348,110 l0,-42 M356,110 l0,-42 M364,110 l0,-42 M372,110 l0,-42 M380,110 l0,-42 M388,110 l0,-42 M396,110 l0,-42 M404,110 l0,-42 M412,110 l0,-42" stroke="#C98E76" stroke-width="2.4" stroke-linecap="round"/>' +
         '<text class="fb" x="365" y="34" text-anchor="middle">Microvilli</text>' +
         '<text class="fs" x="365" y="134" text-anchor="middle">×20 more</text></g>' +
-        '<path d="M138,80 L158,80 M283,80 L303,80" stroke="#14572B" stroke-width="2.2" marker-end="url(#ar3)"/>' +
-        '<defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
-        '<path d="M0,0 L9,4.5 L0,9 Z" fill="#14572B"/></marker></defs>' +
+        arrowDefs('ar3', '#14572B') + arrow('ar3', '#14572B', 'M138,80 L158,80') + arrow('ar3', '#14572B', 'M283,80 L303,80') +
         '<text class="fl" x="220" y="168" text-anchor="middle">Together they raise the surface area up to <tspan class="fb">600×</tspan> that of a flat tube.</text>' +
         '<text class="fs" x="220" y="188" text-anchor="middle">About 250 m² of absorbing surface — roughly a tennis court.</text>'),
       cap:'Three levels of folding multiply together: <b>circular folds</b> (×3), <b>villi</b> (×10) and <b>microvilli</b> (×20). More surface area means more sites for small soluble molecules to be absorbed.'
@@ -417,30 +430,70 @@
 
   /* ---------------- egestion vs excretion ---------------- */
   function egestVsExcrete() {
+    /* Redrawn. The old one put a plain bar where the gut should be and two
+       concentric circles where the cell should be, and ran "via the anus" out
+       through the side of its own panel. A reader has to recognise the two
+       things being contrasted, so the gut is drawn as a gut — descending
+       colon, rectum, and a sphincter at the end — and the cell as a cell,
+       with a membrane, a nucleus and waste actually crossing the membrane. */
+    var L = 12, R = 262, PW = 226, PT = 28, PH = 232;
+
+    /* the last stretch of gut: down, a bend, and out */
+    var gutPath = 'M44,92 L44,150 Q44,176 60,186 L60,204';
+    var gut =
+      '<path d="' + gutPath + '" fill="none" stroke="#B07E4A" stroke-width="27" stroke-linecap="round"/>' +
+      '<path d="' + gutPath + '" fill="none" stroke="#EFDFCB" stroke-width="21" stroke-linecap="round"/>' +
+      /* what is inside the lumen, on its way out */
+      [[44,108],[44,136],[52,168]].map(function (p) {
+        return '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7" ry="5.4" fill="#A9713C" opacity=".85"/>';
+      }).join('') +
+      /* the sphincter at the end */
+      '<ellipse cx="60" cy="209" rx="12" ry="5" fill="#C08B57" stroke="#8A5A2B" stroke-width="2"/>' +
+      '<ellipse cx="60" cy="209" rx="4.5" ry="2" fill="#6E4423"/>' +
+      '<path class="ld" d="M74,209 L88,209"/>' +
+      '<text class="fs" x="92" y="212">anus</text>';
+
+    /* a cell: a lobed outline, a membrane you can see, a nucleus, and waste
+       leaving through the membrane rather than sitting inside a second ring */
+    var cell =
+      '<path d="M318,108 C348,104 372,124 371,150 C370,176 350,194 320,193 ' +
+      'C292,192 272,174 273,149 C274,125 292,111 318,108 Z" ' +
+      'fill="#DCEBF3" stroke="#0F6E8C" stroke-width="2.6"/>' +
+      '<path d="M318,113 C344,110 366,127 365,150 C364,172 347,188 320,187 ' +
+      'C296,186 279,171 280,149 C281,128 296,116 318,113 Z" ' +
+      'fill="none" stroke="#7FB2CE" stroke-width="1.4"/>' +
+      '<ellipse cx="314" cy="146" rx="15" ry="13" fill="#9CC3E8" stroke="#0F6E8C" stroke-width="1.8"/>' +
+      '<ellipse cx="314" cy="146" rx="5" ry="4" fill="#5B8FB5"/>' +
+      '<ellipse cx="298" cy="172" rx="8" ry="4.5" fill="#BBD9E8" transform="rotate(-18 298 172)"/>' +
+      '<ellipse cx="340" cy="171" rx="7" ry="4" fill="#BBD9E8" transform="rotate(14 340 171)"/>' +
+      '<text class="fs" x="316" y="207" text-anchor="middle">a body cell</text>' +
+      /* two wastes crossing the membrane */
+      arrow('arE', '#0F6E8C', 'M366,136 L392,130', 2) +
+      arrow('arE', '#0F6E8C', 'M368,166 L392,172', 2) +
+      '<circle cx="364" cy="137" r="4" fill="#0F6E8C"/>' +
+      '<circle cx="366" cy="165" r="4" fill="#0F6E8C"/>';
+
     return {
-      svg: svg('-28 0 496 236',
-        '<rect x="14" y="20" width="196" height="176" rx="12" fill="#FBF3E3" stroke="#A16207" stroke-width="2"/>' +
-        '<rect x="230" y="20" width="196" height="176" rx="12" fill="#E5F0F4" stroke="#0F6E8C" stroke-width="2"/>' +
-        '<text class="fb" x="112" y="44" text-anchor="middle" style="fill:#A16207">EGESTION</text>' +
-        '<text class="fb" x="328" y="44" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
-        '<text class="fs" x="112" y="62" text-anchor="middle">never entered a cell</text>' +
-        '<text class="fs" x="328" y="62" text-anchor="middle">made inside cells</text>' +
-        /* left: tube passing through */
-        '<path d="M52,84 L52,168" stroke="#C98E76" stroke-width="17" stroke-linecap="round"/>' +
-        '<circle cx="52" cy="98" r="6" fill="#8A6A4A"><animate attributeName="cy" values="86;168" dur="3s" repeatCount="indefinite"/></circle>' +
-        '<text class="fl" x="76" y="100">Fibre / roughage</text>' +
-        '<text class="fl" x="76" y="122">Undigested food</text>' +
-        '<text class="fl" x="76" y="144">Dead gut cells</text>' +
-        '<text class="fs" x="76" y="166">leaves as faeces, via the anus</text>' +
-        /* right: cell producing waste */
-        '<circle cx="268" cy="112" r="26" fill="#CDE3EA" stroke="#0F6E8C" stroke-width="2"/>' +
-        '<circle cx="268" cy="112" r="8" fill="#0F6E8C" opacity=".5"/>' +
-        '<path d="M294,104 L318,96 M294,120 L318,128" stroke="#0F6E8C" stroke-width="1.8" fill="none"/>' +
-        '<text class="fl" x="324" y="100">Urea → urine</text>' +
-        '<text class="fl" x="324" y="132">CO₂ → lungs</text>' +
-        '<text class="fs" x="328" y="166" text-anchor="middle">products of reactions in cells</text>' +
-        '<text class="fl" x="220" y="220" text-anchor="middle">Food in the gut is still <tspan class="fb">outside</tspan> your cells — so removing it is egestion, not excretion.</text>'),
-      cap:'<b>The distinction 0610 examines.</b> Egestion removes material that was never absorbed into cells. Excretion removes the waste products of chemical reactions <i>inside</i> cells. Faeces are egested; urea and carbon dioxide are excreted.'
+      svg: svg('0 0 500 316',
+        arrowDefs('arE', '#0F6E8C') +
+        '<rect x="' + L + '" y="' + PT + '" width="' + PW + '" height="' + PH + '" rx="14" fill="#FCF4E7" stroke="#B07E4A" stroke-width="2.4"/>' +
+        '<rect x="' + R + '" y="' + PT + '" width="' + PW + '" height="' + PH + '" rx="14" fill="#E8F3F8" stroke="#0F6E8C" stroke-width="2.4"/>' +
+        '<text class="fb" x="125" y="56" text-anchor="middle" style="fill:#8A5A2B">EGESTION</text>' +
+        '<text class="fs" x="125" y="74" text-anchor="middle">never entered a cell</text>' +
+        '<text class="fb" x="375" y="56" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
+        '<text class="fs" x="375" y="74" text-anchor="middle">made inside cells</text>' +
+        gut + cell +
+        '<text class="fb" x="96" y="112" style="fill:#8A5A2B">Fibre / roughage</text>' +
+        '<text class="fb" x="96" y="140" style="fill:#8A5A2B">Undigested food</text>' +
+        '<text class="fb" x="96" y="168" style="fill:#8A5A2B">Dead gut cells</text>' +
+        '<text class="fs" x="125" y="246" text-anchor="middle">leaves the body as faeces</text>' +
+        '<text class="fb" x="400" y="134">Urea &#8594; urine</text>' +
+        '<text class="fb" x="400" y="176">CO&#8322; &#8594; lungs</text>' +
+        '<text class="fs" x="375" y="246" text-anchor="middle">products of reactions in cells</text>' +
+        '<text class="fl" x="250" y="286" text-anchor="middle">Food in the gut is still ' +
+        '<tspan style="fill:#14572B" font-weight="700">outside</tspan> your cells.</text>' +
+        '<text class="fl" x="250" y="304" text-anchor="middle">So getting rid of it is egestion, not excretion.</text>'),
+      cap:'The alimentary canal is a tube running through the body, and what is in the tube has never been inside a cell. <b>Egestion</b> passes that out. <b>Excretion</b> gets rid of waste the cells themselves made &#8212; urea from the liver, carbon dioxide from respiration. That is why they are different processes, and 0610 asks about it.'
     };
   }
 
@@ -512,35 +565,49 @@
 
   /* ---------------- starch pathway ---------------- */
   function starchPath() {
-    function chain(x, y, n, fill) {
-      var s = '';
-      for (var i = 0; i < n; i++) s += '<circle cx="' + (x + i * 15) + '" cy="' + y + '" r="7" fill="' + fill + '" stroke="#7A5B12" stroke-width="1.2"/>';
+    /* Laid out as one left-to-right pathway, because that is what it is:
+       starch, then the enzyme that acts on it, then the product. The arrow
+       used to hang in the space beside the starch chain, pointing at nothing
+       and connecting nothing. Each arrow now starts at the molecule it acts
+       on and ends at what that molecule becomes. */
+    var Y = 74;
+    function chain(x, n, fill, stroke, gap) {
+      var s = '', i;
+      for (i = 0; i < n; i++)
+        s += '<circle cx="' + (x + i * (gap || 15)) + '" cy="' + Y + '" r="7" fill="' + fill +
+             '" stroke="' + stroke + '" stroke-width="1.2"/>';
       return s;
     }
+    /* three maltose molecules: two joined units, spaced apart */
+    var maltose = [190, 231, 272].map(function (x) { return chain(x, 2, '#E8C063', '#7A5B12'); }).join('');
     return {
-      svg: svg('0 0 440 200',
-        '<text class="fb" x="14" y="34">Starch</text>' + chain(14, 60, 8, '#E8C063') +
-        '<path d="M136,84 L136,104" stroke="#14572B" stroke-width="2.2" marker-end="url(#ar4)"/>' +
-        '<defs><marker id="ar4" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
-        '<path d="M0,0 L9,4.5 L0,9 Z" fill="#14572B"/></marker></defs>' +
-        '<text class="fb" x="150" y="98" style="fill:#A16207">amylase</text>' +
-        '<text class="fs" x="150" y="112">mouth and duodenum</text>' +
-        '<text class="fb" x="14" y="140">Maltose</text>' +
-        chain(14, 164, 2, '#E8C063') + chain(64, 164, 2, '#E8C063') + chain(114, 164, 2, '#E8C063') + chain(164, 164, 2, '#E8C063') +
-        '<path d="M226,164 L262,164" stroke="#14572B" stroke-width="2.2" marker-end="url(#ar4)"/>' +
-        '<text class="fb" x="244" y="150" text-anchor="middle" style="fill:#0F6E8C">maltase</text>' +
-        '<text class="fs" x="244" y="186" text-anchor="middle">on the microvilli membrane</text>' +
-        '<text class="fb" x="286" y="140">Glucose</text>' +
-        '<circle cx="292" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<circle cx="314" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<circle cx="336" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<circle cx="358" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<circle cx="380" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<circle cx="402" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
-        '<text class="fs" x="286" y="56">Only glucose is small</text>' +
-        '<text class="fs" x="286" y="72">enough — and soluble</text>' +
-        '<text class="fs" x="286" y="88">enough — to be absorbed.</text>'),
-      cap:'<b>Two enzymes, two steps.</b> Amylase breaks starch into maltose — it does <b>not</b> make glucose. Maltase, sitting on the membranes of the microvilli, then breaks maltose into glucose.'
+      svg: svg('0 0 448 210',
+        arrowDefs('arS', '#4A4A4A') +
+        '<text class="fb" x="8" y="40">Starch</text>' +
+        '<text class="fs" x="8" y="56">many units joined</text>' +
+        chain(10, 8, '#E8C063', '#7A5B12') +
+
+        arrow('arS', '#4A4A4A', 'M132,' + Y + ' L172,' + Y, 2.2) +
+        '<text class="fb" x="152" y="' + (Y - 16) + '" text-anchor="middle" style="fill:#A16207">amylase</text>' +
+        '<text class="fs" x="152" y="' + (Y + 22) + '" text-anchor="middle">mouth and</text>' +
+        '<text class="fs" x="152" y="' + (Y + 35) + '" text-anchor="middle">duodenum</text>' +
+
+        '<text class="fb" x="190" y="40">Maltose</text>' +
+        '<text class="fs" x="190" y="56">two units</text>' +
+        maltose +
+
+        arrow('arS', '#4A4A4A', 'M300,' + Y + ' L340,' + Y, 2.2) +
+        '<text class="fb" x="320" y="' + (Y - 16) + '" text-anchor="middle" style="fill:#0F6E8C">maltase</text>' +
+        '<text class="fs" x="320" y="' + (Y + 22) + '" text-anchor="middle">on the</text>' +
+        '<text class="fs" x="320" y="' + (Y + 35) + '" text-anchor="middle">microvilli</text>' +
+
+        '<text class="fb" x="356" y="40">Glucose</text>' +
+        '<text class="fs" x="356" y="56">one unit</text>' +
+        chain(360, 4, '#7DBE45', '#4A7A25', 21) +
+
+        '<text class="fs" x="224" y="164" text-anchor="middle">Only glucose is small enough &#8212; and soluble enough &#8212; to be absorbed.</text>' +
+        '<text class="fs" x="224" y="182" text-anchor="middle">Amylase stops at maltose. It never makes glucose on its own.</text>'),
+      cap:'<b>Two enzymes, two steps.</b> Amylase breaks starch down to <b>maltose</b> &#8212; it does <i>not</i> produce glucose. Maltase, sitting on the membranes of the microvilli in the small intestine, then breaks maltose into <b>glucose</b>. Writing "amylase turns starch into glucose" loses the mark.'
     };
   }
 
@@ -700,15 +767,20 @@
         '<text class="fs" x="400" y="150" text-anchor="end">solid faeces,</text>' +
         '<text class="fs" x="400" y="163" text-anchor="end">stored in the rectum</text>' +
         '<text class="fl" x="222" y="186" text-anchor="middle">The pouches squeeze in turn, kneading the contents</text>' +
-        '<text class="fl" x="222" y="200" text-anchor="middle">against the wall so the water has time to leave.</text>'),
+        '<text class="fl" x="222" y="205" text-anchor="middle">against the wall so the water has time to leave.</text>'),
       cap:'<b>The colon.</b> It does not push with one smooth wave like the oesophagus — neighbouring pouches squeeze in turn, working the contents against the wall so water and mineral salts have time to be absorbed. What arrives watery leaves solid. Watch the trap though: <b>most</b> of the water is absorbed in the <b>small</b> intestine, not here.'
     };
   }
 
 
   /* ---------------- pie chart, for the diet questions ---------------- */
+  /* Seven slices need seven colours that stay apart from each other, including
+     for a colour-blind reader: minerals was a green almost identical to fibre,
+     and water a blue almost identical to vitamins. They are now a purple and a
+     pale blue, which separate on hue and on lightness. */
   var DIET_COL = { carbohydrate:'#A15C07', fat:'#C9A227', protein:'#9B2C6F',
-                   fibre:'#5E7A3A', vitamins:'#0F6480', water:'#1D4E89', other:'#8A8A8A' };
+                   fibre:'#5E7A3A', vitamins:'#0F6480', minerals:'#7B4FA8',
+                   water:'#7FB2CE', other:'#8A8A8A' };
   function pie(slices, size) {
     var R = (size || 96) / 2, cx = R, cy = R, a0 = -Math.PI / 2, out = '';
     slices.forEach(function (s) {
@@ -737,9 +809,14 @@
        that is energy balance, a different idea, and not on 0610. The point is
        that the seven components stay in the same proportions while the amount
        changes. Three plates, same recipe, different size. */
-    var SL = [{label:'Carbohydrate',pct:40,cat:'carbohydrate'},{label:'Protein',pct:20,cat:'protein'},
-              {label:'Fats and oils',pct:20,cat:'fat'},{label:'Fibre',pct:10,cat:'fibre'},
-              {label:'Vitamins and minerals',pct:10,cat:'vitamins'}];
+    /* Seven slices, because the sentence above them says seven components.
+       Vitamins and mineral ions are separate components of the diet, and
+       water is one too — merging them into "vitamins and minerals" and
+       leaving water out made the figure contradict its own heading. */
+    var SL = [{label:'Carbohydrate',pct:33,cat:'carbohydrate'},{label:'Protein',pct:17,cat:'protein'},
+              {label:'Fats and oils',pct:17,cat:'fat'},{label:'Fibre',pct:9,cat:'fibre'},
+              {label:'Vitamins',pct:6,cat:'vitamins'},{label:'Mineral ions',pct:6,cat:'minerals'},
+              {label:'Water',pct:12,cat:'water'}];
     var who = [{x:82,  r:34, t:'A 7-year-old',   s:'still growing, but small'},
                {x:228, r:48, t:'An office worker', s:'sitting most of the day'},
                {x:388, r:64, t:'A builder',       s:'heavy work all day'}];
@@ -753,12 +830,12 @@
              '<text class="fs" x="' + w.x + '" y="215" text-anchor="middle">' + w.s + '</text>';
     }).join('');
     var key = SL.map(function (sl, i) {
-      return '<g transform="translate(' + (16 + (i % 3) * 154) + ',' + (238 + Math.floor(i / 3) * 17) + ')">' +
+      return '<g transform="translate(' + (16 + (i % 4) * 116) + ',' + (238 + Math.floor(i / 4) * 18) + ')">' +
              '<rect width="10" height="10" rx="3" fill="' + DIET_COL[sl.cat] + '"/>' +
              '<text class="fs" x="15" y="9">' + sl.label + '</text></g>';
     }).join('');
     return {
-      svg: svg('0 0 470 282',
+      svg: svg('0 0 470 296',
         '<text class="fl" x="235" y="20" text-anchor="middle">The same seven components, in the same proportions.</text>' +
         '<text class="fl" x="235" y="36" text-anchor="middle">What changes from person to person is <tspan font-weight="700">how much</tspan>.</text>' +
         g + key),
@@ -773,21 +850,28 @@
      scaled to fit. The long-form version above is still the one used when a
      figure has the whole width to itself. */
   function toothCompact() {
+    /* The pair version of the tooth plate. It lost its explanatory sub-lines
+       when it was first cut down to fit half a row, and that made it a poorer
+       diagram than the one it replaced — which is what he noticed. They are
+       back. The way to keep them readable in a narrower box is to make the
+       box itself narrower, not the type smaller: the viewBox is trimmed to
+       what the artwork and labels actually occupy, so the same rendered width
+       gives a bigger scale. */
     var art = (global.FIGURE_ART || {}).tooth;
     if (!art) return { svg:'', cap:'' };
     return {
       svg: plateFig(art, {
-        viewBox:'-34 52 496 586', leftX:-14, rightX:384, minGap:22, top:70, bottom:600,
+        viewBox:'-30 50 576 596', leftX:-14, rightX:384, minGap:30, top:74, bottom:606,
         hide:[55,56,57,58,59,60,61,62,68,69,70,71],
         labels:[
-          { side:'right', ly:116, at:[281,116], text:'Enamel' },
-          { side:'right', ly:160, at:[260,167], text:'Dentine' },
-          { side:'right', ly:210, at:[203,214], text:'Pulp cavity' },
-          { side:'right', ly:256, at:[323,236], text:'Gum' },
-          { side:'right', ly:322, at:[201,296], text:'Cement' },
-          { side:'right', ly:430, at:[308,435], text:'Jaw bone' },
-          { side:'right', ly:516, at:[288,556], text:'Blood vessel' },
-          { side:'right', ly:566, at:[288,580], text:'Nerve' }
+          { side:'right', ly:116, at:[281,116], text:'Enamel',      sub:'hardest substance in the body' },
+          { side:'right', ly:178, at:[260,167], text:'Dentine',     sub:'softer, and it senses pain' },
+          { side:'right', ly:236, at:[203,214], text:'Pulp cavity', sub:'blood vessels and nerves' },
+          { side:'right', ly:288, at:[323,236], text:'Gum' },
+          { side:'right', ly:344, at:[201,296], text:'Cement',      sub:'anchors the root' },
+          { side:'right', ly:432, at:[308,435], text:'Jaw bone' },
+          { side:'right', ly:508, at:[288,556], text:'Blood vessel' },
+          { side:'right', ly:562, at:[288,580], text:'Nerve' }
         ],
         brackets:[
           { x:26, y0:62,  y1:262, text:'Crown' },
