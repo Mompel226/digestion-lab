@@ -25,8 +25,48 @@ window.PHOTOS = {
    "t": "photo",
    "src": "premolars-molars-real.jpg",
    "kind": "Photograph",
-   "cap": "Looking along the tooth row — the view exam questions use. Premolars first, then the larger molars behind them.",
-   "after": 3
+   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back. Count the bumps on the biting surface: a premolar has <b>two</b>, a molar has <b>four</b>.",
+   "after": 3,
+   "annot": [
+    {
+     "x": 22,
+     "y": 13,
+     "t": "back of the mouth",
+     "to": [
+      36,
+      26
+     ]
+    },
+    {
+     "x": 80,
+     "y": 84,
+     "t": "towards the front",
+     "to": [
+      90,
+      58
+     ]
+    },
+    {
+     "x": 30,
+     "y": 64,
+     "t": "Molars — bigger, broader tops",
+     "to": [
+      41,
+      40
+     ],
+     "big": true
+    },
+    {
+     "x": 86,
+     "y": 22,
+     "t": "Premolars — smaller",
+     "to": [
+      92,
+      44
+     ],
+     "big": true
+    }
+   ]
   },
   {
    "t": "photo",
@@ -67,8 +107,20 @@ window.PHOTOS = {
    "t": "photo",
    "src": "tooth-xray.jpg",
    "kind": "Radiograph",
-   "cap": "The same structures on an X-ray, with the tooth in its socket in the jaw bone.",
-   "more": true
+   "cap": "An X-ray of the same structures. It also settles a common question: this lower molar has <b>two</b> roots. Upper molars have three, and most premolars have one — so <b>root number depends on the jaw and is a poor way to tell them apart</b>. Count cusps instead.",
+   "after": 4,
+   "annot": [
+    {
+     "x": 52,
+     "y": 92,
+     "t": "Two roots — this is a lower molar",
+     "to": [
+      34,
+      74
+     ],
+     "big": true
+    }
+   ]
   }
  ],
  "salivary-glands": [
@@ -85,8 +137,8 @@ window.PHOTOS = {
    "t": "video",
    "src": "peristalsis",
    "kind": "Animation",
-   "cap": "A real animation of the bolus being swallowed. Watch the ring of muscle close <b>behind</b> the bolus and the tube open <b>in front</b> of it — that wave is peristalsis, and it is what pushes the food down.",
-   "after": 1
+   "cap": "And the same thing filmed inside a real body — the bolus is the yellow mass. Watch how the wall closes behind it.",
+   "after": 2
   },
   {
    "t": "photo",
@@ -218,14 +270,14 @@ window.PHOTOS = {
    "src": "villi-micrograph-set.jpg",
    "kind": "Micrographs",
    "cap": "(b) circular folds, (c) villi and (d) microvilli, at increasing magnification.",
-   "more": true
+   "after": 1
   },
   {
    "t": "photo",
    "src": "surface-area-levels.jpg",
    "kind": "Illustration",
-   "cap": "The three levels of folding together: circular folds, then villi, then microvilli.",
-   "more": true
+   "cap": "The three levels of folding that make the surface area so large: <b>circular folds</b>, then <b>villi</b> on the folds, then <b>microvilli</b> on each cell. Together they multiply the area by up to 600 times.",
+   "after": 1
   },
   {
    "t": "photo",

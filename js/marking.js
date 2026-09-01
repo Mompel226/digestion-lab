@@ -42,7 +42,10 @@
       case 'match': return H([id, 'match', r.map(function (p) { return p.join('-'); }).sort().join(',')]);
       case 'sort':  return H([id, 'sort', r.map(function (p) { return norm(p[0]) + '=' + p[1]; }).sort().join(',')]);
       case 'drag':  return H([id, 'drag', r.map(function (t, j) { return j + '=' + norm(t); }).join(',')]);
-      case 'ph':    return H([id, 'ph', Number(r).toFixed(1)]);
+      /* The slider moves in half units, and an optimum like amylase's 6.8 does
+         not sit on that grid. Snap before hashing so marking never depends on
+         how the value happened to arrive. */
+      case 'ph':    return H([id, 'ph', (Math.round(Number(r) * 2) / 2).toFixed(1)]);
     }
     return Promise.resolve('');
   }
