@@ -205,6 +205,7 @@
   }
 
   function paintLearn(pane, st) {
+    if (window.Terms) window.Terms.setStation(st.id);
     var M = window.Terms ? window.Terms.mark : esc;
     var media = (window.PHOTOS || {})[st.id] || [];
     var figs = FIGS[st.id] || [];
@@ -234,6 +235,14 @@
       figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] === i; })
           .forEach(function (name) { li.appendChild(figBox(name)); });
     });
+
+    if (st.id === 'overview') {
+      var trace = document.createElement('button');
+      trace.className = 'traceBtn';
+      trace.innerHTML = '<span class="traceBtn__dot"></span>Trace it on the diagram — send a meal down the whole canal';
+      trace.addEventListener('click', function () { startTour(); });
+      card.appendChild(trace);
+    }
 
     /* anything not anchored to a sentence follows the list */
     media.filter(function (x) { return !x.more && x.after == null; })
@@ -591,6 +600,56 @@
       .catch(function () { finish(false); });
   }
 
+
+  /* ---------- clicking a highlighted word ----------
+     Some words open a small picture where you clicked; others take you to
+     the station that explains them. Both are marked so you can tell which
+     is which before you click. */
+  var peekEl = null;
+  function closePeek() { if (peekEl) { peekEl.remove(); peekEl = null; } }
+
+  /* The card lives inside the scrolling panel and is positioned against it,
+     so it stays put beside its word while the student scrolls. */
+  function openPeek(el) {
+    closePeek();
+    var host = document.getElementById('panelInner');
+    var src = el.getAttribute('data-peek'), note = el.getAttribute('data-note');
+    var p = document.createElement('div');
+    p.className = 'peek';
+    p.innerHTML = '<img src="assets/photos/' + src + '" alt="">' +
+                  '<div class="peek__note">' + note + '</div>' +
+                  '<button class="peek__x" aria-label="Close">×</button>';
+    host.appendChild(p);
+    var hr = host.getBoundingClientRect(), r = el.getBoundingClientRect();
+    var w = p.offsetWidth, h = p.offsetHeight, pad = 8;
+    var left = Math.min(Math.max(pad, (r.left - hr.left) + r.width / 2 - w / 2), host.clientWidth - w - pad);
+    var top = (r.bottom - hr.top) + 8;
+    /* flip above the word if there is not room below inside the panel */
+    var panel = document.getElementById('panel');
+    if (r.bottom + 8 + h > panel.getBoundingClientRect().bottom) top = (r.top - hr.top) - h - 8;
+    p.style.left = left + 'px';
+    p.style.top = Math.max(0, top) + 'px';
+    p.querySelector('.peek__x').addEventListener('click', closePeek);
+    peekEl = p;
+  }
+
+  function wireTermClicks(root) {
+    root.addEventListener('click', function (e) {
+      var t = e.target.closest('[data-peek],[data-jump]');
+      if (!t) { closePeek(); return; }
+      e.preventDefault();
+      if (t.hasAttribute('data-peek')) openPeek(t);
+      else { closePeek(); open(t.getAttribute('data-jump')); }
+    });
+    root.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var t = e.target.closest('[data-peek],[data-jump]');
+      if (!t) return;
+      e.preventDefault();
+      if (t.hasAttribute('data-peek')) openPeek(t); else open(t.getAttribute('data-jump'));
+    });
+  }
+
   /* ---------- toast ---------- */
   var toastT = null;
   function toast(msg) {
@@ -634,6 +693,9 @@
     document.getElementById('modeSel').addEventListener('change', function () { setMode(this.value); });
     document.getElementById('btnSubmit').addEventListener('click', openSubmit);
 
+    wireTermClicks(document.getElementById('panel'));
+    window.addEventListener('resize', closePeek);
+
     var lb = document.getElementById('lightbox');
     lb.addEventListener('click', function () { lb.hidden = true; });
     document.getElementById('btnHelp').addEventListener('click', function () {
@@ -647,6 +709,7 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
+      closePeek();
       document.getElementById('modal').hidden = true;
       document.getElementById('pwDlg').hidden = true;
       document.getElementById('subDlg').hidden = true;
@@ -679,7 +742,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788260518') {
+        if (v && v !== '1788261410') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

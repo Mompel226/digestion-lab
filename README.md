@@ -154,6 +154,14 @@ needs to change.
   British spellings throughout.
 - Labels are laid out at runtime with a collision pass, so **no two labels can
   overlap** on the plate or on any diagram, whatever is shown or hidden.
+- **Highlighted words are actionable.** A dotted underline opens a small picture
+  in place (what fats, protein or iron actually look like); a solid underline
+  jumps to the station that explains the term. Which treatment a word gets is set
+  in `PEEK` and `JUMP` in `js/terms.js`. A word never links to the station you are
+  already on.
+- **Images only where they earn it.** The alimentary canal station has none: the
+  plate on the left already is the canal, so it offers "trace it on the diagram"
+  instead of repeating itself as a picture.
 - **Colour coding never stands alone.** Each of the five processes wears a chip
   carrying its number in the sequence, so the coding survives colour blindness and
   greyscale printing — and the number teaches the order, which is examinable.
