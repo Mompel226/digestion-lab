@@ -264,6 +264,7 @@ body[data-mode="practice"] .panel__inner::before{
   --c-ass:#1D4E89;  --c-ass-t:#E5EBF5;
   --c-ege:#5E4636;  --c-ege-t:#EFE9E3;
   --c-mol:#9B2C6F;
+  --c-cond:#4A4A4A;   /* conditions: neutral, because a disease is not a stage */
 }
 /* plain bold term, coloured by the stage it belongs to */
 .t{font-weight:700}
@@ -272,6 +273,7 @@ body[data-mode="practice"] .panel__inner::before{
 .t--assimilation{color:var(--c-ass)} .t--egestion{color:var(--c-ege)}
 .t--molecule{color:var(--c-mol);text-decoration:underline;text-decoration-style:dotted;
              text-decoration-thickness:1.5px;text-underline-offset:3px}
+.t--condition{color:var(--c-cond);font-style:italic}
 
 /* a stage word wears a chip carrying its number */
 .tc{
@@ -362,6 +364,9 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* a highlighted word you can act on */
 .t.is-peek,.tc.is-peek,.t.is-jump,.tc.is-jump{cursor:pointer}
+/* Vertical padding on an inline element grows the hit area without pushing the
+   lines apart, so a word is easier to tap without changing the layout. */
+.t.is-peek,.tc.is-peek,.t.is-jump,.tc.is-jump{padding-top:4px;padding-bottom:4px}
 .t.is-peek,.tc.is-peek{border-bottom:2px dotted currentColor}
 .t.is-jump,.tc.is-jump{border-bottom:1.5px solid currentColor}
 .t.is-jump::after,.tc.is-jump::after{content:"\2197";font-size:.72em;vertical-align:.35em;margin-left:1px;opacity:.75}
@@ -423,6 +428,8 @@ body[data-mode="practice"] .panel__inner::before{
   border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)
 }
 .media__el{width:100%;display:block;background:#FFFDF8}
+.media__el--img{margin:0 auto}
+.annot{display:flex;justify-content:center}
 .media__el--img{cursor:zoom-in;background:#F2EADB;transition:filter .18s}
 .media__el--img:hover{filter:brightness(1.03) saturate(1.04)}
 .media--video .media__el{background:#111}

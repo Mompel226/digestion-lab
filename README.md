@@ -160,6 +160,10 @@ needs to change.
   way back. Which treatment a word gets is set
   in `PEEK` and `JUMP` in `js/terms.js`. A word never links to the station you are
   already on.
+- **No image is ever upscaled.** Each carries a `maxw` equal to half its own pixel
+  width, so on a 2x screen it is drawn at most 1:1. A small sharp picture beats a
+  large soft one; if a source is too small to be useful at any size, it is dropped
+  rather than stretched.
 - **Every image must pass a test: does it teach something the words cannot?**
   Food groups get a picture of the foods, because a student may not know tofu is
   protein. Vitamins and minerals get a picture of the *deficiency*, because that
