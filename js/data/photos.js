@@ -4,15 +4,7 @@
    t     : 'photo' -> assets/photos/<src>   ·   'video' -> assets/video/<src>.mp4 + .jpg
    See assets/photos/CREDITS.md for provenance. */
 window.PHOTOS = {
- "overview": [
-  {
-   "t": "photo",
-   "src": "canal-regions.jpg",
-   "kind": "Illustration",
-   "cap": "The regions of the alimentary canal. Follow it from the mouth down: oesophagus, stomach, duodenum, jejunum, ileum, then the colon frames the whole thing.",
-   "after": 0
-  }
- ],
+ "overview": [],
  "mouth": [
   {
    "t": "photo",
@@ -179,13 +171,6 @@ window.PHOTOS = {
    "kind": "Illustration",
    "cap": "The liver, gall bladder and the bile ducts that carry bile down to the duodenum.",
    "after": 1
-  },
-  {
-   "t": "photo",
-   "src": "bile-summary.jpg",
-   "kind": "Illustration",
-   "cap": "Where bile is made and stored, and what it does once it arrives.",
-   "more": true
   }
  ],
  "gall-bladder": [
@@ -195,13 +180,6 @@ window.PHOTOS = {
    "kind": "Illustration",
    "cap": "The gall bladder sits under the liver. The bile duct carries bile to the duodenum.",
    "after": 0
-  },
-  {
-   "t": "photo",
-   "src": "gall-pancreas-place.jpg",
-   "kind": "Illustration",
-   "cap": "Where the gall bladder and pancreas sit in the body.",
-   "more": true
   }
  ],
  "pancreas": [
@@ -234,6 +212,13 @@ window.PHOTOS = {
    "kind": "Illustration",
    "cap": "The three parts of the small intestine: duodenum, jejunum and ileum.",
    "after": 0
+  },
+  {
+   "t": "photo",
+   "src": "canal-regions.jpg",
+   "kind": "Illustration",
+   "more": true,
+   "cap": "Where the duodenum sits: first part of the small intestine, straight after the stomach, with the jejunum and ileum following."
   }
  ],
  "ileum-villi": [
@@ -324,6 +309,78 @@ window.PHOTOS = {
    "kind": "Illustration",
    "cap": "Maltase works on the membrane of the epithelial cells, not floating free in the gut.",
    "more": true
+  }
+ ],
+ "diet": [
+  {
+   "t": "photo",
+   "src": "eatwell-plate.jpg",
+   "kind": "Illustration",
+   "after": 0,
+   "cap": "What \"correct proportions\" looks like on a plate. The biggest sections are starchy foods and fruit and vegetables; the smallest is the one people expect to be biggest."
+  },
+  {
+   "t": "photo",
+   "src": "card-vitaminc.jpg",
+   "kind": "Summary card",
+   "after": 2,
+   "cap": "<b>Vitamin C.</b> Sources, what the body uses it for, and what happens without it."
+  },
+  {
+   "t": "photo",
+   "src": "card-vitamind.jpg",
+   "kind": "Summary card",
+   "after": 2,
+   "cap": "<b>Vitamin D.</b> Note the last source — your own skin, in sunlight."
+  },
+  {
+   "t": "photo",
+   "src": "card-calcium.jpg",
+   "kind": "Summary card",
+   "after": 3,
+   "cap": "<b>Calcium.</b> Bones and teeth, and blood clotting."
+  },
+  {
+   "t": "photo",
+   "src": "card-iron.jpg",
+   "kind": "Summary card",
+   "after": 3,
+   "cap": "<b>Iron.</b> Follow the arrow: iron → haemoglobin → oxygen carried. Take the iron away and that chain breaks."
+  },
+  {
+   "t": "photo",
+   "src": "scurvy-gums.jpg",
+   "kind": "Photograph",
+   "more": true,
+   "cap": "Scurvy. Vitamin C is needed to make collagen, which holds gums and blood vessels together."
+  },
+  {
+   "t": "photo",
+   "src": "rickets.jpg",
+   "kind": "Radiograph and photograph",
+   "more": true,
+   "cap": "Rickets. Without vitamin D the body cannot absorb enough calcium, so the bones stay soft and bow under the child’s weight."
+  },
+  {
+   "t": "photo",
+   "src": "kwashiorkor.jpg",
+   "kind": "Photograph",
+   "more": true,
+   "cap": "Kwashiorkor — severe protein deficiency. The swollen abdomen is fluid, not fat."
+  },
+  {
+   "t": "photo",
+   "src": "carbs-complex-simple.jpg",
+   "kind": "Illustration",
+   "more": true,
+   "cap": "Complex versus simple carbohydrates — both give energy, but the complex ones release it more slowly."
+  },
+  {
+   "t": "photo",
+   "src": "energy-balance.jpg",
+   "kind": "Illustration",
+   "more": true,
+   "cap": "Energy in against energy out. Malnutrition is any imbalance, in either direction."
   }
  ]
 };
