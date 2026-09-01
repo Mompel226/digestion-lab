@@ -117,25 +117,35 @@
      means the CONSEQUENCE of going without, because that is the thing worth
      remembering and the thing 0610 asks about. "Water" gets nothing: a
      picture of water teaches you nothing you did not already know. */
-  var PEEK = {
-    'carbohydrates': ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes, cereals — the body’s main energy source.'],
-    'carbohydrate':  ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes, cereals — the body’s main energy source.'],
-    'fats and oils': ['food-fats.jpg', 'Butter and cheese are fats — solid at room temperature. Olive and sunflower oil are oils — liquid. Both store energy, insulate and protect.'],
+  /* What a peek is for: an image earns its place only if it shows something
+     the sentence cannot. For the macronutrients that means showing the range
+     a word covers — protein from an animal and protein from a plant, fat that
+     is solid beside oil that is liquid — not just one example of it. For the
+     micronutrients it means the deficiency, because no student can picture
+     scurvy. Two of those are drawn rather than photographed,
+     because a deficiency is a difference, and a single clinical photograph
+     has nothing to be different from.
 
-    'protein':       ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
-    'proteins':      ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
-    'fibre (roughage)': ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'Photo: formulatehealth, CC BY 2.0'],
-    'fibre':         ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'Photo: formulatehealth, CC BY 2.0'],
+     Third element = the credit line, shown under the note. Every borrowed
+     image has one; SOURCES.md carries the full record. */
+  var PEEK = {
+    'carbohydrates': ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes and cereals — the body’s main energy source, and the one it reaches for first.', 'Scott Bauer, USDA ARS, public domain'],
+    'carbohydrate':  ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes and cereals — the body’s main energy source, and the one it reaches for first.', 'Scott Bauer, USDA ARS, public domain'],
+    'protein':       ['food-protein.jpg', 'From animals (meat, fish, eggs) and from plants (beans, lentils, nuts, tofu) alike — for growth and for repairing tissues.', 'Salmon: DanaTentis, CC0. Beans: Bean appreciator, CC0'],
+    'proteins':      ['food-protein.jpg', 'From animals (meat, fish, eggs) and from plants (beans, lentils, nuts, tofu) alike — for growth and for repairing tissues.', 'Salmon: DanaTentis, CC0. Beans: Bean appreciator, CC0'],
+    'fats and oils': ['food-fats.jpg', 'The difference is the state they are in at room temperature. <b>Fats</b> are solid — butter, lard, the fat on meat. <b>Oils</b> are liquid — olive, sunflower, rapeseed. Both store energy, insulate and protect.', 'Butter: markusspiske, CC0. Oil: ajay_suresh, CC BY 2.0'],
+    'fibre (roughage)': ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'formulatehealth, CC BY 2.0'],
+    'fibre':         ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'formulatehealth, CC BY 2.0'],
 
     /* the micronutrients: what happens when you go without */
-    'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums bleed and wounds stop healing — scurvy.'],
-    'scurvy':        ['scurvy-gums.jpg', 'Bleeding gums and wounds that will not heal. Caused by a lack of vitamin C.'],
-    'vitamin d':     ['rickets.jpg', 'From oily fish, eggs and dairy — and made in your skin in sunlight. Without it you cannot absorb calcium, so bones stay soft and bend: rickets.'],
-    'rickets':       ['rickets.jpg', 'Soft bones that bow under the child’s own weight. Caused by too little vitamin D or calcium.'],
-    'calcium':       ['osteoporosis.jpg', 'From milk, cheese and green vegetables. It makes bone hard. Too little over a lifetime and the skeleton weakens — the spine on the right has lost bone.'],
-    'iron':          ['anaemia-pallor.jpg', 'From red meat, liver and dark green vegetables. Iron is part of haemoglobin, so without it less oxygen is carried — the pale hand on the left is anaemic.'],
-    'anaemia':       ['anaemia-pallor.jpg', 'Too little iron means too little haemoglobin, so less oxygen reaches the tissues. Pale skin and tiredness follow.'],
-    'kwashiorkor':   ['kwashiorkor.jpg', 'Severe protein deficiency. The swollen abdomen is fluid, not fat.']
+    'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums swell and bleed and wounds stop healing — scurvy.', 'CDC, public domain'],
+    'scurvy':        ['scurvy-gums.jpg', 'Swollen, bleeding gums and wounds that will not heal. Caused by a lack of vitamin C.', 'CDC, public domain'],
+    'vitamin d':     ['fig:boneBend', 'From oily fish, eggs and dairy — and made in your skin in sunlight. Without it you cannot absorb calcium, so the growing bone stays soft and bends.'],
+    'rickets':       ['fig:boneBend', 'Soft bone that bows under a child’s own weight. Caused by too little vitamin D, or too little calcium.'],
+    'calcium':       ['fig:boneDensity', 'From milk, cheese and green vegetables. Calcium is what makes bone hard — and the skeleton doubles as the body’s calcium store.'],
+    'iron':          ['anaemia-pallor.jpg', 'From red meat, liver and dark green vegetables. Iron is part of haemoglobin, so without it the blood carries less oxygen — the pale hand on the left is anaemic.', 'James Heilman, MD, CC BY-SA 3.0'],
+    'anaemia':       ['anaemia-pallor.jpg', 'Too little iron means too little haemoglobin, so less oxygen reaches the tissues. Pale skin and tiredness follow. The hand on the left is anaemic; the one on the right is not.', 'James Heilman, MD, CC BY-SA 3.0'],
+    'kwashiorkor':   ['kwashiorkor.jpg', 'Severe protein deficiency. Two signs sit together here: the wasted arm and visible ribs, and the swollen abdomen — which is fluid, not fat.', 'Dr. Lyle Conrad, CDC, public domain']
   };
 
   /* term -> the station that explains it */
@@ -174,7 +184,9 @@
   var INFO = {};
   ENTRIES.forEach(function (e) { if (!INFO[e[0].toLowerCase()]) INFO[e[0].toLowerCase()] = e; });
 
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  /* The quote matters: these strings are also written into attributes. */
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;')
+                                    .replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   /* Lookarounds rather than \b, because a term may end in a bracket —
      "fibre (roughage)" must match as one unit, not as two words. */

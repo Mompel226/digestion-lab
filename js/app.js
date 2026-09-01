@@ -674,20 +674,59 @@
     var credit = el.getAttribute('data-credit');
     var p = document.createElement('div');
     p.className = 'peek';
-    p.innerHTML = '<img src="assets/photos/' + src + '" alt="">' +
+    var art = '';
+    if (src.slice(0, 4) === 'fig:') {
+      /* Drawn rather than borrowed: a deficiency is a difference, and one
+         photograph has nothing to be different from. */
+      var f = window.Figures.get(src.slice(4));
+      if (f) { art = '<div class="peek__fig">' + f.svg + '</div>'; p.className += ' has-fig'; }
+    } else if (src) {
+      art = '<img src="assets/photos/' + src + '" alt="">';
+    }
+    p.innerHTML = art +
                   '<div class="peek__note">' + note +
                   (credit ? '<span class="peek__credit">' + credit + '</span>' : '') + '</div>' +
-                  '<button class="peek__x" aria-label="Close">×</button>';
+                  '<button class="peek__x" aria-label="Close">\u00D7</button>';
     host.appendChild(p);
-    var hr = host.getBoundingClientRect(), r = el.getBoundingClientRect();
-    var w = p.offsetWidth, h = p.offsetHeight, pad = 8;
-    var left = Math.min(Math.max(pad, (r.left - hr.left) + r.width / 2 - w / 2), host.clientWidth - w - pad);
-    var top = (r.bottom - hr.top) + 8;
-    /* flip above the word if there is not room below inside the panel */
-    var panel = document.getElementById('panel');
-    if (r.bottom + 8 + h > panel.getBoundingClientRect().bottom) top = (r.top - hr.top) - h - 8;
-    p.style.left = left + 'px';
-    p.style.top = Math.max(0, top) + 'px';
+
+    /* Placing has to happen again once the picture has loaded: until then the
+       card has no height, so "is there room below?" is answered against the
+       wrong number and a tall card can end up hanging out of the panel. */
+    function place() {
+      var hr = host.getBoundingClientRect(), r = el.getBoundingClientRect();
+      var w = p.offsetWidth, h = p.offsetHeight, pad = 8, gap = 8;
+      var left = Math.min(Math.max(pad, (r.left - hr.left) + r.width / 2 - w / 2), host.clientWidth - w - pad);
+      /* Room is measured against the window. The page is what scrolls, not
+         #panel, so #panel's box says nothing about what the reader can see —
+         measuring against it sent every card above its word and often off
+         the top of the screen. */
+      var below = window.innerHeight - r.bottom - gap - pad,
+          above = r.top - gap - pad,
+          room = Math.max(above, below), top;
+      /* On a short window a tall card fits neither above nor below. Sliding it
+         back on screen would then park it on top of the word the reader just
+         clicked, so cap its height instead and let the card scroll: the word
+         stays readable, which is the whole point of showing the card. */
+      if (h > room) { p.style.maxHeight = room + 'px'; p.style.overflowY = 'auto'; h = p.offsetHeight; }
+      else          { p.style.maxHeight = ''; p.style.overflowY = ''; }
+      if (below >= h) top = (r.bottom - hr.top) + gap;                     /* under the word */
+      else            top = (r.top - hr.top) - h - gap;                    /* over it instead */
+      var vTop = hr.top + top;
+      if (vTop + h > window.innerHeight - pad) { top -= (vTop + h) - (window.innerHeight - pad); vTop = hr.top + top; }
+      if (vTop < pad) top += pad - vTop;
+      p.style.left = left + 'px';
+      p.style.top = top + 'px';
+    }
+    place();
+    var im = p.querySelector('img');
+    if (im) im.addEventListener('load', function () {
+      /* and never draw a picture bigger than it actually is */
+      if (im.naturalWidth && im.naturalWidth < im.clientWidth) {
+        im.style.width = im.naturalWidth + 'px';
+        im.style.margin = '0 auto';
+      }
+      place();
+    });
     p.querySelector('.peek__x').addEventListener('click', closePeek);
     peekEl = p;
   }
@@ -802,7 +841,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788263185') {
+        if (v && v !== '1788265711') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

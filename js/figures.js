@@ -15,6 +15,9 @@
            '.fs{font:500 10.5px Calibri,Carlito,sans-serif;fill:#6B6B6B}' +
            '.fb{font:700 13px Calibri,Carlito,sans-serif;fill:#14572B}' +
            '.ld{stroke:#9C8E77;stroke-width:1;fill:none}' +
+           /* NOTE: these classes set fill, and a CSS rule beats a presentation
+              attribute. To recolour one of these labels use style="fill:…",
+              never fill="…" — the attribute is silently ignored. */
            '</style>' + inner + '</svg>';
   }
   var A = '<animate attributeName=';
@@ -208,8 +211,8 @@
         (k.top ? '<path d="' + k.top + '" fill="none" stroke="#B9AB92" stroke-width="2"/>' : '') +
         '<text class="fb" x="' + k.x + '" y="242" text-anchor="middle">' + k.name + '</text>' +
         '<text class="fs" x="' + k.x + '" y="259" text-anchor="middle">' + k.job + '</text>' +
-        '<text class="fl" x="' + k.x + '" y="282" text-anchor="middle" fill="#A16207">' + k.cusps + '</text>' +
-        '<text class="fl" x="' + k.x + '" y="299" text-anchor="middle" fill="#0F6E8C">' + k.nroot + '</text>' +
+        '<text class="fl" x="' + k.x + '" y="282" text-anchor="middle" style="fill:#A16207">' + k.cusps + '</text>' +
+        '<text class="fl" x="' + k.x + '" y="299" text-anchor="middle" style="fill:#0F6E8C">' + k.nroot + '</text>' +
         '</g>';
     }).join('');
     return {
@@ -338,7 +341,7 @@
         /* the arrow and its label only appear while the splitting happens */
         '<g opacity="0">' +
         '<path d="M160,104 L214,104" stroke="#4E7D4A" stroke-width="3.4" marker-end="url(#arB)"/>' +
-        '<text class="fb" x="187" y="92" text-anchor="middle" fill="#4E7D4A">bile</text>' +
+        '<text class="fb" x="187" y="92" text-anchor="middle" style="fill:#4E7D4A">bile</text>' +
         A + '"opacity" values="0;0;1;1;0" keyTimes="0;0.4;0.5;0.92;1" dur="' + CYCLE + '" repeatCount="indefinite"/></g>' +
         '<defs><marker id="arB" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
         '<path d="M0,0 L9,4.5 L0,9 Z" fill="#4E7D4A"/></marker></defs>' +
@@ -348,7 +351,7 @@
         '<circle cx="0" cy="0" r="4" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g>' +
         '<text class="fs" x="38" y="211">a bile salt — the head likes water,</text>' +
         '<text class="fs" x="38" y="224">the tail likes fat, so it sits on the surface</text>' +
-        '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" fill="#6B3FA0">lipase</tspan> to work on.</text>' +
+        '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" style="fill:#6B3FA0">lipase</tspan> to work on.</text>' +
         '<text class="fs" x="228" y="265" text-anchor="middle">No bonds are broken here — this is <tspan font-weight="700">physical</tspan>, not chemical.</text>'),
       cap:'<b>Emulsification.</b> Bile salts crowd onto the surface of a large fat droplet, and the churning of the gut then breaks it into many small ones that cannot re-join, because each is coated. Bile is <b>not</b> an enzyme: the fat molecules are unchanged, there is simply far more surface for lipase to attack. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
     };
@@ -421,8 +424,8 @@
       svg: svg('-28 0 496 236',
         '<rect x="14" y="20" width="196" height="176" rx="12" fill="#FBF3E3" stroke="#A16207" stroke-width="2"/>' +
         '<rect x="230" y="20" width="196" height="176" rx="12" fill="#E5F0F4" stroke="#0F6E8C" stroke-width="2"/>' +
-        '<text class="fb" x="112" y="44" text-anchor="middle" fill="#A16207">EGESTION</text>' +
-        '<text class="fb" x="328" y="44" text-anchor="middle" fill="#0F6E8C">EXCRETION</text>' +
+        '<text class="fb" x="112" y="44" text-anchor="middle" style="fill:#A16207">EGESTION</text>' +
+        '<text class="fb" x="328" y="44" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
         '<text class="fs" x="112" y="62" text-anchor="middle">never entered a cell</text>' +
         '<text class="fs" x="328" y="62" text-anchor="middle">made inside cells</text>' +
         /* left: tube passing through */
@@ -523,12 +526,12 @@
         '<path d="M136,84 L136,104" stroke="#14572B" stroke-width="2.2" marker-end="url(#ar4)"/>' +
         '<defs><marker id="ar4" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
         '<path d="M0,0 L9,4.5 L0,9 Z" fill="#14572B"/></marker></defs>' +
-        '<text class="fb" x="150" y="98" fill="#A16207">amylase</text>' +
+        '<text class="fb" x="150" y="98" style="fill:#A16207">amylase</text>' +
         '<text class="fs" x="150" y="112">mouth and duodenum</text>' +
         '<text class="fb" x="14" y="140">Maltose</text>' +
         chain(14, 164, 2, '#E8C063') + chain(64, 164, 2, '#E8C063') + chain(114, 164, 2, '#E8C063') + chain(164, 164, 2, '#E8C063') +
         '<path d="M226,164 L262,164" stroke="#14572B" stroke-width="2.2" marker-end="url(#ar4)"/>' +
-        '<text class="fb" x="244" y="150" text-anchor="middle" fill="#0F6E8C">maltase</text>' +
+        '<text class="fb" x="244" y="150" text-anchor="middle" style="fill:#0F6E8C">maltase</text>' +
         '<text class="fs" x="244" y="186" text-anchor="middle">on the microvilli membrane</text>' +
         '<text class="fb" x="286" y="140">Glucose</text>' +
         '<circle cx="292" cy="164" r="7" fill="#7DBE45" stroke="#4A7A25" stroke-width="1.2"/>' +
@@ -690,7 +693,7 @@
       svg: svg('-16 6 486 204',
         /* the blood vessel that takes the water away */
         '<rect x="34" y="30" width="376" height="24" rx="12" fill="#FAE0DC" stroke="#C0392B" stroke-width="1.8"/>' +
-        '<text class="fs" x="222" y="46" text-anchor="middle" fill="#8A2A20">blood — water and mineral salts are carried away</text>' +
+        '<text class="fs" x="222" y="46" text-anchor="middle" style="fill:#8A2A20">blood — water and mineral salts are carried away</text>' +
         /* the colon wall, segmenting */
         '<path fill="#F3E1D3" stroke="#C08A72" stroke-width="2.6" stroke-linejoin="round" d="' + frames[0] + '">' +
         A + '"d" values="' + frames.join(';') + '" dur="' + DUR + '" repeatCount="indefinite" ' +
@@ -766,7 +769,149 @@
     };
   }
 
-  var FIGS = { sameBalance:sameBalance, chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
+  /* ---------------------------------------------------------------
+     Two comparisons that a photograph does badly.
+
+     Both of these started as borrowed clinical photographs. Both were
+     replaced, for the same reason: a photograph of one patient shows
+     one patient, and the student has nothing to hold it against. A
+     deficiency is only visible as a difference, so the figure has to
+     carry both states at once — the one thing a single photograph
+     cannot do. Drawing them also means the provenance is ours.
+     --------------------------------------------------------------- */
+
+  /* Smooth a list of numbers so a swept outline has no kinks. */
+  function smooth(a) {
+    return a.map(function (v, i) {
+      var p = a[i - 1] === undefined ? v : a[i - 1],
+          n = a[i + 1] === undefined ? v : a[i + 1];
+      return (p + v * 2 + n) / 4;
+    });
+  }
+
+  /* Sweep a width profile down a centreline to get a long-bone outline.
+     kt/kw are the profile: wide at the knee, narrow through the shaft,
+     wide again at the ankle. bow displaces the shaft sideways, which is
+     what soft bone does under a child's own weight. */
+  function bonePath(o) {
+    var n = 56, i, t, k, f, ws = [], xs = [], ys = [], L = [], R = [];
+    for (i = 0; i <= n; i++) {
+      t = i / n;
+      k = 0; while (k < o.kt.length - 2 && t > o.kt[k + 1]) k++;
+      f = (t - o.kt[k]) / (o.kt[k + 1] - o.kt[k]);
+      ws.push(o.kw[k] + (o.kw[k + 1] - o.kw[k]) * f);
+      ys.push(o.y0 + (o.y1 - o.y0) * t);
+      xs.push(o.x0 + (o.x1 - o.x0) * t + (o.bow || 0) * Math.sin(Math.PI * t));
+    }
+    ws = smooth(smooth(smooth(ws)));
+    for (i = 0; i <= n; i++) { L.push([(xs[i] - ws[i]).toFixed(1), ys[i].toFixed(1)]); R.push([(xs[i] + ws[i]).toFixed(1), ys[i].toFixed(1)]); }
+    R.reverse();
+    return { d: 'M' + L.map(function (p) { return p.join(','); }).join(' L') +
+                ' L' + R.map(function (p) { return p.join(','); }).join(' L') + ' Z',
+             at: function (u) { var j = Math.round(u * n); return { x: xs[j], y: ys[j], w: ws[j] }; } };
+  }
+
+  function boneBend() {
+    /* One shin: tibia in front, fibula beside it, growth plates marked. */
+    function shin(cx, bow, tone, plate) {
+      var tib = bonePath({ x0:cx, x1:cx, y0:46, y1:170, bow:bow,
+                           kt:[0,.04,.09,.16,.34,.60,.80,.90,.96,1], kw:[12.5,13,11,6.6,5,4.7,5.6,8,8.4,6.2] }),
+          fib = bonePath({ x0:cx+13, x1:cx+9.5, y0:56, y1:170, bow:bow*.9,
+                           kt:[0,.08,.5,.9,1], kw:[3.6,2.5,2.2,3.2,4.2] }),
+          gp  = [tib.at(.10), tib.at(.90)];
+      return '<path d="' + fib.d + '" fill="#F2EDE2" stroke="' + tone + '" stroke-width="1.2"/>' +
+             '<path d="' + tib.d + '" fill="#FBF8F1" stroke="' + tone + '" stroke-width="1.6"/>' +
+             gp.map(function (p) {
+               return '<rect x="' + (p.x - p.w - .5).toFixed(1) + '" y="' + (p.y - 2.4).toFixed(1) +
+                      '" width="' + (p.w * 2 + 1).toFixed(1) + '" height="4.8" rx="2.2" fill="' + plate + '"/>';
+             }).join('');
+    }
+    function panel(ox, bow, tone, plate) {
+      return '<g>' + shin(ox - 21, -bow, tone, plate) + shin(ox + 21, bow, tone, plate) +
+        /* the widest point of the gap, measured — and labelled clear of the art */
+        '<line x1="' + (ox - 21 - bow - 4) + '" y1="112" x2="' + (ox + 21 + bow + 4) + '" y2="112" ' +
+        'stroke="' + (bow ? '#B3261E' : '#7B8A99') + '" stroke-width="1.3" stroke-dasharray="3.5 3"/>' +
+        [-1, 1].map(function (d) {
+          return '<line x1="' + (ox + d * (21 + bow + 4)) + '" y1="107" x2="' + (ox + d * (21 + bow + 4)) +
+                 '" y2="117" stroke="' + (bow ? '#B3261E' : '#7B8A99') + '" stroke-width="1.3"/>';
+        }).join('') + '</g>';
+    }
+    return {
+      svg: svg('0 0 470 288',
+        '<text class="fl" x="228" y="17" text-anchor="middle">Vitamin D lets you absorb calcium.</text>' +
+        '<text class="fl" x="228" y="36" text-anchor="middle">Calcium is what makes bone hard.</text>' +
+        '<text class="fs" x="228" y="54" text-anchor="middle">The shin bones of a child, from the front.</text>' +
+        '<g transform="translate(0,24)">' + panel(122, 0, '#4C7FB8', '#9CC3E8') + panel(348, 13, '#B3261E', '#E8A9A2') + '</g>' +
+        '<g transform="translate(0,30)">' +
+        '<text class="fb" x="122" y="192" text-anchor="middle" style="fill:#2D5F8F">Enough vitamin D</text>' +
+        '<text class="fs" x="122" y="210" text-anchor="middle">the bone is hard, so it stays straight</text>' +
+        '<text class="fb" x="348" y="192" text-anchor="middle" style="fill:#B3261E">Too little vitamin D</text>' +
+        '<text class="fs" x="348" y="210" text-anchor="middle">the bone stays soft and bends under the</text>' +
+        '<text class="fs" x="348" y="228" text-anchor="middle">child&#8217;s own weight &#8212; rickets</text>' +
+        '<rect x="118" y="238" width="9" height="9" rx="4" fill="#9CC3E8"/>' +
+        '<text class="fs" x="132" y="246">growth plate &#8212; where the bone is still growing</text>' +
+        '</g>'),
+      cap:'<b>Rickets</b> is a child&#8217;s disease because it is the <i>growing</i> ends of the bone, marked above, that stay soft. The same shortage in an adult, whose bones have finished growing, softens them without bending them &#8212; that one is called osteomalacia.'
+    };
+  }
+
+  function boneDensity() {
+    /* A jittered triangular lattice, identical in both panels, with a
+       fixed seed. Osteoporosis is then drawn by deleting struts from it
+       and thinning what is left — which is what the disease does. Both
+       panels really are the same piece of bone, so the comparison is
+       honest rather than two unrelated scribbles. */
+    function rng(seed) { var s = seed >>> 0; return function () { s ^= s << 13; s >>>= 0; s ^= s >> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+    var W = 130, H = 114, step = 12.5, r = rng(20260901), grid = [], links = [], row, col;
+    for (row = 0; row * step * .87 <= H + step; row++) {
+      grid[row] = [];
+      for (col = 0; col * step <= W + step; col++) {
+        grid[row][col] = [col * step + (row % 2 ? step / 2 : 0) + (r() - .5) * 7,
+                          row * step * .87 + (r() - .5) * 7];
+      }
+    }
+    for (row = 0; row < grid.length; row++) for (col = 0; col < grid[row].length; col++) {
+      var a = grid[row][col], odd = row % 2;
+      [[0, 1], [1, 0], [1, odd ? 1 : -1]].forEach(function (d) {
+        var b = (grid[row + d[0]] || [])[col + d[1]];
+        if (b) links.push([a, b, r()]);
+      });
+    }
+    function panel(ox, keep, sw, shell, tone) {
+      /* Offsets are baked into the coordinates. A transform on the clipped
+         group would move the clip rectangle with it — the clip is read in
+         the element's own transformed space, not the parent's. */
+      var dx = ox + 4, dy = 46;
+      var out = links.filter(function (l) { return l[2] < keep; }).map(function (l) {
+        return '<line x1="' + (l[0][0] + dx).toFixed(1) + '" y1="' + (l[0][1] + dy).toFixed(1) +
+               '" x2="' + (l[1][0] + dx).toFixed(1) + '" y2="' + (l[1][1] + dy).toFixed(1) +
+               '" stroke="' + tone + '" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      }).join('');
+      return '<clipPath id="bd' + ox + '"><rect x="' + (ox + 6) + '" y="48" width="128" height="112" rx="6"/></clipPath>' +
+             '<rect x="' + ox + '" y="42" width="140" height="124" rx="10" fill="#FBF8F1" stroke="#E2DCCF"/>' +
+             '<g clip-path="url(#bd' + ox + ')">' + out + '</g>' +
+             '<rect x="' + (ox + 4) + '" y="46" width="132" height="116" rx="7" fill="none" stroke="' + tone +
+             '" stroke-width="' + shell + '"/>';
+    }
+    return {
+      svg: svg('0 0 470 280',
+        '<text class="fl" x="228" y="17" text-anchor="middle">Inside a bone: the struts that</text>' +
+        '<text class="fl" x="228" y="36" text-anchor="middle">carry your weight.</text>' +
+        '<text class="fs" x="228" y="54" text-anchor="middle">The same bone, at the same magnification.</text>' +
+        '<g transform="translate(0,24)">' + panel(38, 1, 2.2, 5, '#4C7FB8') + panel(292, .42, 1.35, 2.4, '#B3261E') + '</g>' +
+        '<g transform="translate(0,32)">' +
+        '<text class="fb" x="108" y="186" text-anchor="middle" style="fill:#2D5F8F">Enough calcium</text>' +
+        '<text class="fs" x="108" y="204" text-anchor="middle">many thick struts, and a thick outer</text>' +
+        '<text class="fs" x="108" y="220" text-anchor="middle">shell &#8212; the load is shared</text>' +
+        '<text class="fb" x="362" y="186" text-anchor="middle" style="fill:#B3261E">Too little calcium</text>' +
+        '<text class="fs" x="362" y="204" text-anchor="middle">struts lost and the rest thinned, so the</text>' +
+        '<text class="fs" x="362" y="220" text-anchor="middle">bone snaps under an ordinary knock</text>' +
+        '</g>'),
+      cap:'Your skeleton is also your calcium <b>store</b>. When the blood runs short, calcium is taken back out of the bone &#8212; so years of too little calcium quietly empty it. That is <b>osteoporosis</b>, and it is why the calcium you eat as a teenager still matters at seventy.'
+    };
+  }
+
+  var FIGS = { sameBalance:sameBalance, boneBend:boneBend, boneDensity:boneDensity, chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };

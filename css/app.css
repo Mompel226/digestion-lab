@@ -382,7 +382,16 @@ body[data-mode="practice"] .panel__inner::before{
   overflow:hidden;animation:peekIn .14s ease-out
 }
 @keyframes peekIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.peek img{width:100%;display:block;background:#fff}
+.peek img{width:100%;max-width:100%;display:block;background:#fff}
+.peek__fig{background:#fff;padding:6px 4px 2px}
+.peek__fig svg{width:100%;height:auto;display:block}
+/* A figure carries its own labels, so it needs more width than a photograph:
+   at 320px the labels come out around 8px, which is not readable. The wider
+   card and the larger type below bring them back to roughly footnote size. */
+.peek.has-fig{width:min(430px,92vw)}
+.peek__fig .fl{font-size:14px}
+.peek__fig .fs{font-size:12.2px}
+.peek__fig .fb{font-size:15px}
 .peek__note{padding:10px 13px;font-size:13.5px;line-height:1.5;color:#3C3C3C}
 .peek__credit{display:block;margin-top:6px;font-size:11px;color:var(--grey)}
 .peek__x{
