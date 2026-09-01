@@ -94,6 +94,8 @@ for (const st of STATIONS) {
     } else if (t === 'match') {
       p.left = a.left; p.right = a.right;
       p.leftHead = a.leftHead; p.rightHead = a.rightHead;
+      if (a.leftNotes) p.leftNotes = a.leftNotes;       /* presentation only */
+      if (a.rightCharts) p.rightCharts = a.rightCharts; /* the pie data is not the answer */
       p.k = await H([id, 'match', a.pairs.map(x => x.join('-')).sort().join(',')]);
       v.pairs = a.pairs;
 

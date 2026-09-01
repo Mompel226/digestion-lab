@@ -1,15 +1,16 @@
-/* Photographs, illustrations and animations taken from Dr Mompel's own Topic 7
-   lesson slides, so the simulation shows students the same material they saw in
-   class. Order matters: the clearest view first, extension material last.
-   t:'photo' -> assets/photos/<src>   ·   t:'video' -> assets/video/<src>.mp4 + .jpg poster
-   See assets/photos/CREDITS.md for which deck each file came from. */
+/* Photographs, illustrations and animations from Dr Mompel's own Topic 7 slides.
+   after : index of the exam bullet this illustrates — it is rendered inline there
+   more  : true = tucked into the collapsed "More from the lesson" group at the end
+   t     : 'photo' -> assets/photos/<src>   ·   'video' -> assets/video/<src>.mp4 + .jpg
+   See assets/photos/CREDITS.md for provenance. */
 window.PHOTOS = {
  "overview": [
   {
    "t": "photo",
    "src": "canal-regions.jpg",
    "kind": "Illustration",
-   "cap": "The regions of the alimentary canal. Follow it from the mouth down: oesophagus, stomach, duodenum, jejunum, ileum, then the colon frames the whole thing."
+   "cap": "The regions of the alimentary canal. Follow it from the mouth down: oesophagus, stomach, duodenum, jejunum, ileum, then the colon frames the whole thing.",
+   "after": 0
   }
  ],
  "mouth": [
@@ -17,49 +18,57 @@ window.PHOTOS = {
    "t": "photo",
    "src": "teeth-in-mouth.jpg",
    "kind": "Photograph",
-   "cap": "All four types in one mouth, labelled. Work along from the front: incisor, canine, pre-molar, then molar."
+   "cap": "All four types in one mouth, labelled. Work along from the front: incisor, canine, pre-molar, then molar.",
+   "after": 3
   },
   {
    "t": "photo",
    "src": "premolars-molars-real.jpg",
    "kind": "Photograph",
-   "cap": "Looking along the tooth row — the view exam questions use. Premolars first, then the larger molars behind them."
+   "cap": "Looking along the tooth row — the view exam questions use. Premolars first, then the larger molars behind them.",
+   "after": 3
   },
   {
    "t": "photo",
    "src": "jaw-model-xray.jpg",
    "kind": "Model and radiograph",
-   "cap": "A jaw model against an X-ray. In the X-ray you can count roots: premolars have one, sometimes two; molars have two or three."
-  },
-  {
-   "t": "photo",
-   "src": "incisors-real.jpg",
-   "kind": "Photograph",
-   "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge."
-  },
-  {
-   "t": "photo",
-   "src": "canine-real.jpg",
-   "kind": "Photograph",
-   "cap": "The canine — one pointed cusp, sitting just behind the incisors."
+   "cap": "A jaw model against an X-ray. In the X-ray you can count roots: premolars have one, sometimes two; molars have two or three.",
+   "after": 4
   },
   {
    "t": "photo",
    "src": "tooth-cut-open.jpg",
    "kind": "Photograph",
-   "cap": "A real molar cut in half: enamel, dentine, pulp, cementum and the root canal."
-  },
-  {
-   "t": "photo",
-   "src": "tooth-xray.jpg",
-   "kind": "Radiograph",
-   "cap": "The same structures on an X-ray, with the tooth in its socket in the jaw bone."
+   "cap": "A real molar cut in half: enamel, dentine, pulp, cementum and the root canal.",
+   "after": 4
   },
   {
    "t": "photo",
    "src": "tooth-decay.jpg",
    "kind": "Photographs",
-   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp."
+   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp.",
+   "after": 5
+  },
+  {
+   "t": "photo",
+   "src": "incisors-real.jpg",
+   "kind": "Photograph",
+   "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge.",
+   "more": true
+  },
+  {
+   "t": "photo",
+   "src": "canine-real.jpg",
+   "kind": "Photograph",
+   "cap": "The canine — one pointed cusp, sitting just behind the incisors.",
+   "more": true
+  },
+  {
+   "t": "photo",
+   "src": "tooth-xray.jpg",
+   "kind": "Radiograph",
+   "cap": "The same structures on an X-ray, with the tooth in its socket in the jaw bone.",
+   "more": true
   }
  ],
  "salivary-glands": [
@@ -67,7 +76,8 @@ window.PHOTOS = {
    "t": "photo",
    "src": "salivary-glands.jpg",
    "kind": "Illustration",
-   "cap": "The three pairs of salivary glands and the ducts that carry saliva into the mouth."
+   "cap": "The three pairs of salivary glands and the ducts that carry saliva into the mouth.",
+   "after": 0
   }
  ],
  "oesophagus": [
@@ -75,13 +85,16 @@ window.PHOTOS = {
    "t": "video",
    "src": "peristalsis",
    "kind": "Animation",
-   "cap": "A real animation of the bolus being swallowed. Watch the ring of muscle close <b>behind</b> the bolus and the tube open <b>in front</b> of it — that wave is peristalsis, and it is what pushes the food down."
+   "cap": "A real animation of the bolus being swallowed. Watch the ring of muscle close <b>behind</b> the bolus and the tube open <b>in front</b> of it — that wave is peristalsis, and it is what pushes the food down.",
+   "after": 1
   },
   {
    "t": "photo",
    "src": "peristalsis.jpg",
    "kind": "Illustration",
-   "cap": "The same thing as an exam diagram: circular muscle contracts behind the bolus, relaxes in front."
+   "cap": "The same thing as an exam diagram: circular muscle contracts behind the bolus, relaxes in front.",
+   "after": 1,
+   "more": true
   }
  ],
  "stomach": [
@@ -89,19 +102,22 @@ window.PHOTOS = {
    "t": "photo",
    "src": "stomach-inside.jpg",
    "kind": "Illustration",
-   "cap": "Inside the stomach. The folds in the lining are called rugae; they let the stomach stretch as it fills."
+   "cap": "Inside the stomach. The folds in the lining are called rugae; they let the stomach stretch as it fills.",
+   "after": 0
   },
   {
    "t": "photo",
    "src": "stomach-churning.jpg",
    "kind": "Illustration",
-   "cap": "Churning: the muscular wall squeezes the food and mixes it with gastric juice."
+   "cap": "Churning: the muscular wall squeezes the food and mixes it with gastric juice.",
+   "after": 1
   },
   {
    "t": "photo",
    "src": "stomach-wall.jpg",
    "kind": "Illustration",
-   "cap": "The stomach wall — three muscle layers, and the gastric glands that make the juice."
+   "cap": "The stomach wall — three muscle layers, and the gastric glands that make the juice.",
+   "more": true
   }
  ],
  "liver": [
@@ -109,13 +125,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "liver-ducts.jpg",
    "kind": "Illustration",
-   "cap": "The liver, gall bladder and the bile ducts that carry bile down to the duodenum."
+   "cap": "The liver, gall bladder and the bile ducts that carry bile down to the duodenum.",
+   "after": 1
   },
   {
    "t": "photo",
    "src": "bile-summary.jpg",
    "kind": "Illustration",
-   "cap": "Where bile is made and stored, and what it does once it arrives."
+   "cap": "Where bile is made and stored, and what it does once it arrives.",
+   "more": true
   }
  ],
  "gall-bladder": [
@@ -123,13 +141,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "liver-ducts.jpg",
    "kind": "Illustration",
-   "cap": "The gall bladder sits under the liver. The bile duct carries bile to the duodenum."
+   "cap": "The gall bladder sits under the liver. The bile duct carries bile to the duodenum.",
+   "after": 0
   },
   {
    "t": "photo",
    "src": "gall-pancreas-place.jpg",
    "kind": "Illustration",
-   "cap": "Where the gall bladder and pancreas sit in the body."
+   "cap": "Where the gall bladder and pancreas sit in the body.",
+   "more": true
   }
  ],
  "pancreas": [
@@ -137,13 +157,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "pancreas-duct.jpg",
    "kind": "Illustration",
-   "cap": "The pancreas and its duct, delivering pancreatic juice into the duodenum."
+   "cap": "The pancreas and its duct, delivering pancreatic juice into the duodenum.",
+   "after": 0
   },
   {
    "t": "photo",
    "src": "pancreas-dissection.jpg",
    "kind": "Photograph",
-   "cap": "A real dissection: the liver, the pancreas and the portal vein."
+   "cap": "A real dissection: the liver, the pancreas and the portal vein.",
+   "more": true
   }
  ],
  "duodenum": [
@@ -151,13 +173,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "circular-folds-regions.jpg",
    "kind": "Illustration",
-   "cap": "Circular folds along the small intestine: deepest in the jejunum, shallower in the duodenum and ileum."
+   "cap": "Circular folds along the small intestine: deepest in the jejunum, shallower in the duodenum and ileum.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "small-intestine-parts.jpg",
    "kind": "Illustration",
-   "cap": "The three parts of the small intestine: duodenum, jejunum and ileum."
+   "cap": "The three parts of the small intestine: duodenum, jejunum and ileum.",
+   "after": 0
   }
  ],
  "ileum-villi": [
@@ -165,49 +189,57 @@ window.PHOTOS = {
    "t": "video",
    "src": "villus-absorption",
    "kind": "Animation",
-   "cap": "Absorption at the villi. Watch the small soluble molecules cross the wall and disappear into the blood vessels inside."
+   "cap": "Absorption at the villi. Watch the small soluble molecules cross the wall and disappear into the blood vessels inside.",
+   "after": 2
   },
   {
    "t": "photo",
    "src": "villi-and-microvilli-em.jpg",
    "kind": "Micrographs",
-   "cap": "Villi at ×70 under a light microscope, and the microvilli of a single cell at ×18,000 under an electron microscope."
+   "cap": "Villi at ×70 under a light microscope, and the microvilli of a single cell at ×18,000 under an electron microscope.",
+   "after": 1
   },
   {
    "t": "photo",
    "src": "folds-real-photo.jpg",
    "kind": "Photograph",
-   "cap": "Inside a real small intestine: the circular folds of the lining, close up."
+   "cap": "Inside a real small intestine: the circular folds of the lining, close up.",
+   "after": 1
   },
   {
    "t": "photo",
    "src": "villi-carpet.jpg",
    "kind": "Photograph",
-   "cap": "The lining is a carpet of villi — this is what gives the enormous surface area."
+   "cap": "The lining is a carpet of villi — this is what gives the enormous surface area.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "villi-micrograph-set.jpg",
    "kind": "Micrographs",
-   "cap": "(b) circular folds, (c) villi and (d) microvilli, at increasing magnification."
+   "cap": "(b) circular folds, (c) villi and (d) microvilli, at increasing magnification.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "surface-area-levels.jpg",
    "kind": "Illustration",
-   "cap": "The three levels of folding together: circular folds, then villi, then microvilli."
+   "cap": "The three levels of folding together: circular folds, then villi, then microvilli.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "intestine-dissection.jpg",
    "kind": "Photograph",
-   "cap": "A real dissection: loops of jejunum, and the mesentery carrying their blood vessels."
+   "cap": "A real dissection: loops of jejunum, and the mesentery carrying their blood vessels.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "mesentery-lymph.jpg",
    "kind": "Illustration · going further",
-   "cap": "<b>Where the lacteal actually goes.</b> The fan-shaped <b>mesentery</b> holds the small intestine in place and carries its vessels: the artery branches that supply the gut (red), and the lymph vessels studded with <b>lymph nodes</b> (the yellow beads). Fatty acids and glycerol leave a villus in its lacteal, the lacteals drain into these lymph vessels, and the lymph finally joins the blood. The lymphatic system is not on 0610 — but this is the answer to “where does the lacteal go?”"
+   "cap": "<b>Where the lacteal actually goes.</b> The fan-shaped <b>mesentery</b> holds the small intestine in place and carries its vessels: the artery branches that supply the gut (red), and the lymph vessels studded with <b>lymph nodes</b> (the yellow beads). Fatty acids and glycerol leave a villus in its lacteal, the lacteals drain into these lymph vessels, and the lymph finally joins the blood. The lymphatic system is not on 0610 — but this is the answer to “where does the lacteal go?”",
+   "more": true
   }
  ],
  "colon": [
@@ -215,13 +247,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "large-intestine-parts.jpg",
    "kind": "Illustration",
-   "cap": "The parts of the large intestine: caecum, ascending, transverse, descending, sigmoid, rectum."
+   "cap": "The parts of the large intestine: caecum, ascending, transverse, descending, sigmoid, rectum.",
+   "after": 0
   },
   {
    "t": "photo",
    "src": "colon-inside.jpg",
    "kind": "Photograph",
-   "cap": "Inside the large intestine, through an endoscope. No villi here — the lining is smooth, because almost nothing is absorbed except water and salts."
+   "cap": "Inside the large intestine, through an endoscope. No villi here — the lining is smooth, because almost nothing is absorbed except water and salts.",
+   "after": 1
   }
  ],
  "molecules-lab": [
@@ -229,13 +263,15 @@ window.PHOTOS = {
    "t": "photo",
    "src": "carbohydrate-chain.jpg",
    "kind": "Illustration",
-   "cap": "Carbohydrate digestion: polysaccharide to disaccharide to monosaccharide."
+   "cap": "Carbohydrate digestion: polysaccharide to disaccharide to monosaccharide.",
+   "more": true
   },
   {
    "t": "photo",
    "src": "maltase-membrane.jpg",
    "kind": "Illustration",
-   "cap": "Maltase works on the membrane of the epithelial cells, not floating free in the gut."
+   "cap": "Maltase works on the membrane of the epithelial cells, not floating free in the gut.",
+   "more": true
   }
  ]
 };
