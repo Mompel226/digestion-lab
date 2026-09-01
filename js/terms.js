@@ -40,7 +40,11 @@
     absorption:   { n:'3', label:'Absorption',         chip:true },
     assimilation: { n:'4', label:'Assimilation',       chip:true },
     egestion:     { n:'5', label:'Egestion',           chip:true },
-    molecule:     { n:'',  label:'Food molecules and nutrients', chip:false }
+    molecule:     { n:'',  label:'Food molecules and nutrients', chip:false },
+    /* A disease is not a stage and not a nutrient — it is what happens when one
+       is missing. It gets a neutral ink rather than an eighth hue, which says
+       "different kind of word" without adding to the colour load. */
+    condition:    { n:'',  label:'Conditions and diseases', chip:false }
   };
 
   /* Words that NAME a stage get a chip. Everything else is plain bold
@@ -73,15 +77,15 @@
     absorption:['villus','villi','microvilli','microvillus','circular folds','lacteal','lacteals',
                 'capillary','capillaries','epithelium','diffusion','diffuse','diffuses','diffused',
                 'active transport','osmosis','absorbed','absorb','absorbs','lumen',
-                'concentration gradient','goblet cell','goblet cells'],
+                'concentration gradient','goblet cell','goblet cells',
+                'blood','bloodstream','plasma','lymph'],
 
-    assimilation:['assimilated','glycogen','respiration','hepatic portal vein','stored','protein synthesis',
-                  'blood','bloodstream','plasma','lymph'],
+    assimilation:['assimilated','glycogen','respiration','hepatic portal vein','protein synthesis'],
 
     /* 'excretion' is deliberately NOT here. Egestion is not excretion, and
        giving them the same colour would teach exactly the wrong thing —
        leaving excretion in plain black makes the contrast visible. */
-    egestion:  ['egested','faeces','stool','defecation','roughage','fibre','constipation','undigested'],
+    egestion:  ['egested','faeces','stool','defecation','undigested'],
 
     molecule:  ['starch','maltose','glucose','galactose','fructose','sucrose','lactose','cellulose',
                 'protein','proteins','polypeptide','polypeptides','amino acid','amino acids','lipid','lipids',
@@ -92,9 +96,12 @@
                 /* the dietary components — same family, because they are what food is made of */
                 'carbohydrate','carbohydrates','vitamin','vitamins','vitamin c','vitamin d',
                 'mineral ion','mineral ions','calcium','iron','water','balanced diet',
-                'scurvy','rickets','anaemia','kwashiorkor','deficiency disease','malnutrition',
+                'fibre','roughage',
                 /* whole phrases, so they are marked once rather than word by word */
-                'fats and oils','fibre (roughage)']
+                'fats and oils','fibre (roughage)'],
+
+    condition: ['scurvy','rickets','anaemia','kwashiorkor','deficiency disease',
+                'deficiency diseases','malnutrition','constipation','obesity','starvation']
   };
 
 
@@ -208,6 +215,7 @@
              CATS[c].label + '</b></span>';
     });
     out += '<span class="legend__i"><b class="t t--molecule">Food molecules and nutrients</b></span>';
+    out += '<span class="legend__i"><b class="t t--condition">Conditions and diseases</b></span>';
     out += '</div>';
     return out;
   }

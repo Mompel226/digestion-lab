@@ -730,7 +730,43 @@
     }).join('') + '</ul>';
   }
 
-  var FIGS = { chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
+
+  /* ---------------- same balance, different amount ---------------- */
+  function sameBalance() {
+    /* The point of "requirements vary" is NOT calories in against calories out —
+       that is energy balance, a different idea, and not on 0610. The point is
+       that the seven components stay in the same proportions while the amount
+       changes. Three plates, same recipe, different size. */
+    var SL = [{label:'Carbohydrate',pct:40,cat:'carbohydrate'},{label:'Protein',pct:20,cat:'protein'},
+              {label:'Fats and oils',pct:20,cat:'fat'},{label:'Fibre',pct:10,cat:'fibre'},
+              {label:'Vitamins and minerals',pct:10,cat:'vitamins'}];
+    var who = [{x:82,  r:34, t:'A 7-year-old',   s:'still growing, but small'},
+               {x:228, r:48, t:'An office worker', s:'sitting most of the day'},
+               {x:388, r:64, t:'A builder',       s:'heavy work all day'}];
+    var g = who.map(function (w) {
+      var inner = pie(SL, w.r * 2);
+      inner = inner.replace('<svg class="pie" viewBox', '<svg viewBox');
+      return '<g transform="translate(' + (w.x - w.r) + ',' + (118 - w.r) + ')">' +
+             '<svg width="' + (w.r * 2) + '" height="' + (w.r * 2) + '" ' +
+             inner.slice(inner.indexOf('viewBox')) + '</g>' +
+             '<text class="fb" x="' + w.x + '" y="200" text-anchor="middle">' + w.t + '</text>' +
+             '<text class="fs" x="' + w.x + '" y="215" text-anchor="middle">' + w.s + '</text>';
+    }).join('');
+    var key = SL.map(function (sl, i) {
+      return '<g transform="translate(' + (16 + (i % 3) * 154) + ',' + (238 + Math.floor(i / 3) * 17) + ')">' +
+             '<rect width="10" height="10" rx="3" fill="' + DIET_COL[sl.cat] + '"/>' +
+             '<text class="fs" x="15" y="9">' + sl.label + '</text></g>';
+    }).join('');
+    return {
+      svg: svg('0 0 470 282',
+        '<text class="fl" x="235" y="20" text-anchor="middle">The same seven components, in the same proportions.</text>' +
+        '<text class="fl" x="235" y="36" text-anchor="middle">What changes from person to person is <tspan font-weight="700">how much</tspan>.</text>' +
+        g + key),
+      cap:'A balanced diet is not one fixed menu. The <b>proportions</b> stay the same for everybody; the <b>amount</b> changes with age, activity, and during pregnancy. That is what exam questions test when they hand you four people and four diets.'
+    };
+  }
+
+  var FIGS = { sameBalance:sameBalance, chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };

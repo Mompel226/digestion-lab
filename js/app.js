@@ -10,7 +10,7 @@
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
-    diet:[], overview:[], mouth:['toothTypes','tooth','chewing'],
+    diet:['sameBalance'], overview:[], mouth:['toothTypes','tooth','chewing'],
     'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:['peristalsis'],
     stomach:['churn'], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
     duodenum:['starchPath'], 'ileum-villi':['villus'],
@@ -20,6 +20,7 @@
 
   /* which sentence each drawn diagram illustrates */
   var FIG_AFTER = {
+    'diet:sameBalance':6,
     'mouth:toothTypes':3, 'mouth:tooth':4, 'mouth:chewing':1,
     'salivary-glands:starchPath':2, 'epiglottis:swallow':1,
     'oesophagus:peristalsis':1,
@@ -332,6 +333,8 @@
       img.loading = 'lazy';
       img.src = 'assets/photos/' + ph.src;
       img.title = 'Click to see it full size';
+      /* never draw an image wider than its own pixels support */
+      if (ph.maxw) { img.style.maxWidth = ph.maxw + 'px'; img.style.margin = '0 auto'; }
       img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind, ph.annot); });
       img.addEventListener('error', function () {
         var miss = document.createElement('div');
@@ -799,7 +802,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788262642') {
+        if (v && v !== '1788263185') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
