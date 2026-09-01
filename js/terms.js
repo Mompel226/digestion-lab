@@ -117,8 +117,8 @@
 
     'protein':       ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
     'proteins':      ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
-    'fibre (roughage)': ['food-fibre.jpg', 'Wholegrains, beans, and the skins of fruit and vegetables. You cannot digest it — that is the point.'],
-    'fibre':         ['food-fibre.jpg', 'Wholegrains, beans, and the skins of fruit and vegetables. You cannot digest it — that is the point.'],
+    'fibre (roughage)': ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'Photo: formulatehealth, CC BY 2.0'],
+    'fibre':         ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'Photo: formulatehealth, CC BY 2.0'],
 
     /* the micronutrients: what happens when you go without */
     'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums bleed and wounds stop healing — scurvy.'],
@@ -184,7 +184,9 @@
       if (!e) return m;
       var cat = e[1], act = '', cls = '';
       if (PEEK[low]) {
-        act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '" tabindex="0" role="button"';
+        act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
+              (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') +
+              ' tabindex="0" role="button"';
         cls = ' is-peek';
       } else if (JUMP[low] && JUMP[low] !== here) {
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';

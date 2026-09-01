@@ -668,10 +668,12 @@
     closePeek();
     var host = document.getElementById('panelInner');
     var src = el.getAttribute('data-peek'), note = el.getAttribute('data-note');
+    var credit = el.getAttribute('data-credit');
     var p = document.createElement('div');
     p.className = 'peek';
     p.innerHTML = '<img src="assets/photos/' + src + '" alt="">' +
-                  '<div class="peek__note">' + note + '</div>' +
+                  '<div class="peek__note">' + note +
+                  (credit ? '<span class="peek__credit">' + credit + '</span>' : '') + '</div>' +
                   '<button class="peek__x" aria-label="Close">×</button>';
     host.appendChild(p);
     var hr = host.getBoundingClientRect(), r = el.getBoundingClientRect();
@@ -797,7 +799,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788262282') {
+        if (v && v !== '1788262642') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

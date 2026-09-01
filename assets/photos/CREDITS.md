@@ -51,7 +51,6 @@ Both were converted from GIF to H.264 to cut them from about 5 MB each to under 
 | `food-carbohydrate.jpg` | 7.1 Diet and Nutrition | `image14.png` |
 | `food-fats.jpg` | 7.1 Diet and Nutrition | `image19.png` |
 | `food-protein.jpg` | 7.1 Diet and Nutrition | `image17.png` |
-| `food-fibre.jpg` | 7.1 Diet and Nutrition | `image13.jpg` |
 | `eatwell-plate.jpg` | 7.1 Diet and Nutrition | `image26.jpeg` |
 | `carbs-complex-simple.jpg` | 7.1 Diet and Nutrition | `image16.jpeg` |
 | `scurvy-gums.jpg` | 7.1 Diet and Nutrition | `image34.jpg` |
@@ -60,3 +59,10 @@ Both were converted from GIF to H.264 to cut them from about 5 MB each to under 
 | `energy-balance.jpg` | 7.1 Diet and Nutrition | `image12.png` |
 | `osteoporosis.jpg` | 7.1 Diet and Nutrition | `image35.png` |
 | `anaemia-pallor.jpg` | 7.1 Diet and Nutrition | `image30.png` |
+
+## Sourced from Wikimedia Commons
+
+| File | Source | Licence |
+|---|---|---|
+| `food-fibre.jpg` | *Foods with a high fibre content* by **formulatehealth**, [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Foods_with_a_high_fibre_content,_such_as_bread,_grains,_chia_seeds_and_nuts.jpg) | **CC BY 2.0** — attribution required. Cropped to remove the mortar and pestle; labels added by this simulation. |
+
