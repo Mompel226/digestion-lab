@@ -51,16 +51,46 @@
   }
   function p(id, m) {
     var bag = progress[m || mode];
-    if (!bag[id]) bag[id] = { done:{}, tried:{} };
+    if (!bag[id]) bag[id] = { done:{}, tried:{}, sig:(S[id] ? stationSig(S[id]) : '') };
     return bag[id];
   }
+  /* A saved answer is filed under the question's position in the station, and
+     positions are not stable: if a question is removed, everything after it
+     shifts up one, and a record would silently credit a reader for a question
+     they never saw. So each station's record carries a fingerprint of the
+     question set it was made against — the number of questions and their
+     types. If that changes, the record for that station is dropped and the
+     station is answered again. Losing one station's progress is a far smaller
+     harm than handing in a perfect score that was never earned. */
+  function stationSig(st) {
+    return (st.activities || []).length + ':' +
+           (st.activities || []).map(function (a) { return a.type.charAt(0); }).join('');
+  }
+  function reconcile() {
+    var dropped = 0;
+    Object.keys(MODES).forEach(function (m) {
+      var bag = progress[m] || {};
+      Object.keys(bag).forEach(function (id) {
+        var st = S[id];
+        if (!st) { delete bag[id]; dropped++; return; }      /* station itself is gone */
+        var sig = stationSig(st);
+        if (bag[id].sig && bag[id].sig !== sig) { bag[id] = { done:{}, tried:{}, sig:sig }; dropped++; }
+        else bag[id].sig = sig;
+      });
+    });
+    if (dropped) save();
+    return dropped;
+  }
+
   function stationScore(id, m) {
     var st = S[id];
     if (!st) return { done:0, total:0, tried:0 };
-    var rec = p(id, m), n = 0, t = 0;
-    Object.keys(rec.done).forEach(function (k) { if (rec.done[k]) n++; });
-    Object.keys(rec.tried).forEach(function (k) { if (rec.tried[k]) t++; });
-    return { done:n, total:(st.activities || []).length, tried:t };
+    var rec = p(id, m), total = (st.activities || []).length, n = 0, t = 0;
+    /* only positions that still exist may count, so a stale record can never
+       push the score above the number of questions actually asked */
+    Object.keys(rec.done).forEach(function (k) { if (rec.done[k] && +k < total) n++; });
+    Object.keys(rec.tried).forEach(function (k) { if (rec.tried[k] && +k < total) t++; });
+    return { done:n, total:total, tried:t };
   }
   function totals() {
     var done = 0, total = 0;
@@ -817,6 +847,10 @@
   function boot() {
     (window.STATIONS || []).forEach(function (s) { S[s.id] = s; });
     ORDER = ORDER.filter(function (id) { return S[id]; });
+    /* must run before anything reads a score: a record made against an older
+       set of questions is cleared here rather than silently miscounted */
+    var stale = reconcile();
+    if (stale) console.info('Digestion Lab: ' + stale + ' station record(s) reset — the questions there have changed since they were answered.');
 
     var svg = document.getElementById('bodySvg');
     window.Anatomy.state.onPick = function (id) { open(id); };
@@ -895,7 +929,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788267675') {
+        if (v && v !== '1788268425') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
