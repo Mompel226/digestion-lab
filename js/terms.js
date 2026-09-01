@@ -92,7 +92,9 @@
                 /* the dietary components — same family, because they are what food is made of */
                 'carbohydrate','carbohydrates','vitamin','vitamins','vitamin c','vitamin d',
                 'mineral ion','mineral ions','calcium','iron','water','balanced diet',
-                'scurvy','rickets','anaemia','kwashiorkor','deficiency disease','malnutrition']
+                'scurvy','rickets','anaemia','kwashiorkor','deficiency disease','malnutrition',
+                /* whole phrases, so they are marked once rather than word by word */
+                'fats and oils','fibre (roughage)']
   };
 
 
@@ -102,24 +104,31 @@
      jump : go to the station where the word is properly explained —
             for things you need to READ about, like peristalsis
      A term does one or the other, never both, so a click is predictable. */
+  /* A picture only earns its place if it shows something the words cannot.
+     For the macronutrients that means WHICH FOODS contain them — a student
+     may not know that tofu is protein. For the vitamins and minerals it
+     means the CONSEQUENCE of going without, because that is the thing worth
+     remembering and the thing 0610 asks about. "Water" gets nothing: a
+     picture of water teaches you nothing you did not already know. */
   var PEEK = {
-    'carbohydrate':  ['food-carbohydrate.jpg', 'Rice, bread, pasta, potatoes — the main energy source.'],
-    'carbohydrates': ['food-carbohydrate.jpg', 'Rice, bread, pasta, potatoes — the main energy source.'],
-    'fats and oils': ['food-fats.jpg',  'Butter, oils, cheese, nuts, oily fish — an energy store that also insulates.'],
-    'fats':          ['food-fats.jpg',  'Butter, oils, cheese, nuts, oily fish — an energy store that also insulates.'],
-    'oils':          ['food-fats.jpg',  'Butter, oils, cheese, nuts, oily fish — an energy store that also insulates.'],
-    'protein':       ['food-protein.jpg', 'Meat, fish, eggs, beans, tofu — for growth and repair.'],
-    'proteins':      ['food-protein.jpg', 'Meat, fish, eggs, beans, tofu — for growth and repair.'],
-    'fibre':         ['food-fibre.jpg', 'Wholegrains, fruit and vegetable skins — not digested, but it keeps food moving.'],
-    'roughage':      ['food-fibre.jpg', 'Wholegrains, fruit and vegetable skins — not digested, but it keeps food moving.'],
-    'water':         ['food-water.jpg', 'A solvent for reactions, the fluid that transports things, and how you lose heat.'],
-    'vitamin c':     ['card-vitaminc.jpg', 'Citrus fruit, peppers, green vegetables. Too little causes scurvy.'],
-    'vitamin d':     ['card-vitamind.jpg', 'Oily fish, eggs, dairy — and made in your skin in sunlight. Too little causes rickets.'],
-    'calcium':       ['card-calcium.jpg', 'Milk, cheese, green vegetables. For bones, teeth and blood clotting.'],
-    'iron':          ['card-iron.jpg',   'Red meat, liver, dark green vegetables. For haemoglobin. Too little causes anaemia.'],
-    'scurvy':        ['scurvy-gums.jpg', 'Bleeding gums — the classic sign of a lack of vitamin C.'],
-    'rickets':       ['rickets.jpg',     'Soft bones that bend under the child’s weight, from too little vitamin D or calcium.'],
-    'anaemia':       ['card-iron.jpg',   'Too little iron means too little haemoglobin, so less oxygen is carried.']
+    'carbohydrates': ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes, cereals — the body’s main energy source.'],
+    'carbohydrate':  ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes, cereals — the body’s main energy source.'],
+    'fats and oils': ['food-fats.jpg', 'Butter and cheese are fats — solid at room temperature. Olive and sunflower oil are oils — liquid. Both store energy, insulate and protect.'],
+
+    'protein':       ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
+    'proteins':      ['food-protein.jpg', 'Meat, fish, eggs, beans, lentils, tofu — for growth and for repairing tissues.'],
+    'fibre (roughage)': ['food-fibre.jpg', 'Wholegrains, beans, and the skins of fruit and vegetables. You cannot digest it — that is the point.'],
+    'fibre':         ['food-fibre.jpg', 'Wholegrains, beans, and the skins of fruit and vegetables. You cannot digest it — that is the point.'],
+
+    /* the micronutrients: what happens when you go without */
+    'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums bleed and wounds stop healing — scurvy.'],
+    'scurvy':        ['scurvy-gums.jpg', 'Bleeding gums and wounds that will not heal. Caused by a lack of vitamin C.'],
+    'vitamin d':     ['rickets.jpg', 'From oily fish, eggs and dairy — and made in your skin in sunlight. Without it you cannot absorb calcium, so bones stay soft and bend: rickets.'],
+    'rickets':       ['rickets.jpg', 'Soft bones that bow under the child’s own weight. Caused by too little vitamin D or calcium.'],
+    'calcium':       ['osteoporosis.jpg', 'From milk, cheese and green vegetables. It makes bone hard. Too little over a lifetime and the skeleton weakens — the spine on the right has lost bone.'],
+    'iron':          ['anaemia-pallor.jpg', 'From red meat, liver and dark green vegetables. Iron is part of haemoglobin, so without it less oxygen is carried — the pale hand on the left is anaemic.'],
+    'anaemia':       ['anaemia-pallor.jpg', 'Too little iron means too little haemoglobin, so less oxygen reaches the tissues. Pale skin and tiredness follow.'],
+    'kwashiorkor':   ['kwashiorkor.jpg', 'Severe protein deficiency. The swollen abdomen is fluid, not fat.']
   };
 
   /* term -> the station that explains it */
@@ -160,7 +169,10 @@
 
   function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
-  var RE = new RegExp('\\b(' + ENTRIES.map(function (e) { return escRe(e[0]); }).join('|') + ')\\b', 'gi');
+  /* Lookarounds rather than \b, because a term may end in a bracket —
+     "fibre (roughage)" must match as one unit, not as two words. */
+  var RE = new RegExp('(?<![A-Za-z0-9-])(' +
+    ENTRIES.map(function (e) { return escRe(e[0]); }).join('|') + ')(?![A-Za-z0-9-])', 'gi');
 
   /* Escape first, then mark, so a term can never be injected as markup. */
   var here = null;                       /* the station being read, so we never link to itself */

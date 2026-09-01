@@ -339,6 +339,27 @@ body[data-mode="practice"] .panel__inner::before{
 .kw dt{font-weight:700;color:var(--green);font-size:14.5px;margin-bottom:2px}
 .kw dd{margin:0;font-size:13.5px;color:#3C3C3C;line-height:1.45}
 
+/* where a link lands: flash the exact place, then get out of the way */
+.flash{position:relative;border-radius:var(--r);animation:flashRing 2.8s ease-out 1}
+@keyframes flashRing{
+  0%   {box-shadow:0 0 0 3px rgba(20,87,43,.85), 0 0 0 9px rgba(20,87,43,.18); background:rgba(20,87,43,.10)}
+  18%  {box-shadow:0 0 0 3px rgba(20,87,43,.25), 0 0 0 9px rgba(20,87,43,.04); background:rgba(20,87,43,.03)}
+  36%  {box-shadow:0 0 0 3px rgba(20,87,43,.85), 0 0 0 9px rgba(20,87,43,.18); background:rgba(20,87,43,.10)}
+  54%  {box-shadow:0 0 0 3px rgba(20,87,43,.25), 0 0 0 9px rgba(20,87,43,.04); background:rgba(20,87,43,.03)}
+  72%  {box-shadow:0 0 0 3px rgba(20,87,43,.7),  0 0 0 9px rgba(20,87,43,.14); background:rgba(20,87,43,.08)}
+  100% {box-shadow:0 0 0 3px rgba(20,87,43,0),   0 0 0 9px rgba(20,87,43,0);   background:transparent}
+}
+.exam-list li.flash{padding-left:26px;margin-left:-4px}
+
+.backchip{
+  position:sticky;bottom:14px;left:0;margin:0 0 0 4px;z-index:30;
+  border:1.5px solid var(--green);background:var(--card);color:var(--green);
+  border-radius:var(--r-pill);padding:8px 16px;font-size:13.5px;font-weight:600;cursor:pointer;
+  box-shadow:var(--shadow-lg);transition:opacity .9s ease
+}
+.backchip:hover{background:var(--green-tint)}
+.backchip.is-fading{opacity:0}
+
 /* a highlighted word you can act on */
 .t.is-peek,.tc.is-peek,.t.is-jump,.tc.is-jump{cursor:pointer}
 .t.is-peek,.tc.is-peek{border-bottom:2px dotted currentColor}

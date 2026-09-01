@@ -52,14 +52,11 @@ Both were converted from GIF to H.264 to cut them from about 5 MB each to under 
 | `food-fats.jpg` | 7.1 Diet and Nutrition | `image19.png` |
 | `food-protein.jpg` | 7.1 Diet and Nutrition | `image17.png` |
 | `food-fibre.jpg` | 7.1 Diet and Nutrition | `image13.jpg` |
-| `food-water.jpg` | 7.1 Diet and Nutrition | `image48.png` |
-| `card-vitaminc.jpg` | 7.1 Diet and Nutrition | `image22.png` |
-| `card-vitamind.jpg` | 7.1 Diet and Nutrition | `image23.png` |
-| `card-calcium.jpg` | 7.1 Diet and Nutrition | `image24.png` |
-| `card-iron.jpg` | 7.1 Diet and Nutrition | `image25.png` |
 | `eatwell-plate.jpg` | 7.1 Diet and Nutrition | `image26.jpeg` |
 | `carbs-complex-simple.jpg` | 7.1 Diet and Nutrition | `image16.jpeg` |
 | `scurvy-gums.jpg` | 7.1 Diet and Nutrition | `image34.jpg` |
 | `rickets.jpg` | 7.1 Diet and Nutrition | `image31.jpg` |
 | `kwashiorkor.jpg` | 7.1 Diet and Nutrition | `image36.jpg` |
 | `energy-balance.jpg` | 7.1 Diet and Nutrition | `image12.png` |
+| `osteoporosis.jpg` | 7.1 Diet and Nutrition | `image35.png` |
+| `anaemia-pallor.jpg` | 7.1 Diet and Nutrition | `image30.png` |
