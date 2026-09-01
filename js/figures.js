@@ -184,47 +184,6 @@
   }
 
   /* ---------------- four tooth types ---------------- */
-  function toothTypes() {
-    /* Drawn to the two things that actually separate a premolar from a molar:
-       the number of cusps on the biting surface, and the number of roots. */
-    var K = [
-      { x:66,  name:'Incisor',  job:'Cutting and biting',
-        crown:'M40,116 C40,72 48,58 66,58 C84,58 92,72 92,116 C92,130 84,136 66,136 C48,136 40,130 40,116 Z',
-        top:'M40,66 L92,66', roots:'M54,136 L50,206', cusps:'1 chisel edge', nroot:'1 root' },
-      { x:196, name:'Canine',   job:'Holding and tearing',
-        crown:'M172,120 C172,68 186,40 196,40 C206,40 220,68 220,120 C220,132 212,138 196,138 C180,138 172,132 172,120 Z',
-        top:'', roots:'M188,138 L184,212', cusps:'1 point', nroot:'1 long root' },
-      { x:326, name:'Premolar', job:'Crushing and grinding',
-        crown:'M300,118 C300,80 308,64 326,64 C344,64 352,80 352,118 C352,132 344,138 326,138 C308,138 300,132 300,118 Z',
-        top:'M304,74 C310,62 316,62 322,74 M330,74 C336,62 342,62 348,74', roots:'M316,138 L312,202',
-        cusps:'2 cusps', nroot:'usually 1 root' },
-      { x:456, name:'Molar',    job:'Chewing and grinding',
-        crown:'M424,118 C424,80 434,62 456,62 C478,62 488,80 488,118 C488,132 478,138 456,138 C434,138 424,132 424,118 Z',
-        top:'M428,74 C433,62 439,62 444,74 M448,74 C453,62 459,62 464,74 M468,74 C473,62 479,62 484,74',
-        roots:'M436,138 L428,200 M456,138 L456,204 M476,138 L484,200',
-        cusps:'4 cusps', nroot:'2 roots (3 in the upper jaw)' }
-    ];
-    var g = K.map(function (k) {
-      return '<g>' +
-        (k.roots ? '<path d="' + k.roots + '" stroke="#E6D5B7" stroke-width="10" fill="none" stroke-linecap="round"/>' : '') +
-        '<path d="' + k.crown + '" fill="#FCFBF6" stroke="#B9AB92" stroke-width="2.2" stroke-linejoin="round"/>' +
-        (k.top ? '<path d="' + k.top + '" fill="none" stroke="#B9AB92" stroke-width="2"/>' : '') +
-        '<text class="fb" x="' + k.x + '" y="242" text-anchor="middle">' + k.name + '</text>' +
-        '<text class="fs" x="' + k.x + '" y="259" text-anchor="middle">' + k.job + '</text>' +
-        '<text class="fl" x="' + k.x + '" y="282" text-anchor="middle" style="fill:#A16207">' + k.cusps + '</text>' +
-        '<text class="fl" x="' + k.x + '" y="299" text-anchor="middle" style="fill:#0F6E8C">' + k.nroot + '</text>' +
-        '</g>';
-    }).join('');
-    return {
-      svg: svg('16 30 524 340',
-        '<rect x="26" y="204" width="500" height="11" rx="5.5" fill="#EBD3D3"/>' + g +
-        '<rect x="26" y="312" width="500" height="46" rx="10" fill="#FBF3E3" stroke="#A16207" stroke-width="1.6"/>' +
-        '<text class="fl" x="276" y="332" text-anchor="middle">Premolar or molar? Count the bumps on the biting surface:</text>' +
-        '<text class="fl" x="276" y="350" text-anchor="middle"><tspan fill="#A16207" font-weight="700">2 = premolar</tspan>, ' +
-        '<tspan fill="#A16207" font-weight="700">4 = molar</tspan>. Root number depends on the jaw, so it is a poor test.</text>'),
-      cap:'<b>Incisors</b> cut and bite. <b>Canines</b> hold and tear. <b>Premolars</b> crush and grind. <b>Molars</b> chew and grind. The pair students confuse is premolar and molar — a premolar has <b>two</b> cusps, a molar has <b>four</b>. Root number is not a reliable test: most premolars have one root, lower molars have two and upper molars three. All four are physical digestion: the food molecules are unchanged.'
-    };
-  }
 
   /* ---------------- peristalsis ---------------- */
   function peristalsis() {
@@ -769,7 +728,7 @@
     };
   }
 
-  var FIGS = { sameBalance:sameBalance, chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
+  var FIGS = { sameBalance:sameBalance, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };
