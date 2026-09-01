@@ -38,51 +38,146 @@
   }
 
   /* ---------- pointer drag, shared by drag / sort / order ---------- */
+  /* Rewritten because it dropped gestures in real use. Three faults:
+
+     1. The browser's own drag-and-drop could take over the gesture. Once it
+        did, no pointerup ever arrived, so the floating copy of the word was
+        never removed — the word sat stuck on the screen with no way to
+        dismiss it.
+     2. pointermove/pointerup were bound to the token itself. If the token was
+        re-rendered, or pointer capture was lost, the drag could never finish.
+        They are on the window now, and any lost drag is swept up on blur,
+        on Escape, and at the start of the next one.
+     3. The drop had to land exactly inside a box. Release a few pixels short
+        and the word flew back to the pool for no visible reason. A release
+        that misses now snaps to the nearest box within 56px.
+
+     There is also no longer any need to drag at all: a token is focusable and
+     Enter or Space moves it on to the next box, which is both an answer for
+     anyone who cannot drag and a way out if a drag misbehaves. */
+  var live = null;                       /* the one drag in progress, if any */
+
+  function sweepDragArtefacts() {
+    var i, g = document.querySelectorAll('.is-ghost');
+    for (i = 0; i < g.length; i++) g[i].remove();
+    var d = document.querySelectorAll('.is-drag');
+    for (i = 0; i < d.length; i++) d[i].classList.remove('is-drag');
+    var o = document.querySelectorAll('.over');
+    for (i = 0; i < o.length; i++) o[i].classList.remove('over');
+  }
+
+  function finishDrag(e, cancelled) {
+    var L = live;
+    if (!L) { sweepDragArtefacts(); return; }
+    live = null;
+    window.removeEventListener('pointermove', L.move, true);
+    window.removeEventListener('pointerup', L.up, true);
+    window.removeEventListener('pointercancel', L.up, true);
+    try { L.node.releasePointerCapture(L.pid); } catch (_) {}
+    sweepDragArtefacts();
+    if (cancelled) return;
+    if (L.dragging) { if (L.opts.onDrop && e) L.opts.onDrop(L.node, e.clientX, e.clientY); }
+    else if (L.opts.onTap) L.opts.onTap(L.node);
+  }
+
+  window.addEventListener('blur', function () { finishDrag(null, true); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') finishDrag(null, true); });
+  /* the browser's own drag would swallow the gesture and strand the ghost */
+  document.addEventListener('dragstart', function (e) {
+    if (e.target && e.target.closest && e.target.closest('.tok,.oitem')) e.preventDefault();
+  });
+
   function makeDraggable(node, opts) {
-    var ghost = null, sx = 0, sy = 0, dragging = false, pid = null;
+    node.draggable = false;
+    node.setAttribute('tabindex', '0');
+    node.setAttribute('role', 'button');
+
+    node.addEventListener('keydown', function (e) {
+      if (node.dataset.locked === '1') return;
+      if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+        e.preventDefault();
+        if (opts.onTap) { opts.onTap(node); node.focus(); }
+      }
+    });
+
     node.addEventListener('pointerdown', function (e) {
       if (e.button != null && e.button !== 0) return;
       if (node.dataset.locked === '1') return;
-      pid = e.pointerId; sx = e.clientX; sy = e.clientY; dragging = false;
-      node.setPointerCapture(pid);
-      node.addEventListener('pointermove', move);
-      node.addEventListener('pointerup', up);
-      node.addEventListener('pointercancel', up);
-    });
-    function move(e) {
-      if (e.pointerId !== pid) return;
-      if (!dragging) {
-        if (Math.abs(e.clientX - sx) < 5 && Math.abs(e.clientY - sy) < 5) return;
-        dragging = true;
-        ghost = node.cloneNode(true);
-        ghost.classList.add('is-ghost');
-        ghost.style.width = node.offsetWidth + 'px';
-        document.body.appendChild(ghost);
-        node.classList.add('is-drag');
-      }
+      finishDrag(null, true);                       /* never two at once */
       e.preventDefault();
-      ghost.style.left = e.clientX + 'px';
-      ghost.style.top = e.clientY + 'px';
-      if (opts.onOver) opts.onOver(e.clientX, e.clientY);
-    }
-    function up(e) {
-      node.removeEventListener('pointermove', move);
-      node.removeEventListener('pointerup', up);
-      node.removeEventListener('pointercancel', up);
-      try { node.releasePointerCapture(pid); } catch (_) {}
-      if (ghost) { ghost.remove(); ghost = null; }
-      node.classList.remove('is-drag');
-      if (dragging) { if (opts.onDrop) opts.onDrop(node, e.clientX, e.clientY); }
-      else if (opts.onTap) opts.onTap(node);
-      dragging = false; pid = null;
-    }
+      var L = { node:node, opts:opts, pid:e.pointerId,
+                sx:e.clientX, sy:e.clientY, dragging:false, ghost:null };
+      L.move = function (ev) {
+        if (live !== L || (ev.pointerId != null && ev.pointerId !== L.pid)) return;
+        if (!L.dragging) {
+          if (Math.abs(ev.clientX - L.sx) < 5 && Math.abs(ev.clientY - L.sy) < 5) return;
+          L.dragging = true;
+          L.ghost = node.cloneNode(true);
+          L.ghost.classList.add('is-ghost');
+          L.ghost.removeAttribute('tabindex');
+          L.ghost.style.width = node.offsetWidth + 'px';
+          document.body.appendChild(L.ghost);
+          node.classList.add('is-drag');
+        }
+        if (ev.cancelable) ev.preventDefault();
+        L.ghost.style.left = ev.clientX + 'px';
+        L.ghost.style.top = ev.clientY + 'px';
+        if (opts.onOver) opts.onOver(ev.clientX, ev.clientY);
+      };
+      L.up = function (ev) {
+        if (live !== L || (ev.pointerId != null && ev.pointerId !== L.pid)) return;
+        finishDrag(ev, false);
+      };
+      live = L;
+      try { node.setPointerCapture(L.pid); } catch (_) {}
+      /* on the window, so losing capture cannot strand the drag */
+      window.addEventListener('pointermove', L.move, true);
+      window.addEventListener('pointerup', L.up, true);
+      window.addEventListener('pointercancel', L.up, true);
+    });
   }
+
+  /* Exact hit first; nothing found means the reader released in the gap
+     between the boxes, so snap to the nearest one rather than throwing the
+     word back to the pool. */
+  var SNAP = 56;
   function underPoint(zones, x, y) {
     for (var i = 0; i < zones.length; i++) {
       var r = zones[i].getBoundingClientRect();
       if (x >= r.left && x <= r.right && y >= r.top && y <= r.bottom) return zones[i];
     }
     return null;
+  }
+  function nearest(zones, x, y, tol) {
+    var best = null, bestD = Infinity, i, r, dx, dy, d;
+    for (i = 0; i < zones.length; i++) {
+      r = zones[i].getBoundingClientRect();
+      if (!r.width && !r.height) continue;
+      dx = Math.max(r.left - x, 0, x - r.right);
+      dy = Math.max(r.top - y, 0, y - r.bottom);
+      d = Math.sqrt(dx * dx + dy * dy);
+      if (d < bestD) { bestD = d; best = zones[i]; }
+    }
+    return bestD <= tol ? best : null;
+  }
+  /* zones includes the pool; targets are the real drop boxes only.
+     Order matters, and getting it wrong was the actual bug: the pool sits
+     directly above the boxes and is a big target, so a reader dragging
+     downwards who let go a little early landed back in the pool and the word
+     sprang home for no visible reason. A box therefore wins over the pool
+     anywhere within 56px of it — someone dragging towards a box means the
+     box, not the empty space they happen to be over. */
+  function dropTarget(zones, targets, x, y) {
+    return underPoint(targets, x, y) ||
+           nearest(targets, x, y, SNAP) ||
+           underPoint(zones, x, y);
+  }
+
+  /* Dragging is not the only way in — say so, because a reader who cannot
+     make the drag work will otherwise think the question is broken. */
+  function dragHint(card) {
+    var hint = h('div', 'act__hint', 'Drag a word into a box \u2014 or just click it to move it along.');
+    card.appendChild(hint);
   }
 
   /* ---------- card shell ---------- */
@@ -424,12 +519,12 @@
       makeDraggable(t, {
         onOver:function (x, y) {
           zones.forEach(function (z) { z.classList.remove('over'); });
-          var z = underPoint(zones, x, y);
+          var z = dropTarget(zones, bins, x, y);
           if (z && z !== pool) z.classList.add('over');
         },
         onDrop:function (node, x, y) {
           zones.forEach(function (z) { z.classList.remove('over'); });
-          (underPoint(zones, x, y) || pool).appendChild(node);
+          (dropTarget(zones, bins, x, y) || pool).appendChild(node);
         },
         onTap:function (node) {
           var here = bins.indexOf(node.parentElement);
@@ -440,6 +535,7 @@
       return t;
     }
     shuffle(a.items || []).forEach(function (t) { pool.appendChild(mkTok(t)); });
+    dragHint(card);
     card.appendChild(pool);
     card.appendChild(binsWrap);
 
@@ -494,12 +590,12 @@
       makeDraggable(t, {
         onOver:function (x, y) {
           zones.forEach(function (z) { z.classList.remove('over'); });
-          var z = underPoint(zones, x, y);
+          var z = dropTarget(zones, wells, x, y);
           if (z && z !== pool) z.classList.add('over');
         },
         onDrop:function (node, x, y) {
           zones.forEach(function (z) { z.classList.remove('over'); });
-          var z = underPoint(zones, x, y) || pool;
+          var z = dropTarget(zones, wells, x, y) || pool;
           if (z !== pool) {
             var sitting = z.querySelector('.tok');
             if (sitting && sitting !== node) pool.appendChild(sitting);
@@ -517,6 +613,7 @@
       return t;
     }
     shuffle((a.tokens || []).concat(a.distractors || [])).forEach(function (t) { pool.appendChild(mkTok(t)); });
+    dragHint(card);
     card.appendChild(pool);
     card.appendChild(slotsWrap);
     tidy();

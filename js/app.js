@@ -10,7 +10,7 @@
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
-    diet:['sameBalance'], overview:[], mouth:['toothTypes','tooth','chewing'],
+    diet:['sameBalance'], overview:[], mouth:['chewing'],
     'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:['peristalsis'],
     stomach:['churn'], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
     duodenum:['starchPath'], 'ileum-villi':['villus'],
@@ -21,7 +21,7 @@
   /* which sentence each drawn diagram illustrates */
   var FIG_AFTER = {
     'diet:sameBalance':6,
-    'mouth:toothTypes':3, 'mouth:tooth':4, 'mouth:chewing':1,
+    'mouth:chewing':1,
     'salivary-glands:starchPath':2, 'epiglottis:swallow':1,
     'oesophagus:peristalsis':1,
     'stomach:churn':1, 'gall-bladder:emulsify':3,
@@ -314,7 +314,57 @@
   }
 
   /* One media item — a photograph, a micrograph or an animation. */
+  /* Two views of one thing, side by side. The point is that the reader sees
+     the real tooth and the drawing of it without scrolling between them —
+     the comparison only works when both are in the eye at once. */
+  function pairBox(ph) {
+    var box = document.createElement('figure');
+    box.className = 'media media--pair';
+    var row = document.createElement('div');
+    row.className = 'pair';
+    (ph.of || []).forEach(function (half) {
+      var cell = document.createElement('div');
+      cell.className = 'pair__half';
+      if (half.fig) {
+        var f = window.Figures.get(half.fig);
+        if (f) cell.innerHTML = f.svg;
+      } else {
+        var img = new Image();
+        img.className = 'media__el media__el--img';
+        img.alt = half.label || String(ph.cap).replace(/<[^>]+>/g, '');
+        img.loading = 'lazy';
+        img.src = 'assets/photos/' + half.photo;
+        img.title = 'Click to see it full size';
+        if (half.maxw) img.style.maxWidth = half.maxw + 'px';
+        img.addEventListener('click', function () { lightbox(img.src, half.label || ph.cap, ph.kind, half.annot); });
+        if (half.annot && half.annot.length) {
+          var stage = document.createElement('div');
+          stage.className = 'annot';
+          stage.appendChild(img);
+          stage.insertAdjacentHTML('beforeend', annotLayer(half.annot));
+          cell.appendChild(stage);
+        } else {
+          cell.appendChild(img);
+        }
+      }
+      if (half.label) {
+        var lab = document.createElement('div');
+        lab.className = 'pair__lab';
+        lab.innerHTML = half.label;
+        cell.appendChild(lab);
+      }
+      row.appendChild(cell);
+    });
+    box.appendChild(row);
+    var cap = document.createElement('figcaption');
+    cap.className = 'media__cap';
+    cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + ph.cap;
+    box.appendChild(cap);
+    return box;
+  }
+
   function mediaBox(ph) {
+    if (ph.t === 'pair') return pairBox(ph);
     var box = document.createElement('figure');
     box.className = 'media' + (ph.t === 'video' ? ' media--video' : '');
     var cap = document.createElement('figcaption');
@@ -844,7 +894,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788266481') {
+        if (v && v !== '1788267139') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

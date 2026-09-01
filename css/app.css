@@ -383,6 +383,16 @@ body[data-mode="practice"] .panel__inner::before{
 }
 @keyframes peekIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
 .peek img{width:100%;max-width:100%;display:block;background:#fff}
+/* Two views of one thing, side by side — a real tooth beside the drawing of
+   it, or the two radiographs together. They stack on a narrow screen, where
+   side-by-side would make each half too small to read. */
+.pair{display:flex;gap:14px;align-items:flex-start}
+.pair__half{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center}
+.pair__half img{width:100%;height:auto;display:block;border-radius:var(--r-sm)}
+.pair__half svg{width:100%;height:auto;display:block}
+.pair__half .annot{width:100%}
+.pair__lab{margin-top:6px;font-size:12.5px;line-height:1.4;color:var(--grey);text-align:center}
+@media (max-width:620px){.pair{flex-direction:column;gap:16px}}
 .peek__fig{background:#fff;padding:6px 4px 2px}
 .peek__fig svg{width:100%;height:auto;display:block}
 /* A figure carries its own labels, so it needs more width than a photograph:
@@ -514,6 +524,9 @@ body[data-mode="practice"] .panel__inner::before{
 }
 .tok:active{cursor:grabbing}
 .tok.is-drag{opacity:.45}
+.tok:focus-visible,.oitem:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.act__hint{font-size:12.5px;color:var(--grey);margin:2px 0 8px}
+
 .tok.is-ghost{position:fixed;z-index:999;pointer-events:none;transform:translate(-50%,-50%) scale(1.06);
               box-shadow:var(--shadow-lg);opacity:.96}
 .slots{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
