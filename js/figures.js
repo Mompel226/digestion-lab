@@ -430,116 +430,154 @@
 
   /* ---------------- egestion vs excretion ---------------- */
   function egestVsExcrete() {
-    /* Redrawn. The old one put a plain bar where the gut should be and two
-       concentric circles where the cell should be, and ran "via the anus" out
-       through the side of its own panel. A reader has to recognise the two
-       things being contrasted, so the gut is drawn as a gut — descending
-       colon, rectum, and a sphincter at the end — and the cell as a cell,
-       with a membrane, a nucleus and waste actually crossing the membrane. */
-    var L = 12, R = 262, PW = 226, PT = 28, PH = 232;
+    /* Two panels. The gut follows the orientation of the body plate beside it —
+       descending colon down the viewer's RIGHT, sigmoid bending left, rectum and
+       anus at the bottom — because drawing it the other way round teaches a
+       second, contradictory picture of the same organ.
 
-    /* the last stretch of gut: down, a bend, and out */
-    var gutPath = 'M44,92 L44,150 Q44,176 60,186 L60,204';
+       The cell is a cell: membrane, cytoplasm, nucleus with a nucleolus,
+       mitochondria with cristae, rough ER studded with ribosomes, a Golgi
+       stack, free ribosomes. The point of the panel is that excretion removes
+       what these organelles made, so they have to be visible. */
+    var LX = 12, LW = 268, RX = 302, RW = 306, PT = 28, PH = 268;
+
+    /* --- the last of the gut, oriented like the plate --- */
+    var gutPath = 'M232,96 L232,150 Q232,178 206,190 L176,196 Q152,202 152,224';
     var gut =
-      '<path d="' + gutPath + '" fill="none" stroke="#B07E4A" stroke-width="27" stroke-linecap="round"/>' +
-      '<path d="' + gutPath + '" fill="none" stroke="#EFDFCB" stroke-width="21" stroke-linecap="round"/>' +
-      /* what is inside the lumen, on its way out */
-      [[44,108],[44,136],[52,168]].map(function (p) {
-        return '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7" ry="5.4" fill="#A9713C" opacity=".85"/>';
+      '<path d="' + gutPath + '" fill="none" stroke="#B07E4A" stroke-width="30" stroke-linecap="round"/>' +
+      '<path d="' + gutPath + '" fill="none" stroke="#EFDFCB" stroke-width="23" stroke-linecap="round"/>' +
+      [[232,112],[232,146],[210,186],[176,196]].map(function (p) {
+        return '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7.5" ry="5.6" fill="#A9713C" opacity=".85"/>';
       }).join('') +
-      /* the sphincter at the end */
-      '<ellipse cx="60" cy="209" rx="12" ry="5" fill="#C08B57" stroke="#8A5A2B" stroke-width="2"/>' +
-      '<ellipse cx="60" cy="209" rx="4.5" ry="2" fill="#6E4423"/>' +
-      '<path class="ld" d="M74,209 L88,209"/>' +
-      '<text class="fs" x="92" y="212">anus</text>';
+      '<ellipse cx="152" cy="230" rx="13" ry="5.5" fill="#C08B57" stroke="#8A5A2B" stroke-width="2"/>' +
+      '<ellipse cx="152" cy="230" rx="5" ry="2.2" fill="#6E4423"/>' +
+      '<path class="ld" d="M138,230 L118,230"/>' +
+      '<text class="fs" x="114" y="233" text-anchor="end">anus</text>' +
+      '<path class="ld" d="M216,124 L206,124"/>' +
+      '<text class="fs" x="202" y="127" text-anchor="end">colon</text>' +
+      '<path class="ld" d="M196,208 L212,214"/>' +
+      '<text class="fs" x="216" y="217">rectum</text>';
 
-    /* a cell: a lobed outline, a membrane you can see, a nucleus, and waste
-       leaving through the membrane rather than sitting inside a second ring */
+    /* --- a body cell --- */
+    var CX = 414, CY = 158;
+    function mito(x, y, rot) {
+      return '<g transform="translate(' + x + ',' + y + ') rotate(' + rot + ')">' +
+        '<rect x="-17" y="-8" width="34" height="16" rx="8" fill="#F2C9A6" stroke="#B5713A" stroke-width="1.6"/>' +
+        '<path d="M-11,-6 q5,6 0,12 M-3,-6 q5,6 0,12 M5,-6 q5,6 0,12" fill="none" stroke="#B5713A" stroke-width="1.3"/>' +
+        '</g>';
+    }
     var cell =
-      '<path d="M318,108 C348,104 372,124 371,150 C370,176 350,194 320,193 ' +
-      'C292,192 272,174 273,149 C274,125 292,111 318,108 Z" ' +
-      'fill="#DCEBF3" stroke="#0F6E8C" stroke-width="2.6"/>' +
-      '<path d="M318,113 C344,110 366,127 365,150 C364,172 347,188 320,187 ' +
-      'C296,186 279,171 280,149 C281,128 296,116 318,113 Z" ' +
-      'fill="none" stroke="#7FB2CE" stroke-width="1.4"/>' +
-      '<ellipse cx="314" cy="146" rx="15" ry="13" fill="#9CC3E8" stroke="#0F6E8C" stroke-width="1.8"/>' +
-      '<ellipse cx="314" cy="146" rx="5" ry="4" fill="#5B8FB5"/>' +
-      '<ellipse cx="298" cy="172" rx="8" ry="4.5" fill="#BBD9E8" transform="rotate(-18 298 172)"/>' +
-      '<ellipse cx="340" cy="171" rx="7" ry="4" fill="#BBD9E8" transform="rotate(14 340 171)"/>' +
-      '<text class="fs" x="316" y="207" text-anchor="middle">a body cell</text>' +
-      /* two wastes crossing the membrane */
-      arrow('arE', '#0F6E8C', 'M366,136 L392,130', 2) +
-      arrow('arE', '#0F6E8C', 'M368,166 L392,172', 2) +
-      '<circle cx="364" cy="137" r="4" fill="#0F6E8C"/>' +
-      '<circle cx="366" cy="165" r="4" fill="#0F6E8C"/>';
+      /* cytoplasm and membrane */
+      '<path d="M414,92 C462,90 486,120 484,158 C482,196 456,224 414,224 ' +
+      'C372,224 344,198 344,158 C344,120 368,94 414,92 Z" ' +
+      'fill="#E4F1F7" stroke="#0F6E8C" stroke-width="3"/>' +
+      '<path d="M414,98 C458,96 479,124 477,158 C475,192 452,218 414,218 ' +
+      'C376,218 351,194 351,158 C351,124 372,100 414,98 Z" ' +
+      'fill="none" stroke="#8FBDD4" stroke-width="1.4"/>' +
+      /* nucleus */
+      '<ellipse cx="404" cy="146" rx="30" ry="25" fill="#BBD9E8" stroke="#0F6E8C" stroke-width="2"/>' +
+      '<ellipse cx="404" cy="146" rx="25" ry="20" fill="none" stroke="#7FB2CE" stroke-width="1.2"/>' +
+      '<ellipse cx="410" cy="144" rx="9" ry="7.5" fill="#5B8FB5"/>' +
+      /* rough ER, studded with ribosomes */
+      '<path d="M368,178 q18,-9 36,-2 M366,188 q20,-9 40,-2" fill="none" stroke="#0F6E8C" stroke-width="1.6"/>' +
+      [[371,176],[381,173],[391,173],[401,176],[369,186],[380,183],[391,183],[402,186]].map(function (p) {
+        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7" fill="#0B5670"/>';
+      }).join('') +
+      /* Golgi stack with a vesicle */
+      '<g transform="translate(452,182)">' +
+      '<path d="M-16,-6 q16,-6 30,-1 M-16,0 q16,-6 30,-1 M-16,6 q16,-6 30,-1" fill="none" stroke="#7A4FA0" stroke-width="1.9" stroke-linecap="round"/>' +
+      '<circle cx="18" cy="8" r="3.2" fill="#7A4FA0"/></g>' +
+      /* mitochondria */
+      mito(372, 128, -24) + mito(452, 132, 16) +
+      /* free ribosomes */
+      [[430,196],[420,204],[440,168],[386,204],[398,196]].map(function (p) {
+        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.9" fill="#0B5670"/>';
+      }).join('');
+
+    var cellLabels =
+      '<path class="ld" d="M498,130 L430,140"/><text class="fs" x="502" y="133">nucleus</text>' +
+      '<path class="ld" d="M498,156 L466,136"/><text class="fs" x="502" y="159">mitochondrion</text>' +
+      '<path class="ld" d="M498,182 L470,182"/><text class="fs" x="502" y="185">Golgi apparatus</text>' +
+      '<path class="ld" d="M498,208 L404,190"/><text class="fs" x="502" y="211">ribosomes</text>' +
+      '<path class="ld" d="M498,232 L474,204"/><text class="fs" x="502" y="235">cell membrane</text>';
 
     return {
-      svg: svg('0 0 500 316',
-        arrowDefs('arE', '#0F6E8C') +
-        '<rect x="' + L + '" y="' + PT + '" width="' + PW + '" height="' + PH + '" rx="14" fill="#FCF4E7" stroke="#B07E4A" stroke-width="2.4"/>' +
-        '<rect x="' + R + '" y="' + PT + '" width="' + PW + '" height="' + PH + '" rx="14" fill="#E8F3F8" stroke="#0F6E8C" stroke-width="2.4"/>' +
-        '<text class="fb" x="125" y="56" text-anchor="middle" style="fill:#8A5A2B">EGESTION</text>' +
-        '<text class="fs" x="125" y="74" text-anchor="middle">never entered a cell</text>' +
-        '<text class="fb" x="375" y="56" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
-        '<text class="fs" x="375" y="74" text-anchor="middle">made inside cells</text>' +
-        gut + cell +
-        '<text class="fb" x="96" y="112" style="fill:#8A5A2B">Fibre / roughage</text>' +
-        '<text class="fb" x="96" y="140" style="fill:#8A5A2B">Undigested food</text>' +
-        '<text class="fb" x="96" y="168" style="fill:#8A5A2B">Dead gut cells</text>' +
-        '<text class="fs" x="125" y="246" text-anchor="middle">leaves the body as faeces</text>' +
-        '<text class="fb" x="400" y="134">Urea &#8594; urine</text>' +
-        '<text class="fb" x="400" y="176">CO&#8322; &#8594; lungs</text>' +
-        '<text class="fs" x="375" y="246" text-anchor="middle">products of reactions in cells</text>' +
-        '<text class="fl" x="250" y="286" text-anchor="middle">Food in the gut is still ' +
-        '<tspan style="fill:#14572B" font-weight="700">outside</tspan> your cells.</text>' +
-        '<text class="fl" x="250" y="304" text-anchor="middle">So getting rid of it is egestion, not excretion.</text>'),
-      cap:'The alimentary canal is a tube running through the body, and what is in the tube has never been inside a cell. <b>Egestion</b> passes that out. <b>Excretion</b> gets rid of waste the cells themselves made &#8212; urea from the liver, carbon dioxide from respiration. That is why they are different processes, and 0610 asks about it.'
+      svg: svg('0 0 620 348',
+        '<rect x="' + LX + '" y="' + PT + '" width="' + LW + '" height="' + PH + '" rx="14" fill="#FCF4E7" stroke="#B07E4A" stroke-width="2.4"/>' +
+        '<rect x="' + RX + '" y="' + PT + '" width="' + RW + '" height="' + PH + '" rx="14" fill="#E8F3F8" stroke="#0F6E8C" stroke-width="2.4"/>' +
+        '<text class="fb" x="146" y="56" text-anchor="middle" style="fill:#8A5A2B">EGESTION</text>' +
+        '<text class="fs" x="146" y="74" text-anchor="middle">never entered a cell</text>' +
+        '<text class="fb" x="455" y="56" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
+        '<text class="fs" x="455" y="74" text-anchor="middle">made inside cells</text>' +
+        gut + cell + cellLabels +
+        '<text class="fb" x="30" y="112" style="fill:#8A5A2B">Fibre / roughage</text>' +
+        '<text class="fb" x="30" y="140" style="fill:#8A5A2B">Undigested food</text>' +
+        '<text class="fb" x="30" y="168" style="fill:#8A5A2B">Dead gut cells</text>' +
+        '<text class="fs" x="146" y="274" text-anchor="middle">passed out as faeces</text>' +
+        '<text class="fs" x="455" y="256" text-anchor="middle">Urea from the liver leaves in urine.</text>' +
+        '<text class="fs" x="455" y="272" text-anchor="middle">Carbon dioxide from respiration leaves in the breath.</text>' +
+        '<text class="fl" x="310" y="320" text-anchor="middle">Food in the gut is still ' +
+        '<tspan style="fill:#14572B" font-weight="700">outside</tspan> your cells, so getting rid of it is egestion.</text>' +
+        '<text class="fl" x="310" y="338" text-anchor="middle">Excretion removes what the cells themselves made.</text>'),
+      cap:'The alimentary canal is a tube running <i>through</i> the body, and what is in the tube has never been inside a cell. <b>Egestion</b> passes that out. <b>Excretion</b> removes waste the cells made &#8212; urea from the liver, carbon dioxide from respiration in the mitochondria. Different processes, and 0610 asks you to tell them apart.'
     };
   }
 
   /* ---------------- stomach churning ---------------- */
+  /* Sample a smooth centre line through a list of points (Catmull-Rom). Used to
+     sweep one continuous tube: oesophagus, stomach and duodenum are the same
+     tube, so drawing them as three pieces and then trying to hide the joins was
+     always going to look like three pieces. */
+  function crPoint(P, u) {
+    var n = P.length - 1, i = Math.min(Math.floor(u * n), n - 1), t = u * n - i;
+    var p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(n, i + 2)];
+    var t2 = t * t, t3 = t2 * t;
+    return [0.5 * ((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+            0.5 * ((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)];
+  }
+
   function churn() {
-    /* The stomach was drawn as an oval with a tube on top. A stomach is not an
-       oval: the oesophagus enters at the cardia, the fundus domes up beside
-       it, the body sweeps down along a long greater curvature and a short
-       lesser one, and it narrows through the antrum to the pylorus.
+    /* One continuous tube, swept along a centre line that starts up in the
+       oesophagus and ends out in the duodenum, with a different width on each
+       side. The asymmetry is what makes the J: a long greater curvature on the
+       outside, a short lesser one on the inside. Orientation follows the body
+       plate beside it — liver on the viewer's left, so the stomach's fundus
+       domes to the right and the pylorus leaves to the left. Contraction rings
+       then travel towards the pylorus, squeezing the wall as they pass and
+       getting stronger as they go, which is what gastric waves do. */
+    var DUR = '5.5s', N = 96, STEPS = 30;
+    var MID = [[190,20],[190,64],[224,96],[240,140],[228,182],[186,210],[132,218],[92,224],[64,246],[54,276]];
 
-       So the outline is built from a centre line with a DIFFERENT width on
-       each side — a long outer curve and a short inner one — which is what
-       makes the J. Contraction rings then travel from the body towards the
-       pylorus, squeezing the wall in as they pass, the same wall-morphing
-       method used for peristalsis. Real gastric waves run this way, about
-       three a minute, and get stronger as they approach the pylorus. */
-    var DUR = '5.5s', N = 70, STEPS = 30;
-    var P0 = [150, 62], P1 = [80, 116], P2 = [112, 208], P3 = [250, 216];
-
-    function bez(t) {
-      var u = 1 - t;
-      return [u*u*u*P0[0] + 3*u*u*t*P1[0] + 3*u*t*t*P2[0] + t*t*t*P3[0],
-              u*u*u*P0[1] + 3*u*u*t*P1[1] + 3*u*t*t*P2[1] + t*t*t*P3[1]];
+    function at(u) {
+      var p = crPoint(MID, u), q = crPoint(MID, Math.min(1, u + 0.004));
+      var dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1;
+      return { x:p[0], y:p[1], nx:dy / L, ny:-dx / L };
     }
-    function dbez(t) {
-      var u = 1 - t;
-      return [3*u*u*(P1[0]-P0[0]) + 6*u*t*(P2[0]-P1[0]) + 3*t*t*(P3[0]-P2[0]),
-              3*u*u*(P1[1]-P0[1]) + 6*u*t*(P2[1]-P1[1]) + 3*t*t*(P3[1]-P2[1])];
+    /* width each side: oesophagus narrow, stomach wide and lopsided, pylorus
+       narrow again, duodenum narrow */
+    function prof(u, keys) {
+      var i = 0;
+      while (i < keys.length - 2 && u > keys[i + 1][0]) i++;
+      var a = keys[i], b = keys[i + 1], f = (u - a[0]) / (b[0] - a[0] || 1);
+      f = Math.max(0, Math.min(1, f));
+      f = f * f * (3 - 2 * f);                                  /* ease, so no kinks */
+      return a[1] + (b[1] - a[1]) * f;
     }
-    /* greater curvature: long and generous. lesser curvature: short and tight. */
-    function outerW(t) { return t < .30 ? 22 + 40 * (t / .30) : 62 - 50 * Math.pow((t - .30) / .70, 1.25); }
-    function innerW(t) { return t < .30 ? 10 + 12 * (t / .30) : 22 - 13 * Math.pow((t - .30) / .70, 1.1); }
+    var OUT = [[0,9],[0.10,13],[0.20,40],[0.34,56],[0.50,50],[0.66,30],[0.78,15],[0.88,10],[1,9]];
+    var INN = [[0,9],[0.10,11],[0.22,20],[0.40,24],[0.58,20],[0.72,13],[0.84,10],[1,9]];
 
     function wall(rings) {
-      var i, t, p, d, len, nx, ny, wo, wi, Lo = [], Li = [];
+      var i, u, s, wo, wi, Lo = [], Li = [];
       for (i = 0; i <= N; i++) {
-        t = i / N; p = bez(t); d = dbez(t); len = Math.hypot(d[0], d[1]) || 1;
-        nx = -d[1] / len; ny = d[0] / len;
-        wo = outerW(t); wi = innerW(t);
+        u = i / N; s = at(u);
+        wo = prof(u, OUT); wi = prof(u, INN);
         rings.forEach(function (r) {
-          var g = gauss(t - r, .05) * (14 + 10 * r);   /* stronger nearer the pylorus */
-          wo -= g; wi -= g * .8;
+          var g = gauss(u - r, .045) * (13 + 12 * r) * (u > .12 && u < .84 ? 1 : 0);
+          wo -= g; wi -= g * .75;
         });
-        wo = Math.max(7, wo); wi = Math.max(6, wi);
-        Lo.push([(p[0] + nx * wo).toFixed(1), (p[1] + ny * wo).toFixed(1)]);
-        Li.push([(p[0] - nx * wi).toFixed(1), (p[1] - ny * wi).toFixed(1)]);
+        wo = Math.max(6, wo); wi = Math.max(5.5, wi);
+        Lo.push([(s.x + s.nx * wo).toFixed(1), (s.y + s.ny * wo).toFixed(1)]);
+        Li.push([(s.x - s.nx * wi).toFixed(1), (s.y - s.ny * wi).toFixed(1)]);
       }
       Li.reverse();
       return 'M' + Lo.map(function (q) { return q.join(','); }).join(' L') +
@@ -548,14 +586,12 @@
 
     var frames = [], i;
     for (i = 0; i <= STEPS; i++) {
-      var a = .22 + (i / STEPS) * .82;            /* one wave running to the pylorus */
-      var b = a - .38;                            /* and the next one behind it */
+      var a = .24 + (i / STEPS) * .56, b = a - .26;
       var rings = [a]; if (b > .18) rings.push(b);
       frames.push(wall(rings));
     }
     frames.push(frames[0]);
 
-    /* food, tumbling and getting smaller as it goes round */
     function bit(cx, cy, r, delay, dx, dy) {
       return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#B5762F" opacity=".9">' +
         '<animateTransform attributeName="transform" type="translate" ' +
@@ -563,33 +599,27 @@
         'dur="' + DUR + '" begin="' + delay + 's" repeatCount="indefinite"/>' +
         A + '"r" values="' + r + ';' + (r * .55).toFixed(1) + ';' + r + '" dur="' + DUR + '" repeatCount="indefinite"/></circle>';
     }
-    var food = bit(112,120,7,0,14,26) + bit(96,150,6,.5,18,-14) + bit(126,168,6.5,1.1,-12,20) +
-               bit(140,132,5.5,1.7,10,30) + bit(112,190,5,2.2,20,-10) + bit(150,176,6,2.8,-14,-22);
-
-    var oeso = '<path d="M150,26 L150,64" stroke="#C99A85" stroke-width="17" stroke-linecap="round" fill="none"/>' +
-               '<path d="M150,28 L150,62" stroke="#EFD9C9" stroke-width="11" stroke-linecap="round" fill="none"/>';
-    var duo  = '<path d="M248,216 C282,220 292,246 286,268" stroke="#B07E4A" stroke-width="19" fill="none" stroke-linecap="round"/>' +
-               '<path d="M248,216 C280,220 289,245 284,266" stroke="#F0DFCC" stroke-width="12" fill="none" stroke-linecap="round"/>';
+    var food = bit(226,118,7,0,-12,26) + bit(240,150,6,.5,-16,-12) + bit(212,168,6.5,1.1,10,18) +
+               bit(204,132,5.5,1.7,-8,28) + bit(214,196,5,2.2,-18,-8) + bit(178,204,6,2.8,12,-20);
 
     return {
       svg: svg('0 0 540 300',
-        oeso + duo +
         '<path fill="#F3DFCB" stroke="#B07E4A" stroke-width="3" stroke-linejoin="round" d="' + frames[0] + '">' +
         A + '"d" values="' + frames.join(';') + '" dur="' + DUR + '" repeatCount="indefinite"/></path>' +
         food +
-        '<path class="ld" d="M312,98 L214,104"/><text class="fb" x="318" y="96">Muscular wall</text>' +
+        '<path class="ld" d="M312,98 L276,124"/><text class="fb" x="318" y="96">Muscular wall</text>' +
         '<text class="fs" x="318" y="112">rings of muscle squeeze and</text>' +
         '<text class="fs" x="318" y="126">travel towards the exit &#8212; this</text>' +
         '<text class="fs" x="318" y="140">is physical digestion</text>' +
-        '<path class="ld" d="M312,172 L166,160"/><text class="fb" x="318" y="170">Gastric juice</text>' +
+        '<path class="ld" d="M312,172 L244,168"/><text class="fb" x="318" y="170">Gastric juice</text>' +
         '<text class="fs" x="318" y="186">hydrochloric acid + pepsin</text>' +
-        '<path class="ld" d="M312,234 L282,248"/><text class="fb" x="318" y="232">Chyme</text>' +
+        '<path class="ld" d="M312,234 L104,236"/><text class="fb" x="318" y="232">Chyme</text>' +
         '<text class="fs" x="318" y="248">the soupy, acidic mixture</text>' +
         '<text class="fs" x="318" y="262">that leaves the stomach</text>' +
-        '<path class="ld" d="M118,42 L142,42"/>' +
-        '<text class="fs" x="112" y="45" text-anchor="end">from the oesophagus</text>' +
-        '<text class="fs" x="288" y="288" text-anchor="middle">to the duodenum</text>'),
-      cap:'<b>Churning is physical digestion.</b> Three layers of muscle in the stomach wall run in different directions, so the stomach can squeeze in more than one plane at once &#8212; rings of contraction travel towards the pylorus roughly three times a minute, breaking the food into smaller pieces and mixing it thoroughly with the gastric juice. Nothing is broken chemically by the squeezing itself; that is pepsin&#8217;s job. What leaves is <b>chyme</b>.'
+        '<path class="ld" d="M156,36 L180,32"/>' +
+        '<text class="fs" x="150" y="39" text-anchor="end">from the oesophagus</text>' +
+        '<text class="fs" x="52" y="292" text-anchor="middle">to the duodenum</text>'),
+      cap:'<b>Churning is physical digestion.</b> Three layers of muscle in the stomach wall run in different directions, so it can squeeze in more than one plane at once. Rings of contraction travel towards the pylorus about three times a minute, breaking the food into smaller pieces and mixing it thoroughly with the gastric juice. Nothing is broken chemically by the squeezing itself &#8212; that is pepsin&#8217;s job. What leaves is <b>chyme</b>.'
     };
   }
 
@@ -700,8 +730,11 @@
                   'C214,194 200,200 176,200 C142,200 108,192 90,180 Z';
     var tonHigh = 'M92,150 C116,128 154,120 184,130 C206,137 216,156 216,178 ' +
                   'C216,194 198,198 172,198 C138,198 106,190 90,178 Z';
-    var epiUp   = 'M198,214 C196,198 201,184 210,177 C218,184 218,201 210,211 Z';
-    var epiDown = 'M198,214 C212,209 230,209 242,214 C236,222 214,223 200,220 Z';
+    var epiUp   = 'M192,214 C190,198 195,184 204,177 C212,184 212,201 204,211 Z';
+    /* folded: a lid over the opening of the trachea, and no further. The
+       oesophagus is behind it and must stay open — the bolus goes past the
+       epiglottis, not through it. */
+    var epiDown = 'M186,212 C196,206 210,205 221,209 C216,218 198,220 188,218 Z';
 
     var soft = '<path fill="#E7BCAB" stroke="#B4796A" stroke-width="1.6" d="' + palDown + '">' +
       A + '"d" values="' + [palDown,palDown,palUp,palUp,palUp,palDown].join(';') +
@@ -718,8 +751,8 @@
 
     var K = '0;0.2;0.36;0.5;0.62;0.88;1';
     var bolus = '<ellipse rx="14" ry="10.5" fill="#C98A45" stroke="#8A5A2B" stroke-width="1.6">' +
-      A + '"cx" values="126;158;200;226;240;242;242" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
-      A + '"cy" values="162;152;150;190;232;300;300" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
+      A + '"cx" values="126;158;204;238;241;241;241" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
+      A + '"cy" values="162;152;150;188;232;300;300" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
       A + '"rx" values="14;14;13;12;11;11;14" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
       A + '"opacity" values="0;.96;.96;.96;.96;.96;0" keyTimes="0;0.06;0.36;0.5;0.62;0.9;1" dur="' + DUR + '" repeatCount="indefinite"/>' +
       '</ellipse>';
@@ -738,7 +771,7 @@
 
     return {
       svg: svg('0 0 470 322',
-        face + soft + tongue + laryn + bolus + leaders +
+        face + soft + tongue + bolus + laryn + leaders +
         '<text class="fl" x="235" y="20" text-anchor="middle">One swallow, seen from the side</text>'),
       cap:'Watch the order. The <b>soft palate</b> lifts and seals off the nose. The <b>tongue</b> humps up and drives the <b>bolus</b> backwards. The larynx rises as it goes, so the <b>epiglottis</b> tips down over the opening of the <b>trachea</b> and the bolus is guided past it into the <b>oesophagus</b>. Breathing stops for about a second while this happens &#8212; which is why talking while eating is how food goes down the wrong way.'
     };
