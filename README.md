@@ -156,9 +156,14 @@ needs to change.
   overlap** on the plate or on any diagram, whatever is shown or hidden.
 - **Highlighted words are actionable.** A dotted underline opens a small picture
   in place (what fats, protein or iron actually look like); a solid underline
-  jumps to the station that explains the term. Which treatment a word gets is set
+  scrolls to the exact sentence that explains the term, flashes it, and offers a
+  way back. Which treatment a word gets is set
   in `PEEK` and `JUMP` in `js/terms.js`. A word never links to the station you are
   already on.
+- **Every image must pass a test: does it teach something the words cannot?**
+  Food groups get a picture of the foods, because a student may not know tofu is
+  protein. Vitamins and minerals get a picture of the *deficiency*, because that
+  is the memorable and examinable part. Water gets nothing.
 - **Images only where they earn it.** The alimentary canal station has none: the
   plate on the left already is the canal, so it offers "trace it on the diagram"
   instead of repeating itself as a picture.

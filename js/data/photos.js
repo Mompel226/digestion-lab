@@ -317,70 +317,21 @@ window.PHOTOS = {
    "src": "eatwell-plate.jpg",
    "kind": "Illustration",
    "after": 0,
-   "cap": "What \"correct proportions\" looks like on a plate. The biggest sections are starchy foods and fruit and vegetables; the smallest is the one people expect to be biggest."
+   "cap": "What \"correct proportions\" actually looks like. The biggest sections are starchy foods and fruit and vegetables — and the smallest is the one most people expect to be biggest."
   },
   {
    "t": "photo",
-   "src": "card-vitaminc.jpg",
-   "kind": "Summary card",
-   "after": 2,
-   "cap": "<b>Vitamin C.</b> Sources, what the body uses it for, and what happens without it."
-  },
-  {
-   "t": "photo",
-   "src": "card-vitamind.jpg",
-   "kind": "Summary card",
-   "after": 2,
-   "cap": "<b>Vitamin D.</b> Note the last source — your own skin, in sunlight."
-  },
-  {
-   "t": "photo",
-   "src": "card-calcium.jpg",
-   "kind": "Summary card",
-   "after": 3,
-   "cap": "<b>Calcium.</b> Bones and teeth, and blood clotting."
-  },
-  {
-   "t": "photo",
-   "src": "card-iron.jpg",
-   "kind": "Summary card",
-   "after": 3,
-   "cap": "<b>Iron.</b> Follow the arrow: iron → haemoglobin → oxygen carried. Take the iron away and that chain breaks."
-  },
-  {
-   "t": "photo",
-   "src": "scurvy-gums.jpg",
-   "kind": "Photograph",
-   "more": true,
-   "cap": "Scurvy. Vitamin C is needed to make collagen, which holds gums and blood vessels together."
-  },
-  {
-   "t": "photo",
-   "src": "rickets.jpg",
-   "kind": "Radiograph and photograph",
-   "more": true,
-   "cap": "Rickets. Without vitamin D the body cannot absorb enough calcium, so the bones stay soft and bow under the child’s weight."
-  },
-  {
-   "t": "photo",
-   "src": "kwashiorkor.jpg",
-   "kind": "Photograph",
-   "more": true,
-   "cap": "Kwashiorkor — severe protein deficiency. The swollen abdomen is fluid, not fat."
+   "src": "energy-balance.jpg",
+   "kind": "Illustration",
+   "after": 6,
+   "cap": "Why the amounts change from person to person: energy in against energy out. Malnutrition is any imbalance — in either direction."
   },
   {
    "t": "photo",
    "src": "carbs-complex-simple.jpg",
    "kind": "Illustration",
    "more": true,
-   "cap": "Complex versus simple carbohydrates — both give energy, but the complex ones release it more slowly."
-  },
-  {
-   "t": "photo",
-   "src": "energy-balance.jpg",
-   "kind": "Illustration",
-   "more": true,
-   "cap": "Energy in against energy out. Malnutrition is any imbalance, in either direction."
+   "cap": "Complex versus simple carbohydrates. Both release energy; the complex ones release it more slowly."
   }
  ]
 };

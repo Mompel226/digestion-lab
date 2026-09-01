@@ -439,7 +439,7 @@
   }
 
   /* ---------- open a station ---------- */
-  function open(id, fromTour) {
+  function open(id, fromTour, focusTerm, cameFrom) {
     if (!S[id]) return;
     current = id;
     tab = 'learn';
@@ -453,7 +453,61 @@
       if (t != null) window.Anatomy.placeBolus(t); else window.Anatomy.stopJourney();
     }
     paintPanel(); paintRail();
+    if (focusTerm) focusOnTerm(focusTerm, cameFrom);
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
+  }
+
+  /* Landing at the top of a long station and being told to go and find the
+     word yourself is no better than not linking at all. Find where the term
+     is actually explained, scroll to it, and flash it so the eye lands on it. */
+  function focusOnTerm(term, cameFrom) {
+    var panel = document.getElementById('panel');
+    var low = term.toLowerCase();
+    var re = new RegExp('(?<![A-Za-z0-9-])' + low.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z0-9-])', 'i');
+
+    /* a key-word definition is the best landing place, then a sentence, then a caption */
+    var target = null;
+    var kws = document.querySelectorAll('#panelInner .kw');
+    for (var i = 0; i < kws.length && !target; i++) {
+      var dt = kws[i].querySelector('dt');
+      if (dt && re.test(dt.textContent)) target = kws[i];
+    }
+    if (!target) {
+      var lis = document.querySelectorAll('#panelInner .exam-list > li');
+      for (var j = 0; j < lis.length && !target; j++) if (re.test(lis[j].textContent)) target = lis[j];
+    }
+    if (!target) {
+      var caps = document.querySelectorAll('#panelInner .media__cap, #panelInner .later__list li');
+      for (var k = 0; k < caps.length && !target; k++) if (re.test(caps[k].textContent)) target = caps[k];
+    }
+    if (!target) return;
+
+    var prev = panel.style.scrollBehavior;
+    panel.style.scrollBehavior = 'smooth';
+    var hr = document.getElementById('panelInner').getBoundingClientRect();
+    var tr = target.getBoundingClientRect();
+    panel.scrollTop += (tr.top - panel.getBoundingClientRect().top) - panel.clientHeight / 2 + tr.height / 2;
+    setTimeout(function () { panel.style.scrollBehavior = prev || ''; }, 600);
+
+    target.classList.add('flash');
+    setTimeout(function () { target.classList.remove('flash'); }, 2800);
+
+    if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
+  }
+
+  /* a way back, so following a link is not a one-way trip */
+  var backChip = null;
+  function showBackChip(id, term) {
+    if (backChip) backChip.remove();
+    var b = document.createElement('button');
+    b.className = 'backchip';
+    b.innerHTML = '← back to ' + esc(S[id].name);
+    b.title = 'You followed "' + term + '" from here';
+    b.addEventListener('click', function () { b.remove(); backChip = null; open(id); });
+    document.getElementById('panel').appendChild(b);
+    backChip = b;
+    setTimeout(function () { if (backChip === b) { b.classList.add('is-fading'); } }, 9000);
+    setTimeout(function () { if (backChip === b) { b.remove(); backChip = null; } }, 11000);
   }
 
   /* ---------- guided tour ---------- */
@@ -639,14 +693,15 @@
       if (!t) { closePeek(); return; }
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
-      else { closePeek(); open(t.getAttribute('data-jump')); }
+      else { closePeek(); open(t.getAttribute('data-jump'), false, t.textContent.trim(), current); }
     });
     root.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       var t = e.target.closest('[data-peek],[data-jump]');
       if (!t) return;
       e.preventDefault();
-      if (t.hasAttribute('data-peek')) openPeek(t); else open(t.getAttribute('data-jump'));
+      if (t.hasAttribute('data-peek')) openPeek(t);
+      else open(t.getAttribute('data-jump'), false, t.textContent.trim(), current);
     });
   }
 
@@ -742,7 +797,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788261410') {
+        if (v && v !== '1788262282') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
