@@ -325,6 +325,7 @@
     (ph.of || []).forEach(function (half) {
       var cell = document.createElement('div');
       cell.className = 'pair__half';
+      if (half.w) cell.style.flex = half.w + ' 1 0';
       if (half.fig) {
         var f = window.Figures.get(half.fig);
         if (f) cell.innerHTML = f.svg;
@@ -894,7 +895,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788267139') {
+        if (v && v !== '1788267675') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

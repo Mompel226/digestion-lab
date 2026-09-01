@@ -131,25 +131,63 @@
 
 
   /* ---------------- physical digestion: surface area ---------------- */
+  /* An enzyme, drawn as a mouth that has to reach the food: a disc with a
+     wedge cut out of it, turned to face the piece it is working on. Drawn
+     rather than described because the whole argument is a counting argument
+     — the reader is meant to count them. */
+  function pac(cx, cy, r, faceDeg) {
+    var rad = Math.PI / 180, a1 = (faceDeg + 34) * rad, a2 = (faceDeg - 34) * rad;
+    return '<path d="M' + (cx + r * Math.cos(a1)).toFixed(1) + ',' + (cy + r * Math.sin(a1)).toFixed(1) +
+           ' A' + r + ',' + r + ' 0 1,1 ' + (cx + r * Math.cos(a2)).toFixed(1) + ',' +
+           (cy + r * Math.sin(a2)).toFixed(1) + ' L' + cx + ',' + cy + ' Z" ' +
+           'fill="#0F6E8C" opacity=".92"/>';
+  }
+
   function chewing() {
-    var big = '<rect x="34" y="46" width="72" height="72" rx="9" fill="#E8B98A" stroke="#B07E4A" stroke-width="2"/>';
-    var small = '', i, j;
-    for (i = 0; i < 4; i++) for (j = 0; j < 4; j++)
-      small += '<rect x="' + (218 + i * 19) + '" y="' + (46 + j * 19) + '" width="15" height="15" rx="3" ' +
-               'fill="#E8B98A" stroke="#B07E4A" stroke-width="1.4"/>';
+    /* The numbers have to survive being checked, because a reader can count
+       them. One 72-unit square has a perimeter of 288. Cut it into four
+       36-unit squares and the mass is identical — 4 x 1296 = 5184 — while the
+       perimeter doubles to 576. Space the enzymes evenly along the edge and
+       their number doubles too, 16 to 32. Every figure on the page agrees
+       with every other one. (The previous version drew sixteen pieces and
+       claimed twice the area; sixteen pieces is four times, not twice.) */
+    var R = 4.6, OFF = 13, STEP = 18;
+
+    function block(x0, y0, s) {
+      var out = '<rect x="' + x0 + '" y="' + y0 + '" width="' + s + '" height="' + s +
+                '" rx="' + (s > 50 ? 9 : 5) + '" fill="#E8B98A" stroke="#B07E4A" stroke-width="2"/>';
+      var n = Math.round(s / STEP), i, t;
+      for (i = 0; i < n; i++) {
+        t = x0 + STEP / 2 + i * (s / n);
+        out += pac(t, y0 - OFF, R, 90);            /* above, facing down  */
+        out += pac(t, y0 + s + OFF, R, -90);       /* below, facing up    */
+        t = y0 + STEP / 2 + i * (s / n);
+        out += pac(x0 - OFF, t, R, 0);             /* left,  facing right */
+        out += pac(x0 + s + OFF, t, R, 180);       /* right, facing left  */
+      }
+      return { svg:out, count:n * 4 };
+    }
+
+    var one = block(79, 70, 72);
+    var four = [block(255, 70, 36), block(335, 70, 36), block(255, 150, 36), block(335, 150, 36)];
+    var manySvg = four.map(function (b) { return b.svg; }).join('');
+    var manyN = four.reduce(function (a, b) { return a + b.count; }, 0);
+
     return {
-      svg: svg('0 0 380 176',
-        '<text class="fb" x="70" y="30" text-anchor="middle">One large piece</text>' +
-        '<text class="fb" x="256" y="30" text-anchor="middle">Many small pieces</text>' +
-        big + small +
-        '<path d="M132,82 L190,82" stroke="#14572B" stroke-width="2.5" marker-end="url(#ar)"/>' +
+      svg: svg('0 0 460 292',
+        '<text class="fb" x="115" y="28" text-anchor="middle">One large piece</text>' +
+        '<text class="fb" x="317" y="28" text-anchor="middle">Four smaller pieces</text>' +
+        one.svg + manySvg +
+        '<path d="M186,124 L228,124" stroke="#14572B" stroke-width="2.5" marker-end="url(#ar)"/>' +
         '<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
         '<path d="M0,0 L9,4.5 L0,9 Z" fill="#14572B"/></marker></defs>' +
-        '<text class="fs" x="161" y="74" text-anchor="middle">teeth</text>' +
-        '<text class="fs" x="70" y="140" text-anchor="middle">surface area = 288 units</text>' +
-        '<text class="fs" x="256" y="140" text-anchor="middle">surface area = 576 units</text>' +
-        '<text class="fl" x="190" y="164" text-anchor="middle">Same amount of food — twice the surface for enzymes to act on.</text>'),
-      cap:'<b>Physical digestion increases surface area.</b> The mass of food does not change; the area enzymes can reach does. That is the whole point of chewing.'
+        '<text class="fs" x="207" y="116" text-anchor="middle">teeth</text>' +
+        '<text class="fs" x="115" y="232" text-anchor="middle">same food: 72 &#215; 72</text>' +
+        '<text class="fs" x="317" y="232" text-anchor="middle">same food: 4 &#215; (36 &#215; 36)</text>' +
+        '<text class="fb" x="115" y="252" text-anchor="middle" style="fill:#0F6E8C">' + one.count + ' enzymes fit round it</text>' +
+        '<text class="fb" x="317" y="252" text-anchor="middle" style="fill:#0F6E8C">' + manyN + ' enzymes fit</text>' +
+        '<text class="fl" x="230" y="278" text-anchor="middle">Same amount of food. Twice the edge, so twice as many enzymes work at once.</text>'),
+      cap:'<b>Physical digestion increases surface area.</b> The mass of food does not change &#8212; both sides here are the same amount of food. What changes is how much <i>edge</i> there is for enzymes to attach to, and you can count it: ' + one.count + ' enzymes fit around the whole piece, ' + manyN + ' around the four smaller ones. That is the whole point of chewing.'
     };
   }
 
@@ -728,7 +766,39 @@
     };
   }
 
-  var FIGS = { sameBalance:sameBalance, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
+  /* The same plate, sized for half a row. A viewBox is only a coordinate
+     system, so the way to keep labels readable in a narrower box is to make
+     the box itself narrower — drop the explanatory sub-lines, pull the label
+     column in, and the type comes back up to full size when the SVG is
+     scaled to fit. The long-form version above is still the one used when a
+     figure has the whole width to itself. */
+  function toothCompact() {
+    var art = (global.FIGURE_ART || {}).tooth;
+    if (!art) return { svg:'', cap:'' };
+    return {
+      svg: plateFig(art, {
+        viewBox:'-34 52 496 586', leftX:-14, rightX:384, minGap:22, top:70, bottom:600,
+        hide:[55,56,57,58,59,60,61,62,68,69,70,71],
+        labels:[
+          { side:'right', ly:116, at:[281,116], text:'Enamel' },
+          { side:'right', ly:160, at:[260,167], text:'Dentine' },
+          { side:'right', ly:210, at:[203,214], text:'Pulp cavity' },
+          { side:'right', ly:256, at:[323,236], text:'Gum' },
+          { side:'right', ly:322, at:[201,296], text:'Cement' },
+          { side:'right', ly:430, at:[308,435], text:'Jaw bone' },
+          { side:'right', ly:516, at:[288,556], text:'Blood vessel' },
+          { side:'right', ly:566, at:[288,580], text:'Nerve' }
+        ],
+        brackets:[
+          { x:26, y0:62,  y1:262, text:'Crown' },
+          { x:26, y0:274, y1:556, text:'Root' }
+        ]
+      }),
+      cap:''
+    };
+  }
+
+  var FIGS = { sameBalance:sameBalance, toothCompact:toothCompact, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };

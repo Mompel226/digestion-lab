@@ -13,109 +13,86 @@ window.PHOTOS = {
    "t": "photo",
    "src": "premolars-molars-real.jpg",
    "kind": "Photograph",
-   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back. Count the bumps on the biting surface: a premolar has <b>two</b>, a molar has <b>four</b>.",
+   "maxw": 640,
    "after": 3,
+   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back, and the bumps on the biting surface are the <b>cusps</b>: a premolar has <b>two</b>, a molar has <b>four</b>. Counting cusps is the reliable test, and you can do it on this photograph.",
    "annot": [
     {
-     "x": 22,
-     "y": 13,
-     "t": "back of the mouth",
-     "to": [
-      36,
-      26
-     ]
-    },
-    {
-     "x": 80,
-     "y": 84,
-     "t": "towards the front",
-     "to": [
-      90,
-      58
-     ]
-    },
-    {
-     "x": 30,
-     "y": 64,
-     "t": "Molars — bigger, broader tops",
-     "to": [
-      41,
-      40
-     ],
+     "x": 27,
+     "y": 63,
+     "t": "Molars — broad tops, 4 cusps",
      "big": true
     },
     {
-     "x": 86,
-     "y": 22,
-     "t": "Premolars — smaller",
-     "to": [
-      92,
-      44
-     ],
+     "x": 60,
+     "y": 83,
+     "t": "Premolars — narrower, 2 cusps",
      "big": true
     }
-   ],
-   "maxw": 640
+   ]
   },
   {
-   "t": "photo",
-   "src": "jaw-model-xray.jpg",
-   "kind": "Model and radiograph",
-   "cap": "A jaw model against an X-ray. In the X-ray you can count roots: premolars have one, sometimes two; molars have two or three.",
+   "t": "pair",
+   "kind": "Photograph and diagram",
    "after": 4,
-   "maxw": 400
+   "cap": "The same tooth twice, so you can read one against the other. <b>Enamel</b> is the hardest substance in the body and protects the tooth; <b>dentine</b> lies beneath it and senses pain; the <b>pulp cavity</b> holds the blood vessels and nerves — which is why a deep cavity hurts; <b>cement</b> and the periodontal fibres anchor the root in the jaw bone.",
+   "of": [
+    {
+     "photo": "tooth-cut-open.jpg",
+     "label": "A real molar, cut in half",
+     "maxw": 360,
+     "w": 34
+    },
+    {
+     "fig": "toothCompact",
+     "label": "The same structures, drawn",
+     "w": 66
+    }
+   ]
   },
   {
-   "t": "photo",
-   "src": "tooth-cut-open.jpg",
-   "kind": "Photograph",
-   "cap": "A real molar cut in half: enamel, dentine, pulp, cementum and the root canal.",
+   "t": "pair",
+   "kind": "Radiographs",
    "after": 4,
-   "maxw": 360
+   "cap": "Roots, on X-ray. On the left, a whole jaw: the premolars towards the front carry <b>one</b> root and the molars at the back carry <b>two or three</b>. On the right, one lower molar close up, with its own labels — note it uses the American spelling <i>dentin</i>. Root number depends on which jaw the tooth is in, so it is a <b>poor way to tell tooth types apart</b>; count cusps instead.",
+   "of": [
+    {
+     "photo": "jaw-model-xray.jpg",
+     "label": "A jaw model held against the X-ray behind it",
+     "maxw": 400,
+     "w": 50
+    },
+    {
+     "photo": "tooth-xray.jpg",
+     "label": "One lower molar — two roots",
+     "maxw": 378,
+     "w": 50
+    }
+   ]
   },
   {
    "t": "photo",
    "src": "tooth-decay.jpg",
    "kind": "Photographs",
-   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp.",
+   "maxw": 750,
    "after": 5,
-   "maxw": 750
+   "cap": "Tooth decay: healthy enamel, then caries, then a cavity reaching the pulp."
   },
   {
    "t": "photo",
    "src": "incisors-real.jpg",
    "kind": "Photograph",
-   "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge.",
+   "maxw": 715,
    "more": true,
-   "maxw": 715
+   "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge."
   },
   {
    "t": "photo",
    "src": "canine-real.jpg",
    "kind": "Photograph",
-   "cap": "The canine — one pointed cusp, sitting just behind the incisors.",
+   "maxw": 800,
    "more": true,
-   "maxw": 800
-  },
-  {
-   "t": "photo",
-   "src": "tooth-xray.jpg",
-   "kind": "Radiograph",
-   "cap": "An X-ray of the same structures. It also settles a common question: this lower molar has <b>two</b> roots. Upper molars have three, and most premolars have one — so <b>root number depends on the jaw and is a poor way to tell them apart</b>. Count cusps instead.",
-   "after": 4,
-   "annot": [
-    {
-     "x": 52,
-     "y": 92,
-     "t": "Two roots — this is a lower molar",
-     "to": [
-      34,
-      74
-     ],
-     "big": true
-    }
-   ],
-   "maxw": 378
+   "cap": "The canine — one pointed cusp, sitting just behind the incisors."
   }
  ],
  "salivary-glands": [

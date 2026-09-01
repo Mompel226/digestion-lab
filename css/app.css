@@ -386,7 +386,9 @@ body[data-mode="practice"] .panel__inner::before{
 /* Two views of one thing, side by side — a real tooth beside the drawing of
    it, or the two radiographs together. They stack on a narrow screen, where
    side-by-side would make each half too small to read. */
-.pair{display:flex;gap:14px;align-items:flex-start}
+/* centred, because one half is often much taller than the other and a
+   short photograph stranded at the top of a tall diagram reads as a mistake */
+.pair{display:flex;gap:14px;align-items:center}
 .pair__half{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center}
 .pair__half img{width:100%;height:auto;display:block;border-radius:var(--r-sm)}
 .pair__half svg{width:100%;height:auto;display:block}
