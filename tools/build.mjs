@@ -114,9 +114,11 @@ for (const st of STATIONS) {
     } else if (t === 'ph') {
       p.enzyme = a.enzyme;
       const tol = a.tolerance ?? 0.6;
+      /* every half-unit the slider can land on that is within tolerance */
       const ok = [];
       for (let x = 0; x <= 14.0001; x += 0.5)
         if (Math.abs(x - a.optimum) <= tol) ok.push(await H([id, 'ph', x.toFixed(1)]));
+      if (!ok.length) throw new Error(id + ': no slider value falls within the tolerance');
       p.k = ok;
       v.optimum = a.optimum; v.tolerance = tol; v.explain = a.explain;
     }

@@ -11,22 +11,23 @@
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
     diet:[], overview:[], mouth:['toothTypes','tooth','chewing'],
-    'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:[],
-    stomach:['churn'], liver:['emulsify'], 'gall-bladder':['emulsify'], pancreas:['emulsify'],
-    duodenum:['emulsify','starchPath'], 'ileum-villi':['villus','surfaceArea'],
+    'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:['peristalsis'],
+    stomach:['churn'], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
+    duodenum:['starchPath'], 'ileum-villi':['villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
-    'molecules-lab':['starchPath','surfaceArea']
+    'molecules-lab':['starchPath']
   };
 
   /* which sentence each drawn diagram illustrates */
   var FIG_AFTER = {
     'mouth:toothTypes':3, 'mouth:tooth':4, 'mouth:chewing':1,
     'salivary-glands:starchPath':2, 'epiglottis:swallow':1,
-    'stomach:churn':1, 'liver:emulsify':2, 'gall-bladder:emulsify':3,
-    'duodenum:emulsify':2, 'duodenum:starchPath':4,
-    'ileum-villi:villus':3, 'ileum-villi:surfaceArea':1,
+    'oesophagus:peristalsis':1,
+    'stomach:churn':1, 'gall-bladder:emulsify':3,
+    'duodenum:starchPath':4,
+    'ileum-villi:villus':3,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':2,
-    'molecules-lab:starchPath':1, 'molecules-lab:surfaceArea':null
+    'molecules-lab:starchPath':1
   };
 
   var S = {};                       /* stations by id */
@@ -322,23 +323,54 @@
       img.loading = 'lazy';
       img.src = 'assets/photos/' + ph.src;
       img.title = 'Click to see it full size';
-      img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind); });
+      img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind, ph.annot); });
       img.addEventListener('error', function () {
         var miss = document.createElement('div');
         miss.className = 'photo-missing';
         miss.textContent = 'Image not found: assets/photos/' + ph.src;
         if (img.parentNode) img.parentNode.replaceChild(miss, img);
       });
-      box.appendChild(img);
+      if (ph.annot && ph.annot.length) {
+        var stage = document.createElement('div');
+        stage.className = 'annot';
+        stage.appendChild(img);
+        stage.insertAdjacentHTML('beforeend', annotLayer(ph.annot));
+        box.appendChild(stage);
+      } else {
+        box.appendChild(img);
+      }
     }
     box.appendChild(cap);
     return box;
   }
 
+  /* Labels drawn ON the photograph, so the student does not have to work out
+     which bit of the picture the caption is talking about. Positions are
+     percentages, so they hold at any size. */
+  function annotLayer(list) {
+    var out = '<svg class="annot__svg" viewBox="0 0 100 100" preserveAspectRatio="none">';
+    list.forEach(function (a) {
+      if (a.to) out += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + a.to[0] + '" y2="' + a.to[1] +
+                       '" vector-effect="non-scaling-stroke"/>';
+      if (a.to) out += '<circle cx="' + a.to[0] + '" cy="' + a.to[1] + '" r="0.9" vector-effect="non-scaling-stroke"/>';
+    });
+    out += '</svg>';
+    list.forEach(function (a) {
+      out += '<span class="annot__lab' + (a.big ? ' annot__lab--big' : '') + '" style="left:' + a.x +
+             '%;top:' + a.y + '%">' + a.t + '</span>';
+    });
+    return out;
+  }
+
   /* click any image to see it full size — essential for the micrographs */
-  function lightbox(src, cap, kind) {
+  function lightbox(src, cap, kind, annot) {
     var lb = document.getElementById('lightbox');
-    lb.querySelector('img').src = src;
+    var st = lb.querySelector('.lb__stage');
+    st.innerHTML = '';
+    var im = new Image(); im.src = src; im.alt = '';
+    st.appendChild(im);
+    if (annot && annot.length) { st.classList.add('annot'); st.insertAdjacentHTML('beforeend', annotLayer(annot)); }
+    else st.classList.remove('annot');
     lb.querySelector('.lb__cap').innerHTML =
       '<span class="kindtag">' + esc(kind) + '</span> ' + cap;
     lb.hidden = false;
@@ -647,7 +679,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788258216') {
+        if (v && v !== '1788260518') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
