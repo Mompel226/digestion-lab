@@ -966,7 +966,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788271071') {
+        if (v && v !== '1788300808') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
