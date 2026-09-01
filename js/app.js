@@ -284,6 +284,8 @@
     }
 
     if ((st.keywords || []).length) {
+      /* Key words is a glossary, not a place to send the reader off again. */
+      if (window.Terms) window.Terms.setQuiet(true);
       var k = document.createElement('div');
       k.className = 'card';
       k.innerHTML = '<div class="card__h">Key words</div><dl class="kw-grid">' +
@@ -291,6 +293,7 @@
           return '<div class="kw"><dt>' + M(w.term) + '</dt><dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
       pane.appendChild(k);
+      if (window.Terms) window.Terms.setQuiet(false);
     }
   }
 
@@ -841,7 +844,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788265711') {
+        if (v && v !== '1788266481') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

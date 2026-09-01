@@ -25,6 +25,10 @@ drop a new file with the same name into this folder and it will appear automatic
 | `stomach-churning.jpg` | 7.2 The Digestive System | `image14.png` |
 | `stomach-inside.jpg` | 7.4 Chemical digestion | `image1.jpeg` |
 | `stomach-wall.jpg` | 7.4 Chemical digestion | `image33.png` |
+| `scurvy-gums.jpg` | 7.1 Diet and Nutrition | `image34.jpg` |
+| `rickets.jpg` | 7.1 Diet and Nutrition | `image31.jpg` |
+| `osteoporosis.jpg` | 7.1 Diet and Nutrition | `image35.png` |
+| `anaemia-pallor.jpg` | 7.1 Diet and Nutrition | `image30.png` — **carries a `PharmEasy` watermark**, left intact rather than cropped out |
 | `surface-area-levels.jpg` | 7.5 Absorption | `image15.png` |
 | `tooth-cut-open.jpg` | 7.3 Physical digestion | `image20.jpeg` |
 | `tooth-decay.jpg` | 7.3 Physical digestion | `image23.png` |
@@ -62,17 +66,28 @@ Each row's credit line is also shown to the student, under the picture.
 | `food-protein.jpg` | Left: *Grilled plated salmon fillet* by **DanaTentis**, [Commons](https://commons.wikimedia.org/wiki/File:Grilled_plated_salmon_fillet.jpg). Right: *Mixture of beans… and pardina lentils 11* by **Bean appreciator**, [Commons](https://commons.wikimedia.org/wiki/File:Mixture_of_beans_(small_red,_cannellini,_pinto,_roman,_red_kidney,_black),_peas_(blackeye,_yellow_split),_and_pardina_lentils_11.jpg) | Both **CC0**. Squared and set side by side here: an animal source and a plant source. |
 | `food-fats.jpg` | Left: *Cookie ingredients like flour and butter* by **markusspiske**, [Commons](https://commons.wikimedia.org/wiki/File:Cookie_ingredients_like_flour_and_butter.jpg) — **CC0**. Right: *Olive Oil* by **ajay_suresh**, [Commons](https://commons.wikimedia.org/wiki/File:Olive_Oil_(50316477903).jpg) — **CC BY 2.0** | Attribution required for the oil. Squared and set side by side: solid beside liquid, which is the whole distinction. |
 | `food-fibre.jpg` | *Foods with a high fibre content* by **formulatehealth**, [Commons](https://commons.wikimedia.org/wiki/File:Foods_with_a_high_fibre_content,_such_as_bread,_grains,_chia_seeds_and_nuts.jpg) | **CC BY 2.0** — attribution required. |
-| `scurvy-gums.jpg` | *Scorbutic gums*, **Centers for Disease Control and Prevention**, [Commons](https://commons.wikimedia.org/wiki/File:Scorbutic_gums.jpg) | **Public domain** (US federal work). |
-| `anaemia-pallor.jpg` | *Anemia* by **James Heilman, MD**, [Commons](https://commons.wikimedia.org/wiki/File:Anemia.JPG) | **CC BY-SA 3.0** — attribution required, and any modified version must carry the same licence. |
 | `kwashiorkor.jpg` | *Starved girl* by **Dr. Lyle Conrad**, CDC, [Commons](https://commons.wikimedia.org/wiki/File:Starved_girl.jpg) | **Public domain**. Cropped to the torso: the wasted arm and the swollen abdomen are the two teaching points, and the crop is more discreet than the full-body photograph. |
 
 ## Drawn here, not borrowed
 
 | Figure | Replaces | Why |
 |---|---|---|
-| `boneBend` (vitamin D, rickets) | `rickets.jpg` | A deficiency is a *difference*, and a photograph of one patient gives the student nothing to compare against. The figure holds a normal shin and a rachitic one side by side and marks the growth plate, which is what makes rickets a child's disease. |
-| `boneDensity` (calcium) | `osteoporosis.jpg` | Same reason. Both panels are the same lattice; the osteoporotic one has struts deleted and the rest thinned, which is what the disease actually does. |
 | `sameBalance` (balanced diet) | `energy-balance.jpg` | The original was a calories-in/calories-out seesaw. That is energy balance, a different idea, and not what 7.1 examines. |
+
+Two more were drawn — `boneBend` for rickets and `boneDensity` for calcium — and both were
+removed again. Dr Mompel's verdict on the rickets one was that a drawn shin *"doesn't look like
+legs"*, and he was right: his own plate carries an X-ray, an MRI and two photographs of bowed
+legs, which is worth more than a diagram of the same idea. The general rule that came out of it:
+**a drawing earns its place for a process the eye cannot see happening — peristalsis, emulsification,
+churning. For a thing that can simply be photographed, use the photograph.** Both figures are in
+git history if they are ever wanted.
+
+## The four deficiency photographs are small, and stay small
+
+`rickets.jpg` is 230px wide, `scurvy-gums.jpg` 353px, `osteoporosis.jpg` 322px. Those are the
+native sizes in the 7.1 deck; there is no larger original. They are drawn at their true size,
+centred in the card, rather than stretched to fill it — a small sharp picture beats a large soft
+one, and these are the pictures the class has already seen on the board.
 
 ## Dropped
 

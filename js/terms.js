@@ -122,9 +122,11 @@
      a word covers — protein from an animal and protein from a plant, fat that
      is solid beside oil that is liquid — not just one example of it. For the
      micronutrients it means the deficiency, because no student can picture
-     scurvy. Two of those are drawn rather than photographed,
-     because a deficiency is a difference, and a single clinical photograph
-     has nothing to be different from.
+     scurvy. Those four are Dr Mompel's own lesson photographs, deliberately:
+     a drawn diagram of a bowed shin does not look like a leg, and the class
+     has already met these exact pictures. They are small — 230px for the
+     rickets plate — so they are shown at their true size and open full size
+     on click, rather than being stretched.
 
      Third element = the credit line, shown under the note. Every borrowed
      image has one; SOURCES.md carries the full record. */
@@ -138,13 +140,13 @@
     'fibre':         ['food-fibre.jpg', 'Wholemeal bread, oats, lentils, beans, nuts and seeds — and the skins of fruit and vegetables. You cannot digest any of it, and that is exactly the point: it gives the gut muscles something to grip.', 'formulatehealth, CC BY 2.0'],
 
     /* the micronutrients: what happens when you go without */
-    'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums swell and bleed and wounds stop healing — scurvy.', 'CDC, public domain'],
-    'scurvy':        ['scurvy-gums.jpg', 'Swollen, bleeding gums and wounds that will not heal. Caused by a lack of vitamin C.', 'CDC, public domain'],
-    'vitamin d':     ['fig:boneBend', 'From oily fish, eggs and dairy — and made in your skin in sunlight. Without it you cannot absorb calcium, so the growing bone stays soft and bends.'],
-    'rickets':       ['fig:boneBend', 'Soft bone that bows under a child’s own weight. Caused by too little vitamin D, or too little calcium.'],
-    'calcium':       ['fig:boneDensity', 'From milk, cheese and green vegetables. Calcium is what makes bone hard — and the skeleton doubles as the body’s calcium store.'],
-    'iron':          ['anaemia-pallor.jpg', 'From red meat, liver and dark green vegetables. Iron is part of haemoglobin, so without it the blood carries less oxygen — the pale hand on the left is anaemic.', 'James Heilman, MD, CC BY-SA 3.0'],
-    'anaemia':       ['anaemia-pallor.jpg', 'Too little iron means too little haemoglobin, so less oxygen reaches the tissues. Pale skin and tiredness follow. The hand on the left is anaemic; the one on the right is not.', 'James Heilman, MD, CC BY-SA 3.0'],
+    'vitamin c':     ['scurvy-gums.jpg', 'From citrus fruit, peppers and green vegetables. Without it you cannot make collagen, so gums swell and bleed and wounds stop healing — scurvy.', 'From the 7.1 lesson'],
+    'scurvy':        ['scurvy-gums.jpg', 'Swollen, bleeding gums and wounds that will not heal. Caused by a lack of vitamin C.', 'From the 7.1 lesson'],
+    'vitamin d':     ['rickets.jpg', 'From oily fish, eggs and dairy — and made in your skin in sunlight. Without it you cannot absorb calcium, so the growing ends of the shin bones stay soft. The X-ray and MRI at the top show the bone itself; the photographs below show what it looks like from outside — the shins bow outward under the child’s own weight.', 'From the 7.1 lesson'],
+    'rickets':       ['rickets.jpg', 'Soft bone that bows under a child’s own weight. The X-ray and MRI at the top show the shin and knee; the two photographs below show the bowed legs that result. Caused by too little vitamin D, or too little calcium.', 'From the 7.1 lesson'],
+    'calcium':       ['osteoporosis.jpg', 'From milk, cheese and green vegetables. Calcium is what makes bone hard, and the skeleton doubles as the body’s calcium store — draw on it for years and the vertebrae weaken and collapse forward — the curved spine and lost height on the right.', 'From the 7.1 lesson'],
+    'iron':          ['anaemia-pallor.jpg', 'From red meat, liver and dark green vegetables. Iron is part of haemoglobin, so without it the blood carries less oxygen — compare the pale, anaemic hand with the healthy one.', 'From the 7.1 lesson'],
+    'anaemia':       ['anaemia-pallor.jpg', 'Too little iron means too little haemoglobin, so less oxygen reaches the tissues. Pale skin and tiredness follow — compare the two hands.', 'From the 7.1 lesson'],
     'kwashiorkor':   ['kwashiorkor.jpg', 'Severe protein deficiency. Two signs sit together here: the wasted arm and visible ribs, and the swollen abdomen — which is fluid, not fat.', 'Dr. Lyle Conrad, CDC, public domain']
   };
 
@@ -195,13 +197,30 @@
 
   /* Escape first, then mark, so a term can never be injected as markup. */
   var here = null;                       /* the station being read, so we never link to itself */
-  function setStation(id) { here = id; }
+  /* A marker is an offer to go and look at something. Repeating the offer on
+     every later mention of the same word turns it into noise: the reader has
+     already been told the picture is there. So each word carries its marker
+     on its FIRST appearance on the page and is plain styling after that —
+     the same rule an encyclopedia uses for links. `quiet` switches markers
+     off entirely, for the Key words list at the foot of the page: by then the
+     reader has met every word above, and a column of magnifying glasses is
+     just clutter. */
+  var seen = null, quiet = false;
+  function setStation(id) { here = id; seen = Object.create(null); quiet = false; }
+  function setQuiet(v) { quiet = !!v; }
 
   function mark(text) {
     return esc(text).replace(RE, function (m) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
       var cat = e[1], act = '', cls = '';
+      var first = !quiet && !(seen && seen[low]);
+      if (seen) seen[low] = true;
+      if (!first) {
+        /* styled the same, but nothing to click */
+        if (e[2]) return '<b class="tc tc--' + cat + '"><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
+        return '<b class="t t--' + cat + '">' + m + '</b>';
+      }
       if (PEEK[low]) {
         act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
               (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') +
@@ -232,5 +251,6 @@
     return out;
   }
 
-  global.Terms = { mark:mark, legend:legend, CATS:CATS, setStation:setStation, PEEK:PEEK, JUMP:JUMP };
+  global.Terms = { mark:mark, legend:legend, CATS:CATS, setStation:setStation,
+                   setQuiet:setQuiet, PEEK:PEEK, JUMP:JUMP };
 })(window);
