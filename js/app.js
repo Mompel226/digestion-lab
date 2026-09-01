@@ -4,18 +4,29 @@
 (function () {
   'use strict';
 
-  var ORDER = ['overview','mouth','salivary-glands','epiglottis','oesophagus','stomach',
+  var ORDER = ['diet','overview','mouth','salivary-glands','epiglottis','oesophagus','stomach',
                'liver','gall-bladder','pancreas','duodenum','ileum-villi','colon',
                'rectum-anus','molecules-lab'];
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
-    overview:[], mouth:['toothTypes','tooth','chewing'],
+    diet:[], overview:[], mouth:['toothTypes','tooth','chewing'],
     'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:[],
     stomach:['churn'], liver:['emulsify'], 'gall-bladder':['emulsify'], pancreas:['emulsify'],
     duodenum:['emulsify','starchPath'], 'ileum-villi':['villus','surfaceArea'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath','surfaceArea']
+  };
+
+  /* which sentence each drawn diagram illustrates */
+  var FIG_AFTER = {
+    'mouth:toothTypes':3, 'mouth:tooth':4, 'mouth:chewing':1,
+    'salivary-glands:starchPath':2, 'epiglottis:swallow':1,
+    'stomach:churn':1, 'liver:emulsify':2, 'gall-bladder:emulsify':3,
+    'duodenum:emulsify':2, 'duodenum:starchPath':4,
+    'ileum-villi:villus':3, 'ileum-villi:surfaceArea':1,
+    'colon:waterColon':1, 'rectum-anus:egestVsExcrete':2,
+    'molecules-lab:starchPath':1, 'molecules-lab:surfaceArea':null
   };
 
   var S = {};                       /* stations by id */
@@ -156,7 +167,7 @@
     var tabs = document.createElement('div');
     tabs.className = 'tabs';
     tabs.setAttribute('role', 'tablist');
-    [['learn','Learn',''],['see','See it',''],['do','Practise', sc.done + '/' + sc.total]]
+    [['learn','Learn',''],['do','Practise', sc.done + '/' + sc.total]]
       .forEach(function (t) {
         var b = document.createElement('button');
         b.className = 'tab';
@@ -187,7 +198,6 @@
     }
 
     if (tab === 'learn') paintLearn(pane, st);
-    else if (tab === 'see') paintSee(pane, st);
     else paintDo(pane, st);
 
     document.getElementById('panel').scrollTop = 0;
@@ -195,6 +205,8 @@
 
   function paintLearn(pane, st) {
     var M = window.Terms ? window.Terms.mark : esc;
+    var media = (window.PHOTOS || {})[st.id] || [];
+    var figs = FIGS[st.id] || [];
 
     if (st.learn && st.learn.golden) {
       var g = document.createElement('div');
@@ -203,15 +215,52 @@
       pane.appendChild(g);
     }
 
+    /* The text and the pictures are one thing now: each image sits under the
+       sentence it illustrates, instead of in a separate tab to hunt through. */
     var card = document.createElement('div');
     card.className = 'card';
-    var html = '<div class="card__h">What you need to know</div><ul class="exam-list">' +
-      (st.learn.exam || []).map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul>';
-    if ((st.learn.real || []).length)
-      html += '<div class="real"><div class="real__h">Real science — not examined</div><ul>' +
-        st.learn.real.map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul></div>';
-    card.innerHTML = html;
+    card.innerHTML = '<div class="card__h">What you need to know</div>';
+    var list = document.createElement('ul');
+    list.className = 'exam-list';
+    card.appendChild(list);
+
+    (st.learn.exam || []).forEach(function (b, i) {
+      var li = document.createElement('li');
+      li.innerHTML = M(b);
+      list.appendChild(li);
+      media.filter(function (x) { return !x.more && x.after === i; })
+           .forEach(function (x) { li.appendChild(mediaBox(x)); });
+      figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] === i; })
+          .forEach(function (name) { li.appendChild(figBox(name)); });
+    });
+
+    /* anything not anchored to a sentence follows the list */
+    media.filter(function (x) { return !x.more && x.after == null; })
+         .forEach(function (x) { card.appendChild(mediaBox(x)); });
+    figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] == null; })
+        .forEach(function (name) { var fb = figBox(name); if (fb) card.appendChild(fb); });
+
+    if ((st.learn.real || []).length) {
+      var r = document.createElement('div');
+      r.className = 'real';
+      r.innerHTML = '<div class="real__h">Real science — not examined</div><ul>' +
+        st.learn.real.map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul>';
+      card.appendChild(r);
+    }
     pane.appendChild(card);
+
+    var extras = media.filter(function (x) { return x.more; });
+    if (extras.length) {
+      var d = document.createElement('details');
+      d.className = 'moremedia';
+      d.innerHTML = '<summary>More from the lesson — ' + extras.length +
+        (extras.length === 1 ? ' image' : ' images') + '</summary>';
+      var wrap = document.createElement('div');
+      wrap.className = 'moremedia__grid';
+      extras.forEach(function (x) { wrap.appendChild(mediaBox(x)); });
+      d.appendChild(wrap);
+      pane.appendChild(d);
+    }
 
     if ((st.later || []).length) {
       var L = document.createElement('div');
@@ -234,69 +283,56 @@
     }
   }
 
-  function paintSee(pane, st) {
-    (FIGS[st.id] || []).forEach(function (name) {
-      var f = window.Figures.get(name);
-      if (!f || !f.svg) return;
-      var box = document.createElement('div');
-      box.className = 'figbox';
-      box.innerHTML = f.svg + '<div class="figbox__cap">' + f.cap + '</div>';
-      /* a sourced plate keeps its own baked-in labels; hide them by index so only
-         our labels show — laid out by us, and guaranteed not to overlap */
-      Array.prototype.forEach.call(box.querySelectorAll('svg[data-hide]'), function (sv) {
-        var idx = sv.getAttribute('data-hide').split(',');
-        var paths = sv.querySelectorAll('.plate path');
-        idx.forEach(function (i) { if (paths[+i]) paths[+i].style.display = 'none'; });
+  /* a drawn diagram, in the same frame as the photographs */
+  function figBox(name) {
+    var f = window.Figures.get(name);
+    if (!f || !f.svg) return null;
+    var box = document.createElement('figure');
+    box.className = 'media media--fig';
+    box.innerHTML = f.svg + '<figcaption class="media__cap">' +
+      '<span class="kindtag kindtag--fig">Diagram</span> ' + f.cap + '</figcaption>';
+    Array.prototype.forEach.call(box.querySelectorAll('svg[data-hide]'), function (sv) {
+      var idx = sv.getAttribute('data-hide').split(',');
+      var paths = sv.querySelectorAll('.plate path');
+      idx.forEach(function (i) { if (paths[+i]) paths[+i].style.display = 'none'; });
+    });
+    return box;
+  }
+
+  /* One media item — a photograph, a micrograph or an animation. */
+  function mediaBox(ph) {
+    var box = document.createElement('figure');
+    box.className = 'media' + (ph.t === 'video' ? ' media--video' : '');
+    var cap = document.createElement('figcaption');
+    cap.className = 'media__cap';
+    cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + ph.cap;
+
+    if (ph.t === 'video') {
+      var v = document.createElement('video');
+      v.className = 'media__el';
+      v.src = 'assets/video/' + ph.src + '.mp4';
+      v.poster = 'assets/video/' + ph.src + '.jpg';
+      v.controls = true; v.loop = true; v.muted = true; v.playsInline = true; v.preload = 'metadata';
+      v.setAttribute('aria-label', ph.kind);
+      box.appendChild(v);
+    } else {
+      var img = new Image();
+      img.className = 'media__el media__el--img';
+      img.alt = String(ph.cap).replace(/<[^>]+>/g, '');
+      img.loading = 'lazy';
+      img.src = 'assets/photos/' + ph.src;
+      img.title = 'Click to see it full size';
+      img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind); });
+      img.addEventListener('error', function () {
+        var miss = document.createElement('div');
+        miss.className = 'photo-missing';
+        miss.textContent = 'Image not found: assets/photos/' + ph.src;
+        if (img.parentNode) img.parentNode.replaceChild(miss, img);
       });
-      pane.appendChild(box);
-    });
-
-    var shots = (window.PHOTOS || {})[st.id] || [];
-    if (!shots.length) return;
-
-    var head = document.createElement('div');
-    head.className = 'gallery__h';
-    var nVid = shots.filter(function (x) { return x.t === 'video'; }).length;
-    head.innerHTML = '<span>From your lesson slides</span><span class="gallery__n">' +
-      (nVid ? nVid + (nVid === 1 ? ' animation, ' : ' animations, ') : '') +
-      (shots.length - nVid) + ' image' + (shots.length - nVid === 1 ? '' : 's') + '</span>';
-    pane.appendChild(head);
-
-    shots.forEach(function (ph) {
-      var box = document.createElement('div');
-      box.className = 'figbox figbox--photo';
-      var cap = document.createElement('div');
-      cap.className = 'figbox__cap';
-      cap.innerHTML = '<span class="kindtag">' + esc(ph.kind) + '</span> ' + ph.cap;
-
-      if (ph.t === 'video') {
-        var v = document.createElement('video');
-        v.className = 'photo photo--video';
-        v.src = 'assets/video/' + ph.src + '.mp4';
-        v.poster = 'assets/video/' + ph.src + '.jpg';
-        v.controls = true; v.loop = true; v.muted = true; v.playsInline = true;
-        v.preload = 'metadata';
-        v.setAttribute('aria-label', ph.kind + ': ' + ph.src.replace(/-/g, ' '));
-        box.appendChild(v);
-      } else {
-        var img = new Image();
-        img.className = 'photo';
-        img.alt = String(ph.cap).replace(/<[^>]+>/g, '');
-        img.loading = 'lazy';
-        img.src = 'assets/photos/' + ph.src;
-        img.title = 'Click to see it full size';
-        img.addEventListener('click', function () { lightbox(img.src, ph.cap, ph.kind); });
-        img.addEventListener('error', function () {
-          var miss = document.createElement('div');
-          miss.className = 'photo-missing';
-          miss.textContent = 'Image not found: assets/photos/' + ph.src;
-          if (img.parentNode) img.parentNode.replaceChild(miss, img);
-        });
-        box.appendChild(img);
-      }
-      box.appendChild(cap);
-      pane.appendChild(box);
-    });
+      box.appendChild(img);
+    }
+    box.appendChild(cap);
+    return box;
   }
 
   /* click any image to see it full size — essential for the micrographs */
@@ -602,6 +638,25 @@
       if (S[id] && id !== current) open(id);
     });
   }
+
+  /* GitHub Pages caches the HTML for ten minutes, so a student can sit on an old
+     copy without knowing. Ask the server for a plain version stamp and say so. */
+  function checkForUpdate() {
+    fetch('version.txt', { cache: 'no-store' })
+      .then(function (r) { return r.ok ? r.text() : null; })
+      .then(function (v) {
+        if (!v) return;
+        v = v.trim();
+        if (v && v !== '1788258216') {
+          var t = document.getElementById('toast');
+          t.innerHTML = 'A newer version of this page is available. ' +
+            '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
+            'onclick="location.reload(true)">Reload</button>';
+          t.classList.add('show');
+        }
+      }).catch(function () {});
+  }
+  setTimeout(checkForUpdate, 4000);
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

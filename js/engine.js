@@ -337,8 +337,12 @@
     }
     var lbtn = (a.left || []).map(function (txt, i) {
       var b = h('button', 'mitem'); b.type = 'button';
+      if (a.leftNotes) b.classList.add('mitem--person');
       b.appendChild(h('span', 'mitem__b', ''));
-      b.appendChild(h('span', null, txt));
+      var body = h('span');
+      body.appendChild(h('b', 'mitem__who', txt));
+      if (a.leftNotes && a.leftNotes[i]) body.appendChild(h('span', 'mitem__note', a.leftNotes[i]));
+      b.appendChild(body);
       b.addEventListener('click', function () {
         if (b.dataset.locked === '1') return;
         if (sel.side === 'R') { links[i] = sel.i; sel = { side:null, i:null }; }
@@ -350,7 +354,15 @@
     });
     var rbtn = rIndex.map(function (ri) {
       var b = h('button', 'mitem'); b.type = 'button';
+      if (a.rightCharts && a.rightCharts[ri] && window.Figures) b.classList.add('mitem--chart');
       b.appendChild(h('span', 'mitem__b', ''));
+      if (a.rightCharts && a.rightCharts[ri] && window.Figures) {
+        var ch = document.createElement('span');
+        ch.className = 'mitem__chart';
+        ch.innerHTML = window.Figures.pie(a.rightCharts[ri], 104) +
+                       window.Figures.pieKey(a.rightCharts[ri]);
+        b.appendChild(ch);
+      }
       b.appendChild(h('span', null, a.right[ri]));
       b.addEventListener('click', function () {
         if (b.dataset.locked === '1') return;

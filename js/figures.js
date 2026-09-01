@@ -198,27 +198,78 @@
 
   /* ---------------- emulsification (animated) ---------------- */
   function emulsify() {
-    var drops = '';
-    var pos = [[268,58],[300,50],[330,64],[276,92],[308,88],[338,96],[290,116],[322,120],[352,80],[262,74]];
-    pos.forEach(function (p, i) {
-      drops += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="0" fill="#F2C14E" stroke="#B98A16" stroke-width="1.4">' +
-               A + '"r" values="0;0;11;11" keyTimes="0;0.42;0.62;1" dur="5s" repeatCount="indefinite"/></circle>';
+    var CYCLE = '9s';
+    /* a bile salt: one water-liking head, one fat-liking tail */
+    function salt(x, y, rot, delay) {
+      return '<g transform="translate(' + x + ',' + y + ') rotate(' + rot + ')" opacity="0">' +
+             '<line x1="0" y1="0" x2="0" y2="9" stroke="#4E7D4A" stroke-width="2.2" stroke-linecap="round"/>' +
+             '<circle cx="0" cy="0" r="3.6" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/>' +
+             A + '"opacity" values="0;1;1;1" keyTimes="0;0.18;0.9;1" dur="' + CYCLE +
+             '" begin="' + delay + '" repeatCount="indefinite"/></g>';
+    }
+    /* bile salts arriving and settling on the big droplet's surface */
+    var arriving = '';
+    for (var i = 0; i < 10; i++) {
+      var a = (i / 10) * Math.PI * 2;
+      var sx = (96 + Math.cos(a) * 52).toFixed(1), sy = (104 + Math.sin(a) * 52).toFixed(1);
+      var fx = (96 + Math.cos(a) * 150).toFixed(1), fy = (104 + Math.sin(a) * 150).toFixed(1);
+      var deg = (a * 180 / Math.PI + 90).toFixed(0);
+      arriving +=
+        '<g opacity="0">' +
+        '<g transform="translate(' + fx + ',' + fy + ')">' +
+        '<animateTransform attributeName="transform" type="translate" ' +
+        'values="' + fx + ',' + fy + ';' + sx + ',' + sy + ';' + sx + ',' + sy + ';' + fx + ',' + fy + '" ' +
+        'keyTimes="0;0.24;0.5;1" dur="' + CYCLE + '" repeatCount="indefinite"/>' +
+        '<g transform="rotate(' + deg + ')">' +
+        '<line x1="0" y1="0" x2="0" y2="10" stroke="#4E7D4A" stroke-width="2.4" stroke-linecap="round"/>' +
+        '<circle cx="0" cy="0" r="3.8" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g></g>' +
+        A + '"opacity" values="0;1;1;0;0" keyTimes="0;0.12;0.46;0.56;1" dur="' + CYCLE + '" repeatCount="indefinite"/>' +
+        '</g>';
+    }
+    /* the small droplets it becomes, each already coated */
+    var small = '', pos = [[262,66],[318,58],[368,74],[252,112],[306,104],[362,116],
+                           [274,152],[330,148],[382,150],[300,182]];
+    pos.forEach(function (pt, k) {
+      var coats = '';
+      for (var j = 0; j < 6; j++) {
+        var b = (j / 6) * Math.PI * 2;
+        coats += '<g transform="translate(' + (Math.cos(b) * 13).toFixed(1) + ',' + (Math.sin(b) * 13).toFixed(1) +
+                 ') rotate(' + (b * 180 / Math.PI + 90).toFixed(0) + ')">' +
+                 '<line x1="0" y1="0" x2="0" y2="6" stroke="#4E7D4A" stroke-width="1.7" stroke-linecap="round"/>' +
+                 '<circle cx="0" cy="0" r="2.6" fill="#6FA36B"/></g>';
+      }
+      small += '<g transform="translate(' + pt[0] + ',' + pt[1] + ')" opacity="0">' +
+               '<circle r="13" fill="#F2C14E" stroke="#B98A16" stroke-width="1.5"/>' + coats +
+               A + '"opacity" values="0;0;1;1;0" keyTimes="0;0.52;0.62;0.92;1" dur="' + CYCLE +
+               '" begin="' + (k * 0.03) + 's" repeatCount="indefinite"/></g>';
     });
+
     return {
-      svg: svg('0 0 440 200',
-        '<circle cx="96" cy="86" r="46" fill="#F2C14E" stroke="#B98A16" stroke-width="2">' +
-        A + '"r" values="46;46;6;6" keyTimes="0;0.42;0.62;1" dur="5s" repeatCount="indefinite"/>' +
-        A + '"opacity" values="1;1;0;0" keyTimes="0;0.5;0.62;1" dur="5s" repeatCount="indefinite"/></circle>' +
-        drops +
-        '<path d="M158,86 L232,86" stroke="#4E7D4A" stroke-width="3" marker-end="url(#ar2)"/>' +
-        '<defs><marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
+      svg: svg('-6 0 470 260',
+        '<text class="fs" x="96" y="20" text-anchor="middle">one large fat droplet</text>' +
+        '<text class="fs" x="320" y="20" text-anchor="middle">many small droplets</text>' +
+        /* the droplet: intact, then squeezed apart */
+        '<g><circle cx="96" cy="104" r="46" fill="#F2C14E" stroke="#B98A16" stroke-width="2">' +
+        A + '"r" values="46;46;46;10;10" keyTimes="0;0.24;0.5;0.62;1" dur="' + CYCLE + '" repeatCount="indefinite"/>' +
+        A + '"opacity" values="1;1;1;0;0" keyTimes="0;0.5;0.56;0.62;1" dur="' + CYCLE + '" repeatCount="indefinite"/>' +
+        '</circle></g>' +
+        arriving + small +
+        /* the arrow and its label only appear while the splitting happens */
+        '<g opacity="0">' +
+        '<path d="M160,104 L214,104" stroke="#4E7D4A" stroke-width="3.4" marker-end="url(#arB)"/>' +
+        '<text class="fb" x="187" y="92" text-anchor="middle" fill="#4E7D4A">bile</text>' +
+        A + '"opacity" values="0;0;1;1;0" keyTimes="0;0.4;0.5;0.92;1" dur="' + CYCLE + '" repeatCount="indefinite"/></g>' +
+        '<defs><marker id="arB" markerWidth="9" markerHeight="9" refX="8" refY="4.5" orient="auto">' +
         '<path d="M0,0 L9,4.5 L0,9 Z" fill="#4E7D4A"/></marker></defs>' +
-        '<text class="fb" x="195" y="76" text-anchor="middle">bile</text>' +
-        '<text class="fb" x="96" y="26" text-anchor="middle">One large fat droplet</text>' +
-        '<text class="fb" x="308" y="26" text-anchor="middle">Many small fat droplets</text>' +
-        '<text class="fl" x="220" y="168" text-anchor="middle">Bile is not an enzyme. It changes the fat <tspan class="fb">physically</tspan>, not chemically.</text>' +
-        '<text class="fl" x="220" y="188" text-anchor="middle">Lipase then digests the droplets into fatty acids and glycerol.</text>'),
-      cap:'<b>Emulsification.</b> Bile breaks large fat droplets into many small ones, increasing the surface area for lipase. Bile is <b>not</b> an enzyme — no chemical bonds are broken here. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
+        /* what a bile salt is */
+        '<g transform="translate(24,214)">' +
+        '<line x1="0" y1="0" x2="0" y2="11" stroke="#4E7D4A" stroke-width="2.4" stroke-linecap="round"/>' +
+        '<circle cx="0" cy="0" r="4" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g>' +
+        '<text class="fs" x="38" y="211">a bile salt — the head likes water,</text>' +
+        '<text class="fs" x="38" y="224">the tail likes fat, so it sits on the surface</text>' +
+        '<text class="fl" x="232" y="243">Same amount of fat. Far more surface for <tspan class="fb" fill="#6B3FA0">lipase</tspan> to work on.</text>' +
+        '<text class="fs" x="232" y="256">No bonds are broken here — this is <tspan font-weight="700">physical</tspan>, not chemical.</text>'),
+      cap:'<b>Emulsification.</b> Bile salts crowd onto the surface of a large fat droplet, and the churning of the gut then breaks it into many small ones that cannot re-join, because each is coated. Bile is <b>not</b> an enzyme: the fat molecules are unchanged, there is simply far more surface for lipase to attack. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
     };
   }
 
@@ -314,26 +365,67 @@
 
   /* ---------------- stomach churning ---------------- */
   function churn() {
-    var bits = '';
-    for (var i = 0; i < 9; i++) {
-      var ang = (i / 9) * Math.PI * 2, r = 26 + (i % 3) * 9;
-      var cx = 150 + Math.cos(ang) * r, cy = 100 + Math.sin(ang) * r * .8;
-      bits += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + (4 + (i % 3)) + '" fill="#D98C4A" opacity=".85">' +
-              '<animateTransform attributeName="transform" type="rotate" from="0 150 100" to="360 150 100" ' +
-              'dur="' + (4 + (i % 3) * 1.4) + 's" repeatCount="indefinite"/></circle>';
+    var CYCLE = '6s';
+    var WALL = 'M118,44 C158,30 214,44 232,88 C252,136 240,190 196,204 ' +
+               'C158,216 122,196 114,160 C106,120 108,66 118,44 Z';
+    var INNER = 'M130,58 C162,46 204,58 218,94 C234,134 224,178 190,189 ' +
+                'C160,198 134,182 128,152 C122,120 123,76 130,58 Z';
+
+    /* three rings of contraction travelling down the stomach, one after another */
+    var waves = '';
+    for (var w = 0; w < 3; w++) {
+      waves +=
+        '<g opacity="0">' +
+        '<ellipse cx="173" cy="70" rx="56" ry="13" fill="none" stroke="#B4614A" stroke-width="9" stroke-linecap="round">' +
+        A + '"cy" values="70;196" dur="' + CYCLE + '" begin="' + (w * 2) + 's" repeatCount="indefinite"/>' +
+        A + '"rx" values="56;44;30;40" dur="' + CYCLE + '" begin="' + (w * 2) + 's" repeatCount="indefinite"/>' +
+        '</ellipse>' +
+        A + '"opacity" values="0;.75;.75;0" keyTimes="0;0.1;0.8;1" dur="' + CYCLE +
+        '" begin="' + (w * 2) + 's" repeatCount="indefinite"/></g>';
     }
+
+    /* food pieces tumbling and breaking up as they are squeezed */
+    var bits = '';
+    for (var i = 0; i < 11; i++) {
+      var ang = (i / 11) * 360;
+      var rad = 26 + (i % 3) * 13;
+      bits +=
+        '<g transform="translate(173,124)">' +
+        '<animateTransform attributeName="transform" type="rotate" from="' + ang + ' 0 0" to="' +
+        (ang + 360) + ' 0 0" dur="' + (5 + (i % 4)) + 's" repeatCount="indefinite" additive="sum"/>' +
+        '<circle cx="' + rad + '" cy="0" r="' + (7 - (i % 3)) + '" fill="#C77B3F" opacity=".9">' +
+        A + '"r" values="' + (7 - (i % 3)) + ';' + (3.5 - (i % 3) * 0.6) + '" dur="12s" repeatCount="indefinite"/>' +
+        '</circle></g>';
+    }
+
     return {
-      svg: svg('0 0 440 210',
-        '<path d="M124,40 C160,30 208,44 218,84 C230,128 218,166 178,174 C144,180 112,164 106,132 C100,98 108,58 124,40 Z" fill="#F4DCC8" stroke="#D98C6A" stroke-width="2.6"/>' +
-        bits +
-        '<text class="fb" x="272" y="60">Physical</text>' +
-        '<text class="fl" x="272" y="80">Muscles churn the food,</text>' +
-        '<text class="fl" x="272" y="98">mixing it with gastric juice.</text>' +
-        '<text class="fb" x="272" y="130">Chemical</text>' +
-        '<text class="fl" x="272" y="150">Pepsin → protein into</text>' +
-        '<text class="fl" x="272" y="168">short polypeptides, at pH 2.</text>' +
-        '<text class="fs" x="220" y="200" text-anchor="middle">Hydrochloric acid gives pepsin its optimum pH, kills bacteria, and denatures proteins.</text>'),
-      cap:'The stomach does <b>both</b> kinds of digestion at once: churning is physical, pepsin is chemical. Note that pepsin makes <b>short polypeptides</b>, not amino acids — trypsin finishes the job in the small intestine.'
+      svg: svg('-4 8 470 256',
+        /* the wall, drawn as the muscle layers that do the work */
+        '<path d="' + WALL + '" fill="#E8B48F" stroke="#B4614A" stroke-width="3"/>' +
+        '<path d="' + WALL + '" fill="none" stroke="#C97F5E" stroke-width="1.6" opacity=".8" transform="translate(0,0) scale(1)"/>' +
+        '<path d="' + INNER + '" fill="#F6E0CC" stroke="#C97F5E" stroke-width="1.6"/>' +
+        /* gastric juice filling the stomach, deepening as it mixes */
+        '<path d="' + INNER + '" fill="#D9A05B" opacity=".25">' +
+        A + '"opacity" values=".18;.5;.18" dur="' + CYCLE + '" repeatCount="indefinite"/></path>' +
+        bits + waves +
+        /* the oesophagus in, the pylorus out */
+        '<path d="M150,44 L150,14" stroke="#DFA096" stroke-width="15" stroke-linecap="round"/>' +
+        '<text class="fs" x="150" y="12" text-anchor="middle">from the oesophagus</text>' +
+        '<path d="M196,204 C214,214 226,214 240,208" stroke="#E0A87A" stroke-width="14" stroke-linecap="round"/>' +
+        '<text class="fs" x="252" y="226">to the duodenum</text>' +
+        /* labels, kept clear of the drawing */
+        '<g class="fl">' +
+        '<path class="ld" d="M300,64 L238,80"/><text x="304" y="68">Muscular wall</text>' +
+        '<text class="fs" x="304" y="82">squeezes in waves — this is</text>' +
+        '<text class="fs" x="304" y="95">physical digestion</text>' +
+        '<path class="ld" d="M300,132 L200,128"/><text x="304" y="136">Gastric juice</text>' +
+        '<text class="fs" x="304" y="150">hydrochloric acid + pepsin</text>' +
+        '<path class="ld" d="M300,186 L214,170"/><text x="304" y="190">Chyme</text>' +
+        '<text class="fs" x="304" y="204">what leaves: a soupy,</text>' +
+        '<text class="fs" x="304" y="217">acidic mixture</text>' +
+        '</g>' +
+        '<text class="fl" x="150" y="242" text-anchor="middle">Watch the rings of muscle travel down and the pieces get smaller.</text>'),
+      cap:'<b>Churning.</b> Rings of muscle contract in waves down the stomach, folding the food over and over and mixing it with gastric juice. That is <b>physical</b> digestion — the pieces get smaller. At the same time <b>pepsin</b> is doing chemical digestion on the protein. What leaves is <b>chyme</b>.'
     };
   }
 
@@ -427,12 +519,38 @@
     };
   }
 
+
+  /* ---------------- pie chart, for the diet questions ---------------- */
+  var DIET_COL = { carbohydrate:'#A15C07', fat:'#C9A227', protein:'#9B2C6F',
+                   fibre:'#5E7A3A', vitamins:'#0F6480', water:'#1D4E89', other:'#8A8A8A' };
+  function pie(slices, size) {
+    var R = (size || 96) / 2, cx = R, cy = R, a0 = -Math.PI / 2, out = '';
+    slices.forEach(function (s) {
+      var a1 = a0 + (s.pct / 100) * Math.PI * 2;
+      var big = (a1 - a0) > Math.PI ? 1 : 0;
+      var x0 = cx + R * Math.cos(a0), y0 = cy + R * Math.sin(a0);
+      var x1 = cx + R * Math.cos(a1), y1 = cy + R * Math.sin(a1);
+      out += '<path d="M' + cx.toFixed(1) + ',' + cy.toFixed(1) + ' L' + x0.toFixed(1) + ',' + y0.toFixed(1) +
+             ' A' + R + ',' + R + ' 0 ' + big + ',1 ' + x1.toFixed(1) + ',' + y1.toFixed(1) + ' Z" ' +
+             'fill="' + (DIET_COL[s.cat] || '#999') + '" stroke="#fff" stroke-width="1.6"/>';
+      a0 = a1;
+    });
+    return '<svg class="pie" viewBox="0 0 ' + (size || 96) + ' ' + (size || 96) + '" role="img">' + out + '</svg>';
+  }
+  function pieKey(slices) {
+    return '<ul class="piekey">' + slices.map(function (s) {
+      return '<li><i style="background:' + (DIET_COL[s.cat] || '#999') + '"></i>' +
+             s.label + ' <b>' + s.pct + '%</b></li>';
+    }).join('') + '</ul>';
+  }
+
   var FIGS = { chewing:chewing, tooth:tooth, toothTypes:toothTypes, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };
 
   global.Figures = {
+    pie:pie, pieKey:pieKey, dietColours:DIET_COL,
     get:function (name) { return FIGS[name] ? FIGS[name]() : null; },
     names:Object.keys(FIGS)
   };
