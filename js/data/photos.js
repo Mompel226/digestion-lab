@@ -145,28 +145,24 @@ window.PHOTOS = {
  ],
  "stomach": [
   {
-   "t": "photo",
-   "src": "stomach-inside.jpg",
-   "kind": "Illustration",
-   "cap": "Inside the stomach. The folds in the lining are called rugae; they let the stomach stretch as it fills.",
-   "after": 0,
-   "maxw": 800
-  },
-  {
-   "t": "photo",
-   "src": "stomach-churning.jpg",
-   "kind": "Illustration",
-   "cap": "Churning: the muscular wall squeezes the food and mixes it with gastric juice.",
+   "t": "pair",
+   "kind": "Photographs",
    "after": 1,
-   "maxw": 417
-  },
-  {
-   "t": "photo",
-   "src": "stomach-wall.jpg",
-   "kind": "Illustration",
-   "cap": "The stomach wall — three muscle layers, and the gastric glands that make the juice.",
-   "more": true,
-   "maxw": 800
+   "cap": "The lining of the stomach, twice. On the left, the <b>rugae</b> — the deep folds that let the stomach stretch as it fills. On the right, the wall itself: three layers of muscle running in different directions, which is what lets it churn rather than merely squeeze, and the <b>gastric glands</b> sunk into the lining that secrete the gastric juice.",
+   "of": [
+    {
+     "photo": "stomach-inside.jpg",
+     "label": "The rugae — folds in the lining",
+     "maxw": 800,
+     "w": 50
+    },
+    {
+     "photo": "stomach-wall.jpg",
+     "label": "Muscle layers and the gastric glands",
+     "maxw": 800,
+     "w": 50
+    }
+   ]
   }
  ],
  "liver": [
