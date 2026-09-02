@@ -238,22 +238,10 @@
       return smoothPts(W.map(function (w, k) { return [w.x + w.nx * s[k], w.y + w.ny * s[k]]; }), 1);
     }
     function outer(rings) { return curve(outerPts(rings)); }
-    /* the lumen sits a fixed wall thickness inside the outer curve: offset along the outer
-       curve's own normals, then any point that strays outside is pulled back in */
-    function inner(rings) {
-      var O = outerPts(rings), T = 5;
-      var I = O.map(function (q, k) {
-        var pv = O[(k - 2 + N) % N], nx = O[(k + 2) % N], tx = nx[0] - pv[0], ty = nx[1] - pv[1], L = Math.hypot(tx, ty) || 1;
-        var ux = -ty / L, uy = tx / L;
-        if ((cx - q[0]) * ux + (cy - q[1]) * uy < 0) { ux = -ux; uy = -uy; }
-        var x = q[0] + ux * T, y = q[1] + uy * T, tries = 0;
-        while (!insidePoly(O, x, y) && tries++ < 8) { x += (cx - x) * 0.15; y += (cy - y) * 0.15; }
-        return [x, y];
-      });
-      return curve(smoothPts(I, 2));
-    }
-    var fo = [], fi = [], f;
-    for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); fi.push(inner(rings)); }
+    var fo = [], f;
+    for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); }
+    var T = 5;                                   /* wall thickness, plate units */
+    function animD() { return A + '"d" values="' + fo.join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/>'; }
     function bit(bx, by, rad, r, dur, delay, col) {
       var path = 'M' + f1(bx - rad) + ',' + f1(by) + ' a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(rad * 2) + ',0 a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(-rad * 2) + ',0';
       return '<ellipse rx="' + f1(r) + '" ry="' + f1(r * .8) + '" fill="' + col + '" opacity=".9"><animateMotion dur="' + dur + 's" begin="' + delay + 's" repeatCount="indefinite" path="' + path + '"/>' +
@@ -271,11 +259,15 @@
     var gc = null; W.forEach(function (w) { if (!gc || w.x > gc.x) gc = w; });
     var top = null; W.forEach(function (w) { if (!top || w.y < top.y) top = w; });
     var mid = { x:0, y:0 }; W.forEach(function (w) { mid.x += w.x; mid.y += w.y; }); mid.x /= W.length; mid.y /= W.length;
-    return '<defs><radialGradient id="chymeG" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#F1D6B0"/><stop offset="1" stop-color="#E4BE93"/></radialGradient></defs>' +
-      '<path fill="#E4B896" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' +
-        A + '"d" values="' + fo.join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path>' +
-      '<path fill="url(#chymeG)" stroke="#C4875C" stroke-width="' + f1(0.7 * u) + '" stroke-linejoin="round" d="' + fi[0] + '">' +
-        A + '"d" values="' + fi.join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path>' +
+    return '<defs><radialGradient id="chymeG" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#F1D6B0"/><stop offset="1" stop-color="#E4BE93"/></radialGradient>' +
+      '<clipPath id="stomachClip"><path d="' + fo[0] + '">' + animD() + '</path></clipPath></defs>' +
+      /* the lumen fills the whole shape; the wall is the inner half of a thick stroke clipped to the shape */
+      '<path fill="url(#chymeG)" d="' + fo[0] + '">' + animD() + '</path>' +
+      '<g clip-path="url(#stomachClip)">' +
+        '<path fill="none" stroke="#C4875C" stroke-width="' + f1(2 * T + 1.4) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
+        '<path fill="none" stroke="#E4B896" stroke-width="' + f1(2 * T) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
+      '</g>' +
+      '<path fill="none" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
       food + squirt +
       (ctx.compact
         ? label('peristaltic waves\nsqueeze towards\nthe pylorus', top.x - 10, top.y - fs * 3.4, gc.x - 2, gc.y - fs * 3, fs, 'middle') +
@@ -313,18 +305,20 @@
     } else {
       g += drops(HEP1.concat(BILED.slice(1)), BILE, r, 4.6, 4, 0) + drops(HEP2, BILE, r, 3.2, 3, .7) + drops(CYST, BILE, r * .8, 2.6, 2, 1.1);
     }
-    g += drops(PANC, JUICE, r * .9, 3.8, 3, .3);
+    if (ctx.compact) {
+      return g + (focus === 'gall-bladder'
+        ? label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('bile duct', 176, 534, 160, 514, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end')
+        : label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('bile duct', 176, 534, 160, 514, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end'));
+    }
     var L = focus === 'gall-bladder'
       ? label('gall bladder — stores bile', 96, 512, 118, 490, fs, 'start') +
         label('cystic duct', 128, 466, 135, 486, fs, 'start') +
-        label('bile duct — bile to\nthe duodenum', 176, 516, 160, 512, fs, 'start') +
-        label('pancreatic duct', 214, 560, 200, 528, fs, 'start') +
+        label('bile duct — bile to\nthe duodenum', 150, 548, 157, 528, fs, 'end') +
         label('duodenum', 118, 585, 140, 560, fs, 'end')
       : label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
         label('hepatic ducts carry\nbile out of the liver', 150, 448, 137, 452, fs, 'start') +
         label('gall bladder', 96, 512, 118, 490, fs, 'start') +
         label('bile duct', 176, 516, 160, 512, fs, 'start') +
-        label('pancreatic duct', 214, 560, 200, 528, fs, 'start') +
         label('duodenum', 118, 585, 140, 560, fs, 'end');
     return g + L;
   }

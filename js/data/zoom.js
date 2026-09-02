@@ -21,48 +21,76 @@ window.ZOOM_DETAIL = {
         "label": "The mouth, cut down the middle (side view)",
         "labels": [
           {
-            "t": "tongue",
+            "t": "hard palate (bone)",
             "at": [
-              0.34,
-              0.69
-            ],
-            "tx": [
-              0.22,
-              0.79
-            ]
-          },
-          {
-            "t": "incisors",
-            "at": [
-              0.175,
-              0.605
-            ],
-            "tx": [
-              0.165,
-              0.505
-            ]
-          },
-          {
-            "t": "hard palate",
-            "at": [
-              0.3,
-              0.56
+              0.27,
+              0.545
             ],
             "tx": [
               0.2,
-              0.47
-            ]
+              0.49
+            ],
+            "anchor": "start"
           },
           {
             "t": "soft palate",
             "at": [
-              0.455,
-              0.6
+              0.47,
+              0.578
             ],
             "tx": [
-              0.43,
-              0.53
-            ]
+              0.44,
+              0.505
+            ],
+            "anchor": "end"
+          },
+          {
+            "t": "upper incisor",
+            "at": [
+              0.176,
+              0.585
+            ],
+            "tx": [
+              0.15,
+              0.51
+            ],
+            "anchor": "end"
+          },
+          {
+            "t": "lower incisor",
+            "at": [
+              0.192,
+              0.66
+            ],
+            "tx": [
+              0.15,
+              0.77
+            ],
+            "anchor": "end"
+          },
+          {
+            "t": "tongue",
+            "at": [
+              0.33,
+              0.66
+            ],
+            "tx": [
+              0.27,
+              0.8
+            ],
+            "anchor": "start"
+          },
+          {
+            "t": "throat (pharynx)",
+            "at": [
+              0.53,
+              0.63
+            ],
+            "tx": [
+              0.45,
+              0.66
+            ],
+            "anchor": "end"
           }
         ],
         "img": "zoom/head-section.jpg",

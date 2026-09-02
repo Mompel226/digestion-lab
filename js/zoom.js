@@ -370,7 +370,9 @@
       if (pp.only) { var inv = svg.getScreenCTM().inverse(); list = list.filter(function (path) { var r = path.getBoundingClientRect(); var q1 = pt(inv, r.left, r.top), q2 = pt(inv, r.right, r.bottom); return q1.x >= pp.only[0] - 2 && q1.y >= pp.only[1] - 2 && q2.x <= pp.only[2] + 2 && q2.y <= pp.only[3] + 2; }); }
       if (pp.largest) { var best = null, ba = 0; list.forEach(function (path) { var r = path.getBoundingClientRect(), ar = r.width * r.height; if (ar > ba) { ba = ar; best = path; } }); list = best ? [best] : []; }
       list.forEach(function (path) {
-        var m = path.getCTM(); if (!m) return;
+        /* the path in plate units: screen matrix of the path, then back through the plate's own screen matrix
+           (getCTM alone includes the viewport scaling in some browsers, so a clone drifts with the window size) */
+        var m = svg.getScreenCTM().inverse().multiply(path.getScreenCTM()); if (!m) return;
         var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, gImgs);
         var c = el('path', { d:path.getAttribute('d'), fill:pp.fill || '#ccc', stroke:pp.stroke || 'none', 'stroke-width':pp.sw != null ? pp.sw : 1.2, 'stroke-linejoin':'round', opacity:pp.opacity != null ? pp.opacity : 1 }, g);
         if (pp.dash) c.setAttribute('stroke-dasharray', pp.dash);
@@ -428,7 +430,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor, outline:outlineFor, focus:s.focus || detail.organ });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:ppu(frame) < 2.2, inFill:inFillFor, outline:outlineFor, focus:s.focus || detail.organ });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;
