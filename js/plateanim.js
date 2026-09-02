@@ -175,6 +175,9 @@
     var iA = nearest(173, 507), iB = nearest(166, 523), n = raw.length, pts = [], i;
     for (i = iA; ; i = (i + 1) % n) { pts.push(raw[i]); if (i === iB) break; if (pts.length > n) break; }
     if (!pts.some(function (q) { return q[1] < 445; })) { pts = []; for (i = iA; ; i = (i - 1 + n) % n) { pts.push(raw[i]); if (i === iB) break; if (pts.length > n) break; } }
+    /* the pyloric opening closes with a few points, so the closure is as smooth as the rest */
+    var pA = pts[0], pB = pts[pts.length - 1];
+    [0.25, 0.5, 0.75].forEach(function (t) { pts.push([pB[0] + (pA[0] - pB[0]) * t, pB[1] + (pA[1] - pB[1]) * t]); });
     var N = pts.length;
     /* centroid, for orienting normals inward */
     var cx = 0, cy = 0; pts.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= N; cy /= N;
@@ -202,23 +205,35 @@
     });
     /* smooth v and d along the wall so neighbours never disagree */
     function smoothKey(key, w) { var out = W.map(function (p) { return p[key]; }); for (var pass = 0; pass < 3; pass++) out = out.map(function (val, k) { var s = 0, c = 0; for (var j = -w; j <= w; j++) { var idx = k + j; if (idx < 0 || idx >= N) continue; s += out[idx]; c++; } return s / c; }); W.forEach(function (p, k) { p[key] = out[k]; }); }
-    smoothKey('v', 3); smoothKey('d', 3);
-    function ring(w, rings) {
-      if (w.v < 0.24) return 0;
-      var g = 0; rings.forEach(function (r) { g += gauss(w.v - r, 0.065); });
-      return Math.min(w.d * 0.55, (4 + 22 * w.v) * g);
+    smoothKey('v', 3); smoothKey('d', 3); smoothKey('nx', 3); smoothKey('ny', 3);
+    W.forEach(function (w) { var L = Math.hypot(w.nx, w.ny) || 1; w.nx /= L; w.ny /= L; });
+    /* a closed Catmull-Rom curve through the points, as cubic Béziers */
+    function curve(P) {
+      var n = P.length, d = 'M' + f1(P[0][0]) + ',' + f1(P[0][1]);
+      for (var i = 0; i < n; i++) {
+        var p0 = P[(i - 1 + n) % n], p1 = P[i], p2 = P[(i + 1) % n], p3 = P[(i + 2) % n];
+        d += ' C' + f1(p1[0] + (p2[0] - p0[0]) / 6) + ',' + f1(p1[1] + (p2[1] - p0[1]) / 6) + ' ' +
+                    f1(p2[0] - (p3[0] - p1[0]) / 6) + ',' + f1(p2[1] - (p3[1] - p1[1]) / 6) + ' ' + f1(p2[0]) + ',' + f1(p2[1]);
+      }
+      return d + ' Z';
+    }
+    function smoothPts(P, w) { return P.map(function (q, k) { var sx = 0, sy = 0, c = 0; for (var j = -w; j <= w; j++) { var r = P[(k + j + N) % N]; sx += r[0]; sy += r[1]; c++; } return [sx / c, sy / c]; }); }
+    function smoothArr(arr, w) { for (var pass = 0; pass < 2; pass++) arr = arr.map(function (val, k) { var s = 0, c = 0; for (var j = -w; j <= w; j++) { s += arr[(k + j + N) % N]; c++; } return s / c; }); return arr; }
+    function ringAll(rings) {
+      var s = W.map(function (w) {
+        if (w.v < 0.24) return 0;
+        var g = 0; rings.forEach(function (r) { g += gauss(w.v - r, 0.085); });
+        return Math.min(w.d * 0.5, (3 + 18 * w.v) * g);
+      });
+      return smoothArr(s, 3);
     }
     function outer(rings) {
-      var o = W.map(function (w) { var s = ring(w, rings); return f1(w.x + w.nx * s) + ',' + f1(w.y + w.ny * s); });
-      return 'M' + o.join(' L') + ' Z';
+      var s = ringAll(rings);
+      return curve(smoothPts(W.map(function (w, k) { return [w.x + w.nx * s[k], w.y + w.ny * s[k]]; }), 1));
     }
     function inner(rings) {
-      var o = W.map(function (w, k) {
-        var s = ring(w, rings), fold = (w.v > 0.12 ? 1.3 * Math.sin(k * 0.85) : 0);
-        var t = Math.min(w.d * 0.6, 5 + fold + s);
-        return f1(w.x + w.nx * t) + ',' + f1(w.y + w.ny * t);
-      });
-      return 'M' + o.join(' L') + ' Z';
+      var s = ringAll(rings);
+      return curve(smoothPts(W.map(function (w, k) { var t = Math.min(w.d * 0.6, 5 + s[k]); return [w.x + w.nx * t, w.y + w.ny * t]; }), 3));
     }
     var fo = [], fi = [], f;
     for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); fi.push(inner(rings)); }
