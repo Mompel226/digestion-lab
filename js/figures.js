@@ -361,8 +361,7 @@
         '<g transform="translate(24,214)">' +
         '<line x1="0" y1="0" x2="0" y2="11" stroke="#4E7D4A" stroke-width="2.4" stroke-linecap="round"/>' +
         '<circle cx="0" cy="0" r="4" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g>' +
-        '<text class="fs" x="38" y="211">a bile salt — the head likes water,</text>' +
-        '<text class="fs" x="38" y="224">the tail likes fat, so it sits on the surface</text>' +
+        '<text class="fs" x="38" y="218">a bile salt (bile is not an enzyme)</text>' +
         '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" style="fill:#BC235B">lipase</tspan> to work on.</text>' +
         '<text class="fs" x="228" y="265" text-anchor="middle">No bonds are broken here — this is <tspan font-weight="700">physical</tspan>, not chemical.</text>'),
       cap:'<b>Emulsification.</b> Bile salts crowd onto the surface of a large fat droplet, and the churning of the gut then breaks it into many small ones that cannot re-join, because each is coated. Bile is <b>not</b> an enzyme: the fat molecules are unchanged, there is simply far more surface for lipase to attack. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
@@ -658,8 +657,8 @@
 
         arrow('arS', '#4A4A4A', 'M300,' + Y + ' L340,' + Y, 2.2) +
         '<text class="fb" x="320" y="' + (Y - 16) + '" text-anchor="middle" style="fill:#0F6E8C">maltase</text>' +
-        '<text class="fs" x="320" y="' + (Y + 22) + '" text-anchor="middle">on the</text>' +
-        '<text class="fs" x="320" y="' + (Y + 35) + '" text-anchor="middle">microvilli</text>' +
+        '<text class="fs" x="320" y="' + (Y + 22) + '" text-anchor="middle">on the epithelium</text>' +
+        '<text class="fs" x="320" y="' + (Y + 35) + '" text-anchor="middle">of the small intestine</text>' +
 
         '<text class="fb" x="356" y="40">Glucose</text>' +
         '<text class="fs" x="356" y="56">one unit</text>' +
@@ -667,7 +666,7 @@
 
         '<text class="fs" x="224" y="164" text-anchor="middle">Only glucose is small enough &#8212; and soluble enough &#8212; to be absorbed.</text>' +
         '<text class="fs" x="224" y="182" text-anchor="middle">Amylase stops at maltose. It never makes glucose on its own.</text>'),
-      cap:'<b>Two enzymes, two steps.</b> Amylase breaks starch down to <b>maltose</b> &#8212; it does <i>not</i> produce glucose. Maltase, sitting on the membranes of the microvilli in the small intestine, then breaks maltose into <b>glucose</b>. Writing "amylase turns starch into glucose" loses the mark.'
+      cap:'<b>Two enzymes, two steps.</b> Amylase breaks starch down to <b>maltose</b> &#8212; it does <i>not</i> produce glucose. Maltase, on the membranes of the epithelium lining the small intestine, then breaks maltose into <b>glucose</b>. Writing "amylase turns starch into glucose" loses the mark.'
     };
   }
 

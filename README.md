@@ -13,12 +13,12 @@ at each organ in turn.
 
 ## What is in it
 
-**14 stations** — the alimentary canal overview, mouth and teeth, salivary glands,
+**15 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
 epiglottis, oesophagus, stomach, liver, gall bladder, pancreas, duodenum, small
 intestine, large intestine, rectum and anus, and a Molecules Lab that reaches back
 into Topics 3, 4 and 5.
 
-**95 questions** across seven kinds:
+**107 questions** across seven kinds:
 
 | Type | What the student does |
 |---|---|
@@ -34,7 +34,7 @@ into Topics 3, 4 and 5.
 peristalsis, and absorption at the villi — converted from ~5 MB GIFs to H.264
 video under 300 KB each.
 
-**Ten animated diagrams** — peristalsis, churning, emulsification, the villus,
+**Thirteen drawn diagrams** — peristalsis, churning, emulsification, the villus,
 the surface-area multiplier, starch digestion, swallowing, water reabsorption,
 egestion vs excretion, and the tooth section.
 
@@ -50,7 +50,7 @@ Progress is saved in the browser. **Reset** clears it.
 
 | Mode | Attempts | Shows the answer? | For |
 |---|---|---|---|
-| **Mastery** (default) | unlimited | no — only which parts are wrong | homework; students must reach 95/95 to hand in |
+| **Mastery** (default) | unlimited | no — only which parts are wrong | homework; students must answer every question to hand in |
 | **Test** | one per question | no | a timed check under exam conditions |
 | **Practice** 🔒 | unlimited | yes, with explanations | revision, after you release the password |
 

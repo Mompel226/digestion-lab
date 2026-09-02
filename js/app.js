@@ -21,15 +21,36 @@
   /* which sentence each drawn diagram illustrates */
   var FIG_AFTER = {
     'diet:sameBalance':6,
-    'mouth:chewing':1,
-    'salivary-glands:starchPath':2, 'epiglottis:swallow':1,
+    'mouth:chewing':2,
+    'salivary-glands:starchPath':2, 'epiglottis:swallow':2,
     'oesophagus:peristalsis':1,
-    'stomach:churn':1, 'gall-bladder:emulsify':3,
-    'duodenum:starchPath':4,
+    'stomach:churn':0, 'gall-bladder:emulsify':3,
+    'duodenum:starchPath':2,
     'ileum-villi:villus':5,
-    'colon:waterColon':1, 'rectum-anus:egestVsExcrete':2,
-    'molecules-lab:starchPath':1
+    'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
+    'molecules-lab:starchPath':0
   };
+
+  /* On a phone a figure is wider than the screen and its labels are the part
+     that ends up off-screen. When a figure has to scroll, its labels are also
+     listed as plain text underneath, and the scroller starts where the drawing
+     is (`focus` = fraction of the hidden width to start scrolled past). */
+  var FIG_LEGEND = {
+    peristalsis:[['Circular muscle','contracts behind the bolus and squeezes it forward'],['The bolus','a ball of chewed food'],['The tube ahead relaxes','opening to receive it']],
+    churn:[['Muscular wall','rings of muscle squeeze and travel towards the exit — this is physical digestion'],['Gastric juice','hydrochloric acid + pepsin'],['Chyme','the soupy, acidic mixture that leaves the stomach']],
+    villus:[['Microvilli','the brush border'],['Epithelium','one cell thick'],['Villus','a finger-like projection built from many cells'],['Capillaries','glucose + amino acids'],['Lacteal','fatty acids + glycerol'],['Blood vessel','on to the hepatic portal vein']],
+    swallow:[['Soft palate','lifts and seals off the nose'],['Tongue','drives the bolus backwards'],['Epiglottis','tips down over the opening of the trachea'],['Trachea','to the lungs — guarded'],['Oesophagus','to the stomach — the bolus goes here']],
+    tooth:[['Enamel','hardest substance in the body'],['Dentine','softer, and it senses pain'],['Pulp cavity','blood vessels and nerves'],['Gum',''],['Cement','anchors the root'],['Jaw bone',''],['Blood vessel',''],['Nerve','']],
+    emulsify:[['Bile','coats one large fat droplet and splits it into many small ones'],['Same amount of fat','far more surface for lipase to work on — physical, not chemical']],
+    egestVsExcrete:[['Egestion','fibre, undigested food and dead gut cells — never entered a cell — passed out as faeces'],['Excretion','urea from the liver in urine; carbon dioxide from respiration in the breath — made inside cells']],
+    waterColon:[['Blood vessel','water and mineral salts are carried away'],['Contents','watery from the small intestine on the left; solid faeces to the rectum on the right']],
+    chewing:[['One large piece','16 enzymes fit round it'],['Four smaller pieces','32 enzymes fit — same food, twice the edge']],
+    starchPath:[['Amylase','starch → maltose, in the mouth and duodenum'],['Maltase','maltose → glucose, on the epithelium of the small intestine']],
+    sameBalance:[['A 7-year-old','growing — most protein'],['An office worker','sitting most of the day'],['A builder','heavy work — most energy']]
+  };
+  FIG_LEGEND.toothCompact = FIG_LEGEND.tooth;
+  var FIG_FOCUS = { peristalsis:.15, churn:.05, villus:.35, swallow:.3, tooth:.3, toothCompact:.3, emulsify:.3,
+                    egestVsExcrete:0, waterColon:.3, chewing:.2, starchPath:.2, sameBalance:.4 };
 
   var S = {};                       /* stations by id */
   var MODES = { mastery:'Mastery', test:'Test', practice:'Practice' };
@@ -241,13 +262,6 @@
     var media = (window.PHOTOS || {})[st.id] || [];
     var figs = FIGS[st.id] || [];
 
-    if (st.learn && st.learn.golden) {
-      var g = document.createElement('div');
-      g.className = 'golden';
-      g.innerHTML = '<div class="golden__h">⬤ The mistake to avoid</div><p>' + M(st.learn.golden) + '</p>';
-      pane.appendChild(g);
-    }
-
     /* The text and the pictures are one thing now: each image sits under the
        sentence it illustrates, instead of in a separate tab to hunt through. */
     var card = document.createElement('div');
@@ -257,9 +271,18 @@
     list.className = 'exam-list';
     card.appendChild(list);
 
+    /* An exam bullet is a string, or {text, sup:true} for Supplement-only
+       content, or {text, ext:true} for what the decks teach but 0610 does not
+       examine. The badge lets a Core candidate see the fence. */
     (st.learn.exam || []).forEach(function (b, i) {
       var li = document.createElement('li');
-      li.innerHTML = M(b);
+      var txt = typeof b === 'string' ? b : b.text;
+      var badge = '';
+      /* typeof check matters: a JS string has a built-in .sup() method, so
+         'b.sup' is truthy for every plain bullet. */
+      if (typeof b === 'object' && b.sup) badge = '<span class="sup" title="Supplement: examined on Paper 4 (Extended) only">S</span>';
+      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext" title="Not in the 2026–28 syllabus — taught for understanding">extension</span>';
+      li.innerHTML = badge + M(txt);
       list.appendChild(li);
       media.filter(function (x) { return !x.more && x.after === i; })
            .forEach(function (x) { li.appendChild(mediaBox(x)); });
@@ -280,6 +303,15 @@
          .forEach(function (x) { card.appendChild(mediaBox(x)); });
     figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] == null; })
         .forEach(function (name) { var fb = figBox(name); if (fb) card.appendChild(fb); });
+
+    /* The mistake to avoid comes AFTER the facts: a refutation only works
+       once the reader has something to hold it against. */
+    if (st.learn && st.learn.golden) {
+      var g = document.createElement('div');
+      g.className = 'golden';
+      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here</div><p>' + M(st.learn.golden) + '</p>';
+      card.appendChild(g);
+    }
 
     if ((st.learn.real || []).length) {
       var r = document.createElement('div');
@@ -325,6 +357,34 @@
       pane.appendChild(k);
       if (window.Terms) window.Terms.setQuiet(false);
     }
+    hintScrollers(pane);
+  }
+
+  /* A figure wider than its column scrolls sideways, and a 7px scrollbar is
+     not a cue anyone reads. So: start it centred on the drawing, and show a
+     "swipe" pill until the reader has scrolled it once. */
+  function hintScrollers(pane) {
+    Array.prototype.forEach.call(pane.querySelectorAll('.figscroll'), function (fs) {
+      if (fs.scrollWidth <= fs.clientWidth + 2) return;
+      var owner = fs.closest('[data-fig]'), name = owner ? owner.getAttribute('data-fig') : '';
+      var focus = FIG_FOCUS[name] != null ? FIG_FOCUS[name] : 0.35;
+      fs.scrollLeft = Math.round((fs.scrollWidth - fs.clientWidth) * focus);
+      var box = fs.closest('.media') || fs.parentNode;
+      if (FIG_LEGEND[name] && !(fs.nextSibling && fs.nextSibling.className === 'figlegend')) {
+        var ul = document.createElement('ul');
+        ul.className = 'figlegend';
+        ul.innerHTML = '<li class="figlegend__h">Labels on this diagram</li>' + FIG_LEGEND[name].map(function (l) {
+          return '<li><b>' + esc(l[0]) + '</b>' + (l[1] ? ' — ' + esc(l[1]) : '') + '</li>';
+        }).join('');
+        fs.parentNode.insertBefore(ul, fs.nextSibling);
+      }
+      if (fs.parentNode.querySelector('.fighint')) return;
+      var pill = document.createElement('span');
+      pill.className = 'fighint';
+      pill.textContent = '⇠ swipe the diagram ⇢';
+      fs.parentNode.insertBefore(pill, fs);   /* the scroller's own parent — a pair half is not a direct child of .media */
+      fs.addEventListener('scroll', function () { pill.classList.add('is-gone'); }, { once:true });
+    });
   }
 
   /* A diagram carries its own labels, and those labels are drawn in the
@@ -362,6 +422,7 @@
     if (!f || !f.svg) return null;
     var box = document.createElement('figure');
     box.className = 'media media--fig';
+    box.setAttribute('data-fig', name);
     box.innerHTML = f.svg + '<figcaption class="media__cap">' +
       '<span class="kindtag kindtag--fig">Diagram</span> ' + f.cap + '</figcaption>';
     Array.prototype.forEach.call(box.querySelectorAll('svg[data-hide]'), function (sv) {
@@ -381,13 +442,14 @@
     var box = document.createElement('figure');
     box.className = 'media media--pair';
     var row = document.createElement('div');
-    row.className = 'pair';
+    row.className = 'pair' + (ph.stack ? ' pair--stack' : '');
     (ph.of || []).forEach(function (half) {
       var cell = document.createElement('div');
       cell.className = 'pair__half';
       if (half.w) cell.style.flex = half.w + ' 1 0';
       if (half.fig) {
         var f = window.Figures.get(half.fig);
+        cell.setAttribute('data-fig', half.fig);
         if (f) cell.innerHTML = f.svg;
       } else {
         var img = new Image();
@@ -810,6 +872,12 @@
                   '<button class="peek__x" aria-label="Close">\u00D7</button>';
     host.appendChild(p);
 
+    /* On a phone there is no room beside or above the word for a tall card:
+       measured, it landed on top of the word it was opened from. So it becomes
+       a sheet pinned to the bottom of the screen, and the word stays visible. */
+    var sheet = window.innerWidth < 600;
+    if (sheet) p.className += ' peek--sheet';
+
     /* Placing has to happen again once the picture has loaded: until then the
        card has no height, so "is there room below?" is answered against the
        wrong number and a tall card can end up hanging out of the panel. */
@@ -838,9 +906,9 @@
       p.style.left = left + 'px';
       p.style.top = top + 'px';
     }
-    place();
+    if (!sheet) place();
     var im = p.querySelector('img');
-    if (im) im.addEventListener('load', function () {
+    if (im && !sheet) im.addEventListener('load', function () {
       /* and never draw a picture bigger than it actually is */
       if (im.naturalWidth && im.naturalWidth < im.clientWidth) {
         im.style.width = im.naturalWidth + 'px';

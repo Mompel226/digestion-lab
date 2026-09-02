@@ -7,7 +7,6 @@ drop a new file with the same name into this folder and it will appear automatic
 
 | File | Source deck | Original name in deck |
 |---|---|---|
-| `mesentery-lymph.jpg` | 7.5 Absorption | `image6.jpeg` |
 | `canal-regions.jpg` | 7.4 Chemical digestion | `image3.jpeg` |
 | `carbohydrate-chain.jpg` | 7.4 Chemical digestion | `image18.jpeg` |
 | `circular-folds-regions.jpg` | 7.5 Absorption | `image10.jpeg` |
@@ -15,11 +14,9 @@ drop a new file with the same name into this folder and it will appear automatic
 | `folds-real-photo.jpg` | 7.5 Absorption | `image13.jpeg` |
 | `intestine-dissection.jpg` | 7.5 Absorption | `image9.png` |
 | `large-intestine-parts.jpg` | 7.2 The Digestive System | `image17.jpeg` |
-| `liver-ducts.jpg` | 7.4 Chemical digestion | `image28.png` |
 | `maltase-membrane.jpg` | 7.4 Chemical digestion | `image13.png` |
 | `pancreas-dissection.jpg` | 7.5 Absorption | `image29.png` |
 | `pancreas-duct.jpg` | 7.4 Chemical digestion | `image8.png` |
-| `peristalsis.jpg` | 7.2 The Digestive System | `image12.jpg` |
 | `salivary-glands.jpg` | 7.4 Chemical digestion | `image7.png` |
 | `small-intestine-parts.jpg` | 7.2 The Digestive System | `image15.jpeg` |
 | `stomach-churning.jpg` | 7.2 The Digestive System | `image14.png` |
@@ -53,6 +50,11 @@ Both were converted from GIF to H.264 to cut them from about 5 MB each to under 
 | `carbs-complex-simple.jpg` | 7.1 Diet and Nutrition | `image16.jpeg` |
 
 ## Sourced from Wikimedia Commons
+
+| File | Source | Licence |
+|---|---|---|
+| `biliary-system.svg` | *Biliary system new.svg* (derived from *Biliary system.svg*), [Commons](https://commons.wikimedia.org/wiki/File:Biliary_system_new.svg) | **Public domain**. Vector, so its labels stay sharp at any size — it replaces `liver-ducts.jpg`, whose labels were unreadable at 250 px. |
+
 
 Everything in the diet station now comes from here rather than from the 7.1 deck.
 Two reasons. Dr Mompel asked for images that fit the words better than the deck's
@@ -91,6 +93,13 @@ centred in the card, rather than stretched to fill it — a small sharp picture 
 one, and these are the pictures the class has already seen on the board.
 
 ## Dropped
+
+| File | Why |
+|---|---|
+| `mesentery-lymph.jpg` | Carried a Kenhub (commercial atlas) watermark — not free to republish. Its teaching point now lives in a Real-science bullet on the small-intestine station. |
+| `peristalsis.jpg` | 277 px wide; drawn at 138 px its four labels were unreadable, and the animated figure above it shows the same mechanism. |
+
+### Earlier drops
 
 | File | Why |
 |---|---|
