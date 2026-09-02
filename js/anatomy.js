@@ -225,6 +225,7 @@
     var focus = isOrgan(state.active) ? state.active : null;
     Array.prototype.forEach.call(artRoot.querySelectorAll('.op'), function (p) {
       var id = p.getAttribute('data-organ'), id2 = p.getAttribute('data-organ2');
+      if (focus === 'ileum-villi' && id === 'duodenum') id = 'ileum-villi';   /* one station reads both */
       var mine = id === focus || id2 === focus;
       p.classList.toggle('is-hidden', !visibleIds[id]);
       p.classList.toggle('is-dim', !!focus && !mine);
