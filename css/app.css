@@ -250,21 +250,32 @@ body[data-mode="practice"] .panel__inner::before{
 .golden p{margin:0;font-size:16px;font-weight:600}
 
 /* ---------- the colour language of the Learn tab ----------
-   Six stage colours + one for the food molecules. Green is absent on
-   purpose: it is the app's own colour and can no longer carry meaning.
-   Every stage word also wears its number, so the coding survives colour
-   blindness and greyscale printing. All inks pass WCAG AA on both the
-   paper and the card background (weakest 5.68:1). */
+   Seven stage colours, plus one for the food molecules and one for the
+   conditions. Green is absent on purpose: it is the app's own colour and can
+   no longer carry meaning. Every stage word also wears its number, so the
+   coding survives colour blindness and greyscale printing.
+
+   Stage 2 is one warm-red run in three steps — physical at the earthy end,
+   chemical at the cool end, the umbrella word "digestion" between them — so
+   the two kinds of digestion read as siblings without being the same colour.
+   They were previously the SAME HEX, which is why they were indistinguishable.
+
+   All inks pass WCAG AA on the paper, the card and their own chip tint
+   (weakest 4.64:1), and every pair stays apart under protanopia and
+   deuteranopia (worst CIE76 dE 16.7; 22.7 among the families where colour is
+   the only signal). */
 :root{
-  --c-ing:#8A4B00;  --c-ing-t:#F7EBDA;
-  --c-dig:#A32E22;  --c-dig-t:#FAE7E4;
-  --c-phy:#A32E22;  --c-phy-t:#FAE7E4;
-  --c-che:#6B3FA0;  --c-che-t:#F0EAF9;
-  --c-abs:#0F6480;  --c-abs-t:#E3EFF4;
-  --c-ass:#1D4E89;  --c-ass-t:#E5EBF5;
-  --c-ege:#5E4636;  --c-ege-t:#EFE9E3;
-  --c-mol:#9B2C6F;
-  --c-cond:#4A4A4A;   /* conditions: neutral, because a disease is not a stage */
+  --c-ing:#985C01;  --c-ing-t:#FDEDDE;
+  --c-dig:#AF4A3C;  --c-dig-t:#FFEBE6;  /* stage 2, the parent: between its two children */
+  --c-phy:#693100;  --c-phy-t:#F8E8DF;  /* stage 2a — the earthy end of the red run */
+  --c-che:#BC235B;  --c-che-t:#FFE4E9;  /* stage 2b — the cool end of the same red run */
+  --c-abs:#02719B;  --c-abs-t:#E5F0F8;
+  --c-ass:#004289;  --c-ass-t:#E8EAF9;
+  --c-ege:#443427;  --c-ege-t:#F0EAE6;
+  --c-mol:#851E66;
+  --c-cond:#676B6E;   /* conditions: neutral, because a disease is not a stage.
+                         Dark enough to clear AA on the pale blue "Real science" box too,
+                         which is the lightest background these words land on. */
 }
 /* plain bold term, coloured by the stage it belongs to */
 .t{font-weight:700}

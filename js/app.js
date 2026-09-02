@@ -26,7 +26,7 @@
     'oesophagus:peristalsis':1,
     'stomach:churn':1, 'gall-bladder:emulsify':3,
     'duodenum:starchPath':4,
-    'ileum-villi:villus':3,
+    'ileum-villi:villus':5,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':2,
     'molecules-lab:starchPath':1
   };
@@ -966,7 +966,7 @@
       .then(function (v) {
         if (!v) return;
         v = v.trim();
-        if (v && v !== '1788300808') {
+        if (v && v !== '1788344782') {
           var t = document.getElementById('toast');
           t.innerHTML = 'A newer version of this page is available. ' +
             '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +

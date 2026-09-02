@@ -363,7 +363,7 @@
         '<circle cx="0" cy="0" r="4" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g>' +
         '<text class="fs" x="38" y="211">a bile salt — the head likes water,</text>' +
         '<text class="fs" x="38" y="224">the tail likes fat, so it sits on the surface</text>' +
-        '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" style="fill:#6B3FA0">lipase</tspan> to work on.</text>' +
+        '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" style="fill:#BC235B">lipase</tspan> to work on.</text>' +
         '<text class="fs" x="228" y="265" text-anchor="middle">No bonds are broken here — this is <tspan font-weight="700">physical</tspan>, not chemical.</text>'),
       cap:'<b>Emulsification.</b> Bile salts crowd onto the surface of a large fat droplet, and the churning of the gut then breaks it into many small ones that cannot re-join, because each is coated. Bile is <b>not</b> an enzyme: the fat molecules are unchanged, there is simply far more surface for lipase to attack. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
     };
@@ -383,7 +383,7 @@
     var flow =
       mol(8, 150, 96, -30, '#A16207', '3.4s', '0s') +
       mol(292, 150, -128, -34, '#A16207', '3.4s', '1.2s') +
-      mol(10, 250, 92, 12, '#6B3FA0', '3.6s', '0.6s') +
+      mol(10, 250, 92, 12, '#BC235B', '3.6s', '0.6s') +
       mol(290, 250, -140, -16, '#0F6E8C', '3.8s', '1.9s') +
       mol(12, 90, 88, 18, '#0F6E8C', '3.6s', '2.7s');
     var base = plateFig(art, {
@@ -877,21 +877,33 @@
   function sameBalance() {
     /* The point of "requirements vary" is NOT calories in against calories out —
        that is energy balance, a different idea, and not on 0610. The point is
-       that the seven components stay in the same proportions while the amount
-       changes. Three plates, same recipe, different size. */
+       "same recipe, different plate size" either: a growing child needs
+       proportionally more protein and more calcium, and someone digging all
+       day needs proportionally more carbohydrate and fat. Three plates, three
+       mixes, three sizes. */
     /* Seven slices, because the sentence above them says seven components.
        Vitamins and mineral ions are separate components of the diet, and
        water is one too — merging them into "vitamins and minerals" and
        leaving water out made the figure contradict its own heading. */
-    var SL = [{label:'Carbohydrate',pct:33,cat:'carbohydrate'},{label:'Protein',pct:17,cat:'protein'},
-              {label:'Fats and oils',pct:17,cat:'fat'},{label:'Fibre',pct:9,cat:'fibre'},
-              {label:'Vitamins',pct:6,cat:'vitamins'},{label:'Mineral ions',pct:6,cat:'minerals'},
-              {label:'Water',pct:12,cat:'water'}];
-    var who = [{x:82,  r:34, t:'A 7-year-old',   s:'still growing, but small'},
-               {x:228, r:48, t:'An office worker', s:'sitting most of the day'},
-               {x:388, r:64, t:'A builder',       s:'heavy work all day'}];
+    /* Vitamins and water are held level across all three on purpose: they are
+       the anchor that shows not everything changes. Each array totals 100. */
+    var SL_CHILD  = [{label:'Carbohydrate',pct:28,cat:'carbohydrate'},{label:'Protein',pct:22,cat:'protein'},
+                     {label:'Fats and oils',pct:15,cat:'fat'},{label:'Fibre',pct:8,cat:'fibre'},
+                     {label:'Vitamins',pct:6,cat:'vitamins'},{label:'Mineral ions',pct:9,cat:'minerals'},
+                     {label:'Water',pct:12,cat:'water'}];
+    var SL_DESK   = [{label:'Carbohydrate',pct:33,cat:'carbohydrate'},{label:'Protein',pct:17,cat:'protein'},
+                     {label:'Fats and oils',pct:16,cat:'fat'},{label:'Fibre',pct:10,cat:'fibre'},
+                     {label:'Vitamins',pct:6,cat:'vitamins'},{label:'Mineral ions',pct:6,cat:'minerals'},
+                     {label:'Water',pct:12,cat:'water'}];
+    var SL_LABOUR = [{label:'Carbohydrate',pct:36,cat:'carbohydrate'},{label:'Protein',pct:15,cat:'protein'},
+                     {label:'Fats and oils',pct:18,cat:'fat'},{label:'Fibre',pct:7,cat:'fibre'},
+                     {label:'Vitamins',pct:6,cat:'vitamins'},{label:'Mineral ions',pct:6,cat:'minerals'},
+                     {label:'Water',pct:12,cat:'water'}];
+    var who = [{x:82,  r:34, sl:SL_CHILD,  t:'A 7-year-old',     s:'growing \u2014 most protein'},
+               {x:228, r:48, sl:SL_DESK,   t:'An office worker', s:'sitting most of the day'},
+               {x:388, r:64, sl:SL_LABOUR, t:'A builder',        s:'heavy work \u2014 most energy'}];
     var g = who.map(function (w) {
-      var inner = pie(SL, w.r * 2);
+      var inner = pie(w.sl, w.r * 2);
       inner = inner.replace('<svg class="pie" viewBox', '<svg viewBox');
       return '<g transform="translate(' + (w.x - w.r) + ',' + (118 - w.r) + ')">' +
              '<svg width="' + (w.r * 2) + '" height="' + (w.r * 2) + '" ' +
@@ -899,17 +911,17 @@
              '<text class="fb" x="' + w.x + '" y="200" text-anchor="middle">' + w.t + '</text>' +
              '<text class="fs" x="' + w.x + '" y="215" text-anchor="middle">' + w.s + '</text>';
     }).join('');
-    var key = SL.map(function (sl, i) {
+    var key = SL_DESK.map(function (sl, i) {
       return '<g transform="translate(' + (16 + (i % 4) * 116) + ',' + (238 + Math.floor(i / 4) * 18) + ')">' +
              '<rect width="10" height="10" rx="3" fill="' + DIET_COL[sl.cat] + '"/>' +
              '<text class="fs" x="15" y="9">' + sl.label + '</text></g>';
     }).join('');
     return {
       svg: svg('0 0 470 296',
-        '<text class="fl" x="235" y="20" text-anchor="middle">The same seven components, in the same proportions.</text>' +
-        '<text class="fl" x="235" y="36" text-anchor="middle">What changes from person to person is <tspan font-weight="700">how much</tspan>.</text>' +
+        '<text class="fl" x="235" y="20" text-anchor="middle">The same seven components \u2014 but not in the same proportions.</text>' +
+        '<text class="fl" x="235" y="36" text-anchor="middle">Both the <tspan font-weight="700">mix</tspan> and the <tspan font-weight="700">amount</tspan> change with age and activity.</text>' +
         g + key),
-      cap:'A balanced diet is not one fixed menu. The <b>proportions</b> stay the same for everybody; the <b>amount</b> changes with age, activity, and during pregnancy. That is what exam questions test when they hand you four people and four diets.'
+      cap:'A balanced diet is not one fixed menu \u2014 and not one fixed recipe either. The <b>mix</b> changes as well as the <b>amount</b>. The growing 7-year-old needs the largest share of <b>protein</b> and <b>mineral ions</b> (calcium, for bones and teeth); the builder needs the largest share of <b>carbohydrate and fat</b>, because heavy work needs energy; the office worker sits between them. Watch the trap: a smaller <b>slice</b> is not less food. Fibre is a 7% slice for the builder and an 8% slice for the child, but his whole plate is far bigger, so he still eats much more fibre. Requirements change with <b>age, activity, pregnancy and breastfeeding</b>.'
     };
   }
 

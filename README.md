@@ -177,7 +177,7 @@ needs to change.
   Green is not used for meaning anywhere, because green is the app's own colour.
   Seven categories, inside the six-to-eight limit the research supports. Every ink
   clears WCAG AA on both backgrounds; the weakest measured on the live page is
-  5.78:1. See the notes at the top of `js/terms.js`.
+  4.64:1. See the notes at the top of `js/terms.js`.
 - Anything simplified is disclosed in the **How to use** panel.
 
 ## Credits
