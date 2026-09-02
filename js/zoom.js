@@ -363,14 +363,26 @@
       bounds = bounds ? { x:Math.min(bounds.x, pl.x), y:Math.min(bounds.y, pl.y), x1:Math.max(bounds.x1, pl.x + pl.W), y1:Math.max(bounds.y1, pl.y + pl.H) }
                       : { x:pl.x, y:pl.y, x1:pl.x + pl.W, y1:pl.y + pl.H };
     });
+    /* painted organs: the plate's own paths, cloned and recoloured */
+    (s.paint || []).forEach(function (pp) {
+      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + pp.organ + '"]'), function (path) {
+        if (path.tagName !== 'path' || path.style.display === 'none') return;
+        var m = path.getCTM(); if (!m) return;
+        var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, gImgs);
+        var c = el('path', { d:path.getAttribute('d'), fill:pp.fill || '#ccc', stroke:pp.stroke || 'none', 'stroke-width':pp.sw != null ? pp.sw : 1.2, 'stroke-linejoin':'round', opacity:pp.opacity != null ? pp.opacity : 1 }, g);
+        if (pp.dash) c.setAttribute('stroke-dasharray', pp.dash);
+      });
+    });
     /* the soft window */
     var win;
     if (s.window) win = s.window;
+    else if (s.crop && placed[0]) { var cp = placed[0].pl, cr = s.crop; win = [cp.x + cr[0] * cp.W, cp.y + cr[1] * cp.H, (cr[2] - cr[0]) * cp.W, (cr[3] - cr[1]) * cp.H]; }
     else if (s.full && bounds) win = [bounds.x - 18, bounds.y - 18, bounds.x1 - bounds.x + 36, bounds.y1 - bounds.y + 36];
     else { var g = s.pad != null ? s.pad : 0.45; win = [target.x - target.w * g, target.y - target.h * g, target.w * (1 + 2 * g), target.h * (1 + 2 * g)]; }
     /* a soft edge is for a cut-away; a whole plate with printed labels is shown crisp, the fade falling on its white margin */
     softBlur.setAttribute('stdDeviation', s.soft != null ? s.soft : (s.full ? 5 : 14));
     maskRect.setAttribute('x', win[0]); maskRect.setAttribute('y', win[1]); maskRect.setAttribute('width', win[2]); maskRect.setAttribute('height', win[3]);
+    if (s.paint && !specs.length) win = [frame.x - 50, frame.y - 50, frame.w + 100, frame.h + 100];
     var back = s.noback || !specs.length ? [0, 0, 0, 0] : [win[0] - 30, win[1] - 30, win[2] + 60, win[3] + 60];
     backRect.setAttribute('x', back[0]); backRect.setAttribute('y', back[1]); backRect.setAttribute('width', back[2]); backRect.setAttribute('height', back[3]);
 
@@ -413,7 +425,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor, outline:outlineFor });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor, outline:outlineFor, focus:s.focus || detail.organ });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;

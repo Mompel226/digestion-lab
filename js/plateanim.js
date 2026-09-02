@@ -269,5 +269,40 @@
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn };
+  /* ---------------- the ducts of the liver, gall bladder and pancreas ---------------- */
+  /* Drawn on the plate's own organs (which the step paints): the right and
+     left hepatic ducts leave the liver and join as the common hepatic duct;
+     the cystic duct from the gall bladder joins it to form the bile duct,
+     which runs down to the duodenum, where the pancreatic duct meets it. */
+  function ducts(ctx) {
+    var fs = ctx.fs, u = ctx.u, focus = ctx.focus;
+    var gb = ctx.outline ? ctx.outline('gall-bladder', 2) : [];
+    var neck = null; gb.forEach(function (q) { if (!neck || q[1] < neck[1]) neck = q; });   /* the top of the sac */
+    if (!neck) neck = [116, 474];
+    var J = [148, 470], A = [150, 548];                       /* the junction under the liver; the ampulla at the duodenum */
+    function tube(pts, w, col) {
+      var d = 'M' + pts[0][0] + ',' + pts[0][1];
+      for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; d += ' Q' + a[0] + ',' + a[1] + ' ' + mx + ',' + my; }
+      d += ' L' + pts[pts.length - 1][0] + ',' + pts[pts.length - 1][1];
+      return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w * u) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
+    var green = '#3F8A55', dark = '#2E6A3F';
+    var g = tube([[126, 452], [138, 462], J], 2.4, green) + tube([[164, 456], [156, 464], J], 2.4, green) +   /* right and left hepatic ducts */
+            tube([[neck[0], neck[1]], [neck[0] + 8, neck[1] - 6], [J[0] - 4, J[1] + 4]], 2.6, green) +           /* cystic duct */
+            tube([J, [148, 490], [146, 515], [148, 536], A], 3.2, dark) +                                          /* bile duct */
+            tube([[250, 540], [222, 543], [196, 545], [172, 546], A], 2.2, '#6E9E3E');                          /* pancreatic duct */
+    var dot = '<circle cx="' + A[0] + '" cy="' + A[1] + '" r="' + f1(2.2 * u) + '" fill="' + dark + '"/>';
+    var L = focus === 'gall-bladder'
+      ? label('cystic duct', neck[0] + 22, neck[1] - fs * 1.6, neck[0] + 9, neck[1] - 3, fs) +
+        label('bile duct — carries bile\nto the duodenum', 100, 520, 147, 505, fs, 'end') +
+        label('pancreatic duct', 212, 566, 205, 545, fs, 'middle') +
+        label('duodenum', 118, 585, 150, 555, fs, 'end')
+      : label('hepatic ducts carry\nbile out of the liver', 176, 440, 160, 458, fs) +
+        label('bile duct', 100, 520, 147, 505, fs, 'end') +
+        label('pancreatic duct', 212, 566, 205, 545, fs, 'middle') +
+        label('duodenum', 118, 585, 150, 555, fs, 'end');
+    return g + dot + L;
+  }
+
+  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, ducts:ducts };
 })(window);
