@@ -347,6 +347,7 @@
     (s.hide || []).forEach(function (organ) {
       Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) { p.style.opacity = '0'; hidden.push(p); });
     });
+    svg.classList.toggle('keep-organ', !!s.keep);
     var frame = frameFor(detailCam || CAM[detail.organ]);
     var fs = (s.px || 12.5) / ppu(frame);
     var target = s.box ? { x:s.box[0], y:s.box[1], w:s.box[2], h:s.box[3] } : organBox(detail.organ);
@@ -365,8 +366,10 @@
     });
     /* painted organs: the plate's own paths, cloned and recoloured */
     (s.paint || []).forEach(function (pp) {
-      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + pp.organ + '"]'), function (path) {
-        if (path.tagName !== 'path' || path.style.display === 'none') return;
+      var list = Array.prototype.filter.call(svg.querySelectorAll('.art .op[data-organ="' + pp.organ + '"]'), function (path) { return path.tagName === 'path' && path.style.display !== 'none'; });
+      if (pp.only) { var inv = svg.getScreenCTM().inverse(); list = list.filter(function (path) { var r = path.getBoundingClientRect(); var q1 = pt(inv, r.left, r.top), q2 = pt(inv, r.right, r.bottom); return q1.x >= pp.only[0] - 2 && q1.y >= pp.only[1] - 2 && q2.x <= pp.only[2] + 2 && q2.y <= pp.only[3] + 2; }); }
+      if (pp.largest) { var best = null, ba = 0; list.forEach(function (path) { var r = path.getBoundingClientRect(), ar = r.width * r.height; if (ar > ba) { ba = ar; best = path; } }); list = best ? [best] : []; }
+      list.forEach(function (path) {
         var m = path.getCTM(); if (!m) return;
         var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, gImgs);
         var c = el('path', { d:path.getAttribute('d'), fill:pp.fill || '#ccc', stroke:pp.stroke || 'none', 'stroke-width':pp.sw != null ? pp.sw : 1.2, 'stroke-linejoin':'round', opacity:pp.opacity != null ? pp.opacity : 1 }, g);
@@ -495,10 +498,10 @@
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = [];
     if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }
-    else if (layer) { fade = 1; layer.style.opacity = 0; }
+    else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
   }
-  function reset() { detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
     svg = svgEl; build(); setBox(frameFor(null));
     global.addEventListener('resize', function () { if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); });

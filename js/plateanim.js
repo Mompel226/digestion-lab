@@ -57,8 +57,13 @@
     lines.forEach(function (l, i) { out += '<tspan x="' + f1(tx) + '" dy="' + (i ? '1.15em' : '0') + '">' + l + '</tspan>'; });
     out += '</text>';
     if (ax != null) {
-      var sx = anchor === 'end' ? tx + fs * 0.25 : anchor === 'middle' ? tx : tx - fs * 0.25;
-      out = '<line class="dl__l" x1="' + f1(sx) + '" y1="' + f1(ty - fs * 0.35) + '" x2="' + f1(ax) + '" y2="' + f1(ay) + '" stroke-width="' + f1(fs * 0.09) + '"/>' +
+      var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
+      var tw = wmax * fs * 0.52, x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
+      var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
+      var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
+      if (sx === x0) sx -= fs * 0.25; else if (sx === x0 + tw) sx += fs * 0.25;
+      if (sy === yTop) sy -= fs * 0.15; else if (sy === yBot) sy += fs * 0.15;
+      out = '<line class="dl__l" x1="' + f1(sx) + '" y1="' + f1(sy) + '" x2="' + f1(ax) + '" y2="' + f1(ay) + '" stroke-width="' + f1(fs * 0.09) + '"/>' +
             '<circle class="dl__d" cx="' + f1(ax) + '" cy="' + f1(ay) + '" r="' + f1(fs * 0.22) + '" stroke-width="' + f1(fs * 0.08) + '"/>' + out;
     }
     return out;
@@ -110,7 +115,7 @@
        tongue), driven back, down the pharynx behind the folded epiglottis,
        then on down the oesophagus — where it lengthens to fit the tube.
        Every point was read off the picture's pixels. */
-    var route = [P(.26, .565), P(.34, .563), P(.42, .575), P(.46, .615), P(.49, .67), P(.52, .75), P(.546, .82), P(.553, .86), P(.557, .90), P(.559, .95), P(.56, 1.0), P(.56, 1.05)];
+    var route = [P(.26, .565), P(.34, .563), P(.42, .575), P(.46, .615), P(.49, .67), P(.52, .75), P(.55, .82), P(.556, .86), P(.558, .90), P(.559, .95), P(.56, 1.0), P(.56, 1.05)];
     var K = '0;0.09;0.18;0.27;0.36;0.45;0.53;0.6;0.66;0.72;0.77;0.8;1';
     var xs = route.map(function (q) { return f1(q[0]); }); xs.push(xs[xs.length - 1]);
     var ys = route.map(function (q) { return f1(q[1]); }); ys.push(ys[ys.length - 1]);
@@ -125,26 +130,26 @@
        from its base at the top of the larynx. It is hinged at the base and
        bends a little along its length as it folds down over the opening of
        the windpipe (the dark ellipse), then springs back. */
-    var H = P(.474, .789);
-    var leafN = [[.463,.788],[.466,.778],[.470,.770],[.474,.762],[.478,.754],[.483,.746],[.4885,.7395],[.4925,.745],[.4938,.753],[.4935,.761],[.4915,.769],[.4895,.777],[.4875,.784],[.485,.790]];
+    var H = P(.467, .812);
+    var leafN = [[.459,.812],[.461,.800],[.463,.788],[.466,.778],[.470,.770],[.474,.762],[.478,.754],[.483,.746],[.4885,.7395],[.4925,.745],[.4938,.753],[.4935,.761],[.4915,.769],[.4895,.777],[.4875,.784],[.485,.790],[.481,.798],[.4775,.806],[.474,.812]];
     var leaf = leafN.map(function (q) { var a = P(q[0], q[1]); return [a[0] - H[0], a[1] - H[1]]; });
     var Lmax = 0; leaf.forEach(function (q) { Lmax = Math.max(Lmax, Math.hypot(q[0], q[1])); });
     function leafPath(phi) {
       var rad = phi * Math.PI / 180;
       return 'M' + leaf.map(function (q) {
-        var s = Math.hypot(q[0], q[1]) / Lmax, a = rad * (0.8 + 0.4 * s);   /* the tip bends a little further than the base */
+        var s = Math.hypot(q[0], q[1]) / Lmax, a = rad * (0.85 + 0.3 * s);   /* the tip bends a little further than the base */
         var c = Math.cos(a), sn = Math.sin(a);
         return f1(H[0] + q[0] * c - q[1] * sn) + ',' + f1(H[1] + q[0] * sn + q[1] * c);
       }).join(' L') + ' Z';
     }
-    var PHI = 112, fr = [], kt = [];
+    var PHI = 105, fr = [], kt = [];
     function seg(t0, t1, from, to, n) { for (var i = 0; i < n; i++) { var k = i / (n - 1); fr.push(leafPath(from + (to - from) * k)); kt.push(t0 + (t1 - t0) * k); } }
     fr.push(leafPath(0)); kt.push(0);
     seg(0.28, 0.42, 0, PHI, 8);
     seg(0.62, 0.76, PHI, 0, 8);
     fr.push(leafPath(0)); kt.push(1);
-    var inlet = P(.50, .828);
-    var opening = '<ellipse cx="' + f1(inlet[0]) + '" cy="' + f1(inlet[1]) + '" rx="' + f1(im.W * .017) + '" ry="' + f1(im.H * .010) + '" fill="#4A1F1E" opacity=".6"/>';
+    var inlet = P(.50, .83);
+    var opening = '<ellipse cx="' + f1(inlet[0]) + '" cy="' + f1(inlet[1]) + '" rx="' + f1(im.W * .02) + '" ry="' + f1(im.H * .012) + '" fill="#4A1F1E" opacity=".65"/>';
     var flap = '<g><animateTransform attributeName="transform" type="translate" values="0,0;0,0;0,' + f1(-Lmax * .16) + ';0,' + f1(-Lmax * .16) + ';0,0;0,0" keyTimes="0;0.28;0.42;0.62;0.76;1" dur="' + DUR + 's" repeatCount="indefinite"/>' +
       '<path d="' + fr[0] + '" fill="#EFD7B8" stroke="#A9743C" stroke-width="' + f1(0.7 * u) + '" stroke-linejoin="round">' +
       A + '"d" values="' + fr.join(';') + '" keyTimes="' + kt.map(function (t) { return t.toFixed(3); }).join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path></g>';
@@ -227,13 +232,25 @@
       });
       return smoothArr(s, 3);
     }
-    function outer(rings) {
+    function insidePoly(P, x, y) { var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++) { var xi = P[i][0], yi = P[i][1], xj = P[j][0], yj = P[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) c = !c; } return c; }
+    function outerPts(rings) {
       var s = ringAll(rings);
-      return curve(smoothPts(W.map(function (w, k) { return [w.x + w.nx * s[k], w.y + w.ny * s[k]]; }), 1));
+      return smoothPts(W.map(function (w, k) { return [w.x + w.nx * s[k], w.y + w.ny * s[k]]; }), 1);
     }
+    function outer(rings) { return curve(outerPts(rings)); }
+    /* the lumen sits a fixed wall thickness inside the outer curve: offset along the outer
+       curve's own normals, then any point that strays outside is pulled back in */
     function inner(rings) {
-      var s = ringAll(rings);
-      return curve(smoothPts(W.map(function (w, k) { var t = Math.min(w.d * 0.6, 5 + s[k]); return [w.x + w.nx * t, w.y + w.ny * t]; }), 3));
+      var O = outerPts(rings), T = 5;
+      var I = O.map(function (q, k) {
+        var pv = O[(k - 2 + N) % N], nx = O[(k + 2) % N], tx = nx[0] - pv[0], ty = nx[1] - pv[1], L = Math.hypot(tx, ty) || 1;
+        var ux = -ty / L, uy = tx / L;
+        if ((cx - q[0]) * ux + (cy - q[1]) * uy < 0) { ux = -ux; uy = -uy; }
+        var x = q[0] + ux * T, y = q[1] + uy * T, tries = 0;
+        while (!insidePoly(O, x, y) && tries++ < 8) { x += (cx - x) * 0.15; y += (cy - y) * 0.15; }
+        return [x, y];
+      });
+      return curve(smoothPts(I, 2));
     }
     var fo = [], fi = [], f;
     for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); fi.push(inner(rings)); }
@@ -269,40 +286,55 @@
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
 
-  /* ---------------- the ducts of the liver, gall bladder and pancreas ---------------- */
-  /* Drawn on the plate's own organs (which the step paints): the right and
-     left hepatic ducts leave the liver and join as the common hepatic duct;
-     the cystic duct from the gall bladder joins it to form the bile duct,
-     which runs down to the duodenum, where the pancreatic duct meets it. */
-  function ducts(ctx) {
-    var fs = ctx.fs, u = ctx.u, focus = ctx.focus;
-    var gb = ctx.outline ? ctx.outline('gall-bladder', 2) : [];
-    var neck = null; gb.forEach(function (q) { if (!neck || q[1] < neck[1]) neck = q; });   /* the top of the sac */
-    if (!neck) neck = [116, 474];
-    var J = [148, 470], A = [150, 548];                       /* the junction under the liver; the ampulla at the duodenum */
-    function tube(pts, w, col) {
-      var d = 'M' + pts[0][0] + ',' + pts[0][1];
-      for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; d += ' Q' + a[0] + ',' + a[1] + ' ' + mx + ',' + my; }
-      d += ' L' + pts[pts.length - 1][0] + ',' + pts[pts.length - 1][1];
-      return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w * u) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+  /* ---------------- bile and pancreatic juice, flowing along the plate's own ducts ---------------- */
+  /* The plate already draws the hepatic ducts, the gall bladder with its
+     cystic duct, the bile duct down to the duodenum, and the pancreatic
+     duct. These routes were read off those paths; droplets run along them. */
+  function drops(route, col, r, dur, n, phase) {
+    var d = 'M' + route.map(function (q) { return q[0] + ',' + q[1]; }).join(' L'), out = '';
+    for (var i = 0; i < n; i++) {
+      var b = (-(i / n) * dur + (phase || 0)).toFixed(2);
+      out += '<circle r="' + f1(r) + '" fill="' + col + '" stroke="#fff" stroke-width="' + f1(r * .25) + '" opacity=".95"><animateMotion dur="' + dur + 's" begin="' + b + 's" repeatCount="indefinite" path="' + d + '" calcMode="linear"/>' +
+             A + '"opacity" values="0;1;1;0" keyTimes="0;0.08;0.9;1" dur="' + dur + 's" begin="' + b + 's" repeatCount="indefinite"/></circle>';
     }
-    var green = '#3F8A55', dark = '#2E6A3F';
-    var g = tube([[126, 452], [138, 462], J], 2.4, green) + tube([[164, 456], [156, 464], J], 2.4, green) +   /* right and left hepatic ducts */
-            tube([[neck[0], neck[1]], [neck[0] + 8, neck[1] - 6], [J[0] - 4, J[1] + 4]], 2.6, green) +           /* cystic duct */
-            tube([J, [148, 490], [146, 515], [148, 536], A], 3.2, dark) +                                          /* bile duct */
-            tube([[250, 540], [222, 543], [196, 545], [172, 546], A], 2.2, '#6E9E3E');                          /* pancreatic duct */
-    var dot = '<circle cx="' + A[0] + '" cy="' + A[1] + '" r="' + f1(2.2 * u) + '" fill="' + dark + '"/>';
+    return out;
+  }
+  var BILE = '#8DB43A', JUICE = '#E8C95A';
+  var HEP1 = [[136, 433], [136, 452], [135, 468], [140, 476], [152, 482]];
+  var HEP2 = [[115, 434], [120, 448], [125, 464], [133, 474], [146, 481]];
+  var CYST = [[104, 487], [124, 486], [142, 487], [152, 486]];
+  var BILED = [[154, 484], [160, 496], [161, 510], [158, 526], [151, 542], [143, 556]];
+  var PANC = [[255, 506], [236, 513], [214, 522], [192, 531], [172, 541], [155, 553]];
+  function bileflow(ctx) {
+    var fs = ctx.fs, u = ctx.u, focus = ctx.focus, r = 1.5 * u;
+    var g = '';
+    if (focus === 'gall-bladder') {
+      g += drops(CYST.concat(BILED.slice(1)), BILE, r, 4.2, 4, 0) + drops(HEP1, BILE, r * .8, 3.6, 2, .5) + drops(HEP2, BILE, r * .8, 3.6, 2, 1.4);
+    } else {
+      g += drops(HEP1.concat(BILED.slice(1)), BILE, r, 4.6, 4, 0) + drops(HEP2, BILE, r, 3.2, 3, .7) + drops(CYST, BILE, r * .8, 2.6, 2, 1.1);
+    }
+    g += drops(PANC, JUICE, r * .9, 3.8, 3, .3);
     var L = focus === 'gall-bladder'
-      ? label('cystic duct', neck[0] + 22, neck[1] - fs * 1.6, neck[0] + 9, neck[1] - 3, fs) +
-        label('bile duct — carries bile\nto the duodenum', 100, 520, 147, 505, fs, 'end') +
-        label('pancreatic duct', 212, 566, 205, 545, fs, 'middle') +
-        label('duodenum', 118, 585, 150, 555, fs, 'end')
-      : label('hepatic ducts carry\nbile out of the liver', 176, 440, 160, 458, fs) +
-        label('bile duct', 100, 520, 147, 505, fs, 'end') +
-        label('pancreatic duct', 212, 566, 205, 545, fs, 'middle') +
-        label('duodenum', 118, 585, 150, 555, fs, 'end');
-    return g + dot + L;
+      ? label('gall bladder — stores bile', 96, 512, 118, 490, fs, 'start') +
+        label('cystic duct', 128, 466, 135, 486, fs, 'start') +
+        label('bile duct — bile to\nthe duodenum', 176, 516, 160, 512, fs, 'start') +
+        label('pancreatic duct', 214, 560, 200, 528, fs, 'start') +
+        label('duodenum', 118, 585, 140, 560, fs, 'end')
+      : label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
+        label('hepatic ducts carry\nbile out of the liver', 150, 448, 137, 452, fs, 'start') +
+        label('gall bladder', 96, 512, 118, 490, fs, 'start') +
+        label('bile duct', 176, 516, 160, 512, fs, 'start') +
+        label('pancreatic duct', 214, 560, 200, 528, fs, 'start') +
+        label('duodenum', 118, 585, 140, 560, fs, 'end');
+    return g + L;
+  }
+  /* pancreatic juice along the duct of the pancreas render */
+  function juiceflow(ctx) {
+    var im = ctx.img, u = ctx.u;
+    if (!im) return '';
+    function P(nx, ny) { return [f1(im.x + nx * im.W), f1(im.y + ny * im.H)]; }
+    return drops([P(.76, .50), P(.62, .50), P(.48, .52), P(.34, .545), P(.20, .55)], JUICE, 1.6 * u, 4, 4, 0);
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, ducts:ducts };
+  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, juiceflow:juiceflow };
 })(window);

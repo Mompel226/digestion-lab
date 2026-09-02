@@ -800,3 +800,6 @@ body[data-mode="practice"] .panel__inner::before{
 #bodySvg .detail .inset:hover rect:first-child{stroke:#5E7A55;stroke-width:1.2}
 #bodySvg .detail .inset:focus{outline:none}
 #bodySvg .detail .inset:focus rect:first-child{stroke:#5E7A55;stroke-width:1.4}
+
+/* some stations show the plate's own drawing of the organ, undimmed, with labels over it */
+#bodySvg.has-detail.keep-organ .art .op.is-on{opacity:1 !important}
