@@ -26,16 +26,16 @@
   var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
   var CAM = {
-    'mouth':           { cx:132, cy:128, w:150 },
+    'mouth':           { cx:132, cy:146, w:150 },
     'salivary-glands': { cx:146, cy:146, w:160 },
-    'epiglottis':      { cx:158, cy:198, w:140 },
+    'epiglottis':      { cx:152, cy:190, w:190 },
     'oesophagus':      { cx:178, cy:318, w:250 },
     'stomach':         { cx:238, cy:474, w:200 },
     'liver':           { cx:130, cy:466, w:220 },
     'gall-bladder':    { cx:116, cy:487, w:200 },
     'pancreas':        { cx:205, cy:535, w:210 },
     'duodenum':        { cx:165, cy:560, w:190 },
-    'ileum-villi':     { cx:192, cy:650, w:220 },
+    'ileum-villi':     { cx:192, cy:660, w:300 },
     'colon':           { cx:182, cy:662, w:280 },
     'rectum-anus':     { cx:178, cy:772, w:170 }
   };
@@ -45,7 +45,7 @@
   var SPOT_SRC = 'assets/photos/biliary-system-plain.svg';
 
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
-  var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null;
+  var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, softBlur = null;
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
@@ -114,7 +114,9 @@
     layer = null;
     var defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
     var filt = el('filter', { id:'detailSoft', x:'-20%', y:'-20%', width:'140%', height:'140%' }, defs);
-    el('feGaussianBlur', { stdDeviation:'14' }, filt);
+    softBlur = el('feGaussianBlur', { stdDeviation:'14' }, filt);
+    var sh = el('filter', { id:'insetShadow', x:'-20%', y:'-20%', width:'140%', height:'150%' }, defs);
+    el('feDropShadow', { dx:'0', dy:'1.2', stdDeviation:'1.6', 'flood-color':'#3a2e1c', 'flood-opacity':'.35' }, sh);
     /* explicit region: the default is the current viewport +10%, which clips a zoomed camera at a hard edge */
     var mask = el('mask', { id:'detailMask', maskUnits:'userSpaceOnUse', x:'-4000', y:'-4000', width:'10000', height:'10000' }, defs);
     maskRect = el('rect', { fill:'#fff', rx:'22', filter:'url(#detailSoft)' }, mask);
@@ -129,6 +131,7 @@
     spotLine = el('g', { 'class':'detail__spot', fill:'none', stroke:'#D9962B', 'stroke-linejoin':'round', opacity:'.9' }, layer);
     gAnim = el('g', { 'class':'detail__anim' }, layer);
     gLabels = el('g', { 'class':'detail__labels' }, layer);
+    gInsets = el('g', { 'class':'detail__insets' }, layer);
     var hits = svg.querySelector('.hits');
     if (hits) svg.insertBefore(layer, hits); else svg.appendChild(layer);
 
@@ -263,7 +266,7 @@
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
-    gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
+    gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     var frame = frameFor(detailCam || CAM[detail.organ]);
     var fs = (s.px || 12.5) / ppu(frame);
@@ -284,8 +287,10 @@
     /* the soft window */
     var win;
     if (s.window) win = s.window;
-    else if (s.full && bounds) win = [bounds.x - 6, bounds.y - 6, bounds.x1 - bounds.x + 12, bounds.y1 - bounds.y + 12];
+    else if (s.full && bounds) win = [bounds.x - 18, bounds.y - 18, bounds.x1 - bounds.x + 36, bounds.y1 - bounds.y + 36];
     else { var g = s.pad != null ? s.pad : 0.45; win = [target.x - target.w * g, target.y - target.h * g, target.w * (1 + 2 * g), target.h * (1 + 2 * g)]; }
+    /* a soft edge is for a cut-away; a whole plate with printed labels is shown crisp, the fade falling on its white margin */
+    softBlur.setAttribute('stdDeviation', s.soft != null ? s.soft : (s.full ? 5 : 14));
     maskRect.setAttribute('x', win[0]); maskRect.setAttribute('y', win[1]); maskRect.setAttribute('width', win[2]); maskRect.setAttribute('height', win[3]);
     var back = s.noback || !specs.length ? [0, 0, 0, 0] : [win[0] - 30, win[1] - 30, win[2] + 60, win[3] + 60];
     backRect.setAttribute('x', back[0]); backRect.setAttribute('y', back[1]); backRect.setAttribute('width', back[2]); backRect.setAttribute('height', back[3]);
@@ -295,6 +300,29 @@
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
 
     if (s.spot && placed[0]) { spotImg._href = 'assets/' + placed[0].d.img; spot(s.spot, placed[0].pl, win); }
+    /* insets: small crisp photographs in a frame, on top of the illustration, never faded */
+    (s.insets || []).forEach(function (ins) {
+      if (!ins.w) { probe(ins, s); pending = true; return; }
+      var x = ins.at[0], y = ins.at[1], w = ins.at[2], h = w * ins.h / ins.w;
+      var g = el('g', { 'class':'inset' }, gInsets);
+      el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
+      var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
+      im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
+      var ipl = { x:x, y:y, W:w, H:h };
+      var keep = gLabels; gLabels = g;
+      (ins.labels || []).forEach(function (L) { drawLabel(L, ipl, fs * (ins.fs || 0.92), null); });
+      gLabels = keep;
+      if (ins.cap) {
+        var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(y + h + fs * 1.15), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
+        String(ins.cap).split('\n').forEach(function (l, i) { var ts = el('tspan', { x:f1(x + w / 2), dy:i ? '1.15em' : '0' }, t); ts.textContent = l; });
+      }
+      if (ins.to && placed[0]) {
+        var ax = placed[0].pl.x + ins.to[0] * placed[0].pl.W, ay = placed[0].pl.y + ins.to[1] * placed[0].pl.H;
+        var sx = ax < x ? x - 2 : x + w + 2, sy = y + h / 2;
+        el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) }, g);
+        el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, g);
+      }
+    });
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();

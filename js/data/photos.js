@@ -95,12 +95,24 @@ window.PHOTOS = {
   ],
   "ileum-villi": [
     {
-      "t": "photo",
-      "src": "intestine-dissection.jpg",
-      "kind": "Photograph",
-      "cap": "This is the organ itself. Loops of jejunum opened at surgery, with the fan-shaped mesentery carrying the blood vessels that take absorbed nutrients away — six to seven metres of tube in an adult, and everything below happens on its inside surface.",
-      "maxw": 800,
-      "after": 0
+      "t": "pair",
+      "kind": "Photograph and 3-D render",
+      "after": 0,
+      "cap": "<b>The organ itself.</b> Left, a dissection: loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries the blood vessels taking absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine, with its vessels running through it.",
+      "of": [
+        {
+          "photo": "intestine-dissection.jpg",
+          "label": "Dissection: jejunum and its mesentery",
+          "maxw": 800,
+          "w": 52
+        },
+        {
+          "photo": "mesentery-render.jpg",
+          "label": "The mesentery, whole",
+          "maxw": 800,
+          "w": 48
+        }
+      ]
     },
     {
       "t": "photo",
