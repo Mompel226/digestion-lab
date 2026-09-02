@@ -11,8 +11,8 @@
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
     diet:['sameBalance'], overview:[], mouth:['chewing'],
-    'salivary-glands':['starchPath'], epiglottis:['swallow'], oesophagus:['peristalsis'],
-    stomach:['churn'], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
+    'salivary-glands':['starchPath'], epiglottis:[], oesophagus:[],
+    stomach:[], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
     duodenum:['starchPath'], 'ileum-villi':['villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath']
@@ -22,9 +22,8 @@
   var FIG_AFTER = {
     'diet:sameBalance':6,
     'mouth:chewing':2,
-    'salivary-glands:starchPath':2, 'epiglottis:swallow':2,
-    'oesophagus:peristalsis':1,
-    'stomach:churn':0, 'gall-bladder:emulsify':3,
+    'salivary-glands:starchPath':2,
+    'gall-bladder:emulsify':3,
     'duodenum:starchPath':2,
     'ileum-villi:villus':5,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
@@ -252,9 +251,9 @@
 
     if (tab === 'learn') paintLearn(pane, st);
     else paintDo(pane, st);
+    var panelEl = document.getElementById('panel');
+    panelEl.style.scrollBehavior = 'auto'; panelEl.scrollTop = 0; panelEl.style.scrollBehavior = '';
     if (window.Zoom) { if (tab === 'learn') window.Zoom.bindLearn(pane); else window.Zoom.unbind(); }
-
-    document.getElementById('panel').scrollTop = 0;
   }
 
   function paintLearn(pane, st) {

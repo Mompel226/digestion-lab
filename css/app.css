@@ -786,3 +786,11 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* the food tracer sits on the plate's own canal; under a registered illustration it would point at the wrong structure */
 #bodySvg.has-detail #bolus, #bodySvg.has-detail #bolusGlowC { opacity: 0; transition: opacity .3s; }
+
+/* labels drawn on the plate's detail: our own, so the camera never cuts a word */
+#bodySvg .detail .dl__t{font-family:Calibri,Carlito,"Segoe UI",-apple-system,sans-serif;font-weight:600;fill:#1F2A1F;paint-order:stroke;stroke:#FFFDF9;stroke-width:.34em;stroke-linejoin:round}
+#bodySvg .detail .dl__l{stroke:#3A3A3A;fill:none;stroke-linecap:round}
+#bodySvg .detail .dl__d{fill:#3A3A3A;stroke:#FFFDF9}
+
+/* phone: the tab bar must not float over the sticky plate */
+@media (max-width:1000px){ .tabs{position:static} }
