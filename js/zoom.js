@@ -45,11 +45,12 @@
   var SPOT_SRC = 'assets/photos/biliary-system-plain2.svg';
 
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
+  var keyImg = null, keyImgFront = null, keyWrap = null, keyCache = {};
   var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, softBlur = null;
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
-  var SPOT = null, spotLoading = false;
+  var SPOT = null, spotLoading = false, hidden = [];
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
@@ -127,7 +128,13 @@
     backRect = el('rect', { fill:'#FFFDF9', mask:'url(#detailMask)' }, layer);
     gImgs = el('g', { 'class':'detail__imgs', mask:'url(#detailMask)' }, layer);
     dimRect = el('rect', { fill:'#FFFDF9', opacity:'.66', mask:'url(#detailMask)', width:'0', height:'0' }, layer);
+    var km = el('mask', { id:'detailKey', maskUnits:'userSpaceOnUse', maskContentUnits:'userSpaceOnUse', x:'-4000', y:'-4000', width:'10000', height:'10000' }, defs);
+    keyImg = el('image', { preserveAspectRatio:'none', width:'0', height:'0' }, km);
+    var glow = el('filter', { id:'spotGlow', x:'-20%', y:'-20%', width:'140%', height:'140%' }, defs);
+    el('feDropShadow', { dx:'0', dy:'0', stdDeviation:'1.6', 'flood-color':'#E8A33D', 'flood-opacity':'.95' }, glow);
     spotImg = el('image', { 'clip-path':'url(#detailSpot)', mask:'url(#detailMask)', preserveAspectRatio:'none', width:'0', height:'0' }, layer);
+    keyWrap = el('g', { filter:'url(#spotGlow)' }, layer);
+    keyImgFront = el('image', { mask:'url(#detailKey)', preserveAspectRatio:'none', width:'0', height:'0' }, keyWrap);
     spotLine = el('g', { 'class':'detail__spot', fill:'none', stroke:'#D9962B', 'stroke-linejoin':'round', opacity:'.9' }, layer);
     gAnim = el('g', { 'class':'detail__anim' }, layer);
     gLabels = el('g', { 'class':'detail__labels' }, layer);
@@ -291,11 +298,55 @@
     spotImg.setAttribute('width', pl.W); spotImg.setAttribute('height', pl.H);
   }
 
+  /* The organ's pixels, picked out by colour (hue/saturation/value ranges in
+     0..1), become a mask: the picture is dimmed and the organ shown again in
+     full colour on top with a soft gold edge. Masks are cached per key. */
+  function spotByColour(key, p, win, s) {
+    var src = 'assets/' + p.d.img, id = src + '|' + JSON.stringify(key);
+    function apply(url) {
+      keyImg.setAttribute('href', url); keyImg.setAttributeNS(XL, 'xlink:href', url);
+      [keyImg, keyImgFront].forEach(function (im) { im.setAttribute('x', p.pl.x); im.setAttribute('y', p.pl.y); im.setAttribute('width', p.pl.W); im.setAttribute('height', p.pl.H); });
+      keyImgFront.setAttribute('href', src); keyImgFront.setAttributeNS(XL, 'xlink:href', src);
+      dimRect.setAttribute('x', win[0]); dimRect.setAttribute('y', win[1]); dimRect.setAttribute('width', win[2]); dimRect.setAttribute('height', win[3]);
+    }
+    if (keyCache[id]) { apply(keyCache[id]); return; }
+    var im = new Image();
+    im.onload = function () {
+      var W = Math.min(480, im.naturalWidth), H = Math.round(im.naturalHeight * W / im.naturalWidth);
+      var c = document.createElement('canvas'); c.width = W; c.height = H;
+      var g = c.getContext('2d'); g.drawImage(im, 0, 0, W, H);
+      var d = g.getImageData(0, 0, W, H), px = d.data, out = g.createImageData(W, H), o = out.data;
+      for (var i = 0; i < px.length; i += 4) {
+        var r = px[i] / 255, gg = px[i + 1] / 255, b = px[i + 2] / 255, mx = Math.max(r, gg, b), mn = Math.min(r, gg, b), v = mx, sat = mx ? (mx - mn) / mx : 0, h = 0;
+        if (mx !== mn) { if (mx === r) h = ((gg - b) / (mx - mn) + 6) % 6; else if (mx === gg) h = (b - r) / (mx - mn) + 2; else h = (r - gg) / (mx - mn) + 4; h /= 6; }
+        var hit = key.h.some(function (rng) { return h >= rng[0] && h <= rng[1]; }) && sat >= key.s[0] && sat <= key.s[1] && v >= key.v[0] && v <= key.v[1];
+        var val = hit ? 255 : 0; o[i] = val; o[i + 1] = val; o[i + 2] = val; o[i + 3] = 255;
+      }
+      /* fill pinholes and soften: a blur pass, then a threshold */
+      g.putImageData(out, 0, 0);
+      var c2 = document.createElement('canvas'); c2.width = W; c2.height = H; var g2 = c2.getContext('2d');
+      g2.filter = 'blur(2px)'; g2.drawImage(c, 0, 0); g2.filter = 'none';
+      var d2 = g2.getImageData(0, 0, W, H), q = d2.data;
+      for (var j = 0; j < q.length; j += 4) { var t = q[j] > 110 ? 255 : 0; q[j] = t; q[j + 1] = t; q[j + 2] = t; q[j + 3] = 255; }
+      g2.putImageData(d2, 0, 0);
+      var c3 = document.createElement('canvas'); c3.width = W; c3.height = H; var g3 = c3.getContext('2d'); g3.filter = 'blur(1px)'; g3.drawImage(c2, 0, 0);
+      var url = c3.toDataURL('image/png'); keyCache[id] = url;
+      if (steps[stepIdx] === s) apply(url);
+    };
+    im.src = src;
+  }
+
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
     gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
+    keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
+    /* organs the step covers with its own picture are hidden, so nothing shows twice */
+    hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = [];
+    (s.hide || []).forEach(function (organ) {
+      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) { p.style.opacity = '0'; hidden.push(p); });
+    });
     var frame = frameFor(detailCam || CAM[detail.organ]);
     var fs = (s.px || 12.5) / ppu(frame);
     var target = s.box ? { x:s.box[0], y:s.box[1], w:s.box[2], h:s.box[3] } : organBox(detail.organ);
@@ -328,6 +379,7 @@
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
 
     if (s.spot && placed[0]) { spotImg._href = 'assets/' + placed[0].d.img; spot(s.spot, placed[0].pl, win); }
+    if (s.spotKey && placed[0]) spotByColour(s.spotKey, placed[0], win, s);
     /* insets: small crisp photographs in a frame, on top of the illustration, never faded */
     (s.insets || []).forEach(function (ins) {
       if (!ins.w) { probe(ins, s); pending = true; return; }
@@ -392,6 +444,8 @@
   function goStep(j, now) {
     stepIdx = j;
     var s = steps[j];
+    var cam = s.cam || CAM[detail.organ];
+    if (cam !== detailCam) { detailCam = cam; if (!now) flyTo(frameFor(cam), 700); }
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     if (now) { applyStep(s); fade = 1; setBox(cur); return; }
     fade = 0; setBox(cur);
@@ -427,11 +481,12 @@
     steps = detail ? (detail.steps || [detail]) : [];
     stepIdx = -1; lis = null;
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+    hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = [];
     if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }
     else if (layer) { fade = 1; layer.style.opacity = 0; }
-    flyTo(frameFor(cam), 800);
+    flyTo(frameFor(detailCam || cam), 800);
   }
-  function reset() { detail = null; detailCam = null; steps = []; stepIdx = -1; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function reset() { detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
     svg = svgEl; build(); setBox(frameFor(null));
     global.addEventListener('resize', function () { if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); });

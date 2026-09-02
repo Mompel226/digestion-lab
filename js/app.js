@@ -5,7 +5,7 @@
   'use strict';
 
   var ORDER = ['diet','overview','mouth','salivary-glands','epiglottis','oesophagus','stomach',
-               'liver','gall-bladder','pancreas','duodenum','ileum-villi','colon',
+               'liver','gall-bladder','pancreas','ileum-villi','colon',
                'rectum-anus','molecules-lab'];
 
   /* which drawn/animated figures each station shows in "See it" */
@@ -13,7 +13,7 @@
     diet:['sameBalance'], overview:[], mouth:['chewing'],
     'salivary-glands':['starchPath'], epiglottis:[], oesophagus:[],
     stomach:[], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
-    duodenum:['starchPath'], 'ileum-villi':['villus'],
+    'ileum-villi':['starchPath','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath']
   };
@@ -24,8 +24,7 @@
     'mouth:chewing':2,
     'salivary-glands:starchPath':2,
     'gall-bladder:emulsify':3,
-    'duodenum:starchPath':2,
-    'ileum-villi:villus':5,
+    'ileum-villi:starchPath':2, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
     'molecules-lab:starchPath':0
   };
@@ -634,6 +633,7 @@
 
   /* ---------- open a station ---------- */
   function open(id, fromTour, focusTerm, cameFrom) {
+    if (id === 'duodenum') id = 'ileum-villi';          /* the duodenum is read at the small-intestine station */
     if (!S[id]) return;
     current = id;
     tab = 'learn';
@@ -721,7 +721,7 @@
     b.dataset.running = '1';
     b.setAttribute('aria-pressed', 'true');
     tourLabel().textContent = 'Stop the tour';
-    var stops = window.Anatomy.ORGANS
+    var stops = window.Anatomy.ORGANS.filter(function (o) { return o.id !== 'duodenum'; })
       .filter(function (o) { return window.Anatomy.state.showBeyond || !o.beyond; })
       .map(function (o) { return { id:o.id, t:window.Anatomy.stopFor(o.id) }; })
       .sort(function (a, b2) { return a.t - b2.t; });

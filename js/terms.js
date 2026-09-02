@@ -160,7 +160,7 @@
     'pepsin':'stomach', 'gastric juice':'stomach', 'hydrochloric acid':'stomach', 'chyme':'stomach',
     'churning':'stomach', 'churns':'stomach',
     'amylase':'salivary-glands', 'salivary amylase':'salivary-glands', 'saliva':'salivary-glands',
-    'maltase':'duodenum', 'trypsin':'pancreas', 'pancreatic juice':'pancreas', 'lipase':'pancreas',
+    'maltase':'ileum-villi', 'trypsin':'pancreas', 'pancreatic juice':'pancreas', 'lipase':'pancreas',
     'mastication':'mouth', 'incisor':'mouth', 'incisors':'mouth', 'canine':'mouth', 'canines':'mouth',
     'premolar':'mouth', 'premolars':'mouth', 'molar':'mouth', 'molars':'mouth',
     'enamel':'mouth', 'dentine':'mouth', 'pulp':'mouth', 'cement':'mouth',

@@ -13,9 +13,9 @@ at each organ in turn.
 
 ## What is in it
 
-**15 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
-epiglottis, oesophagus, stomach, liver, gall bladder, pancreas, duodenum, small
-intestine, large intestine, rectum and anus, and a Molecules Lab that reaches back
+**14 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
+epiglottis, oesophagus, stomach, liver, gall bladder, pancreas, small intestine (duodenum,
+jejunum and ileum), large intestine, rectum and anus, and a Molecules Lab that reaches back
 into Topics 3, 4 and 5.
 
 **107 questions** across seven kinds:

@@ -106,35 +106,49 @@
     if (!im) return '';
     function P(nx, ny) { return [im.x + nx * im.W, im.y + ny * im.H]; }
     var DUR = 6.5;
-    /* the bolus travels in the oral cavity (the dark space between palate and
-       tongue), is driven back, drops down the pharynx behind the folded
-       epiglottis and on down the oesophagus. Points were read off the
-       picture's pixels, not guessed. */
-    var route = [P(.26, .565), P(.34, .563), P(.42, .575), P(.46, .615), P(.49, .67), P(.52, .75), P(.548, .82), P(.555, .88), P(.56, .95), P(.565, 1.04)];
-    var K = '0;0.1;0.2;0.3;0.4;0.5;0.58;0.66;0.74;0.8;1';
+    /* the bolus: along the oral cavity (the dark space between palate and
+       tongue), driven back, down the pharynx behind the folded epiglottis,
+       then on down the oesophagus — where it lengthens to fit the tube.
+       Every point was read off the picture's pixels. */
+    var route = [P(.26, .565), P(.34, .563), P(.42, .575), P(.46, .615), P(.49, .67), P(.52, .75), P(.546, .82), P(.553, .86), P(.557, .90), P(.559, .95), P(.56, 1.0), P(.56, 1.05)];
+    var K = '0;0.09;0.18;0.27;0.36;0.45;0.53;0.6;0.66;0.72;0.77;0.8;1';
     var xs = route.map(function (q) { return f1(q[0]); }); xs.push(xs[xs.length - 1]);
     var ys = route.map(function (q) { return f1(q[1]); }); ys.push(ys[ys.length - 1]);
-    var rx = im.W * 0.018, ry = im.H * 0.012;
-    var bolus = '<ellipse rx="' + f1(rx) + '" ry="' + f1(ry) + '" fill="#C98A45" stroke="#8A5A2B" stroke-width="' + f1(0.7 * u) + '">' +
-      A + '"cx" values="' + xs.join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(10) + '"/>' +
-      A + '"cy" values="' + ys.join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(10) + '"/>' +
-      A + '"opacity" values="0;1;1;1;1;1;1;1;1;0;0" keyTimes="0;0.05;0.2;0.3;0.4;0.5;0.58;0.66;0.76;0.8;1" dur="' + DUR + 's" repeatCount="indefinite"/></ellipse>';
-    /* the epiglottis: a leaf hinged at its base, standing up behind the
-       tongue. As the larynx rises it tips back and down over the opening of
-       the windpipe (the dark ellipse), so the bolus is guided past it into
-       the oesophagus. */
-    var B = P(.472, .81), T = P(.485, .755);
-    var L = Math.hypot(T[0] - B[0], T[1] - B[1]), a0 = Math.atan2(T[1] - B[1], T[0] - B[0]) * 180 / Math.PI;
-    var w = L * 0.42;
-    var leaf = 'M0,' + f1(-w * .45) + ' Q' + f1(L * .55) + ',' + f1(-w) + ' ' + f1(L) + ',0 Q' + f1(L * .55) + ',' + f1(w) + ' 0,' + f1(w * .45) + ' Z';
-    var KT = '0;0.28;0.42;0.62;0.74;1';
-    var inlet = P(.50, .83);
-    var opening = '<ellipse cx="' + f1(inlet[0]) + '" cy="' + f1(inlet[1]) + '" rx="' + f1(im.W * .019) + '" ry="' + f1(im.H * .010) + '" fill="#4A1F1E" opacity=".6"/>';
-    var flap = '<g transform="translate(' + f1(B[0]) + ',' + f1(B[1]) + ')">' +
-      '<animateTransform attributeName="transform" type="translate" additive="sum" values="0,0;0,0;0,' + f1(-L * .2) + ';0,' + f1(-L * .2) + ';0,0;0,0" keyTimes="' + KT + '" dur="' + DUR + 's" repeatCount="indefinite"/>' +
-      '<path d="' + leaf + '" fill="#F0C79F" stroke="#A9743C" stroke-width="' + f1(0.8 * u) + '" stroke-linejoin="round" transform="rotate(' + f1(a0) + ')">' +
-      '<animateTransform attributeName="transform" type="rotate" values="' + f1(a0) + ';' + f1(a0) + ';' + f1(a0 + 113) + ';' + f1(a0 + 113) + ';' + f1(a0) + ';' + f1(a0) + '" keyTimes="' + KT + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(5) + '"/></path></g>';
-    var e = T, tr = P(.46, .93), oe = P(.565, .93), ph = P(.515, .66), tg = P(.33, .60);
+    var rxW = im.W * 0.018, rxN = im.W * 0.011, ryM = im.H * 0.012, ryT = im.H * 0.022;
+    var bolus = '<ellipse rx="' + f1(rxW) + '" ry="' + f1(ryM) + '" fill="#C98A45" stroke="#8A5A2B" stroke-width="' + f1(0.7 * u) + '">' +
+      A + '"cx" values="' + xs.join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(12) + '"/>' +
+      A + '"cy" values="' + ys.join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(12) + '"/>' +
+      A + '"rx" values="' + [rxW, rxW, rxW, rxW * .95, rxW * .9, rxW * .85, rxN * 1.2, rxN, rxN, rxN, rxN, rxN, rxW].map(f1).join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite"/>' +
+      A + '"ry" values="' + [ryM, ryM, ryM, ryM * 1.1, ryM * 1.2, ryM * 1.3, ryT * .9, ryT, ryT, ryT, ryT, ryT, ryM].map(f1).join(';') + '" keyTimes="' + K + '" dur="' + DUR + 's" repeatCount="indefinite"/>' +
+      A + '"opacity" values="0;1;1;1;1;1;1;1;1;1;1;0;0" keyTimes="0;0.05;0.18;0.27;0.36;0.45;0.53;0.6;0.66;0.72;0.76;0.8;1" dur="' + DUR + 's" repeatCount="indefinite"/></ellipse>';
+    /* the epiglottis, traced from the picture: a leaf leaning up and back
+       from its base at the top of the larynx. It is hinged at the base and
+       bends a little along its length as it folds down over the opening of
+       the windpipe (the dark ellipse), then springs back. */
+    var H = P(.474, .789);
+    var leafN = [[.463,.788],[.466,.778],[.470,.770],[.474,.762],[.478,.754],[.483,.746],[.4885,.7395],[.4925,.745],[.4938,.753],[.4935,.761],[.4915,.769],[.4895,.777],[.4875,.784],[.485,.790]];
+    var leaf = leafN.map(function (q) { var a = P(q[0], q[1]); return [a[0] - H[0], a[1] - H[1]]; });
+    var Lmax = 0; leaf.forEach(function (q) { Lmax = Math.max(Lmax, Math.hypot(q[0], q[1])); });
+    function leafPath(phi) {
+      var rad = phi * Math.PI / 180;
+      return 'M' + leaf.map(function (q) {
+        var s = Math.hypot(q[0], q[1]) / Lmax, a = rad * (0.8 + 0.4 * s);   /* the tip bends a little further than the base */
+        var c = Math.cos(a), sn = Math.sin(a);
+        return f1(H[0] + q[0] * c - q[1] * sn) + ',' + f1(H[1] + q[0] * sn + q[1] * c);
+      }).join(' L') + ' Z';
+    }
+    var PHI = 112, fr = [], kt = [];
+    function seg(t0, t1, from, to, n) { for (var i = 0; i < n; i++) { var k = i / (n - 1); fr.push(leafPath(from + (to - from) * k)); kt.push(t0 + (t1 - t0) * k); } }
+    fr.push(leafPath(0)); kt.push(0);
+    seg(0.28, 0.42, 0, PHI, 8);
+    seg(0.62, 0.76, PHI, 0, 8);
+    fr.push(leafPath(0)); kt.push(1);
+    var inlet = P(.50, .828);
+    var opening = '<ellipse cx="' + f1(inlet[0]) + '" cy="' + f1(inlet[1]) + '" rx="' + f1(im.W * .017) + '" ry="' + f1(im.H * .010) + '" fill="#4A1F1E" opacity=".6"/>';
+    var flap = '<g><animateTransform attributeName="transform" type="translate" values="0,0;0,0;0,' + f1(-Lmax * .16) + ';0,' + f1(-Lmax * .16) + ';0,0;0,0" keyTimes="0;0.28;0.42;0.62;0.76;1" dur="' + DUR + 's" repeatCount="indefinite"/>' +
+      '<path d="' + fr[0] + '" fill="#EFD7B8" stroke="#A9743C" stroke-width="' + f1(0.7 * u) + '" stroke-linejoin="round">' +
+      A + '"d" values="' + fr.join(';') + '" keyTimes="' + kt.map(function (t) { return t.toFixed(3); }).join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path></g>';
+    var e = P(.4885, .742), tr = P(.46, .93), oe = P(.558, .93), ph = P(.515, .66), tg = P(.33, .60);
     return opening + bolus + flap +
       label('epiglottis', e[0] + im.W * .09, e[1] - fs * 1.1, e[0] + im.W * .004, e[1], fs) +
       label(ctx.compact ? 'windpipe' : 'trachea (windpipe)\nto the lungs', tr[0] - im.W * .06, tr[1], tr[0], tr[1] - fs * .3, fs, 'end') +
@@ -146,93 +160,85 @@
   /* ---------------- churning, on the plate's stomach ---------------- */
   /* The stomach here IS the plate's stomach: its outline is taken from the
      plate's own path, cut at the pylorus (the artwork carries stomach and
-     duodenum in one path). On it: a muscular wall with a rugae-lined lumen,
-     rings of contraction that start in the body and deepen as they travel
-     to the antrum (gastric peristalsis), chyme mixing inside, and a squirt
-     of chyme through the pylorus into the duodenum with each wave. */
+     duodenum in one path). Each wall point moves along its own inward
+     normal, so the wall deforms smoothly. On it: a muscular wall with a
+     rugae-lined lumen, peristaltic waves that start in the body and deepen
+     towards the pyloric antrum, chyme mixing inside, and a squirt of chyme
+     through the pyloric sphincter into the duodenum with each wave. The
+     plate's own oesophagus meets the outline at the cardia. */
   function churn(ctx) {
     var fs = ctx.fs, u = ctx.u, DUR = 4.4, STEPS = 32;
     if (!ctx.outline) return '';
     var raw = ctx.outline('stomach', 2);
     if (raw.length < 40) return '';
-    /* the stomach part of the outline: from the top of the pylorus, round the
-       lesser curvature, the cardiac notch and the fundus, down the greater
-       curvature to the bottom of the pylorus */
     function nearest(px, py) { var b = 0, bd = 1e9; raw.forEach(function (q, i) { var d = (q[0] - px) * (q[0] - px) + (q[1] - py) * (q[1] - py); if (d < bd) { bd = d; b = i; } }); return b; }
     var iA = nearest(173, 507), iB = nearest(166, 523), n = raw.length, pts = [], i;
     for (i = iA; ; i = (i + 1) % n) { pts.push(raw[i]); if (i === iB) break; if (pts.length > n) break; }
-    var throughFundus = pts.some(function (q) { return q[1] < 445; });
-    if (!throughFundus) { pts = []; for (i = iA; ; i = (i - 1 + n) % n) { pts.push(raw[i]); if (i === iB) break; if (pts.length > n) break; } }
-    /* the long axis, fundus to pylorus; every wall point knows its place on it */
+    if (!pts.some(function (q) { return q[1] < 445; })) { pts = []; for (i = iA; ; i = (i - 1 + n) % n) { pts.push(raw[i]); if (i === iB) break; if (pts.length > n) break; } }
+    var N = pts.length;
+    /* centroid, for orienting normals inward */
+    var cx = 0, cy = 0; pts.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= N; cy /= N;
+    /* the long axis, fundus to pylorus, gives each point its position v (0..1) */
     var AX = [[246,436],[240,462],[238,490],[232,515],[215,538],[192,540],[172,518]];
     var cum = [0]; for (i = 1; i < AX.length; i++) cum.push(cum[i - 1] + Math.hypot(AX[i][0] - AX[i - 1][0], AX[i][1] - AX[i - 1][1]));
     var total = cum[cum.length - 1];
-    function axisOf(q) {
+    function axisV(q) {
       var best = null;
       for (var k = 0; k < AX.length - 1; k++) {
         var a = AX[k], b = AX[k + 1], vx = b[0] - a[0], vy = b[1] - a[1], L2 = vx * vx + vy * vy;
         var t = Math.max(0, Math.min(1, ((q[0] - a[0]) * vx + (q[1] - a[1]) * vy) / L2));
-        var fx = a[0] + vx * t, fy = a[1] + vy * t, d = Math.hypot(q[0] - fx, q[1] - fy);
-        if (!best || d < best.d) best = { d:d, fx:fx, fy:fy, v:(cum[k] + t * Math.sqrt(L2)) / total };
+        var d = Math.hypot(q[0] - (a[0] + vx * t), q[1] - (a[1] + vy * t));
+        if (!best || d < best.d) best = { d:d, v:(cum[k] + t * Math.sqrt(L2)) / total };
       }
       return best;
     }
-    var W = pts.map(function (q) { var ax = axisOf(q); var dx = ax.fx - q[0], dy = ax.fy - q[1], d = Math.hypot(dx, dy) || 1; return { x:q[0], y:q[1], nx:dx / d, ny:dy / d, d:d, v:ax.v }; });
-    /* the oesophagus joins at the cardiac notch */
-    var notch = 0, bestN = 1e9; W.forEach(function (w, k) { var d = Math.hypot(w.x - 197, w.y - 466); if (d < bestN) { bestN = d; notch = k; } });
-    var oes = [[178, 416], [193, 416]];
-    /* a ring of contraction at axis position r indents the wall toward the axis */
+    var W = pts.map(function (q, k) {
+      var pv = pts[(k - 2 + N) % N], nx = pts[(k + 2) % N];
+      var tx = nx[0] - pv[0], ty = nx[1] - pv[1], L = Math.hypot(tx, ty) || 1;
+      var nX = -ty / L, nY = tx / L;                       /* left normal of the tangent */
+      if ((cx - q[0]) * nX + (cy - q[1]) * nY < 0) { nX = -nX; nY = -nY; }   /* point it inward */
+      var ax = axisV(q);
+      return { x:q[0], y:q[1], nx:nX, ny:nY, d:ax.d, v:ax.v };
+    });
+    /* smooth v and d along the wall so neighbours never disagree */
+    function smoothKey(key, w) { var out = W.map(function (p) { return p[key]; }); for (var pass = 0; pass < 3; pass++) out = out.map(function (val, k) { var s = 0, c = 0; for (var j = -w; j <= w; j++) { var idx = k + j; if (idx < 0 || idx >= N) continue; s += out[idx]; c++; } return s / c; }); W.forEach(function (p, k) { p[key] = out[k]; }); }
+    smoothKey('v', 3); smoothKey('d', 3);
     function ring(w, rings) {
       if (w.v < 0.24) return 0;
       var g = 0; rings.forEach(function (r) { g += gauss(w.v - r, 0.065); });
-      var amp = 4 + 22 * w.v;
-      return Math.min(w.d * 0.55, amp * g);
+      return Math.min(w.d * 0.55, (4 + 22 * w.v) * g);
     }
     function outer(rings) {
-      var o = [];
-      o.push(oes[0]);
-      o.push([W[notch].x - 9, W[notch].y + 3]);
-      for (var k = notch; k < W.length; k++) { var w = W[k], s = ring(w, rings); o.push([w.x + w.nx * s, w.y + w.ny * s]); }
-      /* the pylorus opening */
-      for (k = 0; k < notch; k++) { w = W[k]; s = ring(w, rings); o.push([w.x + w.nx * s, w.y + w.ny * s]); }
-      o.push([W[notch].x + 5, W[notch].y - 6]);
-      o.push(oes[1]);
-      return 'M' + o.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' L') + ' Z';
+      var o = W.map(function (w) { var s = ring(w, rings); return f1(w.x + w.nx * s) + ',' + f1(w.y + w.ny * s); });
+      return 'M' + o.join(' L') + ' Z';
     }
-    /* the lumen: the same wall, offset inward by the wall thickness, with rugae folds */
-    function inner(rings, phase) {
-      var o = [], T = 5.2;
-      o.push([oes[0][0] + 4, oes[0][1]]);
-      o.push([W[notch].x - 5, W[notch].y + 1]);
-      var order = []; for (var k = notch; k < W.length; k++) order.push(k); for (k = 0; k < notch; k++) order.push(k);
-      order.forEach(function (k, j) {
-        var w = W[k], s = ring(w, rings), fold = (w.v > 0.15 ? 1.4 * Math.sin(j * 0.9 + phase) : 0);
-        var t = Math.min(w.d * 0.55, T + fold + s);
-        o.push([w.x + w.nx * t, w.y + w.ny * t]);
+    function inner(rings) {
+      var o = W.map(function (w, k) {
+        var s = ring(w, rings), fold = (w.v > 0.12 ? 1.3 * Math.sin(k * 0.85) : 0);
+        var t = Math.min(w.d * 0.6, 5 + fold + s);
+        return f1(w.x + w.nx * t) + ',' + f1(w.y + w.ny * t);
       });
-      o.push([W[notch].x + 1, W[notch].y - 4]);
-      o.push([oes[1][0] - 4, oes[1][1]]);
-      return 'M' + o.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' L') + ' Z';
+      return 'M' + o.join(' L') + ' Z';
     }
     var fo = [], fi = [], f;
-    for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); fi.push(inner(rings, 0)); }
-    /* food: pieces circling in the body of the stomach, always inside the lumen */
-    function bit(cx, cy, rad, r, dur, delay, col) {
-      var path = 'M' + f1(cx - rad) + ',' + f1(cy) + ' a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(rad * 2) + ',0 a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(-rad * 2) + ',0';
+    for (f = 0; f <= STEPS; f++) { var r1 = 0.26 + (f / STEPS) * 0.8, r2 = r1 - 0.42, rings = [r1]; if (r2 > 0.24) rings.push(r2); fo.push(outer(rings)); fi.push(inner(rings)); }
+    function bit(bx, by, rad, r, dur, delay, col) {
+      var path = 'M' + f1(bx - rad) + ',' + f1(by) + ' a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(rad * 2) + ',0 a' + f1(rad) + ',' + f1(rad * .7) + ' 0 1,0 ' + f1(-rad * 2) + ',0';
       return '<ellipse rx="' + f1(r) + '" ry="' + f1(r * .8) + '" fill="' + col + '" opacity=".9"><animateMotion dur="' + dur + 's" begin="' + delay + 's" repeatCount="indefinite" path="' + path + '"/>' +
         A + '"rx" values="' + f1(r) + ';' + f1(r * .75) + ';' + f1(r) + '" dur="' + (dur * .5).toFixed(1) + 's" repeatCount="indefinite"/></ellipse>';
     }
     var food = bit(244, 462, 9, 2.2, 6.5, 0, '#A86B2D') + bit(232, 478, 8, 1.9, 5.5, -2, '#8F5A2B') + bit(252, 490, 7, 1.7, 7, -4, '#B57A3A') +
                bit(236, 506, 8, 2, 6, -1, '#A86B2D') + bit(224, 522, 6, 1.6, 5, -3, '#8F5A2B') + bit(250, 470, 5, 1.4, 4.8, -2.5, '#C08A45') +
                bit(238, 494, 5, 1.5, 5.8, -1.5, '#C08A45') + bit(212, 532, 5, 1.3, 4.6, -.8, '#A86B2D');
-    /* the squirt: with each wave a little chyme passes the pylorus into the duodenum */
     var squirt = '';
     [[0, 2.6], [0.45, 1.6], [0.9, 2.1]].forEach(function (s) {
-      squirt += '<circle r="' + f1(s[1]) + '" fill="#C8A05A" opacity="0"><animateMotion dur="' + DUR + 's" begin="' + (-DUR * (1 - 0.86) + s[0]).toFixed(2) + 's" repeatCount="indefinite" path="M196,536 L182,527 L168,516 L152,513 L140,522 L135,540" keyPoints="0;0;1" keyTimes="0;0.86;1" calcMode="linear"/>' +
-        A + '"opacity" values="0;0;0.95;0.95;0" keyTimes="0;0.84;0.88;0.97;1" dur="' + DUR + 's" begin="' + (-DUR * (1 - 0.86) + s[0]).toFixed(2) + 's" repeatCount="indefinite"/></circle>';
+      var b = (-DUR * (1 - 0.86) + s[0]).toFixed(2);
+      squirt += '<circle r="' + f1(s[1]) + '" fill="#C8A05A" opacity="0"><animateMotion dur="' + DUR + 's" begin="' + b + 's" repeatCount="indefinite" path="M196,536 L182,527 L168,516 L152,513 L140,522 L135,540" keyPoints="0;0;1" keyTimes="0;0.86;1" calcMode="linear"/>' +
+        A + '"opacity" values="0;0;0.95;0.95;0" keyTimes="0;0.84;0.88;0.97;1" dur="' + DUR + 's" begin="' + b + 's" repeatCount="indefinite"/></circle>';
     });
-    var wall = W[Math.round(W.length * 0.38)], body = W[Math.round(W.length * 0.5)], pyl = W[W.length - 3];
-    var gc = null; W.forEach(function (w) { if (!gc || (w.x > gc.x)) gc = w; });
+    var gc = null; W.forEach(function (w) { if (!gc || w.x > gc.x) gc = w; });
+    var top = null; W.forEach(function (w) { if (!top || w.y < top.y) top = w; });
+    var mid = { x:0, y:0 }; W.forEach(function (w) { mid.x += w.x; mid.y += w.y; }); mid.x /= W.length; mid.y /= W.length;
     return '<defs><radialGradient id="chymeG" cx="50%" cy="60%" r="60%"><stop offset="0" stop-color="#F1D6B0"/><stop offset="1" stop-color="#E4BE93"/></radialGradient></defs>' +
       '<path fill="#E4B896" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' +
         A + '"d" values="' + fo.join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path>' +
@@ -240,11 +246,12 @@
         A + '"d" values="' + fi.join(';') + '" dur="' + DUR + 's" repeatCount="indefinite"/></path>' +
       food + squirt +
       (ctx.compact
-        ? label('muscular wall:\nwaves squeeze\ntowards the exit', gc.x + fs * 1.2, gc.y - fs * 4.2, gc.x - 1, gc.y - fs * 2, fs) +
-          label('chyme squirted\ninto the duodenum', 146, 574, 168, 519, fs, 'start')
-        : label('the muscular wall squeezes in\nwaves towards the exit —\nthis is physical digestion', gc.x + fs * 1.4, gc.y - fs * 5.2, gc.x - 1, gc.y - fs * 2.4, fs) +
-          label('gastric juice: hydrochloric\nacid + pepsin, mixed in', gc.x + fs * 1.4, gc.y + fs * 3.6, 248, 486, fs) +
-          label('with each wave a little chyme is\nsquirted through the pylorus\ninto the duodenum', 142, 576, 168, 519, fs, 'start'));
+        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', top.x - 10, top.y - fs * 3.4, gc.x - 2, gc.y - fs * 3, fs, 'middle') +
+          label('gastric juice:\nHCl + pepsin', mid.x, mid.y + fs * .4, null, null, fs, 'middle') +
+          label('chyme through the\npyloric sphincter', 146, 574, 168, 519, fs, 'start')
+        : label('peristaltic waves of the muscular\nwall squeeze towards the pylorus —\nthis is physical digestion', top.x - 10, top.y - fs * 3.6, gc.x - 2, gc.y - fs * 3, fs, 'middle') +
+          label('gastric juice\n(hydrochloric acid\n+ pepsin)', mid.x, mid.y - fs * .2, null, null, fs, 'middle') +
+          label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
 
   global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn };

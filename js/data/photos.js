@@ -67,37 +67,19 @@ window.PHOTOS = {
       "maxw": 300
     }
   ],
-  "duodenum": [
-    {
-      "t": "photo",
-      "src": "circular-folds-regions.jpg",
-      "kind": "Illustration",
-      "cap": "Circular folds along the small intestine: deepest in the jejunum, shallower in the duodenum and ileum.",
-      "more": true,
-      "maxw": 800
-    },
+  "ileum-villi": [
     {
       "t": "photo",
       "src": "small-intestine-parts.jpg",
       "kind": "Illustration",
-      "cap": "The three parts of the small intestine: duodenum, jejunum and ileum.",
+      "cap": "The three parts of the small intestine: the <b>duodenum</b> first, straight after the stomach, then the jejunum and the ileum.",
       "after": 0,
       "maxw": 800
     },
     {
-      "t": "photo",
-      "src": "canal-regions.jpg",
-      "kind": "Illustration",
-      "more": true,
-      "cap": "Where the duodenum sits: first part of the small intestine, straight after the stomach, with the jejunum and ileum following.",
-      "maxw": 800
-    }
-  ],
-  "ileum-villi": [
-    {
       "t": "pair",
       "kind": "Photograph and 3-D render",
-      "after": 0,
+      "after": 6,
       "cap": "<b>The organ itself.</b> Left, a dissection: loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries the blood vessels taking absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine, with its vessels running through it.",
       "of": [
         {
@@ -119,7 +101,7 @@ window.PHOTOS = {
       "src": "folds-real-photo.jpg",
       "kind": "Photograph",
       "cap": "Level one, in a real intestine: the circular folds are the ridges running round the inside of the tube. Nothing in here is smooth, and that is the whole point.",
-      "after": 1,
+      "after": 7,
       "maxw": 800
     },
     {
@@ -128,14 +110,14 @@ window.PHOTOS = {
       "kind": "Photograph",
       "cap": "Level two: zoom in on one fold and its entire surface is a carpet of villi, packed side by side. Each one is a projection built from many cells — not a single cell.",
       "maxw": 240,
-      "after": 2
+      "after": 8
     },
     {
       "t": "photo",
       "src": "villi-and-microvilli-em.jpg",
       "kind": "Micrographs",
       "cap": "Level three, and the only level you need an electron microscope to see. Left: villi at ×70 under a light microscope. Right: the surface of one epithelial cell at ×18,000 — that fuzzy border is its microvilli.",
-      "after": 3,
+      "after": 9,
       "maxw": 800
     },
     {
@@ -151,7 +133,7 @@ window.PHOTOS = {
       "src": "villus-absorption",
       "kind": "Animation",
       "cap": "Now watch it happen. The molecules cross a wall one cell thick and vanish into the vessels running through the middle of the villus.",
-      "after": 6
+      "after": 12
     },
     {
       "t": "photo",
