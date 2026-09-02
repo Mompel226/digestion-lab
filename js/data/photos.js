@@ -152,23 +152,14 @@ window.PHOTOS = {
  "liver": [
   {
    "t": "photo",
-   "src": "biliary-system.svg",
-   "kind": "Illustration",
-   "cap": "The liver, the gall bladder tucked beneath it, and the ducts that carry bile down to the duodenum. Bile made in the liver leaves by the right and left hepatic ducts, is stored in the gall bladder, and reaches the duodenum by the common bile duct, which joins the pancreatic duct just before the opening.",
-   "after": 1,
-   "maxw": 560
+   "src": "pancreas-dissection.jpg",
+   "kind": "Photograph",
+   "cap": "<b>A real liver</b>, seen in a dissection with the pancreas below it and the <b>hepatic portal vein</b> bringing blood up from the gut — the vessel named in the sentence above.",
+   "after": 2,
+   "maxw": 300
   }
  ],
- "gall-bladder": [
-  {
-   "t": "photo",
-   "src": "biliary-system.svg",
-   "kind": "Illustration",
-   "cap": "The gall bladder sits under the liver. Bile goes up the cystic duct into it for storage, and back down into the common bile duct when a fatty meal arrives, entering the duodenum beside the pancreatic duct.",
-   "after": 0,
-   "maxw": 560
-  }
- ],
+ "gall-bladder": [],
  "pancreas": [
   {
    "t": "photo",
@@ -176,14 +167,6 @@ window.PHOTOS = {
    "kind": "Illustration",
    "cap": "The pancreas and its duct, delivering pancreatic juice into the duodenum.",
    "after": 1,
-   "maxw": 300
-  },
-  {
-   "t": "photo",
-   "src": "pancreas-dissection.jpg",
-   "kind": "Photograph",
-   "cap": "A real dissection: the liver, the pancreas and the portal vein.",
-   "more": true,
    "maxw": 300
   }
  ],

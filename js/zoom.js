@@ -1,76 +1,68 @@
 /* ============================================================
    zoom.js — the plate follows the text.
 
-   As the reader scrolls a station's Learn tab, the camera on the anatomical
-   plate flies to the organ, and a lens over it steps through a ladder of
-   real images: the organ, then inside it, then the tissue, then the cell
-   surface. Every level is a photograph, micrograph or licensed medical
-   render — never drawn anatomy — and each carries its magnification and
-   its credit. The ladder for each station lives in js/data/zoom.js.
+   When a station opens, the camera on the anatomical plate flies to the
+   organ. As it arrives, a professional illustration of THAT organ fades in
+   on the plate itself, registered over the organ's own outline — the way a
+   3-D viewer swaps in a higher-detail model as you get closer. Nothing pops
+   up over the page, and nothing shown here is repeated in the text on the
+   right: the plate carries the organ, the text carries the photographs and
+   micrographs. "Whole body" pulls the camera back and the detail fades.
 
-   Two things the reader can always do: click the lens to open the image
-   full size, and press "Whole body" to pull the camera back.
+   The illustration for each station, and where its organ sits inside the
+   picture, is in js/data/zoom.js.
    ============================================================ */
 (function (global) {
   'use strict';
 
   var VIEW = { x:-88, y:-12, w:530, h:848 };          /* the plate's home view */
   var ASPECT = VIEW.h / VIEW.w;
+  var NS = 'http://www.w3.org/2000/svg';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
   var CAM = {
-    'mouth':           { cx:134, cy:128, w:150 },
+    'mouth':           { cx:132, cy:128, w:150 },
     'salivary-glands': { cx:146, cy:146, w:160 },
     'epiglottis':      { cx:158, cy:198, w:140 },
-    'oesophagus':      { cx:178, cy:318, w:240 },
-    'stomach':         { cx:238, cy:474, w:190 },
-    'liver':           { cx:124, cy:456, w:200 },
-    'gall-bladder':    { cx:120, cy:486, w:150 },
-    'pancreas':        { cx:212, cy:538, w:190 },
-    'duodenum':        { cx:160, cy:566, w:170 },
-    'ileum-villi':     { cx:192, cy:650, w:210 },
-    'colon':           { cx:182, cy:662, w:270 },
-    'rectum-anus':     { cx:178, cy:772, w:160 }
+    'oesophagus':      { cx:178, cy:318, w:250 },
+    'stomach':         { cx:238, cy:474, w:200 },
+    'liver':           { cx:130, cy:466, w:220 },
+    'gall-bladder':{cx:116,cy:487,w:200},
+    'pancreas':        { cx:205, cy:535, w:210 },
+    'duodenum':        { cx:165, cy:560, w:190 },
+    'ileum-villi':     { cx:192, cy:650, w:220 },
+    'colon':           { cx:182, cy:662, w:280 },
+    'rectum-anus':     { cx:178, cy:772, w:170 }
   };
 
-  var svg = null, lens = null, imgA = null, imgB = null, front = null, link = null, prevLevel = null, curDir = 1;
+  var svg = null, layer = null, imgEl = null, maskRect = null, strip = null;
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
-  var anim = null, station = null, ladder = null, steps = [], activeKey = null, bound = null;
-  var lastLevel = null, onScroll = null, scroller = null;
+  var anim = null, station = null, detail = null, detailCam = null, backRect = null;
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
     var w = cam.w, h = w * ASPECT;
-    /* the organ is framed in the upper-right part of the view: the lens sits
-       bottom-left, and the connector line runs from the lens up to the organ */
-    return { x:cam.cx - w * 0.58, y:cam.cy - h * 0.34, w:w, h:h };
+    return { x:cam.cx - w / 2, y:cam.cy - h * 0.46, w:w, h:h };
   }
+  function zoomOf(b) { return VIEW.w / b.w; }
   function setBox(b) {
     cur = b;
-    if (svg) svg.setAttribute('viewBox', b.x + ' ' + b.y + ' ' + b.w + ' ' + b.h);
-    var zoomed = b.w < VIEW.w * 0.8;
-    if (svg) svg.classList.toggle('is-zoomed', zoomed);
+    if (!svg) return;
+    svg.setAttribute('viewBox', b.x + ' ' + b.y + ' ' + b.w + ' ' + b.h);
+    var z = zoomOf(b), zoomed = z > 1.25;
+    svg.classList.toggle('is-zoomed', zoomed);
     var host = document.querySelector('.bodycol');
     if (host) host.classList.toggle('is-zoomed', zoomed);
-    drawLink();
-  }
-  /* A line from the lens to the organ it came from, so a picture is never
-     floating free of the body. Runs in plate coordinates -> screen. */
-  function drawLink() {
-    if (!link || !lens || lens.hidden || !svg) { if (link) link.style.display = 'none'; return; }
-    var organ = (ladder && ladder.organ) ? ladder.organ : null;
-    var o = organ && global.Anatomy ? global.Anatomy.ORGANS.filter(function (x) { return x.id === organ; })[0] : null;
-    if (!o) { link.style.display = 'none'; return; }
-    var m = svg.getScreenCTM(); if (!m) return;
-    var wrap = svg.parentNode.getBoundingClientRect();
-    var ax = m.a * o.anchor[0] + m.c * o.anchor[1] + m.e - wrap.left;
-    var ay = m.b * o.anchor[0] + m.d * o.anchor[1] + m.f - wrap.top;
-    var lr = lens.getBoundingClientRect();
-    var lx = lr.right - wrap.left - 14, ly = lr.top - wrap.top + 14;
-    link.style.display = '';
-    link.setAttribute('viewBox', '0 0 ' + wrap.width + ' ' + wrap.height);
-    link.setAttribute('width', wrap.width); link.setAttribute('height', wrap.height);
-    var l = link.querySelector('line'); l.setAttribute('x1', lx); l.setAttribute('y1', ly); l.setAttribute('x2', ax); l.setAttribute('y2', ay);
-    var c = link.querySelector('circle'); c.setAttribute('cx', ax); c.setAttribute('cy', ay);
+    /* the detail fades in as the camera closes on the station's own frame:
+       none at the whole-body view, fully on when it has arrived */
+    var k = 0;
+    if (detail && detailCam) {
+      var span = VIEW.w - detailCam.w * 1.08;
+      k = Math.max(0, Math.min(1, (VIEW.w - b.w) / span));
+      k = k * k * (3 - 2 * k);
+    }
+    if (layer) layer.style.opacity = detail ? k : 0;
+    svg.classList.toggle('has-detail', !!detail && k > 0.05);
+    if (strip) strip.classList.toggle('is-on', !!detail && k > 0.6);
   }
   /* Tween the viewBox. A timer finishes the leg if requestAnimationFrame is
      starved (background tab), so the camera can never be left half way. */
@@ -96,160 +88,117 @@
     return global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
 
-  /* ---------- the lens ---------- */
-  function buildLens() {
-    var wrap = document.querySelector('.bodywrap');
-    if (!wrap || lens) return;
-    lens = document.createElement('div');
-    lens.className = 'lens';
-    lens.hidden = true;
-    lens.innerHTML =
-      '<div class="lens__stage"><img class="lens__img is-front" alt=""><img class="lens__img" alt="">' +
-      '<div class="lens__from" hidden><img alt=""><i class="lens__fromBox"></i><span>from here</span></div></div>' +
-      '<div class="lens__side"><div class="lens__bar"><span class="lens__mag"></span><span class="lens__cap"></span></div>' +
-      '<div class="lens__crumb"></div></div>' +
-      '<button class="lens__x" type="button" aria-label="Hide the picture">×</button>';
-    wrap.appendChild(lens);
-    link = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    link.setAttribute('class', 'lenslink');
-    link.innerHTML = '<line class="lenslink__l"/><circle class="lenslink__c" r="5"/>';
-    wrap.appendChild(link);
-    var imgs = lens.querySelectorAll('.lens__img');
-    imgA = imgs[0]; imgB = imgs[1]; front = imgA;
-    lens.querySelector('.lens__x').addEventListener('click', function (e) { e.stopPropagation(); hideLens(); });
-    lens.querySelector('.lens__stage').addEventListener('click', function () {
-      if (lastLevel && lastLevel.img && global.LabLightbox) global.LabLightbox(front.src, lastLevel.cap, lastLevel.mag, lastLevel.credit);
+  /* ---------- the detail layer, drawn inside the plate ---------- */
+  function build() {
+    if (!svg) return;
+    if (layer && layer.isConnected) return;
+    layer = null;
+    var defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
+    var filt = document.createElementNS(NS, 'filter');
+    filt.setAttribute('id', 'detailSoft'); filt.setAttribute('x', '-20%'); filt.setAttribute('y', '-20%');
+    filt.setAttribute('width', '140%'); filt.setAttribute('height', '140%');
+    var blur = document.createElementNS(NS, 'feGaussianBlur'); blur.setAttribute('stdDeviation', '14');
+    filt.appendChild(blur); defs.appendChild(filt);
+    var mask = document.createElementNS(NS, 'mask'); mask.setAttribute('id', 'detailMask');
+    mask.setAttribute('maskUnits', 'userSpaceOnUse');
+    // Explicit region: the default is the current viewport +10%, which clips a zoomed camera at a hard edge.
+    mask.setAttribute('x', '-4000'); mask.setAttribute('y', '-4000'); mask.setAttribute('width', '10000'); mask.setAttribute('height', '10000');
+    maskRect = document.createElementNS(NS, 'rect');
+    maskRect.setAttribute('fill', '#fff'); maskRect.setAttribute('rx', '22'); maskRect.setAttribute('filter', 'url(#detailSoft)');
+    mask.appendChild(maskRect); defs.appendChild(mask);
+
+    layer = document.createElementNS(NS, 'g');
+    layer.setAttribute('class', 'detail');
+    layer.style.opacity = 0;
+    backRect = document.createElementNS(NS, 'rect');
+    backRect.setAttribute('fill', '#FFFDF9'); backRect.setAttribute('mask', 'url(#detailMask)');
+    layer.appendChild(backRect);
+    imgEl = document.createElementNS(NS, 'image');
+    imgEl.setAttribute('mask', 'url(#detailMask)');
+    imgEl.setAttribute('preserveAspectRatio', 'none');
+    layer.appendChild(imgEl);
+    var hits = svg.querySelector('.hits');
+    if (hits) svg.insertBefore(layer, hits); else svg.appendChild(layer);
+
+    var wrap = svg.parentNode;
+    strip = document.createElement('div');
+    strip.className = 'detailstrip';
+    wrap.appendChild(strip);
+  }
+
+  /* where the organ sits on the plate, in plate coordinates */
+  function organBox(organ) {
+    var inv = svg.getScreenCTM().inverse();
+    var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity, n = 0;
+    Array.prototype.forEach.call(svg.querySelectorAll('.op[data-organ="' + organ + '"]'), function (p) {
+      if (p.style.display === 'none') return;
+      var r = p.getBoundingClientRect(); if (!r.width && !r.height) return;
+      var a = pt(inv, r.left, r.top), b = pt(inv, r.right, r.bottom);
+      x0 = Math.min(x0, a.x); y0 = Math.min(y0, a.y); x1 = Math.max(x1, b.x); y1 = Math.max(y1, b.y); n++;
     });
+    if (!n) return null;
+    return { x:x0, y:y0, w:x1 - x0, h:y1 - y0 };
   }
-  function hideLens() { if (lens) { lens.hidden = true; } if (link) link.style.display = 'none'; }
+  function pt(m, x, y) { return { x:m.a * x + m.c * y + m.e, y:m.b * x + m.d * y + m.f }; }
 
-  function showLevel(level, dir) {
-    if (!lens) buildLens();
-    if (!level || !level.img) { hideLens(); return; }
-    var back = front === imgA ? imgB : imgA;
-    var src = 'assets/' + level.img;
-    lens.hidden = false;
-    curDir = dir;
-    setTimeout(drawLink, 0);
-    lens.classList.toggle('lens--in', dir >= 0);
-    lens.classList.toggle('lens--out', dir < 0);
-    var key = src + '|' + (level.pos || '') + '|' + (level.scale || 1);
-    if (front.getAttribute('data-key') !== key) {
-      /* pos = where to look in the picture; scale = how far into it to zoom.
-         The picture is scaled about that point, so a 3-D render of the whole
-         canal can be used at ×1 for the canal and at ×3 for one organ. */
-      back.style.objectPosition = level.pos || '50% 50%';
-      back.style.objectFit = level.fit || 'cover';
-      back.style.transformOrigin = level.pos || '50% 50%';
-      back.style.setProperty('--zoom', String(level.scale || 1));
-      back.setAttribute('data-key', key);
-      /* The swap must run exactly once per picture. A cached image fires its
-         load event as well as answering `complete`, and running the swap twice
-         removed is-front from the picture that had just been given it — the
-         lens went black with the right caption under it. */
-      back.onload = function () {
-        back.onload = null;
-        if (front === back) return;
-        back.classList.add('is-front');
-        front.classList.remove('is-front');
-        front = back;
-        applyText(level);
-      };
-      var same = back.getAttribute('src') === src;
-      back.src = src;
-      if (same && back.complete && back.naturalWidth) back.onload();
-    } else applyText(level);
-  }
-  function applyText(level) {
-    /* where this picture comes from: the previous level, with the region boxed */
-    var fromEl = lens.querySelector('.lens__from');
-    if (curDir >= 0 && prevLevel && prevLevel.img && prevLevel.img !== level.img) {
-      fromEl.hidden = false;
-      fromEl.querySelector('img').src = 'assets/' + prevLevel.img;
-      fromEl.querySelector('img').style.objectPosition = prevLevel.pos || '50% 50%';
-      var f = level.from || [36, 36, 28, 28];
-      var box = fromEl.querySelector('.lens__fromBox');
-      box.style.left = f[0] + '%'; box.style.top = f[1] + '%'; box.style.width = f[2] + '%'; box.style.height = f[3] + '%';
-    } else fromEl.hidden = true;
-    prevLevel = level;
-    lens.querySelector('.lens__mag').textContent = level.mag || '';
-    lens.querySelector('.lens__cap').innerHTML = level.cap || '';
-    lens.querySelector('.lens__crumb').innerHTML = (level.crumb || []).map(function (c, i) {
-      return (i ? '<i>›</i>' : '') + '<span>' + c + '</span>';
-    }).join('') + (level.credit ? '<em class="lens__credit">' + level.credit + '</em>' : '');
+  /* Register the illustration: the organ inside the picture (roi, in
+     fractions of the picture) is scaled and moved onto the organ's outline on
+     the plate. `box` can override the plate target when the plate's own paths
+     are a poor guide (the rectum shares a path with the colon). */
+  function place(d) {
+    if (!d || !imgEl) return;
+    if (!d.w) {                                   /* learn the picture's size first */
+      var probe = new Image();
+      probe.onload = function () { d.w = probe.naturalWidth; d.h = probe.naturalHeight; if (detail === d) place(d); };
+      probe.src = 'assets/' + d.img;
+      return;
+    }
+    var target = d.box ? { x:d.box[0], y:d.box[1], w:d.box[2], h:d.box[3] } : organBox(d.organ);
+    if (!target) return;
+    var roi = d.roi || [0, 0, 1, 1];
+    var rw = roi[2] * d.w, rh = roi[3] * d.h;
+    var s = Math.max(target.w / rw, target.h / rh) * (d.grow || 1);
+    /* a side-view section of the head cannot register onto a front view; it
+       is shown as a cut-away that fills its window, centred on the organ */
+    if (d.window && d.cover) s = Math.max(s, d.window[2] / d.w, d.window[3] / d.h);
+    if (d.scale) s = d.scale; // plate units per image pixel, when a station must zoom further than fit-to-organ
+    var W = d.w * s, H = d.h * s;
+    var x = target.x + target.w / 2 - (roi[0] * d.w + rw / 2) * s;
+    var y = target.y + target.h / 2 - (roi[1] * d.h + rh / 2) * s;
+    if (d.fixed) { s = d.fixed[2] / d.w; W = d.w * s; H = d.h * s; x = d.fixed[0]; y = d.fixed[1]; } // one placement shared by several stations, so the picture stays put while the camera moves
+    imgEl.setAttribute('href', 'assets/' + d.img);
+    imgEl.setAttribute('x', x); imgEl.setAttribute('y', y);
+    imgEl.setAttribute('width', W); imgEl.setAttribute('height', H);
+    backRect.setAttribute('x', x - 40); backRect.setAttribute('y', y - 40);
+    backRect.setAttribute('width', W + 80); backRect.setAttribute('height', H + 80);
+    /* the soft window: the organ's box, grown so the picture has room to breathe */
+    var g = d.pad != null ? d.pad : 0.45;
+    var mx = target.x - target.w * g, my = target.y - target.h * g;
+    var mw = target.w * (1 + 2 * g), mh = target.h * (1 + 2 * g);
+    if (d.window) { mx = d.window[0]; my = d.window[1]; mw = d.window[2]; mh = d.window[3]; }
+    maskRect.setAttribute('x', mx); maskRect.setAttribute('y', my);
+    maskRect.setAttribute('width', mw); maskRect.setAttribute('height', mh);
+    strip.innerHTML = '<b>' + (d.label || '') + '</b>' + (d.credit ? '<span>' + d.credit + '</span>' : '');
   }
 
-  /* ---------- station + steps ---------- */
+  /* ---------- station ---------- */
   function setStation(id, opts) {
     station = id;
-    ladder = (global.ZOOM_LADDER || {})[id] || null;
-    activeKey = null; lastLevel = null; prevLevel = null;
-    hideLens();
     var quiet = opts && opts.tour;
-    var cam = (!quiet && ladder && ladder.organ) ? CAM[ladder.organ] : (CAM[id] && !quiet ? CAM[id] : null);
-    flyTo(frameFor(cam), 750);
+    detail = (!quiet && (global.ZOOM_DETAIL || {})[id]) || null;
+    var cam = (!quiet && CAM[detail ? detail.organ : id]) || null;
+    detailCam = detail ? cam : null;
+    if (detail) { if (!layer || !layer.isConnected) build(); place(detail); }
+    else if (layer) layer.style.opacity = 0;
+    flyTo(frameFor(cam), 800);
   }
-  function reset() {
-    activeKey = null;
-    hideLens();
-    flyTo(frameFor(null), 650);
-  }
+  function reset() { detail = null; detailCam = null; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function init(svgEl) { svg = svgEl; build(); setBox(frameFor(null)); global.addEventListener('resize', function () { if (detail) place(detail); }); }
 
-  /* bind the Learn list: each <li> is a step; a bullet without its own level
-     keeps the level before it */
-  function bindLearn(pane) {
-    unbind();
-    steps = [];
-    if (!pane || !ladder) return;
-    var lis = pane.querySelectorAll('.exam-list > li');
-    var level = null;
-    Array.prototype.forEach.call(lis, function (li, i) {
-      if (ladder.steps && ladder.steps[i]) level = ladder.steps[i];
-      steps.push({ el:li, level:level, i:i });
-    });
-    scroller = findScroller(pane);
-    bound = pane;
-    onScroll = function () { update(); };
-    (scroller === document.documentElement ? window : scroller).addEventListener('scroll', onScroll, { passive:true });
-    update();
-  }
-  function unbind() {
-    if (onScroll && scroller) (scroller === document.documentElement ? window : scroller).removeEventListener('scroll', onScroll);
-    onScroll = null; scroller = null; bound = null; steps = [];
-  }
-  function findScroller(el) {
-    var n = el.parentElement;
-    while (n && n !== document.documentElement) {
-      var o = getComputedStyle(n).overflowY;
-      if ((o === 'auto' || o === 'scroll') && n.scrollHeight > n.clientHeight + 4) return n;
-      n = n.parentElement;
-    }
-    return document.documentElement;
-  }
-  /* the reading line sits a third of the way down the visible panel; the
-     active step is the last one whose top has passed it */
-  function update() {
-    if (!steps.length) return;
-    var top, height;
-    if (scroller === document.documentElement) { top = 0; height = global.innerHeight; }
-    else { var r = scroller.getBoundingClientRect(); top = r.top; height = r.height; }
-    var line = top + height * 0.34, pick = steps[0];
-    for (var i = 0; i < steps.length; i++) if (steps[i].el.getBoundingClientRect().top <= line) pick = steps[i];
-    var key = pick.i + ':' + (pick.level ? pick.level.img || 'none' : 'none');
-    if (key === activeKey) return;
-    var dir = (lastLevel && pick.level && steps.indexOf(pick) < lastIndex) ? -1 : 1;
-    activeKey = key; lastIndex = steps.indexOf(pick);
-    var lvl = pick.level;
-    if (lvl && lvl.cam) flyTo(frameFor(typeof lvl.cam === 'string' ? CAM[lvl.cam] : lvl.cam), 700);
-    else if (ladder && ladder.organ) flyTo(frameFor(CAM[ladder.organ]), 700);
-    showLevel(lvl, dir);
-    lastLevel = lvl;
-  }
-  var lastIndex = -1;
-
-  function init(svgEl) { svg = svgEl; buildLens(); setBox(frameFor(null)); }
-
-  global.Zoom = { init:init, setStation:setStation, bindLearn:bindLearn, unbind:unbind, reset:reset,
-                  update:update, flyTo:flyTo, frameFor:frameFor, CAM:CAM,
-                  _state:function () { return { cur:cur, station:station, activeKey:activeKey, steps:steps.length }; } };
+  /* The plate is rebuilt from scratch by some controls (labels, beyond,
+     reset). That wipes the detail layer, so it is put back here. */
+  function refresh() { if (!svg) return; if (!layer || !layer.isConnected) build(); if (detail) place(detail); setBox(cur); }
+  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, flyTo:flyTo, frameFor:frameFor, CAM:CAM,
+                  bindLearn:function () {}, unbind:function () {}, update:function () {},
+                  _state:function () { return { cur:cur, station:station, detail:detail && detail.img }; } };
 })(window);

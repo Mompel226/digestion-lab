@@ -969,7 +969,6 @@
 
     var svg = document.getElementById('bodySvg');
     window.Anatomy.state.onPick = function (id) { open(id); };
-    if (window.Zoom) window.Zoom.init(svg);
     var tb = document.getElementById('tBody');
     if (tb) tb.addEventListener('click', function () { if (window.Zoom) window.Zoom.reset(); });
     ORDER.forEach(function (id) {
@@ -977,18 +976,21 @@
       if (s.total && s.done === s.total) window.Anatomy.state.done[id] = true;
     });
     window.Anatomy.render(svg);
+    if (window.Zoom) window.Zoom.init(svg);
 
     document.getElementById('tLabels').addEventListener('click', function () {
       var on = this.getAttribute('aria-pressed') !== 'true';
       this.setAttribute('aria-pressed', on);
       window.Anatomy.state.showLabels = on;
       window.Anatomy.render(svg);
+      if (window.Zoom) window.Zoom.refresh();
     });
     document.getElementById('tBeyond').addEventListener('click', function () {
       var on = this.getAttribute('aria-pressed') !== 'true';
       this.setAttribute('aria-pressed', on);
       window.Anatomy.state.showBeyond = on;
       window.Anatomy.render(svg);
+      if (window.Zoom) window.Zoom.refresh();
     });
     tourBtn().addEventListener('click', function () {
       if (this.dataset.running === '1') stopTourUI(); else startTour();
@@ -1026,6 +1028,7 @@
       try { localStorage.removeItem('digestion-lab.v2'); } catch (e) {}
       window.Anatomy.state.done = {};
       window.Anatomy.render(svg);
+      if (window.Zoom) window.Zoom.refresh();
       paintHeader(); paintRail(); paintPanel();
       toast('Progress cleared.');
     });

@@ -1,59 +1,222 @@
-/* The zoom ladder for each station: which real image the lens shows at each
-   Learn bullet (index), how far into it to look, and what to call the level.
-   img paths are under assets/. Every level is a photograph, a micrograph or a
-   licensed medical render — credits in assets/photos/CREDITS.md.
-   pos = the point of the picture to look at; scale = how far to zoom in on it. */
-window.ZOOM_LADDER = {
- "overview": { "organ": null, "steps": {
-   "0": { "img": "zoom/digestive-render.jpg", "mag": "×1 · 3-D render", "cap": "<b>The whole canal</b>, mouth to anus, with the four associated organs alongside it.", "crumb": ["Body", "Alimentary canal"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "zoom/liver-gallbladder-pancreas-render.jpg", "pos": "50% 22%", "scale": 1.6, "mag": "×2 · 3-D render", "cap": "<b>Three of the associated organs</b> — liver, gall bladder (green) and pancreas — sit against the canal, but food never enters them.", "crumb": ["Body", "Associated organs"], "credit": "BruceBlaus, CC BY 3.0" },
-   "2": { "img": null } } },
- "mouth": { "organ": "mouth", "steps": {
-   "0": { "img": "zoom/head-section.jpg", "pos": "32% 62%", "scale": 1.7, "mag": "×1.5 · medical illustration", "cap": "<b>The mouth, cut down the middle.</b> Teeth in front, the tongue filling the floor, the hard and soft palate above, and the throat behind, where the paths of food and air cross.", "crumb": ["Body", "Head", "Mouth"], "credit": "Patrick J. Lynch, CC BY 2.5" },
-   "2": { "img": "photos/premolars-molars-real.jpg", "mag": "×2 · photograph", "cap": "<b>Looking along the tooth row.</b> Molars at the back, premolars in front of them: the grinding surfaces that do the physical digestion.", "crumb": ["Mouth", "Teeth"], "credit": "Lesson slides" },
-   "4": { "img": "zoom/tooth-render.jpg", "pos": "50% 45%", "mag": "×8 · 3-D render", "cap": "<b>Inside a molar.</b> Enamel over dentine (spelt “dentin” here), the pulp with its nerves and blood vessels running down the root canals, the gum, and the bone the tooth is embedded in.", "crumb": ["Mouth", "Tooth", "Inside"], "credit": "BruceBlaus, CC BY 3.0" },
-   "5": { "img": "photos/tooth-decay.jpg", "mag": "×6 · photographs", "cap": "<b>Decay</b>: healthy enamel, then caries, then a cavity reaching the pulp.", "crumb": ["Mouth", "Tooth", "Decay"], "credit": "Lesson slides" } } },
- "salivary-glands": { "organ": "salivary-glands", "steps": {
-   "0": { "img": "photos/salivary-glands.jpg", "mag": "×1.5 · illustration", "cap": "<b>Three pairs of salivary glands</b> and the ducts that carry saliva into the mouth.", "crumb": ["Head", "Salivary glands"], "credit": "Lesson slides" },
-   "5": { "img": "photos/maltase-membrane.jpg", "mag": "cell surface · illustration", "cap": "<b>Where maltase works</b>: not floating in the gut, but built into the membrane of the epithelial cells lining the small intestine.", "crumb": ["Small intestine", "Epithelium", "Membrane"], "credit": "Lesson slides" } } },
- "epiglottis": { "organ": "epiglottis", "steps": {
-   "0": { "img": "zoom/throat-render.jpg", "pos": "58% 52%", "scale": 1.4, "mag": "×2 · 3-D render", "cap": "<b>The throat from the side.</b> Nasal cavity above, mouth and tongue in front, and the pharynx behind them: the shared space that both food and air pass through.", "crumb": ["Head", "Pharynx"], "credit": "BruceBlaus, CC BY 3.0" },
-   "2": { "img": "zoom/head-section.jpg", "pos": "39% 79%", "scale": 2.6, "mag": "×4 · medical illustration", "cap": "<b>The epiglottis</b> is the leaf-shaped flap standing up behind the back of the tongue, over the top of the larynx. In a swallow the larynx rises and tips it down over the airway.", "crumb": ["Head", "Pharynx", "Epiglottis"], "credit": "Patrick J. Lynch, CC BY 2.5" },
-   "3": { "img": "zoom/digestive-render.jpg", "pos": "52% 28%", "scale": 2.4, "mag": "×2 · 3-D render", "cap": "<b>Two tubes leave the pharynx.</b> The oesophagus (shown) runs down behind the trachea to the stomach; the trachea in front carries air.", "crumb": ["Body", "Oesophagus"], "credit": "BruceBlaus, CC BY 3.0" } } },
- "oesophagus": { "organ": "oesophagus", "steps": {
-   "0": { "img": "zoom/digestive-render.jpg", "pos": "52% 30%", "scale": 2.2, "mag": "×2 · 3-D render", "cap": "<b>The oesophagus</b>: a muscular tube about 25 cm long, from the pharynx down to the stomach.", "crumb": ["Body", "Oesophagus"], "credit": "BruceBlaus, CC BY 3.0" },
-   "2": { "img": "video/peristalsis.jpg", "mag": "×1 · medical animation", "cap": "<b>Peristalsis from inside</b>: the wall closing behind the bolus (the animation itself plays in the text).", "crumb": ["Oesophagus", "Inside"], "credit": "Lesson slides" },
-   "3": { "img": "zoom/digestive-render.jpg", "mag": "×1 · 3-D render", "cap": "<b>Peristalsis runs the whole way</b>: oesophagus, stomach, small and large intestine.", "crumb": ["Body", "Alimentary canal"], "credit": "BruceBlaus, CC BY 3.0" } } },
- "stomach": { "organ": "stomach", "steps": {
-   "0": { "img": "zoom/digestive-render.jpg", "pos": "58% 42%", "scale": 2.8, "mag": "×3 · 3-D render", "cap": "<b>The stomach</b>: a muscular bag on the viewer's right, with the oesophagus entering at the top and the duodenum leaving at the bottom.", "crumb": ["Body", "Stomach"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "photos/stomach-inside.jpg", "mag": "×5 · endoscope", "cap": "<b>Inside the stomach</b>, photographed through an endoscope: the <b>rugae</b>, deep folds that flatten out as the stomach fills.", "crumb": ["Stomach", "Lining"], "credit": "Lesson slides" },
-   "2": { "img": "photos/stomach-wall.jpg", "mag": "×40 · section", "cap": "<b>The wall</b>: three layers of muscle running in different directions, and the <b>gastric glands</b> sunk into the lining that make the gastric juice.", "crumb": ["Stomach", "Wall"], "credit": "Lesson slides" },
-   "3": { "img": "zoom/gastric-mucosa.jpg", "mag": "×100 · light microscope", "cap": "<b>The gastric glands under the microscope</b>: pits open at the surface, and the glands below them secrete the hydrochloric acid and the pepsin.", "crumb": ["Stomach", "Wall", "Glands"], "credit": "Carrasco & Corvalan, CC BY 3.0" } } },
- "liver": { "organ": "liver", "steps": {
-   "0": { "img": "zoom/liver-gallbladder-pancreas-render.jpg", "pos": "50% 22%", "scale": 1.7, "mag": "×2 · 3-D render", "cap": "<b>The liver</b>, the largest organ in the abdomen, with the gall bladder (green) tucked under it and the stomach beside it.", "crumb": ["Body", "Liver"], "credit": "BruceBlaus, CC BY 3.0" },
-   "2": { "img": "photos/pancreas-dissection.jpg", "mag": "×1 · dissection", "cap": "<b>A real liver</b> in a dissection, with the pancreas and the <b>hepatic portal vein</b> bringing blood up from the gut.", "crumb": ["Liver", "Portal vein"], "credit": "Lesson slides" } } },
- "gall-bladder": { "organ": "gall-bladder", "steps": {
-   "0": { "img": "zoom/liver-gallbladder-pancreas-render.jpg", "pos": "26% 31%", "scale": 3, "mag": "×4 · 3-D render", "cap": "<b>The gall bladder</b>, green with bile, under the liver. Its duct joins the duct from the pancreas just before the duodenum.", "crumb": ["Body", "Liver", "Gall bladder"], "credit": "BruceBlaus, CC BY 3.0" } } },
- "pancreas": { "organ": "pancreas", "steps": {
-   "0": { "img": "zoom/liver-gallbladder-pancreas-render.jpg", "pos": "52% 37%", "scale": 2.6, "mag": "×3 · 3-D render", "cap": "<b>The pancreas</b> lies across the back of the abdomen, its head cupped by the C-shaped duodenum.", "crumb": ["Body", "Pancreas"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "photos/pancreas-dissection.jpg", "mag": "×1 · dissection", "cap": "<b>The real thing</b>: pancreas, liver and the portal vein in a dissection.", "crumb": ["Pancreas", "Dissection"], "credit": "Lesson slides" } } },
- "duodenum": { "organ": "duodenum", "steps": {
-   "0": { "img": "zoom/small-intestine-render.jpg", "pos": "50% 49%", "scale": 2.2, "mag": "×2 · 3-D render", "cap": "<b>The duodenum</b> (yellow) is the first 25 cm of the small intestine, curving round the head of the pancreas; the jejunum (blue) and ileum (pink) follow.", "crumb": ["Body", "Small intestine", "Duodenum"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "photos/circular-folds-regions.jpg", "mag": "×3 · illustration", "cap": "<b>Inside</b>: the lining is thrown into circular folds, shallow here in the duodenum and deepest in the jejunum.", "crumb": ["Duodenum", "Lining"], "credit": "Lesson slides" },
-   "3": { "img": "photos/maltase-membrane.jpg", "mag": "cell surface · illustration", "cap": "<b>Maltase</b> is fixed in the membrane of the epithelial cells: the last step of starch digestion happens on the wall itself.", "crumb": ["Small intestine", "Epithelium", "Membrane"], "credit": "Lesson slides" } } },
- "ileum-villi": { "organ": "ileum-villi", "steps": {
-   "0": { "img": "zoom/small-intestine-render.jpg", "pos": "58% 62%", "scale": 1.6, "mag": "×1.5 · 3-D render", "cap": "<b>The small intestine</b>: duodenum, then jejunum (blue) and ileum (pink), six to seven metres coiled into the abdomen.", "crumb": ["Body", "Small intestine"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "photos/folds-real-photo.jpg", "mag": "×3 · photograph", "cap": "<b>Opened up</b>: the circular folds, ridges running round the inside of the tube.", "crumb": ["Small intestine", "Circular folds"], "credit": "Lesson slides" },
-   "2": { "img": "photos/villi-carpet.jpg", "mag": "×40 · photograph", "cap": "<b>On every fold, villi</b>: finger-like projections packed side by side, each built from many cells.", "crumb": ["Small intestine", "Folds", "Villi"], "credit": "Lesson slides" },
-   "3": { "img": "zoom/microvilli-tem.jpg", "mag": "×20 000 · electron microscope", "cap": "<b>The surface of one cell</b>: microvilli, folds of its own membrane, each about 100 nm across (scale bar, bottom left).", "crumb": ["Villus", "Epithelial cell", "Microvilli"], "credit": "L. Howard, public domain" },
-   "5": { "img": "photos/villi-micrograph-set.jpg", "pos": "50% 82%", "scale": 1.9, "mag": "×70 · light microscope", "cap": "<b>Villi in section</b>: each wall is a single layer of cells over a core that carries the capillaries and the lacteal.", "crumb": ["Small intestine", "Villus"], "credit": "Lesson slides" },
-   "6": { "img": "video/villus-absorption.jpg", "mag": "×100 · animation", "cap": "<b>Inside a villus</b>: the capillary network and the central lacteal that carry the absorbed molecules away (the animation plays in the text).", "crumb": ["Villus", "Vessels"], "credit": "Lesson slides" } } },
- "colon": { "organ": "colon", "steps": {
-   "0": { "img": "zoom/large-intestine-render.jpg", "pos": "62% 50%", "scale": 1.15, "mag": "×1 · 3-D render", "cap": "<b>The large intestine</b> frames the small intestine: ascending, transverse and descending colon, then the sigmoid, the rectum and the anus. The pouches are haustra.", "crumb": ["Body", "Large intestine"], "credit": "BruceBlaus, CC BY 3.0" },
-   "1": { "img": "photos/colon-inside.jpg", "mag": "×5 · endoscope", "cap": "<b>Inside the colon</b>, through an endoscope: a smooth, moist lining with no villi.", "crumb": ["Colon", "Lining"], "credit": "Lesson slides" },
-   "2": { "img": "zoom/colon-mucosa.jpg", "mag": "×200 · light microscope", "cap": "<b>The lining under the microscope</b>: no villi, but tube-shaped glands (crypts) packed with pale goblet cells that make the mucus that eases the drying faeces along.", "crumb": ["Colon", "Lining", "Cells"], "credit": "M. Häggström, CC0" } } },
- "rectum-anus": { "organ": "rectum-anus", "steps": {
-   "0": { "img": "zoom/large-intestine-render.jpg", "pos": "54% 66%", "scale": 2.6, "mag": "×3 · 3-D render", "cap": "<b>Rectum and anus</b>: the last 15 cm, where faeces are stored, and the opening they leave by.", "crumb": ["Large intestine", "Rectum", "Anus"], "credit": "BruceBlaus, CC BY 3.0" } } },
- "molecules-lab": { "organ": null, "steps": {
-   "5": { "img": "zoom/microvilli-tem.jpg", "mag": "×20 000 · electron microscope", "cap": "<b>The membrane molecules cross</b>: microvilli on a villus cell. Diffusion and active transport both happen through this surface.", "crumb": ["Villus", "Cell membrane"], "credit": "L. Howard, public domain" } } }
+/* What the plate shows once the camera has arrived at each station: a
+   professional illustration of that organ, drawn ON the plate, registered
+   over the organ's own outline.
+     img   under assets/
+     roi   [x, y, w, h] as fractions of the picture: where the organ is
+           inside it — that box is scaled onto the organ's outline on the plate
+     box   optional plate target in plate coordinates (used where the plate's
+           own paths are a poor guide, e.g. the rectum shares a path)
+     pad   how far the soft window extends beyond the organ (fraction)
+   Credits are shown on the plate and recorded in assets/photos/CREDITS.md. */
+window.ZOOM_DETAIL = {
+  "mouth": {
+    "organ": "mouth",
+    "img": "zoom/head-section.jpg",
+    "roi": [
+      0.06,
+      0.52,
+      0.5,
+      0.3
+    ],
+    "window": [
+      30,
+      20,
+      230,
+      230
+    ],
+    "cover": true,
+    "label": "The mouth, cut down the middle (side view)",
+    "credit": "Patrick J. Lynch, CC BY 2.5"
+  },
+  "salivary-glands": {
+    "organ": "salivary-glands",
+    "img": "zoom/salivary-glands-illus.jpg",
+    "roi": [
+      0.15,
+      0.05,
+      0.85,
+      0.75
+    ],
+    "window": [
+      30,
+      30,
+      230,
+      220
+    ],
+    "cover": true,
+    "label": "The three pairs of salivary glands (side view)",
+    "credit": "OpenStax College, CC BY 3.0"
+  },
+  "epiglottis": {
+    "organ": "epiglottis",
+    "img": "zoom/head-section.jpg",
+    "w": 1200,
+    "h": 1319,
+    "roi": [
+      0.385,
+      0.635,
+      0.2,
+      0.26
+    ],
+    "window": [
+      0,
+      0,
+      340,
+      296
+    ],
+    "cover": true,
+    "scale": 0.36,
+    "label": "The throat, cut down the middle: the epiglottis sits at the base of the tongue, above the windpipe",
+    "credit": "Patrick J. Lynch, CC BY 2.5"
+  },
+  "stomach": {
+    "organ": "stomach",
+    "img": "zoom/stomach-cutaway.jpg",
+    "roi": [
+      0.12,
+      0.02,
+      0.68,
+      0.94
+    ],
+    "pad": 0.35,
+    "label": "The stomach, cut open: rugae and the three muscle layers",
+    "credit": "OpenStax College, CC BY 3.0"
+  },
+  "liver": {
+    "organ": "liver",
+    "img": "photos/biliary-system-plain.svg",
+    "roi": [
+      0.08,
+      0,
+      0.63,
+      0.53
+    ],
+    "label": "Liver, gall bladder, bile ducts, pancreas and duodenum",
+    "credit": "Biliary system, public domain (labels removed)",
+    "fixed": [
+      -8,
+      362,
+      340
+    ],
+    "window": [
+      -24,
+      346,
+      372,
+      349
+    ]
+  },
+  "gall-bladder": {
+    "organ": "gall-bladder",
+    "img": "photos/biliary-system-plain.svg",
+    "roi": [
+      0.25,
+      0.28,
+      0.18,
+      0.18
+    ],
+    "label": "The gall bladder stores bile; the bile duct carries it to the duodenum",
+    "credit": "Biliary system, public domain (labels removed)",
+    "fixed": [
+      -8,
+      362,
+      340
+    ],
+    "window": [
+      -24,
+      346,
+      372,
+      349
+    ]
+  },
+  "pancreas": {
+    "organ": "pancreas",
+    "img": "photos/biliary-system-plain.svg",
+    "roi": [
+      0.36,
+      0.4,
+      0.53,
+      0.3
+    ],
+    "label": "The pancreas and its duct into the duodenum",
+    "credit": "Biliary system, public domain (labels removed)",
+    "fixed": [
+      -8,
+      362,
+      340
+    ],
+    "window": [
+      -24,
+      346,
+      372,
+      349
+    ]
+  },
+  "duodenum": {
+    "organ": "duodenum",
+    "img": "photos/biliary-system-plain.svg",
+    "roi": [
+      0.45,
+      0.45,
+      0.32,
+      0.5
+    ],
+    "label": "The duodenum, where bile and pancreatic juice arrive",
+    "credit": "Biliary system, public domain (labels removed)",
+    "fixed": [
+      -8,
+      362,
+      340
+    ],
+    "window": [
+      -24,
+      346,
+      372,
+      349
+    ]
+  },
+  "ileum-villi": {
+    "organ": "ileum-villi",
+    "img": "zoom/small-intestine-illus.jpg",
+    "roi": [
+      0.41,
+      0.08,
+      0.4,
+      0.78
+    ],
+    "pad": 0.35,
+    "label": "The small intestine: duodenum, jejunum and ileum",
+    "credit": "OpenStax College, CC BY 3.0 (labels removed)"
+  },
+  "colon": {
+    "organ": "colon",
+    "img": "zoom/large-intestine-illus.jpg",
+    "roi": [
+      0.25,
+      0.02,
+      0.55,
+      0.96
+    ],
+    "pad": 0.25,
+    "label": "The large intestine: colon, rectum and anus",
+    "credit": "OpenStax College, CC BY 3.0 (labels removed)"
+  },
+  "rectum-anus": {
+    "organ": "rectum-anus",
+    "img": "zoom/large-intestine-illus.jpg",
+    "roi": [
+      0.46,
+      0.62,
+      0.12,
+      0.36
+    ],
+    "box": [
+      157,
+      741,
+      35,
+      71
+    ],
+    "pad": 1,
+    "label": "Rectum and anal canal",
+    "credit": "OpenStax College, CC BY 3.0 (labels removed)"
+  }
 };
