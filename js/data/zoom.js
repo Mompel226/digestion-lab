@@ -469,131 +469,45 @@ window.ZOOM_DETAIL = {
   },
   "liver": {
     "organ": "liver",
+    "keep": true,
     "noback": true,
-    "anim": "ducts",
+    "anim": "bileflow",
     "focus": "liver",
     "paint": [
       {
-        "organ": "duodenum",
-        "opacity": 0.9,
-        "fill": "#F2BFB4",
-        "stroke": "#C5847A",
-        "sw": 1
-      },
-      {
-        "organ": "pancreas",
-        "opacity": 0.9,
-        "fill": "#F0D9A6",
-        "stroke": "#B79A55",
-        "sw": 1
-      },
-      {
-        "organ": "gall-bladder",
-        "opacity": 0.85,
-        "fill": "#9CC27E",
-        "stroke": "#4E7B3A",
-        "sw": 1.2
-      },
-      {
         "organ": "liver",
-        "fill": "#8F3B2C",
-        "stroke": "#5E2418",
-        "sw": 1.2
-      }
-    ],
-    "labels": [
-      {
-        "t": "liver",
-        "at": [
-          110,
-          445
-        ],
-        "tx": [
-          70,
-          410
-        ],
-        "anchor": "start",
-        "plate": true
-      },
-      {
-        "t": "gall bladder",
-        "at": [
-          112,
-          488
-        ],
-        "tx": [
-          70,
-          508
-        ],
-        "anchor": "start",
-        "plate": true
+        "largest": true,
+        "fill": "none",
+        "stroke": "#E8A33D",
+        "sw": 2.2,
+        "opacity": 0.95
       }
     ],
     "label": "The liver makes bile; the hepatic ducts carry it out, the gall bladder stores it, and the bile duct delivers it to the duodenum"
   },
   "gall-bladder": {
     "organ": "gall-bladder",
+    "keep": true,
     "noback": true,
-    "anim": "ducts",
+    "anim": "bileflow",
     "focus": "gall-bladder",
     "paint": [
       {
-        "organ": "duodenum",
-        "opacity": 0.9,
-        "fill": "#F2BFB4",
-        "stroke": "#C5847A",
-        "sw": 1
-      },
-      {
-        "organ": "pancreas",
-        "opacity": 0.9,
-        "fill": "#F0D9A6",
-        "stroke": "#B79A55",
-        "sw": 1
-      },
-      {
         "organ": "gall-bladder",
-        "fill": "#9CC27E",
-        "stroke": "#4E7B3A",
-        "sw": 1.2
-      },
-      {
-        "organ": "liver",
-        "opacity": 0.55,
-        "fill": "#8F3B2C",
-        "stroke": "#5E2418",
-        "sw": 1.2
+        "largest": false,
+        "fill": "none",
+        "stroke": "#E8A33D",
+        "sw": 2,
+        "opacity": 0.95,
+        "only": [
+          96,
+          479,
+          145,
+          496
+        ]
       }
     ],
-    "labels": [
-      {
-        "t": "liver",
-        "at": [
-          110,
-          445
-        ],
-        "tx": [
-          70,
-          410
-        ],
-        "anchor": "start",
-        "plate": true
-      },
-      {
-        "t": "gall bladder — stores bile",
-        "at": [
-          112,
-          490
-        ],
-        "tx": [
-          60,
-          510
-        ],
-        "anchor": "start",
-        "plate": true
-      }
-    ],
-    "label": "The gall bladder lies against the underside of the liver; it stores bile and empties it down the bile duct"
+    "label": "The gall bladder lies under the liver; it stores bile and empties it down the bile duct into the duodenum"
   },
   "pancreas": {
     "organ": "pancreas",
@@ -657,7 +571,8 @@ window.ZOOM_DETAIL = {
       0.02,
       1,
       1
-    ]
+    ],
+    "anim": "juiceflow"
   },
   "ileum-villi": {
     "organ": "ileum-villi",
