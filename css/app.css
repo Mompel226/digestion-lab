@@ -794,3 +794,9 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* phone: the tab bar must not float over the sticky plate */
 @media (max-width:1000px){ .tabs{position:static} }
+
+/* an inset is the one thing on the detail layer that takes a click: full size in the lightbox */
+#bodySvg .detail .inset{pointer-events:auto;cursor:zoom-in}
+#bodySvg .detail .inset:hover rect:first-child{stroke:#5E7A55;stroke-width:1.2}
+#bodySvg .detail .inset:focus{outline:none}
+#bodySvg .detail .inset:focus rect:first-child{stroke:#5E7A55;stroke-width:1.4}

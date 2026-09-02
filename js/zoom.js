@@ -42,7 +42,7 @@
   /* the organ shapes inside the biliary plate, found by their fill colour */
   var SPOT_FILLS = { liver:['#967348', '#c58c55'], 'gall-bladder':['#d1e8c5'], pancreas:['#e89e55'],
                      duodenum:['#f69799', '#facccc', '#f7c5b5', '#f16668'] };
-  var SPOT_SRC = 'assets/photos/biliary-system-plain.svg';
+  var SPOT_SRC = 'assets/photos/biliary-system-plain2.svg';
 
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
   var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, softBlur = null;
@@ -133,7 +133,7 @@
     gLabels = el('g', { 'class':'detail__labels' }, layer);
     gInsets = el('g', { 'class':'detail__insets' }, layer);
     var hits = svg.querySelector('.hits');
-    if (hits) svg.insertBefore(layer, hits); else svg.appendChild(layer);
+    if (hits) svg.insertBefore(layer, hits.nextSibling); else svg.appendChild(layer);
 
     var wrap = svg.parentNode;
     if (!strip || !strip.isConnected) {
@@ -157,6 +157,19 @@
     return { x:x0, y:y0, w:x1 - x0, h:y1 - y0 };
   }
   function pt(m, x, y) { return { x:m.a * x + m.c * y + m.e, y:m.b * x + m.d * y + m.f }; }
+  /* is this plate point inside the organ's own artwork? (the plate's paths carry transforms, so
+     the test goes plate -> screen -> each path's local space) */
+  function inFillFor(organ) {
+    var root = svg.getScreenCTM();
+    var paths = Array.prototype.filter.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) { return p.tagName === 'path' && p.style.display !== 'none'; });
+    var inv = paths.map(function (p) { return p.getScreenCTM().inverse(); });
+    var P = svg.createSVGPoint();
+    return function (x, y) {
+      var sx = root.a * x + root.c * y + root.e, sy = root.b * x + root.d * y + root.f;
+      for (var i = 0; i < paths.length; i++) { P.x = sx; P.y = sy; if (paths[i].isPointInFill(P.matrixTransform(inv[i]))) return true; }
+      return false;
+    };
+  }
   /* screen pixels per plate unit at a camera frame — so a label can be given
      a size in pixels and drawn in units */
   function ppu(frame) {
@@ -316,6 +329,13 @@
         var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(y + h + fs * 1.15), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
         String(ins.cap).split('\n').forEach(function (l, i) { var ts = el('tspan', { x:f1(x + w / 2), dy:i ? '1.15em' : '0' }, t); ts.textContent = l; });
       }
+      var capText = String(ins.cap || s.label || '').replace(/\n/g, ' ');
+      g.setAttribute('role', 'button'); g.setAttribute('tabindex', '0');
+      var badge = el('g', { 'class':'inset__zoom', transform:'translate(' + f1(x + w - fs * 0.9) + ',' + f1(y + fs * 0.9) + ')' }, g);
+      el('circle', { r:f1(fs * 0.62), fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.4' }, badge);
+      var bt = el('text', { 'class':'dl__t', 'font-size':f1(fs * 0.78), 'text-anchor':'middle', y:f1(fs * 0.28) }, badge); bt.textContent = '⤢';
+      g.addEventListener('click', function (ev) { ev.stopPropagation(); if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + ins.img, capText, 'Photograph'); });
+      g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); g.dispatchEvent(new MouseEvent('click')); } });
       if (ins.to && placed[0]) {
         var ax = placed[0].pl.x + ins.to[0] * placed[0].pl.W, ay = placed[0].pl.y + ins.to[1] * placed[0].pl.H;
         var sx = ax < x ? x - 2 : x + w + 2, sy = y + h / 2;
@@ -326,7 +346,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560 });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;

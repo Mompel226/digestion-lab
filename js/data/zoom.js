@@ -90,8 +90,8 @@ window.ZOOM_DETAIL = {
             "img": "photos/incisors-real.jpg",
             "at": [
               60,
-              204,
-              70
+              194,
+              72
             ],
             "labels": [
               {
@@ -160,8 +160,8 @@ window.ZOOM_DETAIL = {
             "img": "photos/premolars-molars-real.jpg",
             "at": [
               136,
-              204,
-              70
+              194,
+              72
             ],
             "labels": [
               {
@@ -226,7 +226,7 @@ window.ZOOM_DETAIL = {
           30,
           24,
           230,
-          172
+          160
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5"
@@ -239,10 +239,10 @@ window.ZOOM_DETAIL = {
             "img": "photos/tooth-cut-open.jpg",
             "at": [
               60,
-              202,
-              58
+              166,
+              96
             ],
-            "cap": "a real molar, cut in half"
+            "cap": "a real molar, cut in half — click to enlarge"
           }
         ],
         "img": "zoom/head-section.jpg",
@@ -256,7 +256,7 @@ window.ZOOM_DETAIL = {
           30,
           24,
           230,
-          172
+          132
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5"
@@ -269,10 +269,10 @@ window.ZOOM_DETAIL = {
             "img": "photos/tooth-decay.jpg",
             "at": [
               60,
-              206,
-              76
+              178,
+              144
             ],
-            "cap": "healthy · caries · cavity"
+            "cap": "healthy · caries · cavity — click to enlarge"
           }
         ],
         "img": "zoom/head-section.jpg",
@@ -286,7 +286,7 @@ window.ZOOM_DETAIL = {
           30,
           24,
           230,
-          172
+          142
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5"
@@ -665,112 +665,61 @@ window.ZOOM_DETAIL = {
   },
   "pancreas": {
     "organ": "pancreas",
-    "img": "photos/biliary-system-plain2.svg",
+    "img": "zoom/pancreas-render2.jpg",
     "roi": [
-      0.36,
-      0.4,
-      0.53,
-      0.3
+      0.18,
+      0.37,
+      0.64,
+      0.34
     ],
-    "fixed": [
-      -8,
-      362,
-      340
-    ],
-    "window": [
-      -24,
-      346,
-      372,
-      349
-    ],
-    "spot": "pancreas",
-    "label": "The pancreas: pancreatic juice reaches the duodenum through the pancreatic duct",
-    "credit": "Biliary system, public domain · inset: OpenStax College / AnatomyZone",
+    "pad": 0.45,
+    "label": "The pancreas, with its duct running along it into the duodenum",
+    "credit": "OpenStax College / AnatomyZone, from the 7.4 deck",
     "labels": [
-      {
-        "t": "liver",
-        "at": [
-          0.3,
-          0.2
-        ],
-        "tx": [
-          0.1,
-          0.09
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "gall bladder",
-        "at": [
-          0.33,
-          0.36
-        ],
-        "tx": [
-          0.08,
-          0.5
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "bile duct",
-        "at": [
-          0.47,
-          0.5
-        ],
-        "tx": [
-          0.52,
-          0.35
-        ],
-        "anchor": "start"
-      },
       {
         "t": "pancreas",
         "at": [
-          0.7,
-          0.55
+          0.5,
+          0.6
         ],
         "tx": [
           0.56,
-          0.72
+          0.86
         ],
         "anchor": "start"
       },
       {
         "t": "pancreatic duct",
         "at": [
-          0.62,
-          0.53
+          0.6,
+          0.5
         ],
         "tx": [
-          0.64,
-          0.34
+          0.66,
+          0.24
         ],
         "anchor": "start"
       },
       {
         "t": "duodenum",
         "at": [
-          0.42,
-          0.86
+          0.09,
+          0.55
         ],
         "tx": [
-          0.32,
-          0.99
+          0.02,
+          0.9
         ],
         "anchor": "start"
       }
     ],
-    "insets": [
-      {
-        "img": "zoom/pancreas-render.jpg",
-        "at": [
-          226,
-          598,
-          80
-        ],
-        "cap": "pancreatic juice runs along the\npancreatic duct into the duodenum"
-      }
-    ]
+    "box": [
+      168,
+      522,
+      92,
+      32
+    ],
+    "grow": 1.25
   },
   "duodenum": {
     "organ": "duodenum",
