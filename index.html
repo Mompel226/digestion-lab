@@ -7,7 +7,7 @@
 <meta name="description" content="An interactive revision simulation of human nutrition and the digestive system for Cambridge IGCSE Biology 0610.">
 <meta name="theme-color" content="#14572B">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🫁</text></svg>">
-<link rel="stylesheet" href="css/app.css?v=1788348817">
+<link rel="stylesheet" href="css/app.css?v=1788350510">
 </head>
 <body>
 <div class="app">
@@ -53,6 +53,7 @@
         </button>
         <button class="tool" id="tLabels" aria-pressed="true" title="Show or hide the organ names">Labels</button>
         <button class="tool" id="tBeyond" aria-pressed="true" title="Show organs that are useful but not on the 0610 syllabus">Beyond syllabus</button>
+        <button class="tool tool--body" id="tBody" title="Pull the camera back to the whole body">⤢ Whole body</button>
         <span class="hdr__spacer"></span>
       </div>
       <div class="bodywrap">
@@ -115,6 +116,7 @@
     <ul>
       <li><b>Click any organ</b> on the body, or any step on the bar along the bottom.</li>
       <li>Each station has two tabs: <b>Learn</b> — what you must know, with the diagrams and the real photographs from the lesson set beside the sentence each one illustrates — and <b>Practise</b>, the questions.</li>
+      <li><b>The body follows the text.</b> As you read down a station, the camera on the left flies to the organ and a lens over it steps through real pictures — the organ, then inside it, then the tissue, then the cell surface — each with its magnification. Click the lens to see the picture full size; <b>⤢ Whole body</b> pulls the camera back.</li>
       <li><b>Follow the food</b> sends a meal along the whole canal and opens each station as it arrives.</li>
       <li>Your work is saved in <b>this browser on this device</b>. Use the same computer each time, and do not clear your browsing data before you have handed in.</li>
     </ul>
@@ -161,17 +163,19 @@
   </div>
 </div>
 
-<script src="js/config.js?v=1788348817"></script>
-<script src="js/data/stations.js?v=1788348817"></script>
-<script src="js/data/keys.enc.js?v=1788348817"></script>
-<script src="js/data/photos.js?v=1788348817"></script>
-<script src="js/data/figure-art.js?v=1788348817"></script>
-<script src="js/data/anatomy-art.js?v=1788348817"></script>
-<script src="js/anatomy.js?v=1788348817"></script>
-<script src="js/terms.js?v=1788348817"></script>
-<script src="js/figures.js?v=1788348817"></script>
-<script src="js/marking.js?v=1788348817"></script>
-<script src="js/engine.js?v=1788348817"></script>
-<script src="js/app.js?v=1788348817"></script>
+<script src="js/config.js?v=1788350510"></script>
+<script src="js/data/stations.js?v=1788350510"></script>
+<script src="js/data/keys.enc.js?v=1788350510"></script>
+<script src="js/data/photos.js?v=1788350510"></script>
+<script src="js/data/figure-art.js?v=1788350510"></script>
+<script src="js/data/anatomy-art.js?v=1788350510"></script>
+<script src="js/data/zoom.js?v=1788350510"></script>
+<script src="js/zoom.js?v=1788350510"></script>
+<script src="js/anatomy.js?v=1788350510"></script>
+<script src="js/terms.js?v=1788350510"></script>
+<script src="js/figures.js?v=1788350510"></script>
+<script src="js/marking.js?v=1788350510"></script>
+<script src="js/engine.js?v=1788350510"></script>
+<script src="js/app.js?v=1788350510"></script>
 </body>
 </html>

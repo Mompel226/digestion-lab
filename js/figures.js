@@ -222,10 +222,10 @@
           { side:'right', ly:172, at:[260,167], text:'Dentine', sub:'softer, and it senses pain' },
           { side:'right', ly:224, at:[203,214], text:'Pulp cavity' },
           { side:'right', ly:262, at:[323,236], text:'Gum' },
-          { side:'right', ly:330, at:[201,296], text:'Cement',  sub:'anchors the root' },
+          { side:'right', ly:330, at:[279,400], text:'Cement',  sub:'thin layer on the root surface' },
           { side:'right', ly:436, at:[308,435], text:'Jaw bone' },
-          { side:'right', ly:520, at:[288,556], text:'Blood vessel' },
-          { side:'right', ly:576, at:[288,580], text:'Nerve' }
+          { side:'right', ly:520, at:[290,560], text:'Blood vessel' },
+          { side:'right', ly:576, at:[290,570], text:'Nerve' }
         ],
         brackets:[
           { x:26, y0:62,  y1:262, text:'Crown' },
@@ -389,12 +389,12 @@
       viewBox:'-158 -18 646 452', leftX:-24, rightX:296, minGap:26, top:20, bottom:410,
       hide:[19,20,21,22,23,24,25,26],
       labels:[
-        { side:'left',  ly:96,  at:[54,104], text:'Microvilli', sub:'the brush border' },
-        { side:'left',  ly:210, at:[44,214], text:'Epithelium', sub:'one cell thick' },
+        { side:'left',  ly:96,  at:[82,104], text:'Microvilli', sub:'the brush border' },
+        { side:'left',  ly:210, at:[77,215], text:'Epithelium', sub:'one cell thick' },
         { side:'left',  ly:330, at:[92,330], text:'Villus' },
-        { side:'right', ly:96,  at:[166,93], text:'Capillaries', sub:'glucose + amino acids' },
-        { side:'right', ly:216, at:[150,215], text:'Lacteal', sub:'fatty acids + glycerol' },
-        { side:'right', ly:360, at:[214,364], text:'Blood vessel', sub:'on to the hepatic portal vein' }
+        { side:'right', ly:96,  at:[150,93], text:'Capillaries', sub:'glucose + amino acids' },
+        { side:'right', ly:216, at:[136,215], text:'Lacteal', sub:'fatty acids + glycerol' },
+        { side:'right', ly:360, at:[179,364], text:'Blood vessel', sub:'on to the hepatic portal vein' }
       ],
       note:[164, 428, 'Large surface area · short diffusion distance · steep concentration gradient', 'middle']
     });
@@ -949,10 +949,10 @@
           { side:'right', ly:178, at:[260,167], text:'Dentine',     sub:'softer, and it senses pain' },
           { side:'right', ly:236, at:[203,214], text:'Pulp cavity', sub:'blood vessels and nerves' },
           { side:'right', ly:288, at:[323,236], text:'Gum' },
-          { side:'right', ly:344, at:[201,296], text:'Cement',      sub:'anchors the root' },
+          { side:'right', ly:344, at:[279,400], text:'Cement',      sub:'thin layer on the root surface' },
           { side:'right', ly:432, at:[308,435], text:'Jaw bone' },
-          { side:'right', ly:508, at:[288,556], text:'Blood vessel' },
-          { side:'right', ly:562, at:[288,580], text:'Nerve' }
+          { side:'right', ly:508, at:[290,560], text:'Blood vessel' },
+          { side:'right', ly:562, at:[290,570], text:'Nerve' }
         ],
         brackets:[
           { x:26, y0:62,  y1:262, text:'Crown' },

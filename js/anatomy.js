@@ -67,16 +67,16 @@
   var ORGANS = [
     { id:'mouth',           label:'Mouth and teeth',    side:'right', ly:112, anchor:[128,122] },
     { id:'salivary-glands', label:'Salivary glands',  side:'left',  ly:150, anchor:[168,138] },
-    { id:'epiglottis',      label:'Epiglottis',       side:'right', ly:206, anchor:[159,208], beyond:true },
+    { id:'epiglottis',      label:'Epiglottis',       side:'right', ly:206, anchor:[159,204], beyond:true },
     { id:'oesophagus',      label:'Oesophagus',       side:'left',  ly:320, anchor:[179,318] },
     { id:'liver',           label:'Liver',            side:'left',  ly:436, anchor:[104,452] },
     { id:'stomach',         label:'Stomach',          side:'right', ly:446, anchor:[243,470] },
     { id:'gall-bladder',    label:'Gall bladder',        side:'left',  ly:500, anchor:[114,487] },
-    { id:'pancreas',        label:'Pancreas',         side:'right', ly:516, anchor:[218,540] },
+    { id:'pancreas',        label:'Pancreas',         side:'right', ly:516, anchor:[198,512] },
     { id:'duodenum',        label:'Duodenum',         side:'right', ly:574, anchor:[130,572] },
     { id:'colon',           label:'Large intestine',  side:'left',  ly:612, anchor:[97,648] },
     { id:'ileum-villi',     label:'Small intestine',  side:'right', ly:652, anchor:[196,650] },
-    { id:'rectum-anus',     label:'Rectum and anus',    side:'left',  ly:782, anchor:[192,766] }
+    { id:'rectum-anus',     label:'Rectum and anus',    side:'left',  ly:782, anchor:[176,776] }
   ];
 
   /* The route a meal takes, in artwork coordinates. */
