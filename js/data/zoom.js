@@ -238,9 +238,9 @@ window.ZOOM_DETAIL = {
           {
             "img": "photos/tooth-cut-open.jpg",
             "at": [
-              60,
-              166,
-              96
+              72,
+              86,
+              116
             ],
             "cap": "a real molar, cut in half — click to enlarge"
           }
@@ -256,7 +256,7 @@ window.ZOOM_DETAIL = {
           30,
           24,
           230,
-          132
+          246
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5"

@@ -157,6 +157,21 @@
     return { x:x0, y:y0, w:x1 - x0, h:y1 - y0 };
   }
   function pt(m, x, y) { return { x:m.a * x + m.c * y + m.e, y:m.b * x + m.d * y + m.f }; }
+  /* the organ's own outline on the plate, sampled every `step` units along its longest path */
+  function outlineFor(organ, step) {
+    var root = svg.getScreenCTM().inverse(), best = null, bestLen = 0;
+    Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
+      if (p.tagName !== 'path') return;
+      var L = p.getTotalLength(); if (L > bestLen) { bestLen = L; best = p; }
+    });
+    if (!best) return [];
+    var m = best.getScreenCTM(), out = [];
+    for (var s = 0; s < bestLen; s += (step || 2)) {
+      var q = best.getPointAtLength(s), sx = m.a * q.x + m.c * q.y + m.e, sy = m.b * q.x + m.d * q.y + m.f;
+      out.push([root.a * sx + root.c * sy + root.e, root.b * sx + root.d * sy + root.f]);
+    }
+    return out;
+  }
   /* is this plate point inside the organ's own artwork? (the plate's paths carry transforms, so
      the test goes plate -> screen -> each path's local space) */
   function inFillFor(organ) {
@@ -346,7 +361,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:r.width < 560, inFill:inFillFor, outline:outlineFor });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;
