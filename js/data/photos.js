@@ -10,32 +10,44 @@ window.PHOTOS = {
  "overview": [],
  "mouth": [
   {
-   "t": "photo",
-   "src": "premolars-molars-real.jpg",
-   "kind": "Photograph",
-   "maxw": 640,
+   "t": "pair",
+   "kind": "Photographs",
    "after": 3,
-   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back. A <b>cusp</b> is one of the raised points on the biting surface, and counting them is the reliable way to tell the two apart: a premolar has <b>two</b>, a molar has <b>four</b>. Root number is not reliable, because it depends on which jaw the tooth is in.",
-   "annot": [
+   "cap": "Two views of one jaw. Left, looking along the row: the <b>molars</b> are the big teeth at the back, the <b>premolars</b> the smaller ones in front of them. A <b>cusp</b> is one of the raised points on the biting surface, and counting them is the reliable way to tell the two apart: a premolar has <b>two</b>, a molar has <b>four</b>. Right, from the front: the pointed <b>canine</b> beside the flat, chisel-edged <b>incisors</b>.",
+   "of": [
     {
-     "x": 27,
-     "y": 63,
-     "t": "Molars — the big ones at the back",
-     "big": true,
-     "to": [
-      40,
-      40
+     "photo": "premolars-molars-real.jpg",
+     "label": "Along the row: molars, then premolars",
+     "maxw": 640,
+     "w": 58,
+     "annot": [
+      {
+       "x": 27,
+       "y": 63,
+       "t": "Molars",
+       "big": true,
+       "to": [
+        40,
+        40
+       ]
+      },
+      {
+       "x": 72,
+       "y": 78,
+       "t": "Premolars",
+       "big": true,
+       "to": [
+        80,
+        48
+       ]
+      }
      ]
     },
     {
-     "x": 72,
-     "y": 78,
-     "t": "Premolars — smaller, nearer the front",
-     "big": true,
-     "to": [
-      80,
-      48
-     ]
+     "photo": "canine-real.jpg",
+     "label": "From the front: canine beside the incisors",
+     "maxw": 800,
+     "w": 42
     }
    ]
   },
@@ -56,7 +68,8 @@ window.PHOTOS = {
      "label": "The same structures, drawn",
      "w": 70
     }
-   ]
+   ],
+   "stack": true
   },
   {
    "t": "pair",
@@ -93,14 +106,6 @@ window.PHOTOS = {
    "maxw": 715,
    "more": true,
    "cap": "The incisors — flat and chisel-shaped, with a straight cutting edge."
-  },
-  {
-   "t": "photo",
-   "src": "canine-real.jpg",
-   "kind": "Photograph",
-   "maxw": 800,
-   "more": true,
-   "cap": "The canine — one pointed cusp, sitting just behind the incisors."
   }
  ],
  "salivary-glands": [
@@ -120,15 +125,6 @@ window.PHOTOS = {
    "kind": "Animation",
    "cap": "And the same thing filmed inside a real body — the bolus is the yellow mass. Watch how the wall closes behind it.",
    "after": 2
-  },
-  {
-   "t": "photo",
-   "src": "peristalsis.jpg",
-   "kind": "Illustration",
-   "cap": "The same thing as an exam diagram: circular muscle contracts behind the bolus, relaxes in front.",
-   "after": 1,
-   "more": true,
-   "maxw": 138
   }
  ],
  "stomach": [
@@ -156,21 +152,21 @@ window.PHOTOS = {
  "liver": [
   {
    "t": "photo",
-   "src": "liver-ducts.jpg",
+   "src": "biliary-system.svg",
    "kind": "Illustration",
-   "cap": "The liver, gall bladder and the bile ducts that carry bile down to the duodenum.",
+   "cap": "The liver, the gall bladder tucked beneath it, and the ducts that carry bile down to the duodenum. Bile made in the liver leaves by the right and left hepatic ducts, is stored in the gall bladder, and reaches the duodenum by the common bile duct, which joins the pancreatic duct just before the opening.",
    "after": 1,
-   "maxw": 250
+   "maxw": 560
   }
  ],
  "gall-bladder": [
   {
    "t": "photo",
-   "src": "liver-ducts.jpg",
+   "src": "biliary-system.svg",
    "kind": "Illustration",
-   "cap": "The gall bladder sits under the liver. The bile duct carries bile to the duodenum.",
+   "cap": "The gall bladder sits under the liver. Bile goes up the cystic duct into it for storage, and back down into the common bile duct when a fatty meal arrives, entering the duodenum beside the pancreatic duct.",
    "after": 0,
-   "maxw": 250
+   "maxw": 560
   }
  ],
  "pancreas": [
@@ -179,7 +175,7 @@ window.PHOTOS = {
    "src": "pancreas-duct.jpg",
    "kind": "Illustration",
    "cap": "The pancreas and its duct, delivering pancreatic juice into the duodenum.",
-   "after": 0,
+   "after": 1,
    "maxw": 300
   },
   {
@@ -255,8 +251,8 @@ window.PHOTOS = {
    "src": "surface-area-levels.jpg",
    "kind": "Illustration",
    "cap": "All three levels at once, and what they come to: <b>circular folds</b>, then <b>villi</b> on the folds, then <b>microvilli</b> on each cell. Together they multiply the area by up to 600 times compared with a flat tube.",
-   "after": 4,
-   "maxw": 800
+   "maxw": 800,
+   "more": true
   },
   {
    "t": "video",
@@ -272,14 +268,6 @@ window.PHOTOS = {
    "cap": "Could you tell them apart in an exam? (b) circular folds, (c) villi and (d) microvilli, at increasing magnification — the same three levels, this time as real micrographs.",
    "maxw": 539,
    "more": true
-  },
-  {
-   "t": "photo",
-   "src": "mesentery-lymph.jpg",
-   "kind": "Illustration · going further",
-   "cap": "<b>Where the lacteal actually goes.</b> The fan-shaped <b>mesentery</b> holds the small intestine in place and carries its vessels: the artery branches that supply the gut (red), and the lymph vessels studded with <b>lymph nodes</b> (the yellow beads). Fatty acids and glycerol leave a villus in its lacteal, the lacteals drain into these lymph vessels, and the lymph finally joins the blood. The lymphatic system is not on 0610 — but this is the answer to “where does the lacteal go?”",
-   "more": true,
-   "maxw": 206
   }
  ],
  "colon": [

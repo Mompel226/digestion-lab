@@ -191,7 +191,25 @@
     top.appendChild(h('span', 'act__n', 'Question ' + (idx + 1)));
     card.appendChild(top);
     if (a.prompt) card.appendChild(h('p', 'act__prompt', a.prompt));
+    if (a.table) card.appendChild(tableEl(a.table));
     return card;
+  }
+
+  /* A data table is part of the question, not decoration: Paper 6 gives the
+     numbers ruled, and reading them is the skill being tested. */
+  function tableEl(t) {
+    var wrap = h('div', 'qtable'), tbl = document.createElement('table');
+    var thead = document.createElement('thead'), tr = document.createElement('tr');
+    (t.head || []).forEach(function (c) { var th = document.createElement('th'); th.textContent = c; tr.appendChild(th); });
+    thead.appendChild(tr); tbl.appendChild(thead);
+    var tb = document.createElement('tbody');
+    (t.rows || []).forEach(function (row) {
+      var r = document.createElement('tr');
+      row.forEach(function (c, i) { var td = document.createElement(i === 0 ? 'th' : 'td'); if (i === 0) td.setAttribute('scope', 'row'); td.textContent = c; r.appendChild(td); });
+      tb.appendChild(r);
+    });
+    tbl.appendChild(tb); wrap.appendChild(tbl);
+    return wrap;
   }
 
   /* onCheck() must return a Promise of {correct,...} or null to abort */

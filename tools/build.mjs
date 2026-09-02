@@ -68,6 +68,7 @@ for (const st of STATIONS) {
   for (let i = 0; i < (st.activities || []).length; i++) {
     const a = st.activities[i], id = st.id + ':' + i, t = a.type;
     const p = { type: t, prompt: a.prompt };
+    if (a.table) p.table = a.table;          /* presentation only */
     const v = {};
     nAct++;
 
