@@ -15,38 +15,26 @@ window.PHOTOS = {
    "kind": "Photograph",
    "maxw": 640,
    "after": 3,
-   "cap": "Looking along the tooth row — the view exam questions use. The bumps arrowed here are the <b>cusps</b>: the raised points on the biting surface that do the crushing. A premolar has <b>two</b>; a molar has <b>four</b>, though from this angle you can only see the two on the cheek side. Counting cusps is the reliable way to tell the two apart — root number is not, because it depends on which jaw the tooth is in.",
+   "cap": "Looking along the tooth row — the view exam questions use. The teeth get bigger towards the back. A <b>cusp</b> is one of the raised points on the biting surface, and counting them is the reliable way to tell the two apart: a premolar has <b>two</b>, a molar has <b>four</b>. Root number is not reliable, because it depends on which jaw the tooth is in.",
    "annot": [
     {
-     "x": 25,
-     "y": 66,
-     "t": "cusps of a molar",
+     "x": 27,
+     "y": 63,
+     "t": "Molars — the big ones at the back",
      "big": true,
      "to": [
-      [
-       54.5,
-       27
-      ],
-      [
-       61.5,
-       20.5
-      ]
+      40,
+      40
      ]
     },
     {
      "x": 72,
      "y": 78,
-     "t": "cusps of a premolar",
+     "t": "Premolars — smaller, nearer the front",
      "big": true,
      "to": [
-      [
-       72,
-       26
-      ],
-      [
-       78.5,
-       30.5
-      ]
+      80,
+      48
      ]
     }
    ]
@@ -231,25 +219,18 @@ window.PHOTOS = {
  ],
  "ileum-villi": [
   {
-   "t": "video",
-   "src": "villus-absorption",
-   "kind": "Animation",
-   "cap": "Absorption at the villi. Watch the small soluble molecules cross the wall and disappear into the blood vessels inside.",
-   "after": 2
-  },
-  {
    "t": "photo",
-   "src": "villi-and-microvilli-em.jpg",
-   "kind": "Micrographs",
-   "cap": "Villi at ×70 under a light microscope, and the microvilli of a single cell at ×18,000 under an electron microscope.",
-   "after": 1,
-   "maxw": 800
+   "src": "intestine-dissection.jpg",
+   "kind": "Photograph",
+   "cap": "This is the organ itself. Loops of jejunum opened at surgery, with the fan-shaped mesentery carrying the blood vessels that take absorbed nutrients away — six to seven metres of tube in an adult, and everything below happens on its inside surface.",
+   "maxw": 800,
+   "after": 0
   },
   {
    "t": "photo",
    "src": "folds-real-photo.jpg",
    "kind": "Photograph",
-   "cap": "Inside a real small intestine: the circular folds of the lining, close up.",
+   "cap": "Level one, in a real intestine: the circular folds are the ridges running round the inside of the tube. Nothing in here is smooth, and that is the whole point.",
    "after": 1,
    "maxw": 800
   },
@@ -257,33 +238,40 @@ window.PHOTOS = {
    "t": "photo",
    "src": "villi-carpet.jpg",
    "kind": "Photograph",
-   "cap": "The lining is a carpet of villi — this is what gives the enormous surface area.",
-   "more": true,
-   "maxw": 240
+   "cap": "Level two: zoom in on one fold and its entire surface is a carpet of villi, packed side by side. Each one is a projection built from many cells — not a single cell.",
+   "maxw": 240,
+   "after": 2
   },
   {
    "t": "photo",
-   "src": "villi-micrograph-set.jpg",
+   "src": "villi-and-microvilli-em.jpg",
    "kind": "Micrographs",
-   "cap": "(b) circular folds, (c) villi and (d) microvilli, at increasing magnification.",
-   "after": 1,
-   "maxw": 539
+   "cap": "Level three, and the only level you need an electron microscope to see. Left: villi at ×70 under a light microscope. Right: the surface of one epithelial cell at ×18,000 — that fuzzy border is its microvilli.",
+   "after": 3,
+   "maxw": 800
   },
   {
    "t": "photo",
    "src": "surface-area-levels.jpg",
    "kind": "Illustration",
-   "cap": "The three levels of folding that make the surface area so large: <b>circular folds</b>, then <b>villi</b> on the folds, then <b>microvilli</b> on each cell. Together they multiply the area by up to 600 times.",
-   "after": 1,
+   "cap": "All three levels at once, and what they come to: <b>circular folds</b>, then <b>villi</b> on the folds, then <b>microvilli</b> on each cell. Together they multiply the area by up to 600 times compared with a flat tube.",
+   "after": 4,
    "maxw": 800
   },
   {
+   "t": "video",
+   "src": "villus-absorption",
+   "kind": "Animation",
+   "cap": "Now watch it happen. The molecules cross a wall one cell thick and vanish into the vessels running through the middle of the villus.",
+   "after": 6
+  },
+  {
    "t": "photo",
-   "src": "intestine-dissection.jpg",
-   "kind": "Photograph",
-   "cap": "A real dissection: loops of jejunum, and the mesentery carrying their blood vessels.",
-   "more": true,
-   "maxw": 800
+   "src": "villi-micrograph-set.jpg",
+   "kind": "Micrographs",
+   "cap": "Could you tell them apart in an exam? (b) circular folds, (c) villi and (d) microvilli, at increasing magnification — the same three levels, this time as real micrographs.",
+   "maxw": 539,
+   "more": true
   },
   {
    "t": "photo",
