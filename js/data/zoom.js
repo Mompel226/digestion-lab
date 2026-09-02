@@ -469,173 +469,131 @@ window.ZOOM_DETAIL = {
   },
   "liver": {
     "organ": "liver",
-    "label": "The liver, with the gall bladder tucked under its right lobe; bile drains through the bile duct to the duodenum",
-    "spotKey": {
-      "h": [
-        [
-          0,
-          0.055
-        ],
-        [
-          0.93,
-          1
-        ]
-      ],
-      "s": [
-        0.35,
-        1
-      ],
-      "v": [
-        0.2,
-        0.72
-      ]
-    },
+    "noback": true,
+    "anim": "ducts",
+    "focus": "liver",
+    "paint": [
+      {
+        "organ": "duodenum",
+        "opacity": 0.9,
+        "fill": "#F2BFB4",
+        "stroke": "#C5847A",
+        "sw": 1
+      },
+      {
+        "organ": "pancreas",
+        "opacity": 0.9,
+        "fill": "#F0D9A6",
+        "stroke": "#B79A55",
+        "sw": 1
+      },
+      {
+        "organ": "gall-bladder",
+        "opacity": 0.85,
+        "fill": "#9CC27E",
+        "stroke": "#4E7B3A",
+        "sw": 1.2
+      },
+      {
+        "organ": "liver",
+        "fill": "#8F3B2C",
+        "stroke": "#5E2418",
+        "sw": 1.2
+      }
+    ],
     "labels": [
       {
         "t": "liver",
         "at": [
-          0.42,
-          0.3
+          110,
+          445
         ],
         "tx": [
-          0.06,
-          0.12
+          70,
+          410
         ],
-        "anchor": "start"
+        "anchor": "start",
+        "plate": true
       },
       {
         "t": "gall bladder",
         "at": [
-          0.3,
-          0.45
+          112,
+          488
         ],
         "tx": [
-          0.05,
-          0.62
+          70,
+          508
         ],
-        "anchor": "start"
-      },
-      {
-        "t": "bile duct",
-        "at": [
-          0.42,
-          0.56
-        ],
-        "tx": [
-          0.3,
-          0.84
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "pancreas",
-        "at": [
-          0.64,
-          0.6
-        ],
-        "tx": [
-          0.66,
-          0.84
-        ],
-        "anchor": "start"
+        "anchor": "start",
+        "plate": true
       }
     ],
-    "img": "zoom/accessory-organs.jpg",
-    "fixed": [
-      30,
-      388,
-      204
-    ],
-    "window": [
-      16,
-      374,
-      232,
-      186
-    ],
-    "credit": "OpenStax College, CC BY 3.0 (leader lines removed)"
+    "label": "The liver makes bile; the hepatic ducts carry it out, the gall bladder stores it, and the bile duct delivers it to the duodenum"
   },
   "gall-bladder": {
     "organ": "gall-bladder",
-    "label": "The gall bladder lies against the underside of the liver; it stores bile and empties it down the bile duct",
-    "spotKey": {
-      "h": [
-        [
-          0.16,
-          0.34
-        ]
-      ],
-      "s": [
-        0.22,
-        1
-      ],
-      "v": [
-        0.22,
-        0.8
-      ]
-    },
+    "noback": true,
+    "anim": "ducts",
+    "focus": "gall-bladder",
+    "paint": [
+      {
+        "organ": "duodenum",
+        "opacity": 0.9,
+        "fill": "#F2BFB4",
+        "stroke": "#C5847A",
+        "sw": 1
+      },
+      {
+        "organ": "pancreas",
+        "opacity": 0.9,
+        "fill": "#F0D9A6",
+        "stroke": "#B79A55",
+        "sw": 1
+      },
+      {
+        "organ": "gall-bladder",
+        "fill": "#9CC27E",
+        "stroke": "#4E7B3A",
+        "sw": 1.2
+      },
+      {
+        "organ": "liver",
+        "opacity": 0.55,
+        "fill": "#8F3B2C",
+        "stroke": "#5E2418",
+        "sw": 1.2
+      }
+    ],
     "labels": [
       {
         "t": "liver",
         "at": [
-          0.42,
-          0.3
+          110,
+          445
         ],
         "tx": [
-          0.06,
-          0.12
+          70,
+          410
         ],
-        "anchor": "start"
+        "anchor": "start",
+        "plate": true
       },
       {
-        "t": "gall bladder",
+        "t": "gall bladder — stores bile",
         "at": [
-          0.3,
-          0.45
+          112,
+          490
         ],
         "tx": [
-          0.05,
-          0.62
+          60,
+          510
         ],
-        "anchor": "start"
-      },
-      {
-        "t": "bile duct",
-        "at": [
-          0.42,
-          0.56
-        ],
-        "tx": [
-          0.3,
-          0.84
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "pancreas",
-        "at": [
-          0.64,
-          0.6
-        ],
-        "tx": [
-          0.66,
-          0.84
-        ],
-        "anchor": "start"
+        "anchor": "start",
+        "plate": true
       }
     ],
-    "img": "zoom/accessory-organs.jpg",
-    "fixed": [
-      30,
-      388,
-      204
-    ],
-    "window": [
-      16,
-      374,
-      232,
-      186
-    ],
-    "credit": "OpenStax College, CC BY 3.0 (leader lines removed)"
+    "label": "The gall bladder lies against the underside of the liver; it stores bile and empties it down the bile duct"
   },
   "pancreas": {
     "organ": "pancreas",
@@ -694,170 +652,114 @@ window.ZOOM_DETAIL = {
       32
     ],
     "grow": 1.25,
-    "hide": [
-      "duodenum"
+    "crop": [
+      0.17,
+      0.02,
+      1,
+      1
     ]
   },
   "ileum-villi": {
     "organ": "ileum-villi",
-    "steps": [
+    "img": "zoom/small-intestine-illus.jpg",
+    "roi": [
+      0.41,
+      0.08,
+      0.4,
+      0.78
+    ],
+    "full": true,
+    "label": "The small intestine: duodenum, jejunum and ileum, and what their linings look like",
+    "credit": "OpenStax College, CC BY 3.0 · linings from the 7.5 deck",
+    "labels": [
       {
-        "at": 0,
-        "cam": {
-          "cx": 205,
-          "cy": 535,
-          "w": 210
-        },
-        "img": "zoom/pancreas-render2.jpg",
-        "roi": [
-          0.18,
-          0.37,
+        "t": "duodenum",
+        "at": [
+          0.5,
+          0.2
+        ],
+        "tx": [
           0.64,
-          0.34
+          0.08
         ],
-        "box": [
-          168,
-          522,
-          92,
-          32
+        "anchor": "start"
+      },
+      {
+        "t": "jejunum",
+        "at": [
+          0.5,
+          0.38
         ],
-        "grow": 1.25,
-        "pad": 0.45,
-        "hide": [
-          "duodenum"
+        "tx": [
+          0.41,
+          0.3
         ],
-        "label": "The duodenum: chyme arrives from the stomach, and bile and pancreatic juice are added through the ducts",
-        "credit": "OpenStax College / AnatomyZone, from the 7.4 deck",
-        "labels": [
-          {
-            "t": "duodenum — chyme\narrives from the stomach",
-            "at": [
-              0.09,
-              0.55
-            ],
-            "tx": [
-              0.02,
-              0.9
-            ],
-            "anchor": "start"
-          },
-          {
-            "t": "bile and pancreatic juice\nenter through the ducts",
-            "at": [
-              0.14,
-              0.545
-            ],
-            "tx": [
-              0.3,
-              0.1
-            ],
-            "anchor": "start"
-          },
-          {
-            "t": "pancreas",
-            "at": [
-              0.62,
-              0.62
-            ],
-            "tx": [
-              0.66,
-              0.86
-            ],
-            "anchor": "start"
-          }
+        "anchor": "end"
+      },
+      {
+        "t": "ileum",
+        "at": [
+          0.5,
+          0.64
+        ],
+        "tx": [
+          0.41,
+          0.74
+        ],
+        "anchor": "end"
+      }
+    ],
+    "insets": [
+      {
+        "img": "zoom/lining-duodenum.jpg",
+        "at": [
+          262,
+          536,
+          70
+        ],
+        "cap": "duodenum lining",
+        "to": [
+          0.5,
+          0.2
         ]
       },
       {
-        "at": 6,
-        "organ": "ileum-villi",
-        "img": "zoom/small-intestine-illus.jpg",
-        "roi": [
-          0.41,
-          0.08,
-          0.4,
-          0.78
+        "img": "zoom/lining-jejunum.jpg",
+        "at": [
+          262,
+          610,
+          70
         ],
-        "full": true,
-        "label": "The small intestine: duodenum, jejunum and ileum, and what their linings look like",
-        "credit": "OpenStax College, CC BY 3.0 · linings from the 7.5 deck",
-        "labels": [
-          {
-            "t": "duodenum",
-            "at": [
-              0.5,
-              0.2
-            ],
-            "tx": [
-              0.64,
-              0.08
-            ],
-            "anchor": "start"
-          },
-          {
-            "t": "jejunum",
-            "at": [
-              0.5,
-              0.38
-            ],
-            "tx": [
-              0.41,
-              0.3
-            ],
-            "anchor": "end"
-          },
-          {
-            "t": "ileum",
-            "at": [
-              0.5,
-              0.64
-            ],
-            "tx": [
-              0.41,
-              0.74
-            ],
-            "anchor": "end"
-          }
+        "cap": "jejunum: the deepest folds",
+        "to": [
+          0.58,
+          0.4
+        ]
+      },
+      {
+        "img": "zoom/lining-ileum.jpg",
+        "at": [
+          262,
+          684,
+          70
         ],
-        "insets": [
-          {
-            "img": "zoom/lining-duodenum.jpg",
-            "at": [
-              262,
-              536,
-              70
-            ],
-            "cap": "duodenum lining",
-            "to": [
-              0.5,
-              0.2
-            ]
-          },
-          {
-            "img": "zoom/lining-jejunum.jpg",
-            "at": [
-              262,
-              610,
-              70
-            ],
-            "cap": "jejunum: the deepest folds",
-            "to": [
-              0.58,
-              0.4
-            ]
-          },
-          {
-            "img": "zoom/lining-ileum.jpg",
-            "at": [
-              262,
-              684,
-              70
-            ],
-            "cap": "ileum: shallower folds",
-            "to": [
-              0.55,
-              0.66
-            ]
-          }
+        "cap": "ileum: shallower folds",
+        "to": [
+          0.55,
+          0.66
+        ]
+      },
+      {
+        "img": "zoom/pancreas-render2.jpg",
+        "at": [
+          46,
+          500,
+          66
+        ],
+        "cap": "where bile and pancreatic\njuice enter — click to enlarge",
+        "to": [
+          0.5,
+          0.2
         ]
       }
     ]

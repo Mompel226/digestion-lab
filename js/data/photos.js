@@ -69,14 +69,6 @@ window.PHOTOS = {
   ],
   "ileum-villi": [
     {
-      "t": "photo",
-      "src": "small-intestine-parts.jpg",
-      "kind": "Illustration",
-      "cap": "The three parts of the small intestine: the <b>duodenum</b> first, straight after the stomach, then the jejunum and the ileum.",
-      "after": 0,
-      "maxw": 800
-    },
-    {
       "t": "pair",
       "kind": "Photograph and 3-D render",
       "after": 6,
