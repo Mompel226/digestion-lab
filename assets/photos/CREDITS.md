@@ -105,3 +105,17 @@ one, and these are the pictures the class has already seen on the board.
 |---|---|
 | `teeth-in-mouth.jpg` | Source is 270 px wide. Shown honestly it would be 135 px, too small to read its own labels. |
 
+
+## The zoom lens (`assets/zoom/`)
+
+As the reader scrolls a station, the plate zooms to the organ and a lens steps through real images. The ones that are not from the lesson slides:
+
+| File | Source | Licence |
+|---|---|---|
+| `digestive-render.jpg`, `small-intestine-render.jpg`, `large-intestine-render.jpg`, `tooth-render.jpg`, `throat-render.jpg`, `liver-gallbladder-pancreas-render.jpg` | Blausen.com staff (2014), "Medical gallery of Blausen Medical 2014", *WikiJournal of Medicine* 1(2), DOI 10.15347/wjm/2014.010 — files *Blausen 0316 DigestiveSystem*, *0817 SmallIntestine Anatomy*, *0604 LargeIntestine2*, *0863 ToothAnatomy 02*, *0861 Tonsils&Throat Anatomy2*, *0428 Gallbladder-Liver-Pancreas Location* on Wikimedia Commons | **CC BY 3.0** — attribution required; credited on each lens |
+| `head-section.jpg` | *Head lateral mouth anatomy* by **Patrick J. Lynch**, medical illustrator, [Commons](https://commons.wikimedia.org/wiki/File:Head_lateral_mouth_anatomy.jpg) | **CC BY 2.5** |
+| `microvilli-tem.jpg` | *Human jejunum microvilli 2 – TEM* by **Louisa Howard, Katherine Connolly** (Dartmouth EM facility), [Commons](https://commons.wikimedia.org/wiki/File:Human_jejunum_microvilli_2_-_TEM.jpg) | **Public domain** |
+| `gastric-mucosa.jpg` | *Histology of normal antral mucosa* by **Carrasco G, Corvalan AH**, [Commons](https://commons.wikimedia.org/wiki/File:Histology_of_normal_antral_mucosa.png) | **CC BY 3.0** |
+| `colon-mucosa.jpg` | *Histopathology of a mucosal fold* by **Mikael Häggström, M.D.**, [Commons](https://commons.wikimedia.org/wiki/File:Histopathology_of_a_mucosal_fold.jpg) | **CC0** |
+
+Renders were downscaled to 1200–1600 px and saved as JPEG for the web; nothing was redrawn.

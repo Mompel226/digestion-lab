@@ -252,6 +252,7 @@
 
     if (tab === 'learn') paintLearn(pane, st);
     else paintDo(pane, st);
+    if (window.Zoom) { if (tab === 'learn') window.Zoom.bindLearn(pane); else window.Zoom.unbind(); }
 
     document.getElementById('panel').scrollTop = 0;
   }
@@ -425,13 +426,20 @@
     box.setAttribute('data-fig', name);
     box.innerHTML = f.svg + '<figcaption class="media__cap">' +
       '<span class="kindtag kindtag--fig">Diagram</span> ' + f.cap + '</figcaption>';
-    Array.prototype.forEach.call(box.querySelectorAll('svg[data-hide]'), function (sv) {
+    hidePlateParts(box);
+    keepFigureReadable(box);
+    return box;
+  }
+
+  /* A borrowed plate carries its own leader lines and brackets. They are hidden
+     so ours are the only ones — a figure inside a pair used to skip this step,
+     which left two sets of lines pointing at two sets of places on the tooth. */
+  function hidePlateParts(root) {
+    Array.prototype.forEach.call(root.querySelectorAll('svg[data-hide]'), function (sv) {
       var idx = sv.getAttribute('data-hide').split(',');
       var paths = sv.querySelectorAll('.plate path');
       idx.forEach(function (i) { if (paths[+i]) paths[+i].style.display = 'none'; });
     });
-    keepFigureReadable(box);
-    return box;
   }
 
   /* One media item — a photograph, a micrograph or an animation. */
@@ -450,7 +458,7 @@
       if (half.fig) {
         var f = window.Figures.get(half.fig);
         cell.setAttribute('data-fig', half.fig);
-        if (f) cell.innerHTML = f.svg;
+        if (f) { cell.innerHTML = f.svg; hidePlateParts(cell); }
       } else {
         var img = new Image();
         img.className = 'media__el media__el--img';
@@ -558,6 +566,7 @@
   }
 
   /* click any image to see it full size — essential for the micrographs */
+  window.LabLightbox = function (src, cap, kind, credit) { lightbox(src, cap + (credit ? ' <span class="lens__credit">' + credit + '</span>' : ''), kind, null); };
   function lightbox(src, cap, kind, annot) {
     var lb = document.getElementById('lightbox');
     var st = lb.querySelector('.lb__stage');
@@ -633,6 +642,7 @@
     save();
     window.Anatomy.state.active = id;
     window.Anatomy.highlight();
+    if (window.Zoom) window.Zoom.setStation(id, { tour:!!fromTour });
     if (!fromTour) {
       stopTourUI();
       var t = window.Anatomy.stopFor(id);
@@ -959,6 +969,9 @@
 
     var svg = document.getElementById('bodySvg');
     window.Anatomy.state.onPick = function (id) { open(id); };
+    if (window.Zoom) window.Zoom.init(svg);
+    var tb = document.getElementById('tBody');
+    if (tb) tb.addEventListener('click', function () { if (window.Zoom) window.Zoom.reset(); });
     ORDER.forEach(function (id) {
       var s = stationScore(id);
       if (s.total && s.done === s.total) window.Anatomy.state.done[id] = true;
