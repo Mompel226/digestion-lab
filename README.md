@@ -38,7 +38,7 @@ video under 300 KB each.
 the surface-area multiplier, starch digestion, swallowing, water reabsorption,
 egestion vs excretion, and the tooth section.
 
-**The plate follows the text.** As a station is read, the camera on the anatomical plate flies to the organ and a lens over it steps through a ladder of real images — the organ (licensed 3-D medical renders), then inside it, then the tissue, then the cell surface — each with its magnification and credit, and a line back to the organ it came from.
+**The plate follows the text.** As a station is read, the camera on the anatomical plate flies to the organ and a professional illustration of that organ fades in on the plate itself, registered over its outline. As the Learn text is scrolled, the picture gives way to the next one — the four tooth types photographed and labelled, a real molar cut open, the stomach wall — and three processes are animated on the plate: swallowing on the head section, peristalsis on the oesophagus, churning on the stomach. The liver, gall bladder, pancreas and duodenum share one labelled plate on which the organ being read about is spotlit. Nothing pops up over the page, and nothing on the plate is repeated in the text.
 
 **Real images from the lesson slides** — photographs, micrographs and electron
 micrographs taken from the class PowerPoints, so revision matches what was taught.
@@ -114,8 +114,9 @@ fails, the student still gets the code on screen to paste into Google Classroom.
 index.html            the page
 css/app.css           design system (Dr Mompel's IGCSE deck palette)
 js/anatomy.js         the clickable plate: organ tagging, labels, the food tour
-js/zoom.js            the plate follows the text: camera + lens (zoom ladder per station)
-js/data/zoom.js       which real image each Learn bullet shows in the lens, with credit
+js/zoom.js            the plate follows the text: camera, scroll-linked steps, labels, spotlight
+js/data/zoom.js       what each station shows on the plate, step by step, with credits
+js/plateanim.js       swallowing, peristalsis and churning, drawn on the plate itself
 js/figures.js         the animated "See it" diagrams
 js/engine.js          the activity engine (the seven question types)
 js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
