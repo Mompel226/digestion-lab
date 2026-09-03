@@ -297,13 +297,43 @@
   var CYST = [[104, 487], [124, 486], [142, 487], [152, 486]];
   var BILED = [[154, 484], [160, 496], [161, 510], [158, 526], [151, 542], [143, 556]];
   var PANC = [[255, 506], [236, 513], [214, 522], [192, 531], [172, 541], [155, 553]];
+  /* a smooth closed curve round a set of points (convex hull, then Catmull-Rom) */
+  function hullCurve(P) {
+    if (P.length < 3) return '';
+    P = P.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
+    var cross = function (o, a, b) { return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0]); };
+    var lo = [], up = [], i;
+    for (i = 0; i < P.length; i++) { while (lo.length >= 2 && cross(lo[lo.length - 2], lo[lo.length - 1], P[i]) <= 0) lo.pop(); lo.push(P[i]); }
+    for (i = P.length - 1; i >= 0; i--) { while (up.length >= 2 && cross(up[up.length - 2], up[up.length - 1], P[i]) <= 0) up.pop(); up.push(P[i]); }
+    var H = lo.slice(0, -1).concat(up.slice(0, -1)), n = H.length, d = 'M' + f1(H[0][0]) + ',' + f1(H[0][1]);
+    for (i = 0; i < n; i++) { var p0 = H[(i - 1 + n) % n], p1 = H[i], p2 = H[(i + 1) % n], p3 = H[(i + 2) % n]; d += ' C' + f1(p1[0] + (p2[0] - p0[0]) / 6) + ',' + f1(p1[1] + (p2[1] - p0[1]) / 6) + ' ' + f1(p2[0] - (p3[0] - p1[0]) / 6) + ',' + f1(p2[1] - (p3[1] - p1[1]) / 6) + ' ' + f1(p2[0]) + ',' + f1(p2[1]); }
+    return d + ' Z';
+  }
+  function tube(pts, w, col) {
+    var d = 'M' + pts[0][0] + ',' + pts[0][1];
+    for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; d += (i < pts.length - 1 ? ' Q' + b[0] + ',' + b[1] + ' ' : ' L') + (i < pts.length - 1 ? mx + ',' + my : b[0] + ',' + b[1]); }
+    return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
   function bileflow(ctx) {
-    var fs = ctx.fs, u = ctx.u, focus = ctx.focus, r = 1.5 * u;
-    var g = '';
+    var fs = ctx.fs, u = ctx.u, focus = ctx.focus, r = 1.5 * u, g = '';
+    /* the bile duct, redrawn where the plate's pancreas has been painted over it */
+    var duct = tube(BILED, 3 * u, '#3F8A55');
+    if (focus === 'pancreas') {
+      g += drops(PANC, JUICE, r, 3.8, 4, 0);
+      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 214, 560, 200, 528, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end');
+      return g +
+        label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
+        label('pancreatic duct carries\nthe juice to the duodenum', 214, 562, 200, 528, fs, 'start') +
+        label('the bile duct joins it\nat the duodenum', 104, 604, 150, 552, fs, 'start') +
+        label('duodenum', 106, 585, 140, 560, fs, 'start');
+    }
     if (focus === 'gall-bladder') {
+      var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [];
+      var hull = hullCurve(sac);
+      g += duct + (hull ? '<path d="' + hull + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2 * u) + '" stroke-linejoin="round" opacity=".95"/>' : '');
       g += drops(CYST.concat(BILED.slice(1)), BILE, r, 4.2, 4, 0) + drops(HEP1, BILE, r * .8, 3.6, 2, .5) + drops(HEP2, BILE, r * .8, 3.6, 2, 1.4);
     } else {
-      g += drops(HEP1.concat(BILED.slice(1)), BILE, r, 4.6, 4, 0) + drops(HEP2, BILE, r, 3.2, 3, .7) + drops(CYST, BILE, r * .8, 2.6, 2, 1.1);
+      g += duct + drops(HEP1.concat(BILED.slice(1)), BILE, r, 4.6, 4, 0) + drops(HEP2, BILE, r, 3.2, 3, .7) + drops(CYST, BILE, r * .8, 2.6, 2, 1.1);
     }
     if (ctx.compact) {
       return g + (focus === 'gall-bladder'
