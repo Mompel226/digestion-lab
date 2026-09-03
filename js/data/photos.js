@@ -52,7 +52,7 @@ window.PHOTOS = {
       "src": "pancreas-dissection.jpg",
       "kind": "Photograph",
       "cap": "<b>A real liver</b>, seen in a dissection with the pancreas below it and the <b>hepatic portal vein</b> bringing blood up from the gut — the vessel named in the sentence above.",
-      "after": 2,
+      "after": 3,
       "maxw": 300
     }
   ],
@@ -71,12 +71,12 @@ window.PHOTOS = {
     {
       "t": "pair",
       "kind": "Photograph and 3-D render",
-      "after": 6,
-      "cap": "<b>The organ itself.</b> Left, a dissection: loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries the blood vessels taking absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine, with its vessels running through it.",
+      "after": 4,
+      "cap": "<b>The organ itself — alive.</b> Left is not a dissection: it is surgery on a living animal, with loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries their blood vessels. Look at the colour. The vessels are pinkish-red because oxygenated blood is still flowing through them — clearest at the level of the duodenum — and those are the vessels that carry the absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine.",
       "of": [
         {
           "photo": "intestine-dissection.jpg",
-          "label": "Dissection: jejunum and its mesentery",
+          "label": "Surgery on a living animal: jejunum and its mesentery",
           "maxw": 800,
           "w": 52
         },
@@ -89,43 +89,19 @@ window.PHOTOS = {
       ]
     },
     {
-      "t": "photo",
-      "src": "folds-real-photo.jpg",
-      "kind": "Photograph",
-      "cap": "Level one, in a real intestine: the circular folds are the ridges running round the inside of the tube. Nothing in here is smooth, and that is the whole point.",
-      "after": 7,
-      "maxw": 800
-    },
-    {
-      "t": "photo",
-      "src": "villi-carpet.jpg",
-      "kind": "Photograph",
-      "cap": "Level two: zoom in on one fold and its entire surface is a carpet of villi, packed side by side. Each one is a projection built from many cells — not a single cell.",
-      "maxw": 240,
-      "after": 8
-    },
-    {
-      "t": "photo",
-      "src": "villi-and-microvilli-em.jpg",
-      "kind": "Micrographs",
-      "cap": "Level three, and the only level you need an electron microscope to see. Left: villi at ×70 under a light microscope. Right: the surface of one epithelial cell at ×18,000 — that fuzzy border is its microvilli.",
-      "after": 9,
-      "maxw": 800
-    },
-    {
-      "t": "photo",
-      "src": "surface-area-levels.jpg",
-      "kind": "Illustration",
-      "cap": "All three levels at once, and what they come to: <b>circular folds</b>, then <b>villi</b> on the folds, then <b>microvilli</b> on each cell. Together they multiply the area by up to 600 times compared with a flat tube.",
-      "maxw": 800,
-      "more": true
-    },
-    {
       "t": "video",
       "src": "villus-absorption",
       "kind": "Animation",
       "cap": "Now watch it happen. The molecules cross a wall one cell thick and vanish into the vessels running through the middle of the villus.",
       "after": 12
+    },
+    {
+      "t": "photo",
+      "src": "surface-area-levels.jpg",
+      "kind": "Illustration",
+      "cap": "The three levels drawn in one picture, if you want to see how they nest: the tube with its <b>circular folds</b> (a), the <b>villi</b> standing on a fold (b), and one epithelial cell with its <b>microvilli</b> (c, top right).",
+      "maxw": 800,
+      "more": true
     },
     {
       "t": "photo",

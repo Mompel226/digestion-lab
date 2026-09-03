@@ -326,12 +326,12 @@
         g += tube([a, [a[0] + nx * side * len * .6 + tx / L * 3, a[1] + ny * side * len * .6 + ty / L * 3], [a[0] + nx * side * len + tx / L * 6, a[1] + ny * side * len + ty / L * 6]], w * .55, PDUCT);
       }
       g += drops(PANC, JUICE, r, 4, 4, 0);
-      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 150, 578, 200, 528, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
+      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 150, 578, 200, 528, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
       return g +
         label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
-        label('the bile duct joins it\nat the duodenum', 104, 604, 150, 552, fs, 'start') +
-        label('duodenum', 106, 585, 140, 560, fs, 'start');
+        label('the bile duct\njoins it here', 104, 566, 146, 553, fs, 'start') +
+        label('duodenum', 96, 610, 131, 586, fs, 'start');
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
@@ -341,19 +341,26 @@
       if (hull) g += '<path d="' + hull + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2 * u) + '" stroke-linejoin="round" opacity=".95"/>';
       /* release: from the gall bladder, along the cystic duct, down the common bile duct */
       g += drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0);
-      if (ctx.compact) return g + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
+      if (ctx.compact) return g + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
       return g +
         label('gall bladder —\nstores bile and\nsqueezes it out', 96, 512, 118, 490, fs, 'start') +
         label('cystic duct', 126, 470, 148, 488, fs, 'end') +
         label('common hepatic duct\n(bile arriving from the liver)', 158, 448, 150, 480, fs, 'start') +
         label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
-        label('duodenum', 106, 585, 140, 560, fs, 'start');
+        label('duodenum', 96, 610, 131, 586, fs, 'start');
     }
     /* the liver: bile made in the liver drains through the hepatic ducts and is stored in the
        gall bladder; a lighter trickle shows the release from the gall bladder to the duodenum */
-    g += drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5) +
-         drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r * .8, 5.2, 2, 2.6);
-    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
+    /* The liver makes bile all the time. Between meals the opening into the duodenum is shut, so the
+       bile backs up along the cystic duct into the gall bladder; during a meal the gall bladder squeezes
+       its stored bile out and the fresh bile from the liver runs straight down the common bile duct too. */
+    var T = 16, phase = function (first) { return A + '"opacity" values="' + (first ? '1;1;0;0' : '0;0;1;1') + '" keyTimes="0;0.5;0.5;1" dur="' + T + 's" repeatCount="indefinite"/>'; };
+    g += '<g opacity="1">' + phase(true) + drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5) + '</g>' +
+         '<g opacity="0">' + phase(false) + drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0) + drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .85, 5.6, 3, 1.2) + drops(LHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .8, 5.6, 2, 2.9) + '</g>';
+    var phaseLabels = '<g opacity="1">' + phase(true) + label(ctx.compact ? 'between meals:\nstored' : 'between meals —\nthe way into the duodenum\nis shut, so bile is stored', 150, 578, null, null, fs, 'start') + '</g>' +
+                      '<g opacity="0">' + phase(false) + label(ctx.compact ? 'during a meal:\nreleased' : 'during a meal —\nstored and fresh bile\nboth flow to the duodenum', 150, 578, null, null, fs, 'start') + '</g>';
+    g += phaseLabels;
+    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
       label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
@@ -361,7 +368,7 @@
       label('common hepatic duct', 158, 470, 149, 479, fs, 'start') +
       label('gall bladder —\nstores bile\nuntil a meal', 96, 512, 118, 490, fs, 'start') +
       label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
-      label('duodenum', 106, 585, 140, 560, fs, 'start');
+      label('duodenum', 96, 610, 131, 586, fs, 'start');
   }
   /* pancreatic juice along the duct of the pancreas render */
   function juiceflow(ctx) {
@@ -371,5 +378,79 @@
     return drops([P(.76, .50), P(.62, .50), P(.48, .52), P(.34, .545), P(.20, .55)], JUICE, 1.6 * u, 4, 4, 0);
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, juiceflow:juiceflow };
+  /* ---------------- maltase, embedded in the membrane of a microvillus ---------------- */
+  /* Drawn in the step's box: the lumen above, the cytoplasm below, a phospholipid
+     bilayer between them with maltase sitting in it. A maltose molecule drifts down
+     from the lumen, binds to the active site, and leaves as two glucose molecules
+     that pass into the cytoplasm. */
+  function maltase(ctx) {
+    var b = ctx.box, fs = ctx.fs, u = ctx.u, x0 = b.x, y0 = b.y, W = b.w, H = b.h;
+    var my = y0 + H * 0.52, th = H * 0.2, hr = th * 0.17, mx = x0 + W * 0.44, pw = th * 1.7, D = 7;
+    var g = '<rect x="' + f1(x0) + '" y="' + f1(y0) + '" width="' + f1(W) + '" height="' + f1(my - y0) + '" fill="#E3F1F7"/>' +
+            '<rect x="' + f1(x0) + '" y="' + f1(my) + '" width="' + f1(W) + '" height="' + f1(y0 + H - my) + '" fill="#FBEBD3"/>';
+    /* the bilayer: heads on the outside, tails to the middle */
+    var pitch = hr * 2.3, n = Math.floor(W / pitch);
+    for (var i = 0; i < n; i++) {
+      var cx = x0 + pitch * (i + 0.5);
+      if (cx > mx - pw / 2 - hr && cx < mx + pw / 2 + hr) continue;
+      [[my - th / 2 + hr, 1], [my + th / 2 - hr, -1]].forEach(function (row) {
+        var cy = row[0], dir = row[1], ty = cy + dir * hr, tl = th / 2 - hr * 1.3;
+        g += '<path d="M' + f1(cx - hr * .45) + ',' + f1(ty) + ' q' + f1(-hr * .5) + ',' + f1(dir * tl * .5) + ' 0,' + f1(dir * tl) + ' M' + f1(cx + hr * .45) + ',' + f1(ty) + ' q' + f1(hr * .5) + ',' + f1(dir * tl * .5) + ' 0,' + f1(dir * tl) + '" fill="none" stroke="#C9963B" stroke-width="' + f1(hr * .28) + '" stroke-linecap="round"/>' +
+             '<circle cx="' + f1(cx) + '" cy="' + f1(cy) + '" r="' + f1(hr) + '" fill="#B7A7E0" stroke="#7C6BB5" stroke-width="' + f1(hr * .18) + '"/>';
+      });
+    }
+    /* maltase: a protein sitting through the membrane, with its active site open to the lumen */
+    var pt = my - th * 0.95, pb = my + th * 0.85, r = hr * 0.95;
+    g += '<path d="M' + f1(mx - pw / 2) + ',' + f1(pt + th * .3) + ' Q' + f1(mx - pw / 2) + ',' + f1(pt) + ' ' + f1(mx - pw / 2 + th * .3) + ',' + f1(pt) +
+         ' L' + f1(mx - r * 1.35) + ',' + f1(pt) + ' A' + f1(r * 1.4) + ',' + f1(r * 1.4) + ' 0 0 0 ' + f1(mx + r * 1.35) + ',' + f1(pt) +
+         ' L' + f1(mx + pw / 2 - th * .3) + ',' + f1(pt) + ' Q' + f1(mx + pw / 2) + ',' + f1(pt) + ' ' + f1(mx + pw / 2) + ',' + f1(pt + th * .3) +
+         ' L' + f1(mx + pw / 2) + ',' + f1(pb - th * .3) + ' Q' + f1(mx + pw / 2) + ',' + f1(pb) + ' ' + f1(mx + pw / 2 - th * .3) + ',' + f1(pb) +
+         ' L' + f1(mx - pw / 2 + th * .3) + ',' + f1(pb) + ' Q' + f1(mx - pw / 2) + ',' + f1(pb) + ' ' + f1(mx - pw / 2) + ',' + f1(pb - th * .3) + ' Z" fill="#EE8FA6" stroke="#B94B6A" stroke-width="' + f1(hr * .22) + '" stroke-linejoin="round"/>';
+    /* maltose arrives from the lumen, sits in the active site, and leaves as two glucose molecules */
+    var sy = y0 + H * 0.1, ay = pt + r * .05, ey = y0 + H * 0.9, dx = r * 1.05;
+    function sugar(sign, endX, endY) {
+      var xs = [mx + sign * dx * .9, mx + sign * dx * .9, mx + sign * dx * .9, mx + sign * dx * .9, endX, endX].map(f1).join(';');
+      var ys = [sy, sy, ay, ay, endY, endY].map(f1).join(';');
+      return '<circle r="' + f1(r) + '" fill="#E8A33D" stroke="#9A6512" stroke-width="' + f1(r * .2) + '">' +
+        A + '"cx" values="' + xs + '" keyTimes="0;0.05;0.4;0.55;0.9;1" dur="' + D + 's" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>' +
+        A + '"cy" values="' + ys + '" keyTimes="0;0.05;0.4;0.55;0.9;1" dur="' + D + 's" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>' +
+        A + '"opacity" values="0;1;1;1;1;0" keyTimes="0;0.05;0.4;0.55;0.9;1" dur="' + D + 's" repeatCount="indefinite"/></circle>';
+    }
+    /* the bond between the two halves of maltose, gone once the enzyme has cut it */
+    g += '<line x1="' + f1(mx - dx * .3) + '" x2="' + f1(mx + dx * .3) + '" y1="' + f1(sy) + '" y2="' + f1(sy) + '" stroke="#9A6512" stroke-width="' + f1(r * .5) + '" stroke-linecap="round">' +
+         A + '"y1" values="' + [sy, sy, ay, ay, ay, ay].map(f1).join(';') + '" keyTimes="0;0.05;0.4;0.55;0.9;1" dur="' + D + 's" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>' +
+         A + '"y2" values="' + [sy, sy, ay, ay, ay, ay].map(f1).join(';') + '" keyTimes="0;0.05;0.4;0.55;0.9;1" dur="' + D + 's" repeatCount="indefinite" calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"/>' +
+         A + '"opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.4;0.55;0.56;1" dur="' + D + 's" repeatCount="indefinite"/></line>';
+    g += sugar(-1, mx - dx * 2.2, ey) + sugar(1, mx + dx * 2.2, ey);
+    var L = fs * 0.92;
+    if (ctx.compact) return g +
+      label('lumen', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
+      label('maltase in\nthe membrane', mx + pw / 2 + L * 1.4, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
+      label('cytoplasm', x0 + W * .03, y0 + H - L * .5, null, null, L, 'start');
+    return g +
+      label('lumen of the small intestine', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
+      label('maltose', mx - dx * .9 - r * 1.2, sy + L * 1.5, mx - dx * .9 - r * .6, sy + r * .6, L, 'end') +
+      label('maltase — embedded\nin the membrane', mx + pw / 2 + L * 2.2, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
+      label('cell membrane\nof a microvillus', x0 + W * .03, my - th * 1.05, x0 + W * .1, my - th / 2 + hr * .2, L, 'start') +
+      label('glucose', mx + dx * 2.2 + r * 1.6, ey - L * .9, mx + dx * 2.2 + r * .7, ey - r * .7, L, 'start') +
+      label('cytoplasm of the epithelial cell', x0 + W * .03, y0 + H - L * .5, null, null, L, 'start');
+  }
+
+  /* ---------------- the hepatic portal vein, from the small intestine to the liver ---------------- */
+  var PORTAL = [[200, 650], [206, 620], [204, 592], [196, 564], [182, 536], [166, 508], [152, 486]];
+  function portal(ctx) {
+    var fs = ctx.fs, u = ctx.u, w = 3 * u, r = 1.6 * u;
+    var g = tube(PORTAL, w * 1.5, '#2F3E8F') + tube(PORTAL, w * .5, '#6F7FD1');
+    /* the tributaries: veins gathering from the loops of intestine */
+    [[[168, 640], [186, 645], [200, 650]], [[236, 650], [218, 650], [200, 650]], [[186, 690], [194, 672], [200, 650]], [[222, 690], [210, 672], [200, 650]]].forEach(function (t) { g += tube(t, w * .8, '#2F3E8F'); });
+    g += drops(PORTAL, '#E8A33D', r, 5.2, 4, 0) + drops(PORTAL, '#BC235B', r * .9, 5.2, 3, 1.3);
+    if (ctx.compact) return g + label('liver', 60, 452, null, null, fs, 'start') + label('hepatic portal vein', 214, 566, 199, 560, fs, 'start') + label('small intestine', 96, 748, null, null, fs, 'start');
+    return g +
+      label('liver', 60, 452, null, null, fs, 'start') +
+      label('hepatic portal vein —\nblood rich in glucose and\namino acids goes to the liver', 214, 560, 199, 560, fs, 'start') +
+      label('capillaries of the villi\ndrain into it', 232, 640, 218, 650, fs, 'start') +
+      label('small intestine', 96, 748, null, null, fs, 'start');
+  }
+
+  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, juiceflow:juiceflow, maltase:maltase, portal:portal };
 })(window);

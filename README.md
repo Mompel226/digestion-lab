@@ -153,8 +153,11 @@ needs to change.
 
 ## Design rules this follows
 
-- The **exam answer is the main content**; true-but-above-level science sits in a
-  separate blue "Real science — not examined" box and never displaces it.
+- The **exam answer is the main content**, badged Core, `S` (Supplement) or
+  `extension`. Everything past it — links to other 0610 topics, what IB adds, and
+  the real science 0610 leaves out — sits in one tagged "Going further" section
+  and never displaces it; nothing appears in both. Stations with a big exam
+  footprint also carry an amber "In the exam — what to write here" box.
 - Syllabus wording: *physical digestion* (not "mechanical"), *faeces*, *oesophagus*,
   British spellings throughout.
 - Labels are laid out at runtime with a collision pass, so **no two labels can
