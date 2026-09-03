@@ -278,10 +278,12 @@
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
 
-  /* ---------------- bile and pancreatic juice, flowing along the plate's own ducts ---------------- */
-  /* The plate already draws the hepatic ducts, the gall bladder with its
-     cystic duct, the bile duct down to the duodenum, and the pancreatic
-     duct. These routes were read off those paths; droplets run along them. */
+  /* ---------------- the bile ducts, named as in the 7.4 deck, with bile flowing ---------------- */
+  /* Drawn cleanly over the plate (its own branchy duct artwork is hidden for
+     these stations): right and left hepatic ducts join as the common hepatic
+     duct; the cystic duct from the gall bladder joins it to form the common
+     bile duct, which runs down behind the head of the pancreas to the
+     duodenum, where the pancreatic duct meets it. */
   function drops(route, col, r, dur, n, phase) {
     var d = 'M' + route.map(function (q) { return q[0] + ',' + q[1]; }).join(' L'), out = '';
     for (var i = 0; i < n; i++) {
@@ -291,13 +293,17 @@
     }
     return out;
   }
-  var BILE = '#8DB43A', JUICE = '#E8C95A';
-  var HEP1 = [[136, 433], [136, 452], [135, 468], [140, 476], [152, 482]];
-  var HEP2 = [[115, 434], [120, 448], [125, 464], [133, 474], [146, 481]];
-  var CYST = [[104, 487], [124, 486], [142, 487], [152, 486]];
-  var BILED = [[154, 484], [160, 496], [161, 510], [158, 526], [151, 542], [143, 556]];
-  var PANC = [[255, 506], [236, 513], [214, 522], [192, 531], [172, 541], [155, 553]];
-  /* a smooth closed curve round a set of points (convex hull, then Catmull-Rom) */
+  function tube(pts, w, col) {
+    var d = 'M' + pts[0][0] + ',' + pts[0][1];
+    for (var i = 1; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; d += ' Q' + a[0] + ',' + a[1] + ' ' + (a[0] + b[0]) / 2 + ',' + (a[1] + b[1]) / 2; }
+    var last = pts[pts.length - 1]; d += ' L' + last[0] + ',' + last[1];
+    return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w) + '" stroke-linecap="round" stroke-linejoin="round"/>';
+  }
+  var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55';
+  var RHD = [[108, 444], [122, 458], [140, 470]], LHD = [[180, 448], [162, 462], [140, 470]];
+  var CHD = [[140, 470], [150, 480], [156, 490]], CYST = [[144, 488], [150, 489], [156, 490]];
+  var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
+  var PANC = [[255, 506], [230, 514], [206, 524], [184, 533], [166, 545], [151, 553]];
   function hullCurve(P) {
     if (P.length < 3) return '';
     P = P.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
@@ -309,48 +315,43 @@
     for (i = 0; i < n; i++) { var p0 = H[(i - 1 + n) % n], p1 = H[i], p2 = H[(i + 1) % n], p3 = H[(i + 2) % n]; d += ' C' + f1(p1[0] + (p2[0] - p0[0]) / 6) + ',' + f1(p1[1] + (p2[1] - p0[1]) / 6) + ' ' + f1(p2[0] - (p3[0] - p1[0]) / 6) + ',' + f1(p2[1] - (p3[1] - p1[1]) / 6) + ' ' + f1(p2[0]) + ',' + f1(p2[1]); }
     return d + ' Z';
   }
-  function tube(pts, w, col) {
-    var d = 'M' + pts[0][0] + ',' + pts[0][1];
-    for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i], mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2; d += (i < pts.length - 1 ? ' Q' + b[0] + ',' + b[1] + ' ' : ' L') + (i < pts.length - 1 ? mx + ',' + my : b[0] + ',' + b[1]); }
-    return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w) + '" stroke-linecap="round" stroke-linejoin="round"/>';
-  }
   function bileflow(ctx) {
     var fs = ctx.fs, u = ctx.u, focus = ctx.focus, r = 1.5 * u, g = '';
-    /* the bile duct, redrawn where the plate's pancreas has been painted over it */
-    var duct = tube(BILED, 3 * u, '#3F8A55');
     if (focus === 'pancreas') {
       g += drops(PANC, JUICE, r, 3.8, 4, 0);
-      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 214, 560, 200, 528, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end');
+      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 214, 560, 200, 528, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
       return g +
         label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
-        label('pancreatic duct carries\nthe juice to the duodenum', 214, 562, 200, 528, fs, 'start') +
+        label('pancreatic duct\ncarries the juice', 150, 578, 200, 528, fs, 'start') +
         label('the bile duct joins it\nat the duodenum', 104, 604, 150, 552, fs, 'start') +
         label('duodenum', 106, 585, 140, 560, fs, 'start');
     }
+    /* the ducts themselves */
+    var w = 2.4 * u;
+    g += tube(RHD, w, DUCT) + tube(LHD, w, DUCT) + tube(CHD, w * 1.15, DUCT) + tube(CYST, w, DUCT) + tube(CBD, w * 1.3, DUCT) + tube(PANC, w * 0.9, '#6E9E3E');
     if (focus === 'gall-bladder') {
-      var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [];
-      var hull = hullCurve(sac);
-      g += duct + (hull ? '<path d="' + hull + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2 * u) + '" stroke-linejoin="round" opacity=".95"/>' : '');
-      g += drops(CYST.concat(BILED.slice(1)), BILE, r, 4.2, 4, 0) + drops(HEP1, BILE, r * .8, 3.6, 2, .5) + drops(HEP2, BILE, r * .8, 3.6, 2, 1.4);
-    } else {
-      g += duct + drops(HEP1.concat(BILED.slice(1)), BILE, r, 4.6, 4, 0) + drops(HEP2, BILE, r, 3.2, 3, .7) + drops(CYST, BILE, r * .8, 2.6, 2, 1.1);
+      var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [], hull = hullCurve(sac);
+      if (hull) g += '<path d="' + hull + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2 * u) + '" stroke-linejoin="round" opacity=".95"/>';
+      g += drops(CYST.concat(CBD.slice(1)), BILE, r, 4, 4, 0) + drops(RHD.concat(CHD.slice(1)), BILE, r * .8, 3.4, 2, .5) + drops(LHD.concat(CHD.slice(1)), BILE, r * .8, 3.4, 2, 1.6);
+      if (ctx.compact) return g + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
+      return g +
+        label('gall bladder —\nstores bile', 96, 512, 118, 490, fs, 'start') +
+        label('cystic duct', 128, 466, 149, 488, fs, 'start') +
+        label('common hepatic duct', 158, 448, 150, 480, fs, 'start') +
+        label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
+        label('pancreatic duct', 214, 562, 200, 528, fs, 'end') +
+        label('duodenum', 106, 585, 140, 560, fs, 'start');
     }
-    if (ctx.compact) {
-      return g + (focus === 'gall-bladder'
-        ? label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('bile duct', 176, 534, 160, 514, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end')
-        : label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('bile duct', 176, 534, 160, 514, fs, 'start') + label('duodenum', 118, 585, 140, 560, fs, 'end'));
-    }
-    var L = focus === 'gall-bladder'
-      ? label('gall bladder — stores bile', 96, 512, 118, 490, fs, 'start') +
-        label('cystic duct', 128, 466, 135, 486, fs, 'start') +
-        label('bile duct — bile to\nthe duodenum', 150, 548, 157, 528, fs, 'end') +
-        label('duodenum', 118, 585, 140, 560, fs, 'end')
-      : label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
-        label('hepatic ducts carry\nbile out of the liver', 150, 448, 137, 452, fs, 'start') +
-        label('gall bladder', 96, 512, 118, 490, fs, 'start') +
-        label('bile duct', 176, 516, 160, 512, fs, 'start') +
-        label('duodenum', 118, 585, 140, 560, fs, 'end');
-    return g + L;
+    g += drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r, 5, 4, 0) + drops(LHD.concat(CHD.slice(1)), BILE, r * .9, 3.4, 3, .9) + drops(CYST, BILE, r * .8, 2.4, 1, 1.2);
+    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 106, 585, 140, 560, fs, 'start');
+    return g +
+      label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
+      label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
+      label('left hepatic duct', 186, 436, 176, 450, fs, 'start') +
+      label('common hepatic duct', 158, 470, 149, 479, fs, 'start') +
+      label('gall bladder', 96, 512, 118, 490, fs, 'start') +
+      label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
+      label('duodenum', 106, 585, 140, 560, fs, 'start');
   }
   /* pancreatic juice along the duct of the pancreas render */
   function juiceflow(ctx) {

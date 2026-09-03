@@ -501,14 +501,18 @@ window.ZOOM_DETAIL = {
     "noback": true,
     "anim": "bileflow",
     "focus": "liver",
-    "paint": [
+    "hide": [
       {
-        "organ": "pancreas",
-        "largest": true,
-        "fill": "#E89E55",
-        "stroke": "#201B17",
-        "sw": 0.6
-      },
+        "organ": "gall-bladder",
+        "except": [
+          94,
+          477,
+          147,
+          498
+        ]
+      }
+    ],
+    "paint": [
       {
         "organ": "liver",
         "largest": true,
@@ -518,7 +522,7 @@ window.ZOOM_DETAIL = {
         "opacity": 0.95
       }
     ],
-    "label": "The liver makes bile; the hepatic ducts carry it out, the gall bladder stores it, and the bile duct delivers it to the duodenum"
+    "label": "The liver makes bile; the hepatic ducts carry it out, the gall bladder stores it, and the common bile duct delivers it to the duodenum"
   },
   "gall-bladder": {
     "organ": "gall-bladder",
@@ -526,16 +530,18 @@ window.ZOOM_DETAIL = {
     "noback": true,
     "anim": "bileflow",
     "focus": "gall-bladder",
-    "paint": [
+    "hide": [
       {
-        "organ": "pancreas",
-        "largest": true,
-        "fill": "#E89E55",
-        "stroke": "#201B17",
-        "sw": 0.6
+        "organ": "gall-bladder",
+        "except": [
+          94,
+          477,
+          147,
+          498
+        ]
       }
     ],
-    "label": "The gall bladder lies under the liver; it stores bile and empties it down the bile duct into the duodenum"
+    "label": "The gall bladder lies under the liver; it stores bile and empties it through the cystic duct and common bile duct into the duodenum"
   },
   "pancreas": {
     "organ": "pancreas",
@@ -553,7 +559,23 @@ window.ZOOM_DETAIL = {
         "opacity": 0.95
       }
     ],
-    "label": "The pancreas makes pancreatic juice, which its duct carries to the duodenum, where the bile duct joins it"
+    "insets": [
+      {
+        "img": "zoom/pancreas-acinar.jpg",
+        "at": [
+          228,
+          556,
+          78
+        ],
+        "cap": "inside: acinar cells make the juice —\ntrypsin, amylase, lipase (and, as extension,\nchymotrypsin, elastase, hydrogencarbonate)",
+        "to": [
+          0.65,
+          0.55
+        ]
+      }
+    ],
+    "label": "The pancreas makes pancreatic juice in its acinar cells; its duct carries the juice to the duodenum, where the bile duct joins it",
+    "credit": "inset: OpenStax College, CC BY 3.0, from the 7.4 deck"
   },
   "ileum-villi": {
     "organ": "ileum-villi",
@@ -575,10 +597,10 @@ window.ZOOM_DETAIL = {
           0.2
         ],
         "tx": [
-          0.64,
-          0.08
+          0.4,
+          0.12
         ],
-        "anchor": "start"
+        "anchor": "end"
       },
       {
         "t": "jejunum",
@@ -607,10 +629,23 @@ window.ZOOM_DETAIL = {
     ],
     "insets": [
       {
+        "img": "zoom/pancreas-render2.jpg",
+        "at": [
+          262,
+          468,
+          70
+        ],
+        "cap": "where bile and pancreatic\njuice enter — click to enlarge",
+        "to": [
+          0.5,
+          0.2
+        ]
+      },
+      {
         "img": "zoom/lining-duodenum.jpg",
         "at": [
           262,
-          536,
+          542,
           70
         ],
         "cap": "duodenum lining",
@@ -623,7 +658,7 @@ window.ZOOM_DETAIL = {
         "img": "zoom/lining-jejunum.jpg",
         "at": [
           262,
-          610,
+          614,
           70
         ],
         "cap": "jejunum: the deepest folds",
@@ -636,26 +671,13 @@ window.ZOOM_DETAIL = {
         "img": "zoom/lining-ileum.jpg",
         "at": [
           262,
-          684,
+          686,
           70
         ],
         "cap": "ileum: shallower folds",
         "to": [
           0.55,
           0.66
-        ]
-      },
-      {
-        "img": "zoom/pancreas-render2.jpg",
-        "at": [
-          46,
-          500,
-          66
-        ],
-        "cap": "where bile and pancreatic\njuice enter — click to enlarge",
-        "to": [
-          0.5,
-          0.2
         ]
       }
     ]
