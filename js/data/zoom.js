@@ -142,7 +142,7 @@ window.ZOOM_DETAIL = {
                 ],
                 "tx": [
                   0.05,
-                  0.2
+                  0.24
                 ],
                 "anchor": "start"
               },
@@ -154,7 +154,7 @@ window.ZOOM_DETAIL = {
                 ],
                 "tx": [
                   0.5,
-                  0.13
+                  0.08
                 ],
                 "anchor": "middle"
               },
@@ -166,7 +166,7 @@ window.ZOOM_DETAIL = {
                 ],
                 "tx": [
                   0.96,
-                  0.2
+                  0.24
                 ],
                 "anchor": "end"
               },
