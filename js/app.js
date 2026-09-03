@@ -734,11 +734,11 @@
     b.setAttribute('aria-pressed', 'false');
     tourLabel().textContent = 'Follow the food';
   }
-  function stopTourUI() {
+  function stopTourUI(land) {
     var b = tourBtn();
     if (!b || b.dataset.running !== '1') return;
     tourOff();
-    if (window.Tour) window.Tour.stop();
+    if (window.Tour) window.Tour.stop(land ? { reopen:true } : null);
   }
   function startTour() {
     var b = tourBtn();
@@ -1025,7 +1025,7 @@
       if (window.Zoom) window.Zoom.refresh();
     });
     tourBtn().addEventListener('click', function () {
-      if (this.dataset.running === '1') stopTourUI(); else startTour();
+      if (this.dataset.running === '1') stopTourUI(true); else startTour();
     });
 
     window.Engine.setMode(mode);

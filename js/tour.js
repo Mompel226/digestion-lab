@@ -20,21 +20,21 @@
   var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
 
   var SCENES = [
-    { id:'ingestion', name:'Ingestion', organ:'mouth', cam:{ cx:140, cy:160, w:210 }, ms:7000,
+    { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:7000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', cam:{ cx:190, cy:400, w:320 }, ms:16000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:'top', cam:{ cx:190, cy:420, w:320 }, ms:16000,
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
       notes:[[0, 'Swallowed, then pushed down the oesophagus by peristalsis.'],
              [4200, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
              [8600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
-    { id:'absorption', name:'Absorption', organ:'ileum-villi', cam:{ cx:192, cy:650, w:300 }, ms:10000,
+    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', cam:{ cx:192, cy:620, w:300 }, ms:10000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.']] },
-    { id:'assimilation', name:'Assimilation', organ:'liver', cam:{ cx:170, cy:560, w:290 }, ms:9000,
+    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', cam:{ cx:170, cy:540, w:290 }, ms:9000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food. Glucose is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
-    { id:'egestion', name:'Egestion', organ:'colon', cam:{ cx:182, cy:680, w:290 }, ms:11000,
+    { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:700, w:290 }, ms:11000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
       notes:[[0, 'In the colon the remaining water is reabsorbed and what is left becomes faeces.'],
              [5500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
@@ -94,20 +94,23 @@
     card.innerHTML =
       '<div class="tourcard__top"><span class="tourcard__chip"></span><span class="tourcard__step"></span></div>' +
       '<p class="tourcard__def"></p><p class="tourcard__note"></p>' +
-      '<div class="tourcard__btns"><button type="button" class="btn btn--ghost" data-act="back">Back</button>' +
+      '<div class="tourcard__foot"><div class="tourcard__btns"><button type="button" class="btn btn--ghost" data-act="back">Back</button>' +
       '<button type="button" class="btn" data-act="next">Next</button>' +
-      '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button></div>';
+      '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button></div><div class="tourcard__more"></div></div>';
     host.appendChild(card);
     card.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
       var act = b.getAttribute('data-act');
-      if (act === 'next') next(); else if (act === 'back') back(); else if (act === 'stop') stop(); else if (act === 'again') start(opener, onStop);
+      if (act === 'next') next(); else if (act === 'back') back(); else if (act === 'stop') stop({ reopen:true }); else if (act === 'again') start(opener, onStop);
+      else if (act === 'learn') { var sc = SCENES[idx]; stop(); if (sc && typeof opener === 'function') opener(sc.station); }
     });
     return card;
   }
   function showCard(sc, i) {
     var c = buildCard();
     c.hidden = false;
+    c.classList.toggle('tourcard--bottom', sc.pos === 'bottom');
+    c.querySelector('.tourcard__more').innerHTML = '<button type="button" class="tourcard__link" data-act="learn">Learn more at the ' + sc.stationName + ' station</button><span>or click any organ on the plate</span>';
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
     c.querySelector('.tourcard__def').textContent = sc.def;
@@ -120,6 +123,8 @@
   }
   function showEnd() {
     var c = buildCard();
+    c.classList.add('tourcard--bottom');
+    c.querySelector('.tourcard__more').innerHTML = '<span>click any organ on the plate to learn more</span>';
     c.querySelector('.tourcard__chip').innerHTML = '<b>Five processes, in order</b>';
     c.querySelector('.tourcard__step').textContent = '';
     c.querySelector('.tourcard__def').textContent = 'Ingestion → digestion → absorption → assimilation → egestion.';
@@ -136,9 +141,10 @@
   function play(i) {
     clearTimers(); clearFx();
     var A = global.Anatomy;
-    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); camera({ cx:180, cy:430, w:420 }, 1000); showEnd(); return; }
+    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); camera({ cx:180, cy:430, w:420 }, 1000); showEnd(); return; }
     idx = i; running = true;
     var sc = SCENES[i];
+    if (typeof opener === 'function') opener(sc.station, true);
     camera(sc.cam, 900); focus(sc.organ); showCard(sc, i);
     if (!A) return;
     A.stopJourney();
@@ -181,17 +187,19 @@
     later(function () { play(0); }, 300);
     document.addEventListener('keydown', onKey);
   }
-  function stop() {
+  function stop(opts) {
     if (!running && idx < 0) return;
+    var landing = idx >= SCENES.length || idx < 0 ? 'overview' : SCENES[idx].station;
     running = false; idx = -1;
     clearTimers(); clearFx();
     if (global.Anatomy) global.Anatomy.stopJourney();
     if (card) card.hidden = true;
     document.removeEventListener('keydown', onKey);
     if (typeof onStop === 'function') onStop();
+    if (opts && opts.reopen && typeof opener === 'function') opener(landing);
   }
   function onKey(e) {
-    if (e.key === 'Escape') stop();
+    if (e.key === 'Escape') stop({ reopen:true });
     else if (e.key === 'ArrowRight') next();
     else if (e.key === 'ArrowLeft') back();
   }
