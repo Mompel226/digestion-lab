@@ -511,9 +511,18 @@
     steps.forEach(function (s, j) { var at = s.at || 0, sub = s.sub || 0; if (at < idx || (at === idx && sub <= frac)) best = j; });
     return best;
   }
+  var holdUntil = 0, holdTimer = null;
+  function scheduleRecheck(ms) {
+    if (holdTimer) return;
+    holdTimer = setTimeout(function () { holdTimer = null; update(); }, Math.max(20, ms));
+  }
   function goStep(j, now) {
     stepIdx = j;
     var s = steps[j];
+    /* Each view holds for a moment before the next one may take over, and the camera steps
+       through one view at a time rather than jumping. A quick scroll past the folds, the villi
+       and the microvilli therefore shows all three in turn instead of blurring past them. */
+    holdUntil = Date.now() + ((s && s.dwell) || 260);
     var cam = s.cam || CAM[detail.organ];
     if (cam !== detailCam) { detailCam = cam; if (!now) flyTo(frameFor(cam), 700); }
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
@@ -524,7 +533,12 @@
   function update() {
     if (!detail) return;
     var j = pickStep();
-    if (j !== stepIdx) goStep(j, stepIdx < 0);
+    if (j === stepIdx) return;
+    var now = Date.now();
+    if (stepIdx >= 0 && now < holdUntil) { scheduleRecheck(holdUntil - now + 20); return; }
+    var next = stepIdx < 0 ? j : stepIdx + (j > stepIdx ? 1 : -1);
+    goStep(next, stepIdx < 0);
+    if (next !== j) scheduleRecheck(((steps[next] || {}).dwell) || 260);
   }
   function onScroll() { update(); }
   function bindLearn(pane) {
@@ -549,7 +563,8 @@
     var cam = (!quiet && CAM[detail ? detail.organ : id]) || null;
     detailCam = detail ? cam : null;
     steps = detail ? (detail.steps || [detail]) : [];
-    stepIdx = -1; lis = null;
+    stepIdx = -1; lis = null; holdUntil = 0;
+    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
     if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }

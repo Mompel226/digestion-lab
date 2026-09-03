@@ -23,7 +23,7 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:7000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:'top', cam:{ cx:190, cy:420, w:320 }, ms:16000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [9500, 'top']], cam:{ cx:190, cy:420, w:320 }, ms:16000,
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
       notes:[[0, 'Swallowed, then pushed down the oesophagus by peristalsis.'],
              [4200, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
@@ -31,7 +31,7 @@
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', cam:{ cx:192, cy:620, w:300 }, ms:10000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.']] },
-    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', cam:{ cx:170, cy:540, w:290 }, ms:9000,
+    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', cam:{ cx:176, cy:556, w:300 }, ms:11000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food. Glucose is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:700, w:290 }, ms:11000,
@@ -77,6 +77,27 @@
   }
   /* nutrients leaving the intestine into the blood and up the portal vein to the liver */
   function nutrientRoute(t) { return [canalPoint(t)].concat(PORTAL); }
+  /* the hepatic portal vein, drawn on the plate with its name — the vessel the absorbed
+     nutrients actually travel in, so nothing appears to float from the gut to the liver */
+  function vein(named) {
+    var g = fxLayer(); if (!g) return;
+    function tube(pts, w, col) {
+      var d = 'M' + pts[0][0] + ',' + pts[0][1];
+      for (var i = 1; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; d += ' Q' + a[0] + ',' + a[1] + ' ' + (a[0] + b[0]) / 2 + ',' + (a[1] + b[1]) / 2; }
+      var last = pts[pts.length - 1]; d += ' L' + last[0] + ',' + last[1];
+      svgEl('path', { d: d, fill: 'none', stroke: col, 'stroke-width': f1(w), 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
+    }
+    tube(PORTAL, 4.6, '#2F3E8F'); tube(PORTAL, 1.6, '#6F7FD1');
+    [[[168, 640], [186, 645], [200, 650]], [[236, 650], [218, 650], [200, 650]], [[186, 690], [194, 672], [200, 650]]]
+      .forEach(function (t) { tube(t, 2.4, '#2F3E8F'); });
+    if (named) {
+      var t = svgEl('text', { x: 214, y: 560, 'font-size': '7.5', 'class': 'dl__t', 'text-anchor': 'start' }, g);
+      ['hepatic portal vein —', 'the absorbed glucose and amino', 'acids travel to the liver in it'].forEach(function (line, i) {
+        var ts = svgEl('tspan', { x: 214, dy: i ? '1.15em' : '0' }, t); ts.textContent = line;
+      });
+      svgEl('line', { x1: 212, y1: 558, x2: 199, y2: 556, 'class': 'dl__l', 'stroke-width': '0.7' }, g);
+    }
+  }
   function water(t) {
     var g = fxLayer(); if (!g) return;
     var p = canalPoint(t), c = svgEl('circle', { cx:f1(p[0]), cy:f1(p[1]), r:'2.6', fill:'#5FA8D3', stroke:'#fff', 'stroke-width':'0.6', opacity:'0' }, g);
@@ -109,7 +130,11 @@
   function showCard(sc, i) {
     var c = buildCard();
     c.hidden = false;
-    c.classList.toggle('tourcard--bottom', sc.pos === 'bottom');
+    /* pos is where the card sits: one place, or a list of [ms, place] so the card moves out of
+       the way as the food does — in digestion it starts low, so the oesophagus is never covered */
+    var place = function (p) { c.classList.toggle('tourcard--bottom', p === 'bottom'); };
+    if (typeof sc.pos === 'string') place(sc.pos);
+    else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1]); }, q[0]); }); }
     c.querySelector('.tourcard__more').innerHTML = '';                 /* the panel beside is already the station */
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
@@ -170,11 +195,14 @@
       });
     } else if (sc.id === 'absorption') {
       A.travel(M.duodenum, M.ileum, 8200);
+      later(function () { vein(false); }, 1100);
       [0.2, 0.42, 0.64, 0.86].forEach(function (k, i) {
         later(function () { drops(nutrientRoute(mix(M.jejunum, M.ileum, k)), i % 2 ? '#BC235B' : '#E8A33D', 2.2, 5.5, 3); }, 1200 + i * 1500);
       });
     } else if (sc.id === 'assimilation') {
       A.placeBolus(M.ileum);
+      vein(true);
+      drops(PORTAL, '#E8A33D', 2.2, 4.6, 4); drops(PORTAL, '#BC235B', 2, 5.4, 3);
       drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.35)), '#E8A33D', 2.2, 5, 4); drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.7)), '#BC235B', 2.2, 5.6, 3);
     } else if (sc.id === 'egestion') {
       A.travel(M.ileum, 0.995, 8500, function () { later(function () { A.stopJourney(); }, 600); });
