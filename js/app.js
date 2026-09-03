@@ -15,7 +15,7 @@
     stomach:[], liver:['emulsify'], pancreas:[],
     'ileum-villi':['starchPath','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
-    'molecules-lab':['starchPath']
+    'molecules-lab':['foodTests','starchPath']
   };
 
   /* which sentence each drawn diagram illustrates */
@@ -26,7 +26,7 @@
     'liver:emulsify':5,
     'ileum-villi:starchPath':10, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
-    'molecules-lab:starchPath':0
+    'molecules-lab:foodTests':1, 'molecules-lab:starchPath':0
   };
 
   /* On a phone a figure is wider than the screen and its labels are the part
@@ -998,10 +998,16 @@
   document.addEventListener('click', function (e) {
     var lens = e.target.closest ? e.target.closest('.fig-lens, .fig-cell__close') : null;
     if (lens) {
-      var stage = lens.closest('svg');
-      var open = stage.classList.toggle('is-cell');
-      var btn = stage.querySelector('.fig-lens');
-      if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      var stage = lens.closest('svg'), view = lens.getAttribute('data-view');
+      if (view) {
+        var cur = stage.getAttribute('data-view');
+        if (cur === view) stage.removeAttribute('data-view'); else stage.setAttribute('data-view', view);
+        Array.prototype.forEach.call(stage.querySelectorAll('.fig-lens[data-view]'), function (b) { b.setAttribute('aria-expanded', stage.getAttribute('data-view') === b.getAttribute('data-view') ? 'true' : 'false'); });
+      } else {
+        var open = stage.classList.toggle('is-cell');
+        var btn = stage.querySelector('.fig-lens');
+        if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
       e.preventDefault(); return;
     }
     var tip = e.target.closest ? e.target.closest('.tip') : null;
