@@ -98,7 +98,9 @@
                 'mineral ion','mineral ions','calcium','iron','water','balanced diet',
                 'fibre','roughage',
                 /* whole phrases, so they are marked once rather than word by word */
-                'fats and oils','fibre (roughage)'],
+                'fats and oils','fibre (roughage)',
+                /* the food tests — each opens its before-and-after tubes */
+                'iodine solution','benedict’s solution','benedict\'s solution','biuret solution','ethanol emulsion test'],
 
     condition: ['scurvy','rickets','anaemia','kwashiorkor','deficiency disease',
                 'deficiency diseases','malnutrition','constipation','obesity','starvation']
@@ -131,6 +133,12 @@
      Third element = the credit line, shown under the note. Every borrowed
      image has one; SOURCES.md carries the full record. */
   var PEEK = {
+    /* the food tests: drawn tubes, before and after */
+    'iodine solution':       ['tests/iodine.jpg', '<b>Iodine solution test — for starch.</b> Six samples on a spotting tile. Left: the samples still contain starch, so the iodine solution has turned <b>blue-black</b> around them. Right: no starch left, so the iodine solution keeps its own <b>orange-brown</b> colour — the pure drop in the middle shows that colour. Say “iodine solution”, never just “iodine”.', 'Flo Sorg, Wikimedia Commons, public domain'],
+    'benedict’s solution':   ['tests/benedict.jpg', '<b>Benedict’s solution test — for reducing sugars</b> (glucose, maltose), heated in a water bath. Right: the reagent as it starts, <b>blue</b> — no sugar. Left: a strong positive, the <b>brick-red</b> precipitate. In between, a little sugar gives green, then yellow, then orange: the colour goes further the more sugar there is. Write the colour you saw, never “positive”.', 'HunterRSC, Wikimedia Commons, CC0'],
+    'benedict\'s solution': ['tests/benedict.jpg', '<b>Benedict’s solution test — for reducing sugars</b> (glucose, maltose), heated in a water bath. Right: the reagent as it starts, <b>blue</b> — no sugar. Left: a strong positive, the <b>brick-red</b> precipitate. In between, a little sugar gives green, then yellow, then orange: the colour goes further the more sugar there is. Write the colour you saw, never “positive”.', 'HunterRSC, Wikimedia Commons, CC0'],
+    'biuret solution':       ['tests/biuret.jpg', '<b>Biuret solution test — for protein.</b> Left: <b>purple</b> (lilac) — protein present. Right: pale <b>blue</b>, the reagent’s own colour — no protein. (Biuret solution is sodium hydroxide solution with a little copper sulfate solution.)', 'Ykskaks3, Wikimedia Commons, CC BY-SA 4.0'],
+    'ethanol emulsion test': ['tests/emulsion.jpg', '<b>Ethanol emulsion test — for fats and oils.</b> Shake the food with ethanol, then pour the ethanol into water. A positive result is a <b>cloudy white emulsion</b> like the left tube — countless tiny droplets of fat suspended in the water. With no fat the water stays clear. (Photograph of an oil-in-water emulsion; the right tube shows the oil and water before they are mixed.)', 'Francesco Mulas, Wikimedia Commons, CC BY 3.0'],
     'carbohydrates': ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes and cereals — the body’s main energy source, and the one it reaches for first.', 'Scott Bauer, USDA ARS, public domain'],
     'carbohydrate':  ['food-carbohydrate.jpg', 'Bread, rice, pasta, potatoes and cereals — the body’s main energy source, and the one it reaches for first.', 'Scott Bauer, USDA ARS, public domain'],
     'protein':       ['food-protein.jpg', 'From animals (meat, fish, eggs) and from plants (beans, lentils, nuts, tofu) alike — for growth and for repairing tissues.', 'Salmon: DanaTentis, CC0. Beans: Bean appreciator, CC0'],

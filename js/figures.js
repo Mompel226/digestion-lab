@@ -368,66 +368,6 @@
     };
   }
 
-  /* ---------------- food tests: before and after, behind a lens each ---------------- */
-  /* A test tube of liquid, drawn: glass outline, liquid of the given colour, a label under it. */
-  function tube(x, y, col, label, sub, w, h) {
-    w = w || 30; h = h || 74;
-    var r = w / 2, top = y, bot = y + h;
-    var glass = 'M' + (x - r) + ',' + top + ' L' + (x - r) + ',' + (bot - r) + ' A' + r + ',' + r + ' 0 0 0 ' + (x + r) + ',' + (bot - r) + ' L' + (x + r) + ',' + top;
-    var liq = 'M' + (x - r + 3) + ',' + (top + 14) + ' L' + (x - r + 3) + ',' + (bot - r) + ' A' + (r - 3) + ',' + (r - 3) + ' 0 0 0 ' + (x + r - 3) + ',' + (bot - r) + ' L' + (x + r - 3) + ',' + (top + 14) + ' Z';
-    return '<path d="' + liq + '" fill="' + col + '"/>' +
-           '<path d="' + glass + '" fill="none" stroke="#7E7259" stroke-width="1.6" stroke-linecap="round"/>' +
-           '<line x1="' + (x - r - 3) + '" y1="' + top + '" x2="' + (x + r + 3) + '" y2="' + top + '" stroke="#7E7259" stroke-width="1.6" stroke-linecap="round"/>' +
-           '<text class="fl" x="' + x + '" y="' + (bot + 16) + '" text-anchor="middle">' + label + '</text>' +
-           (sub ? '<text class="fs" x="' + x + '" y="' + (bot + 30) + '" text-anchor="middle">' + sub + '</text>' : '');
-  }
-  function lens(x, y, view, label) {
-    return '<g class="fig-lens" data-view="' + view + '" role="button" tabindex="0" transform="translate(' + x + ',' + y + ')"><title>See the test before and after</title>' +
-           '<circle class="lens__glass" r="11" fill="#FFFDF9" stroke="#14572B" stroke-width="2"/>' +
-           '<circle r="5.6" fill="none" stroke="#14572B" stroke-width="1.5"/><line x1="4" y1="4" x2="9" y2="9" stroke="#14572B" stroke-width="2.6" stroke-linecap="round"/>' +
-           '<text class="fs" x="16" y="4" style="fill:#14572B;font-weight:700">' + label + '</text></g>';
-  }
-  function foodTests() {
-    var TESTS = [
-      { id:'iodine',   name:'Iodine solution test', nut:'for starch',           before:['#D9A441', 'no starch', 'orange-brown'],      after:['#1E2140', 'starch present', 'blue-black'] },
-      { id:'benedict', name:'Benedict’s solution test', nut:'for reducing sugars, heated', before:['#3D7BE0', 'no reducing sugar', 'stays blue'], after:['#A83A1B', 'reducing sugar present', 'brick red'] },
-      { id:'biuret',   name:'Biuret solution test', nut:'for protein',          before:['#5B8FE3', 'no protein', 'stays blue'],        after:['#8B5BC7', 'protein present', 'purple (lilac)'] },
-      { id:'emulsion', name:'Ethanol emulsion test', nut:'for fats and oils',   before:['#EDF5FA', 'no fat or oil', 'stays clear'],   after:['#F1EFE6', 'fat or oil present', 'cloudy white emulsion'] }
-    ];
-    var W = 660, colW = W / 4, over = '', detail = '';
-    TESTS.forEach(function (t, i) {
-      var cx = colW * i + colW / 2;
-      over += '<g class="ft-mini">' +
-        '<text class="fb" x="' + cx + '" y="22" text-anchor="middle" style="font-size:12.5px">' + t.name + '</text>' +
-        '<text class="fs" x="' + cx + '" y="36" text-anchor="middle">' + t.nut + '</text>' +
-        tube(cx - 28, 50, t.before[0], 'before', null, 26, 62) + tube(cx + 28, 50, t.after[0], 'after', null, 26, 62) +
-        arrow('ftA', '#14572B', 'M' + (cx - 8) + ',82 L' + (cx + 8) + ',82', 2) +
-        lens(cx - 30, 150, t.id, 'before and after') + '</g>';
-      /* the close-up card for this test */
-      var card = '<g class="ft-detail" data-test="' + t.id + '"><rect x="6" y="4" width="' + (W - 12) + '" height="176" rx="10" fill="#FFFDF9" stroke="#14572B" stroke-width="1.5"/>' +
-        '<text class="fb" x="24" y="28">' + t.name + ' — ' + t.nut + '</text>' +
-        '<g class="fig-cell__close" data-view="' + t.id + '" role="button" tabindex="0"><title>Close</title><circle cx="' + (W - 24) + '" cy="22" r="9" fill="#F1EDE3" stroke="#B9AE9B"/>' +
-        '<text x="' + (W - 24) + '" y="26.5" text-anchor="middle" style="font:700 13px Calibri,Carlito,sans-serif;fill:#3A3A3A">×</text></g>';
-      if (t.id === 'benedict') {
-        var spec = [['#3D7BE0', 'none', 'blue'], ['#5EA548', 'a trace', 'green'], ['#E2C13A', 'a little', 'yellow'], ['#E8842A', 'more', 'orange'], ['#A83A1B', 'a lot', 'brick red']];
-        spec.forEach(function (c, k) { card += tube(120 + k * 100, 44, c[0], c[1], c[2], 30, 70); });
-        card += '<text class="fs" x="24" y="66">warm in a</text><text class="fs" x="24" y="80">water bath;</text><text class="fs" x="24" y="94">the colour</text><text class="fs" x="24" y="108">goes further</text><text class="fs" x="24" y="122">the more</text><text class="fs" x="24" y="136">sugar there is</text>' +
-                '<text class="fl" x="' + (W / 2) + '" y="168" text-anchor="middle">Write the colour you see — “green” or “brick red” — never “positive”.</text>';
-      } else {
-        card += tube(220, 44, t.before[0], t.before[1], t.before[2], 34, 74) + tube(440, 44, t.after[0], t.after[1], t.after[2], 34, 74) +
-                arrow('ftA', '#14572B', 'M300,80 L360,80', 2.4) +
-                '<text class="fl" x="' + (W / 2) + '" y="168" text-anchor="middle">' + (t.id === 'iodine' ? 'Add a few drops of iodine solution to the food. A colour change to blue-black means starch.' :
-                  t.id === 'biuret' ? 'Add Biuret solution (or sodium hydroxide, then a little copper sulfate). Purple means protein.' :
-                  'Shake the food with ethanol, then pour it into water. A cloudy white emulsion means fat or oil.') + '</text>';
-      }
-      detail += card + '</g>';
-    });
-    return {
-      svg: svg('0 0 ' + W + ' 184', arrowDefs('ftA', '#14572B') + '<g class="ft-all">' + over + '</g>' + detail, 'fig--tests'),
-      cap:'<b>The four food tests, before and after.</b> Click a lens to see one close up — the Benedict’s solution test with its whole run of colours. In an answer always name the reagent as a solution: <b>iodine solution</b>, <b>Benedict’s solution</b>, <b>Biuret solution</b>; and describe the colour you saw, never just “positive”.'
-    };
-  }
-
   /* ---------------- villus ---------------- */
   function villus() {
     var art = (global.FIGURE_ART || {}).villus;
@@ -1088,7 +1028,7 @@
   }
 
   var FIGS = { sameBalance:sameBalance, toothCompact:toothCompact, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
-               emulsify:emulsify, villus:villus, surfaceArea:surfaceArea, foodTests:foodTests,
+               emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
                swallow:swallow, waterColon:waterColon };
 

@@ -15,7 +15,7 @@
     stomach:[], liver:['emulsify'], pancreas:[],
     'ileum-villi':['starchPath','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
-    'molecules-lab':['foodTests','starchPath']
+    'molecules-lab':['starchPath']
   };
 
   /* which sentence each drawn diagram illustrates */
@@ -26,7 +26,7 @@
     'liver:emulsify':5,
     'ileum-villi:starchPath':10, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
-    'molecules-lab:foodTests':1, 'molecules-lab:starchPath':0
+    'molecules-lab:starchPath':0
   };
 
   /* On a phone a figure is wider than the screen and its labels are the part
