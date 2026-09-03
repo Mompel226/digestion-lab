@@ -357,9 +357,13 @@
     /* organs the step covers with its own picture are hidden, so nothing shows twice */
     hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
     (s.hide || []).forEach(function (h) {
-      var organ = typeof h === 'string' ? h : h.organ, keep = typeof h === 'string' ? null : h.except, inv = svg.getScreenCTM().inverse();
-      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
-        if (keep) { var r = p.getBoundingClientRect(), a = pt(inv, r.left, r.top), b = pt(inv, r.right, r.bottom); if (a.x >= keep[0] - 2 && a.y >= keep[1] - 2 && b.x <= keep[2] + 2 && b.y <= keep[3] + 2) return; }
+      var organ = typeof h === 'string' ? h : h.organ, keep = typeof h === 'string' ? null : h.except, within = typeof h === 'string' ? null : h.within, inv = svg.getScreenCTM().inverse();
+      var sel = organ ? '.art .op[data-organ="' + organ + '"]' : '.art path';
+      Array.prototype.forEach.call(svg.querySelectorAll(sel), function (p) {
+        var r = p.getBoundingClientRect(), a = pt(inv, r.left, r.top), b = pt(inv, r.right, r.bottom);
+        if (keep && a.x >= keep[0] - 2 && a.y >= keep[1] - 2 && b.x <= keep[2] + 2 && b.y <= keep[3] + 2) return;
+        if (within && !(a.x >= within[0] - 1 && a.y >= within[1] - 1 && b.x <= within[2] + 1 && b.y <= within[3] + 1)) return;
+        if (h.fill && getComputedStyle(p).fill.indexOf(h.fill) < 0) return;
         p.style.display = 'none'; hidden.push(p);
       });
     });
