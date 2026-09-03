@@ -539,17 +539,23 @@
     fade = 0; setBox(cur);
     fadeTimer = setTimeout(function () { fadeTimer = null; applyStep(s); fade = 1; setBox(cur); }, Math.round(((s && s.fade) || 350) * 0.85));
   }
+  /* Where the reader is, is where the plate goes: the view always jumps straight to the step the
+     reading line is on, so scrolling back to the top comes straight back to the whole organ. The
+     only thing held back is the single step forwards — a nudge of the wheel at the edge of a
+     bullet must not flip the picture — and even that gives way as soon as the reader has moved a
+     little further or waited a moment. Nothing ever queues up behind a hold. */
   function update() {
     if (!detail) return;
     var j = pickStep();
     if (j === stepIdx) return;
-    var now = Date.now();
-    if (stepIdx >= 0 && now < holdUntil) { scheduleRecheck(holdUntil - now + 20); return; }
     var here = steps[stepIdx];
-    if (stepIdx >= 0 && here && here.scroll && Math.abs(scrollPos() - holdFrom) < here.scroll) return;
-    var next = stepIdx < 0 ? j : stepIdx + (j > stepIdx ? 1 : -1);
-    goStep(next, stepIdx < 0);
-    if (next !== j) scheduleRecheck(((steps[next] || {}).dwell) || 260);
+    var oneForward = stepIdx >= 0 && j === stepIdx + 1;
+    if (oneForward && here) {
+      var now = Date.now();
+      if (now < holdUntil) { scheduleRecheck(holdUntil - now + 20); return; }
+      if (here.scroll && Math.abs(scrollPos() - holdFrom) < here.scroll) { scheduleRecheck(160); return; }
+    }
+    goStep(j, stepIdx < 0);
   }
   function onScroll() { update(); }
   function bindLearn(pane) {
@@ -566,11 +572,36 @@
   }
   function unbind() { lis = null; }
 
+  /* Every picture the station's steps will use, fetched and decoded as soon as the station opens.
+     Held in a list so the browser keeps them, which is what makes the next view appear at once
+     rather than a beat after the scroll. */
+  var warmed = {}, warm = [];
+  function preload(id) {
+    var d = (global.ZOOM_DETAIL || {})[id]; if (!d) return;
+    (d.steps || [d]).forEach(function (s) {
+      var srcs = (s.imgs || (s.img ? [s] : [])).map(function (x) { return x.img; })
+        .concat((s.insets || []).map(function (x) { return x.img; }));
+      srcs.forEach(function (src) {
+        if (!src || warmed[src]) return;
+        warmed[src] = 1;
+        var im = new Image(); im.src = 'assets/' + src; warm.push(im);
+      });
+    });
+  }
+  /* how much room in the text each step wants, so a view is not scrolled past in one flick */
+  function rooms(id) {
+    var d = (global.ZOOM_DETAIL || {})[id], out = {};
+    if (!d) return out;
+    (d.steps || []).forEach(function (s) { if (s.room) out[s.at || 0] = s.room; });
+    return out;
+  }
+
   /* ---------- station ---------- */
   function setStation(id, opts) {
     station = id;
     var quiet = opts && opts.tour;
     detail = (!quiet && (global.ZOOM_DETAIL || {})[id]) || null;
+    if (detail) preload(id);
     var cam = (!quiet && CAM[detail ? detail.organ : id]) || null;
     detailCam = detail ? cam : null;
     steps = detail ? (detail.steps || [detail]) : [];
@@ -590,7 +621,8 @@
   /* The plate is rebuilt from scratch by some controls (labels, beyond,
      reset). That wipes the detail layer, so it is put back here. */
   function refresh() { if (!svg) return; if (!layer || !layer.isConnected) build(); if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); setBox(cur); }
-  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, flyTo:flyTo, frameFor:frameFor, CAM:CAM,
+  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, flyTo:flyTo, frameFor:frameFor, CAM:CAM, rooms:rooms,
+                  outline:outlineFor, outlineIn:outlineIn, ppu:ppu,
                   bindLearn:bindLearn, unbind:unbind, update:update, _spot:function () { return SPOT; },
                   _state:function () { return { cur:cur, station:station, step:stepIdx, steps:steps.length, detail:detail && (steps[stepIdx] || {}).img }; } };
 })(window);
