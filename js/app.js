@@ -443,6 +443,24 @@
       '<span class="kindtag kindtag--fig">Diagram</span> ' + f.cap + '</figcaption>';
     hidePlateParts(box);
     keepFigureReadable(box);
+    /* An animated figure starts when the page paints, so by the time it is scrolled into
+       view it is half way through its cycle — the fat droplet already split. Hold it on its
+       first frame and start it from the beginning the moment it comes into view. */
+    var stage = box.querySelector('svg.figbox__stage');
+    if (stage && stage.pauseAnimations) {
+      try { stage.pauseAnimations(); stage.setCurrentTime(0); } catch (e) {}
+      var panel = document.getElementById('panel'), started = false;
+      var check = function () {
+        if (started || !box.isConnected) { if (!box.isConnected) panel.removeEventListener('scroll', check); return; }
+        var pr = panel.getBoundingClientRect(), r = box.getBoundingClientRect();
+        var seen = Math.min(r.bottom, pr.bottom) - Math.max(r.top, pr.top);
+        if (seen < Math.min(r.height, pr.height) * 0.4) return;
+        started = true; panel.removeEventListener('scroll', check);
+        try { stage.setCurrentTime(0); stage.unpauseAnimations(); } catch (e) {}
+      };
+      panel.addEventListener('scroll', check, { passive:true });
+      setTimeout(check, 80);
+    }
     return box;
   }
 

@@ -305,6 +305,13 @@
   var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
   /* the pancreatic duct, read off the plate's own artwork */
   var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
+  function sacOf(ctx) {
+    var pts = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [];
+    var hull = hullCurve(pts); if (!hull) return null;
+    var cx = 0, cy = 0, minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    pts.forEach(function (q) { cx += q[0]; cy += q[1]; minX = Math.min(minX, q[0]); maxX = Math.max(maxX, q[0]); minY = Math.min(minY, q[1]); maxY = Math.max(maxY, q[1]); });
+    return { hull:hull, cx:cx / pts.length, cy:cy / pts.length, minX:minX, maxX:maxX, minY:minY, maxY:maxY };
+  }
   function hullCurve(P) {
     if (P.length < 3) return '';
     P = P.slice().sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; });
@@ -344,13 +351,19 @@
          liver-release — a meal in progress: release only, from both.
        The gall bladder is the plate's own outline, painted here so that it can swell and squeeze. */
     var mode = focus === 'liver-fill' ? 'fill' : focus === 'liver-release' ? 'release' : 'cycle';
-    var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [], hull = hullCurve(sac);
-    if (hull) {
-      var cx = 0, cy = 0; sac.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= sac.length; cy /= sac.length;
-      var T = 16, sc = mode === 'fill' ? '0.84;1.06;1.06' : mode === 'release' ? '1.04;0.86;0.86' : '0.84;1.06;1.06;0.86;0.86';
+    var S = sacOf(ctx);
+    if (S) {
+      /* the sac swells as it fills and squeezes as it empties, and the bile level inside it rises and falls */
+      var T = 16, sc = mode === 'fill' ? '0.82;1.1;1.1' : mode === 'release' ? '1.08;0.84;0.84' : '0.82;1.1;1.1;0.84;0.84';
       var kt = mode === 'cycle' ? '0;0.4;0.5;0.8;1' : '0;0.65;1', dur = mode === 'cycle' ? T : 8;
-      g += '<g transform="translate(' + f1(cx) + ',' + f1(cy) + ')"><g><animateTransform attributeName="transform" type="scale" values="' + sc + '" keyTimes="' + kt + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(kt.split(';').length - 1) + '"/>' +
-           '<path d="' + hull + '" transform="translate(' + f1(-cx) + ',' + f1(-cy) + ')" fill="#CFE6BD" stroke="#E8A33D" stroke-width="' + f1(1.8 * u) + '" stroke-linejoin="round" opacity=".97"/></g></g>';
+      var top = S.minY - S.cy - 3, bot = S.maxY - S.cy + 3, lv = mode === 'fill' ? [bot, top, top] : mode === 'release' ? [top, bot, bot] : [bot, top, top, bot, bot];
+      var tr = 'translate(' + f1(-S.cx) + ',' + f1(-S.cy) + ')';
+      g += '<g transform="translate(' + f1(S.cx) + ',' + f1(S.cy) + ')"><g><animateTransform attributeName="transform" type="scale" values="' + sc + '" keyTimes="' + kt + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(kt.split(';').length - 1) + '"/>' +
+           '<clipPath id="gbSac"><path d="' + S.hull + '" transform="' + tr + '"/></clipPath>' +
+           '<path d="' + S.hull + '" transform="' + tr + '" fill="#EAF3DF"/>' +
+           '<rect clip-path="url(#gbSac)" x="' + f1(S.minX - S.cx - 6) + '" width="' + f1(S.maxX - S.minX + 12) + '" y="' + f1(lv[0]) + '" height="' + f1(bot - top + 8) + '" fill="' + BILE + '" opacity=".92">' +
+             A + '"y" values="' + lv.map(f1).join(';') + '" keyTimes="' + kt + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(kt.split(';').length - 1) + '"/></rect>' +
+           '<path d="' + S.hull + '" transform="' + tr + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2.2 * u) + '" stroke-linejoin="round"/></g></g>';
     }
     var FILL = drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5);
     var REL = drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0) + drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .85, 5.6, 3, 1.2) + drops(LHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .8, 5.6, 2, 2.9);
@@ -447,13 +460,16 @@
   /* ---------------- the hepatic portal vein, from the small intestine to the liver ---------------- */
   var PORTAL = [[200, 650], [206, 620], [204, 592], [196, 564], [182, 536], [166, 508], [152, 486]];
   function portal(ctx) {
-    var fs = ctx.fs, u = ctx.u, w = 3 * u, r = 1.6 * u;
-    var g = tube(PORTAL, w * 1.5, '#2F3E8F') + tube(PORTAL, w * .5, '#6F7FD1');
+    var fs = ctx.fs, u = ctx.u, w = 3 * u, r = 1.6 * u, g = '';
+    var S = sacOf(ctx);
+    if (S) g += '<path d="' + S.hull + '" fill="#CFE6BD" stroke="#5E8A3E" stroke-width="' + f1(1.2 * u) + '" stroke-linejoin="round" opacity=".95"/>';
+    g += tube(PORTAL, w * 1.5, '#2F3E8F') + tube(PORTAL, w * .5, '#6F7FD1');
     /* the tributaries: veins gathering from the loops of intestine */
     [[[168, 640], [186, 645], [200, 650]], [[236, 650], [218, 650], [200, 650]], [[186, 690], [194, 672], [200, 650]], [[222, 690], [210, 672], [200, 650]]].forEach(function (t) { g += tube(t, w * .8, '#2F3E8F'); });
     g += drops(PORTAL, '#E8A33D', r, 5.2, 4, 0) + drops(PORTAL, '#BC235B', r * .9, 5.2, 3, 1.3);
-    if (ctx.compact) return g + label('liver', 60, 452, null, null, fs, 'start') + label('hepatic portal vein', 214, 566, 199, 560, fs, 'start') + label('small intestine', 96, 748, null, null, fs, 'start');
-    return g +
+    var gb = ctx.focus === 'liver' && S ? label('gall bladder', 96, 514, S.minX + 4, S.cy, fs, 'start') : '';
+    if (ctx.compact) return g + gb + label('liver', 60, 452, null, null, fs, 'start') + label('hepatic portal vein', 214, 566, 199, 560, fs, 'start') + label('small intestine', 96, 748, null, null, fs, 'start');
+    return g + gb +
       label('liver', 60, 452, null, null, fs, 'start') +
       label('hepatic portal vein —\nblood rich in glucose and\namino acids goes to the liver', 214, 560, 199, 560, fs, 'start') +
       label('capillaries of the villi\ndrain into it', 232, 640, 218, 650, fs, 'start') +
