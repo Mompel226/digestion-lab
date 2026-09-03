@@ -70,7 +70,7 @@
 
     chemical: ['enzyme','enzymes','amylase','salivary amylase','pancreatic amylase','maltase','lactase',
                'sucrase','protease','proteases','pepsin','trypsin','lipase','carbohydrase','carbohydrases',
-               'hydrochloric acid','gastric juice','pancreatic juice','saliva','bile','denature','denatures',
+               'hydrochloric acid','gastric juice','pancreatic juice','saliva','bile','mucus','denature','denatures',
                'denatured','denaturation','optimum ph','alkaline','acidic','neutralises','neutralise',
                'neutralisation','catalyst','catalysts','active site','substrate','chemically'],
 
@@ -78,7 +78,8 @@
                 'capillary','capillaries','epithelium','diffusion','diffuse','diffuses','diffused',
                 'active transport','osmosis','absorbed','absorb','absorbs','lumen',
                 'concentration gradient','goblet cell','goblet cells',
-                'blood','bloodstream','plasma','lymph'],
+                'blood','bloodstream','plasma','lymph node','lymph nodes','lymph vessel','lymph vessels','lymphatic system','lymph',
+                'enterocyte','enterocytes','mesentery'],
 
     assimilation:['assimilated','glycogen','respiration','hepatic portal vein','protein synthesis'],
 
@@ -178,7 +179,17 @@
     'active site':'molecules-lab', 'substrate':'molecules-lab', 'catalyst':'molecules-lab',
     'diffusion':'molecules-lab', 'osmosis':'molecules-lab', 'active transport':'molecules-lab',
     'starch':'molecules-lab', 'maltose':'molecules-lab', 'glucose':'molecules-lab',
-    'amino acids':'molecules-lab', 'fatty acids':'molecules-lab', 'glycerol':'molecules-lab'
+    'amino acids':'molecules-lab', 'fatty acids':'molecules-lab', 'glycerol':'molecules-lab',
+    'enzyme':'molecules-lab', 'enzymes':'molecules-lab', 'catalysts':'molecules-lab', 'optimum ph':'molecules-lab',
+    'concentration gradient':'molecules-lab', 'soluble':'overview', 'insoluble':'overview',
+    'epithelium':'ileum-villi', 'goblet cell':'ileum-villi', 'goblet cells':'ileum-villi', 'lumen':'ileum-villi',
+    'capillary':'ileum-villi', 'capillaries':'ileum-villi', 'enterocyte':'ileum-villi', 'enterocytes':'ileum-villi',
+    'lymph':'ileum-villi', 'lymph node':'ileum-villi', 'lymph nodes':'ileum-villi', 'lymph vessel':'ileum-villi',
+    'lymph vessels':'ileum-villi', 'lymphatic system':'ileum-villi', 'mesentery':'ileum-villi',
+    'mucus':'stomach', 'protease':'pancreas', 'proteases':'pancreas', 'pancreatic amylase':'pancreas',
+    'carbohydrase':'salivary-glands', 'carbohydrases':'salivary-glands',
+    'assimilated':'liver', 'protein synthesis':'liver',
+    'cellulose':'colon', 'undigested':'rectum-anus', 'nutrient':'diet', 'nutrients':'diet'
   };
 
   /* --------- build one matcher, longest phrase first --------- */
@@ -224,11 +235,7 @@
       var cat = e[1], act = '', cls = '';
       var first = !quiet && !(seen && seen[low]);
       if (seen) seen[low] = true;
-      if (!first) {
-        /* styled the same, but nothing to click */
-        if (e[2]) return '<b class="tc tc--' + cat + '"><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
-        return '<b class="t t--' + cat + '">' + m + '</b>';
-      }
+      if (!first) return m;                     /* plain after the first time on the page */
       if (PEEK[low]) {
         act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
               (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') +

@@ -337,16 +337,19 @@
        (graphs, the words that earn marks, how it is asked) behind one expandable section. */
     var rc = st.learn && st.learn.recap;
     if (rc) {
+      /* Plain text with the mark-earning words in bold — no coloured term chips: on a page about
+         enzymes, colouring every "enzyme" is noise, and the words to remember are the marking ones. */
+      var rich = function (t) { return esc(t).replace(/&lt;(\/?)(b|i|br)&gt;/g, '<$1$2>'); };
       var R = document.createElement('div');
       R.className = 'card recap';
       var figs = (rc.figs || []).map(function (f) {
-        return '<figure><img src="assets/photos/' + esc(f.src) + '" alt="" loading="lazy"><figcaption>' + M(f.cap) + '</figcaption></figure>';
+        return '<figure><img src="assets/photos/' + esc(f.src) + '" alt="" loading="lazy"><figcaption>' + rich(f.cap) + '</figcaption></figure>';
       }).join('');
       var body = (rc.more || []).map(function (sec) {
-        return '<div class="recap__h">' + esc(sec.h) + '</div><ul>' + (sec.items || []).map(function (t) { return '<li>' + M(t) + '</li>'; }).join('') + '</ul>';
+        return '<div class="recap__h">' + esc(sec.h) + '</div><ul>' + (sec.items || []).map(function (t) { return '<li>' + rich(t) + '</li>'; }).join('') + '</ul>';
       }).join('');
-      var ex = (rc.exam || []).length ? '<div class="recap__exam"><div class="recap__h">In the exam — how it is asked</div><ul>' + rc.exam.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' : '';
-      R.innerHTML = '<div class="card__h">' + esc(rc.title) + '</div><p class="recap__intro">' + M(rc.intro) + '</p>' +
+      var ex = (rc.exam || []).length ? '<div class="recap__exam"><div class="recap__h">In the exam — how it is asked</div><ul>' + rc.exam.map(function (t) { return '<li>' + rich(t) + '</li>'; }).join('') + '</ul></div>' : '';
+      R.innerHTML = '<div class="card__h">' + esc(rc.title) + '</div><p class="recap__intro">' + rich(rc.intro) + '</p>' +
         '<details><summary>' + esc(rc.open || 'Open the recap') + '</summary><div class="recap__body">' +
         (figs ? '<div class="recap__figs">' + figs + '</div>' : '') + body + ex + '</div></details>';
       pane.appendChild(R);
