@@ -882,28 +882,30 @@ window.ZOOM_DETAIL = {
         "anim": "maltase",
         "animBox": [
           48,
-          588,
+          600,
           194,
           126
         ],
         "label": "Where maltase works: embedded in the membrane of the microvilli, so maltose is split on the cell surface and the glucose goes straight in",
         "insets": [
           {
-            "img": "zoom/microvilli-em.jpg",
+            "img": "zoom/microvilli-tem-tip.jpg",
             "at": [
-              252,
-              606,
-              58
+              150,
+              480,
+              72
             ],
-            "cap": "the microvilli, ×18,000",
+            "cap": "three microvilli, each wrapped in\nits membrane — where maltase sits",
+            "capTop": true,
             "link": [
-              0.62,
+              0.36,
               0.06,
-              0.98,
-              0.94
+              0.66,
+              0.42
             ]
           }
-        ]
+        ],
+        "credit": "micrograph: L. Howard & K. Connolly, Dartmouth, public domain"
       },
       {
         "at": 11,

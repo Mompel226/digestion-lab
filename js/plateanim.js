@@ -423,16 +423,29 @@
          A + '"opacity" values="0;1;1;1;0;0" keyTimes="0;0.05;0.4;0.55;0.56;1" dur="' + D + 's" repeatCount="indefinite"/></line>';
     g += sugar(-1, mx - dx * 2.2, ey) + sugar(1, mx + dx * 2.2, ey);
     var L = fs * 0.92;
+    /* the names ride with the molecules: "maltose" follows the pair down and vanishes as the enzyme
+       cuts it; "glucose" appears on each half as it leaves for the cytoplasm */
+    var KT = '0;0.05;0.4;0.55;0.9;1', SPL = 'calcMode="spline" keySplines="0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1;0.42 0 0.58 1"';
+    function rider(t, xs, ys, op, opK, anchor) {
+      return '<text class="dl__t" font-size="' + f1(L) + '" text-anchor="' + anchor + '" x="' + f1(xs[0]) + '" y="' + f1(ys[0]) + '" opacity="0">' + t +
+        A + '"x" values="' + xs.map(f1).join(';') + '" keyTimes="' + KT + '" dur="' + D + 's" repeatCount="indefinite" ' + SPL + '/>' +
+        A + '"y" values="' + ys.map(f1).join(';') + '" keyTimes="' + KT + '" dur="' + D + 's" repeatCount="indefinite" ' + SPL + '/>' +
+        A + '"opacity" values="' + op + '" keyTimes="' + opK + '" dur="' + D + 's" repeatCount="indefinite"/></text>';
+    }
+    var mlx = mx - dx * .9 - r * 1.5, yOff = L * .38;
+    g += rider('maltose', [mlx, mlx, mlx, mlx, mlx, mlx], [sy + yOff, sy + yOff, ay + yOff, ay + yOff, ay + yOff, ay + yOff], '0;1;1;1;0;0', '0;0.05;0.4;0.52;0.57;1', 'end');
+    var gl = [mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5];
+    var gr = [mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * 2.2 + r * 1.5, mx + dx * 2.2 + r * 1.5];
+    var gy = [sy + yOff, sy + yOff, ay + yOff, ay + yOff, ey + yOff, ey + yOff];
+    g += rider('glucose', gl, gy, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'end') + rider('glucose', gr, gy, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'start');
     if (ctx.compact) return g +
       label('lumen', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
       label('maltase in\nthe membrane', mx + pw / 2 + L * 1.4, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
       label('cytoplasm', x0 + W * .03, y0 + H - L * .5, null, null, L, 'start');
     return g +
       label('lumen of the small intestine', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
-      label('maltose', mx - dx * .9 - r * 1.2, sy + L * 1.5, mx - dx * .9 - r * .6, sy + r * .6, L, 'end') +
       label('maltase — embedded\nin the membrane', mx + pw / 2 + L * 2.2, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
       label('cell membrane\nof a microvillus', x0 + W * .03, my - th * 1.05, x0 + W * .1, my - th / 2 + hr * .2, L, 'start') +
-      label('glucose', mx + dx * 2.2 + r * 1.6, ey - L * .9, mx + dx * 2.2 + r * .7, ey - r * .7, L, 'start') +
       label('cytoplasm of the epithelial cell', x0 + W * .03, y0 + H - L * .5, null, null, L, 'start');
   }
 
