@@ -79,17 +79,28 @@
     { id:'rectum-anus',     label:'Rectum and anus',    side:'left',  ly:782, anchor:[176,776] }
   ];
 
-  /* The route a meal takes, in artwork coordinates. */
-  var CANAL =
-    'M124,118 C146,130 158,158 163,196 C172,240 176,290 179,344 ' +
-    'C184,404 202,436 228,452 C262,468 270,506 246,528 ' +
-    'C218,548 176,524 152,536 C128,548 124,574 144,590 ' +
-    'C172,606 202,586 216,606 C230,628 198,648 178,634 ' +
-    'C158,620 150,652 172,664 C196,676 228,662 234,682 ' +
-    'C238,702 208,714 190,702 C172,690 158,700 162,712 ' +
-    'C132,720 100,722 96,706 L96,586 C96,562 104,550 124,550 ' +
-    'L250,550 C268,550 274,562 274,584 L274,672 ' +
-    'C274,700 258,716 232,730 C204,745 182,754 176,772 L176,800';
+  /* The route a meal takes, in artwork coordinates — traced on the plate: the oral cavity, the
+     pharynx, down the oesophagus, into the stomach at the cardia and round to the pylorus, the
+     duodenal loop, a long meander through the coils of the jejunum and ileum, the caecum, then up,
+     across and down the colon to the rectum. Landmarks along it are found at run time (marks). */
+  var CANAL = 'M124,128 C127,129.7 136,134.3 142,138 C148,141.7 155,144.3 160,150 C165,155.7 169.2,165.3 172,172 C174.8,178.7 176,182.8 177,190 C178,197.2 177.8,203.3 178,215 C178.2,226.7 178,245.8 178,260 C178,274.2 178.2,287.5 178,300 C177.8,312.5 176.8,323.3 177,335 C177.2,346.7 178,358.3 179,370 C180,381.7 181.5,394.7 183,405 C184.5,415.3 183.2,425 188,432 C192.8,439 203.7,442 212,447 C220.3,452 230.7,455.8 238,462 C245.3,468.2 252.3,476.8 256,484 C259.7,491.2 262,499.2 260,505 C258,510.8 251,516 244,519 C237,522 226.3,522.7 218,523 C209.7,523.3 201,522.2 194,521 C187,519.8 180.3,515.2 176,516 C171.7,516.8 173,522.3 168,526 C163,529.7 153,532.3 146,538 C139,543.7 129,552.7 126,560 C123,567.3 125.3,575.3 128,582 C130.7,588.7 135.3,596.7 142,600 C148.7,603.3 160.7,603.3 168,602 C175.3,600.7 179.8,591.3 186,592 C192.2,592.7 197.7,602.3 205,606 C212.3,609.7 221.7,613 230,614 C238.3,615 248,609 255,612 C262,615 269.8,625.3 272,632 C274.2,638.7 272.5,647.3 268,652 C263.5,656.7 253.8,660 245,660 C236.2,660 225,651.7 215,652 C205,652.3 195,662 185,662 C175,662 164.5,651.7 155,652 C145.5,652.3 134.2,658.7 128,664 C121.8,669.3 116,678.7 118,684 C120,689.3 131.3,695 140,696 C148.7,697 160,689.3 170,690 C180,690.7 190,699.7 200,700 C210,700.3 220.3,691.7 230,692 C239.7,692.3 251.7,697.3 258,702 C264.3,706.7 270.2,715.3 268,720 C265.8,724.7 253.8,729.3 245,730 C236.2,730.7 225,723.7 215,724 C205,724.3 195,732 185,732 C175,732 164.5,728 155,724 C145.5,720 135.8,712.7 128,708 C120.2,703.3 112.7,700 108,696 C103.3,692 101.5,691.7 100,684 C98.5,676.3 99.2,661.5 99,650 C98.8,638.5 98.3,625 99,615 C99.7,605 99.5,596.7 103,590 C106.5,583.3 112.2,577.2 120,575 C127.8,572.8 136.7,576.2 150,577 C163.3,577.8 184.2,580.2 200,580 C215.8,579.8 233,575 245,576 C257,577 265.8,580 272,586 C278.2,592 280.3,601.3 282,612 C283.7,622.7 282,637 282,650 C282,663 284,678 282,690 C280,702 277,713.3 270,722 C263,730.7 250.8,737 240,742 C229.2,747 214.5,748.7 205,752 C195.5,755.3 187.5,756.5 183,762 C178.5,767.5 179.2,777.7 178,785 C176.8,792.3 176.3,802.5 176,806';
+  var LANDMARKS = { mouth:[126,130], pharynx:[176,190], oesophagus:[178,300], cardia:[188,432], stomach:[250,490],
+                    pylorus:[176,516], duodenum:[128,582], jejunum:[205,606], ileum:[200,700], caecum:[104,694],
+                    colon:[200,580], sigmoid:[240,742], anus:[176,806] };
+  var marks = null;
+  function findMarks() {
+    var p = document.getElementById('canalPath'); if (!p) return null;
+    var L = p.getTotalLength(), N = 1600, pts = [];
+    for (var i = 0; i <= N; i++) { var q = p.getPointAtLength(L * i / N); pts.push([q.x, q.y]); }
+    var out = {};
+    Object.keys(LANDMARKS).forEach(function (k) {
+      var lm = LANDMARKS[k], best = 0, bd = 1e9;
+      pts.forEach(function (q, i) { var dd = (q[0] - lm[0]) * (q[0] - lm[0]) + (q[1] - lm[1]) * (q[1] - lm[1]); if (dd < bd) { bd = dd; best = i; } });
+      out[k] = best / N;
+    });
+    out.anus = 1; return out;
+  }
+  function getMarks() { if (!marks) marks = findMarks(); return marks; }
 
   /* ---------- helpers ---------- */
   function el(name, attrs, parent) {
@@ -368,15 +379,17 @@
     stopJourney();
   }
 
-  /* how far along the canal each station sits — used to park the bolus */
-  var STOP_T = { 'mouth':0.01, 'salivary-glands':0.02, 'epiglottis':0.05, 'oesophagus':0.12,
-                 'liver':0.20, 'stomach':0.24, 'gall-bladder':0.28, 'pancreas':0.32,
-                 'duodenum':0.36, 'ileum-villi':0.55, 'colon':0.82, 'rectum-anus':0.99 };
+  /* how far along the canal each station sits — used to park the bolus; read off the landmarks */
+  var STATION_MARK = { 'mouth':'mouth', 'salivary-glands':'mouth', 'epiglottis':'pharynx', 'oesophagus':'oesophagus',
+                       'stomach':'stomach', 'liver':'duodenum', 'gall-bladder':'duodenum', 'pancreas':'duodenum',
+                       'duodenum':'duodenum', 'ileum-villi':'ileum', 'colon':'colon', 'rectum-anus':'anus' };
+  var STOP_T = {};
+  function stopFor(id) { var m = getMarks(), k = STATION_MARK[id]; if (!m || !k) return null; return k === 'anus' ? 0.995 : m[k]; }
 
   global.Anatomy = {
     ORGANS:ORGANS, state:state, render:render, highlight:paint,
     tour:tour, stopTour:stopTour, travel:travel, stopJourney:stopJourney,
-    placeBolus:placeBolus, STOP_T:STOP_T,
-    stopFor:function (id) { return STOP_T[id]; }
+    placeBolus:placeBolus, STOP_T:STOP_T, marks:getMarks,
+    stopFor:stopFor
   };
 })(window);
