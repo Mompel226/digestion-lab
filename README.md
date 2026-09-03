@@ -13,8 +13,8 @@ at each organ in turn.
 
 ## What is in it
 
-**14 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
-epiglottis, oesophagus, stomach, liver, gall bladder, pancreas, small intestine (duodenum,
+**13 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
+epiglottis, oesophagus, stomach, liver and gall bladder, pancreas, small intestine (duodenum,
 jejunum and ileum), large intestine, rectum and anus, and a Molecules Lab that reaches back
 into Topics 3, 4 and 5.
 

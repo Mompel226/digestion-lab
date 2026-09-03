@@ -52,11 +52,10 @@ window.PHOTOS = {
       "src": "pancreas-dissection.jpg",
       "kind": "Photograph",
       "cap": "<b>A real liver, in a living animal.</b> This is surgery, not a dissection of a cadaver — and you can tell: the duodenum is pink with fine red vessels because oxygenated blood is still flowing through it, and the liver is a deep, glossy red-brown. Below them runs the purple <b>hepatic portal vein</b>, bringing blood up from the gut to the liver — the vessel named in the sentence above. Compare the grey, bloodless vessels of the cadaver at the small-intestine station.",
-      "after": 3,
+      "after": 8,
       "maxw": 300
     }
   ],
-  "gall-bladder": [],
   "pancreas": [
     {
       "t": "photo",

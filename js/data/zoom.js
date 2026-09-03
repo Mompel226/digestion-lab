@@ -497,51 +497,96 @@ window.ZOOM_DETAIL = {
   },
   "liver": {
     "organ": "liver",
-    "keep": true,
-    "noback": true,
-    "anim": "bileflow",
-    "focus": "liver",
-    "hide": [
+    "label": "Bile: made in the liver, stored in the gall bladder, released into the duodenum",
+    "steps": [
       {
-        "organ": "gall-bladder",
-        "except": [
-          94,
-          477,
-          147,
-          498
+        "at": 0,
+        "focus": "liver-fill",
+        "label": "Between meals: the liver keeps making bile, the way into the duodenum is shut, and the gall bladder fills and stores it",
+        "keep": true,
+        "noback": true,
+        "anim": "bileflow",
+        "hide": [
+          {
+            "organ": "gall-bladder"
+          }
+        ],
+        "paint": [
+          {
+            "organ": "liver",
+            "largest": true,
+            "fill": "none",
+            "stroke": "#E8A33D",
+            "sw": 2.2,
+            "opacity": 0.95
+          }
         ]
-      }
-    ],
-    "paint": [
+      },
       {
-        "organ": "liver",
-        "largest": true,
-        "fill": "none",
-        "stroke": "#E8A33D",
-        "sw": 2.2,
-        "opacity": 0.95
-      }
-    ],
-    "label": "The liver makes bile; the hepatic ducts carry it out, the gall bladder stores it, and the common bile duct delivers it to the duodenum"
-  },
-  "gall-bladder": {
-    "organ": "gall-bladder",
-    "keep": true,
-    "noback": true,
-    "anim": "bileflow",
-    "focus": "gall-bladder",
-    "hide": [
-      {
-        "organ": "gall-bladder",
-        "except": [
-          94,
-          477,
-          147,
-          498
+        "at": 2,
+        "focus": "liver",
+        "label": "The cycle: the gall bladder fills between meals, then a meal arrives — it squeezes its stored bile out, and fresh bile from the liver flows straight down as well",
+        "keep": true,
+        "noback": true,
+        "anim": "bileflow",
+        "hide": [
+          {
+            "organ": "gall-bladder"
+          }
+        ],
+        "paint": [
+          {
+            "organ": "liver",
+            "largest": true,
+            "fill": "none",
+            "stroke": "#E8A33D",
+            "sw": 2.2,
+            "opacity": 0.95
+          }
         ]
+      },
+      {
+        "at": 4,
+        "focus": "liver-release",
+        "label": "During a meal: bile pours into the duodenum from the gall bladder and from the liver, to neutralise the chyme and emulsify the fats",
+        "keep": true,
+        "noback": true,
+        "anim": "bileflow",
+        "hide": [
+          {
+            "organ": "gall-bladder"
+          }
+        ],
+        "paint": [
+          {
+            "organ": "liver",
+            "largest": true,
+            "fill": "none",
+            "stroke": "#E8A33D",
+            "sw": 2.2,
+            "opacity": 0.95
+          }
+        ]
+      },
+      {
+        "at": 8,
+        "cam": {
+          "cx": 170,
+          "cy": 568,
+          "w": 270
+        },
+        "keep": true,
+        "noback": true,
+        "anim": "portal",
+        "animBox": [
+          140,
+          470,
+          120,
+          220
+        ],
+        "label": "The hepatic portal vein: the absorbed glucose and amino acids reach the liver first"
       }
-    ],
-    "label": "The gall bladder lies under the liver; it stores bile and empties it through the cystic duct and common bile duct into the duodenum"
+    ]
   },
   "pancreas": {
     "organ": "pancreas",

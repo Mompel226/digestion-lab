@@ -336,46 +336,41 @@
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
     g += tube(RHD, w, DUCT) + tube(LHD, w, DUCT) + tube(CHD, w * 1.15, DUCT) + tube(CYST, w, DUCT) + tube(CBD, w * 1.3, DUCT);
-    if (focus === 'gall-bladder') {
-      var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [], hull = hullCurve(sac);
-      if (hull) g += '<path d="' + hull + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2 * u) + '" stroke-linejoin="round" opacity=".95"/>';
-      /* release: from the gall bladder, along the cystic duct, down the common bile duct */
-      g += drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0);
-      if (ctx.compact) return g + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
-      return g +
-        label('gall bladder —\nstores bile and\nsqueezes it out', 96, 512, 118, 490, fs, 'start') +
-        label('cystic duct', 126, 470, 148, 488, fs, 'end') +
-        label('common hepatic duct\n(bile arriving from the liver)', 158, 448, 150, 480, fs, 'start') +
-        label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
-        label('duodenum', 96, 610, 131, 586, fs, 'start');
+    /* One story, three ways of telling it as the text is scrolled:
+         liver-fill    — between meals: the way into the duodenum is shut, so the bile the liver keeps
+                         making backs up into the gall bladder, which visibly fills;
+         liver         — the whole cycle: fill (8 s), then a meal — the gall bladder squeezes and empties,
+                         and the fresh bile from the liver runs straight down as well (8 s);
+         liver-release — a meal in progress: release only, from both.
+       The gall bladder is the plate's own outline, painted here so that it can swell and squeeze. */
+    var mode = focus === 'liver-fill' ? 'fill' : focus === 'liver-release' ? 'release' : 'cycle';
+    var sac = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [], hull = hullCurve(sac);
+    if (hull) {
+      var cx = 0, cy = 0; sac.forEach(function (q) { cx += q[0]; cy += q[1]; }); cx /= sac.length; cy /= sac.length;
+      var T = 16, sc = mode === 'fill' ? '0.84;1.06;1.06' : mode === 'release' ? '1.04;0.86;0.86' : '0.84;1.06;1.06;0.86;0.86';
+      var kt = mode === 'cycle' ? '0;0.4;0.5;0.8;1' : '0;0.65;1', dur = mode === 'cycle' ? T : 8;
+      g += '<g transform="translate(' + f1(cx) + ',' + f1(cy) + ')"><g><animateTransform attributeName="transform" type="scale" values="' + sc + '" keyTimes="' + kt + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(kt.split(';').length - 1) + '"/>' +
+           '<path d="' + hull + '" transform="translate(' + f1(-cx) + ',' + f1(-cy) + ')" fill="#CFE6BD" stroke="#E8A33D" stroke-width="' + f1(1.8 * u) + '" stroke-linejoin="round" opacity=".97"/></g></g>';
     }
-    /* the liver: bile made in the liver drains through the hepatic ducts and is stored in the
-       gall bladder; a lighter trickle shows the release from the gall bladder to the duodenum */
-    /* The liver makes bile all the time. Between meals the opening into the duodenum is shut, so the
-       bile backs up along the cystic duct into the gall bladder; during a meal the gall bladder squeezes
-       its stored bile out and the fresh bile from the liver runs straight down the common bile duct too. */
-    var T = 16, phase = function (first) { return A + '"opacity" values="' + (first ? '1;1;0;0' : '0;0;1;1') + '" keyTimes="0;0.5;0.5;1" dur="' + T + 's" repeatCount="indefinite"/>'; };
-    g += '<g opacity="1">' + phase(true) + drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5) + '</g>' +
-         '<g opacity="0">' + phase(false) + drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0) + drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .85, 5.6, 3, 1.2) + drops(LHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .8, 5.6, 2, 2.9) + '</g>';
-    var phaseLabels = '<g opacity="1">' + phase(true) + label(ctx.compact ? 'between meals:\nstored' : 'between meals —\nthe way into the duodenum\nis shut, so bile is stored', 150, 578, null, null, fs, 'start') + '</g>' +
-                      '<g opacity="0">' + phase(false) + label(ctx.compact ? 'during a meal:\nreleased' : 'during a meal —\nstored and fresh bile\nboth flow to the duodenum', 150, 578, null, null, fs, 'start') + '</g>';
-    g += phaseLabels;
+    var FILL = drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5);
+    var REL = drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0) + drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .85, 5.6, 3, 1.2) + drops(LHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .8, 5.6, 2, 2.9);
+    var phase = function (first) { return A + '"opacity" values="' + (first ? '1;1;0;0' : '0;0;1;1') + '" keyTimes="0;0.5;0.5;1" dur="16s" repeatCount="indefinite"/>'; };
+    var lblFill = ctx.compact ? 'between meals:\nthe gall bladder\nfills and stores' : 'between meals —\nthe way into the duodenum is shut,\nso the bile fills the gall bladder';
+    var lblRel = ctx.compact ? 'during a meal:\nreleased from both' : 'during a meal —\nthe gall bladder squeezes its bile out,\nand fresh bile from the liver flows too';
+    if (mode === 'fill') g += FILL + label(lblFill, 150, 578, null, null, fs, 'start');
+    else if (mode === 'release') g += REL + label(lblRel, 150, 578, null, null, fs, 'start');
+    else g += '<g opacity="1">' + phase(true) + FILL + label(lblFill, 150, 578, null, null, fs, 'start') + '</g>' +
+              '<g opacity="0">' + phase(false) + REL + label(lblRel, 150, 578, null, null, fs, 'start') + '</g>';
     if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
       label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
       label('left hepatic duct', 186, 436, 176, 450, fs, 'start') +
       label('common hepatic duct', 158, 470, 149, 479, fs, 'start') +
-      label('gall bladder —\nstores bile\nuntil a meal', 96, 512, 118, 490, fs, 'start') +
+      label('cystic duct', 126, 470, 148, 488, fs, 'end') +
+      label('gall bladder —\nstores bile', 96, 512, 118, 490, fs, 'start') +
       label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
       label('duodenum', 96, 610, 131, 586, fs, 'start');
-  }
-  /* pancreatic juice along the duct of the pancreas render */
-  function juiceflow(ctx) {
-    var im = ctx.img, u = ctx.u;
-    if (!im) return '';
-    function P(nx, ny) { return [f1(im.x + nx * im.W), f1(im.y + ny * im.H)]; }
-    return drops([P(.76, .50), P(.62, .50), P(.48, .52), P(.34, .545), P(.20, .55)], JUICE, 1.6 * u, 4, 4, 0);
   }
 
   /* ---------------- maltase, embedded in the membrane of a microvillus ---------------- */
@@ -465,5 +460,5 @@
       label('small intestine', 96, 748, null, null, fs, 'start');
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, juiceflow:juiceflow, maltase:maltase, portal:portal };
+  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal };
 })(window);
