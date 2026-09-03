@@ -890,3 +890,7 @@ body[data-mode="practice"] .panel__inner::before{
 .recap b,.recap__figs figcaption b{color:#8A2C55;font-weight:700}
 .recap__figs figcaption{font-size:13.5px;color:#2E2E2E;line-height:1.5}
 .recap__figs{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+/* the tour card moves between top and bottom with a fade and a drift, never a jump */
+.tourcard{transition:opacity .26s ease,transform .26s ease}
+.tourcard.is-moving{opacity:0;transform:translateY(var(--drift,8px))}
+@media (prefers-reduced-motion:reduce){.tourcard{transition:none}.tourcard.is-moving{opacity:1;transform:none}}

@@ -511,7 +511,12 @@
     steps.forEach(function (s, j) { var at = s.at || 0, sub = s.sub || 0; if (at < idx || (at === idx && sub <= frac)) best = j; });
     return best;
   }
-  var holdUntil = 0, holdTimer = null;
+  var holdUntil = 0, holdTimer = null, holdFrom = 0;
+  /* where the reader is, counting both the panel's own scrolling and the page's */
+  function scrollPos() {
+    var p = document.getElementById('panel');
+    return (p ? p.scrollTop : 0) + (global.scrollY || 0);
+  }
   function scheduleRecheck(ms) {
     if (holdTimer) return;
     holdTimer = setTimeout(function () { holdTimer = null; update(); }, Math.max(20, ms));
@@ -519,16 +524,20 @@
   function goStep(j, now) {
     stepIdx = j;
     var s = steps[j];
-    /* Each view holds for a moment before the next one may take over, and the camera steps
-       through one view at a time rather than jumping. A quick scroll past the folds, the villi
-       and the microvilli therefore shows all three in turn instead of blurring past them. */
+    /* Each view holds for a moment before the next may take over, and the camera steps through
+       one view at a time rather than jumping. A view may also ask for a minimum amount of
+       scrolling before it gives way (`scroll`, in pixels), so a nudge of the wheel does not flip
+       the picture: the folds, the villi and the microvilli each stay long enough to be looked at.
+       `fade` lengthens the crossfade for the same reason. */
     holdUntil = Date.now() + ((s && s.dwell) || 260);
+    holdFrom = scrollPos();
+    if (layer) layer.style.transitionDuration = ((s && s.fade) || 350) + 'ms';
     var cam = s.cam || CAM[detail.organ];
     if (cam !== detailCam) { detailCam = cam; if (!now) flyTo(frameFor(cam), 700); }
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     if (now) { applyStep(s); fade = 1; setBox(cur); return; }
     fade = 0; setBox(cur);
-    fadeTimer = setTimeout(function () { fadeTimer = null; applyStep(s); fade = 1; setBox(cur); }, 300);
+    fadeTimer = setTimeout(function () { fadeTimer = null; applyStep(s); fade = 1; setBox(cur); }, Math.round(((s && s.fade) || 350) * 0.85));
   }
   function update() {
     if (!detail) return;
@@ -536,6 +545,8 @@
     if (j === stepIdx) return;
     var now = Date.now();
     if (stepIdx >= 0 && now < holdUntil) { scheduleRecheck(holdUntil - now + 20); return; }
+    var here = steps[stepIdx];
+    if (stepIdx >= 0 && here && here.scroll && Math.abs(scrollPos() - holdFrom) < here.scroll) return;
     var next = stepIdx < 0 ? j : stepIdx + (j > stepIdx ? 1 : -1);
     goStep(next, stepIdx < 0);
     if (next !== j) scheduleRecheck(((steps[next] || {}).dwell) || 260);
