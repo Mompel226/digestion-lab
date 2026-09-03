@@ -865,3 +865,8 @@ body[data-mode="practice"] .panel__inner::before{
 .tourcard__more{font-size:11px;color:var(--grey);text-align:right;line-height:1.35;display:flex;flex-direction:column;align-items:flex-end}
 .tourcard__link{background:none;border:0;padding:0;font:inherit;font-size:11.5px;font-weight:700;color:var(--green);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .tourcard__link:hover{color:#0D3D1E}
+/* the food-tests figure: four tests, a lens each, one close-up at a time */
+.figbox__stage .ft-detail{display:none}
+.figbox__stage[data-view="iodine"] .ft-detail[data-test="iodine"],.figbox__stage[data-view="benedict"] .ft-detail[data-test="benedict"],
+.figbox__stage[data-view="biuret"] .ft-detail[data-test="biuret"],.figbox__stage[data-view="emulsion"] .ft-detail[data-test="emulsion"]{display:block}
+.figbox__stage[data-view] .ft-all{opacity:.12}
