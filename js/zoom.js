@@ -50,7 +50,7 @@
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
-  var SPOT = null, spotLoading = false, hidden = [];
+  var SPOT = null, spotLoading = false, hidden = [], spotted = [];
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
@@ -378,6 +378,14 @@
         p.style.display = 'none'; hidden.push(p);
       });
     });
+    /* a spotlit organ is lit on the plate itself, so only the part that is actually drawn lights
+       up — an outline traced from its path would run on behind whatever overlaps it */
+    spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = [];
+    (s.spotlight || []).forEach(function (organ) {
+      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
+        p.classList.add('is-spot'); spotted.push(p);
+      });
+    });
     svg.classList.toggle('keep-organ', !!s.keep);
     var frame = frameFor(detailCam || CAM[detail.organ]);
     var fs = (s.px || 12.5) / ppu(frame);
@@ -609,11 +617,12 @@
     if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
+    spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = [];
     if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
   }
-  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
     svg = svgEl; build(); setBox(frameFor(null));
     global.addEventListener('resize', function () { if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); });

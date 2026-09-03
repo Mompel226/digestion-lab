@@ -825,9 +825,9 @@ window.ZOOM_DETAIL = {
           }
         ],
         "dwell": 700,
-        "scroll": 70,
+        "scroll": 190,
         "fade": 520,
-        "room": 210
+        "room": 380
       },
       {
         "at": 8,
@@ -889,9 +889,9 @@ window.ZOOM_DETAIL = {
           }
         ],
         "dwell": 700,
-        "scroll": 70,
+        "scroll": 190,
         "fade": 520,
-        "room": 210
+        "room": 380
       },
       {
         "at": 9,
@@ -944,7 +944,7 @@ window.ZOOM_DETAIL = {
           }
         ],
         "dwell": 700,
-        "scroll": 60,
+        "scroll": 150,
         "fade": 520
       },
       {
@@ -982,9 +982,9 @@ window.ZOOM_DETAIL = {
         ],
         "credit": "micrograph: L. Howard & K. Connolly, Dartmouth, public domain",
         "dwell": 700,
-        "scroll": 60,
+        "scroll": 190,
         "fade": 500,
-        "room": 170
+        "room": 380
       },
       {
         "at": 11,
@@ -1050,15 +1050,15 @@ window.ZOOM_DETAIL = {
           }
         ],
         "dwell": 700,
-        "scroll": 60,
+        "scroll": 150,
         "fade": 500
       },
       {
         "at": 12,
         "cam": {
-          "cx": 170,
-          "cy": 568,
-          "w": 270
+          "cx": 178,
+          "cy": 590,
+          "w": 300
         },
         "keep": true,
         "noback": true,
@@ -1074,6 +1074,9 @@ window.ZOOM_DETAIL = {
           {
             "organ": "gall-bladder"
           }
+        ],
+        "spotlight": [
+          "liver"
         ]
       }
     ]

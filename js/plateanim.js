@@ -459,59 +459,71 @@
 
   /* ---------------- the mesentery and the hepatic portal vein ---------------- */
   /* What the picture has to say: the absorbed food does not float to the liver. Every loop of the
-     small intestine is held by the mesentery — a sheet of tissue fanning out from the back wall —
+     small intestine is held in the mesentery — one sheet of tissue fanning out from the back wall —
      and the veins that run inside that sheet collect the food from the gut wall, join into the
-     hepatic portal vein, and carry it to the liver. So the sheet is drawn as a sheet, its veins
-     converge, the nutrients travel along them, and the liver is outlined at the end of the road. */
-  var PORTAL = [[200, 650], [205, 628], [204, 604], [197, 578], [186, 550], [172, 520], [160, 498], [152, 486]];
+     hepatic portal vein, and carry it to the liver. So the sheet is drawn over the whole coil mass,
+     its veins converge, the nutrients travel along them, and a photograph of the mesentery on its
+     own sits beside it, because a fan drawn over an intestine is not obvious the first time.
+
+     The liver is NOT outlined here: its silhouette runs on behind the stomach in this artwork, so
+     tracing it drew a line across the stomach. It is lit instead, on the plate itself (is-spot). */
+  var PORTAL = [[200, 646], [205, 626], [204, 602], [197, 578], [186, 550], [172, 520], [160, 498], [152, 486]];
+  var MESO_APEX = [196, 588];
+  var MESO_EDGE = [[116, 600], [104, 644], [110, 690], [136, 718], [178, 732], [224, 726], [258, 700], [272, 664], [274, 624], [256, 600]];
   var TRIBS = [
-    [[126, 664], [162, 658], [200, 650]],
-    [[148, 712], [178, 684], [200, 651]],
-    [[204, 730], [206, 692], [201, 655]],
-    [[252, 702], [226, 676], [205, 654]],
-    [[268, 638], [238, 634], [205, 630]],
-    [[136, 612], [170, 616], [203, 612]]
+    [[112, 618], [150, 626], [200, 644]],
+    [[108, 676], [150, 664], [199, 648]],
+    [[142, 714], [172, 686], [200, 650]],
+    [[200, 730], [204, 692], [201, 656]],
+    [[250, 706], [226, 678], [204, 654]],
+    [[270, 650], [238, 646], [204, 640]],
+    [[262, 606], [232, 614], [205, 624]]
   ];
   function portal(ctx) {
     var fs = ctx.fs, u = ctx.u, w = 3 * u, r = 1.7 * u, g = '';
 
-    /* the mesentery: one sheet, drawn over the coils it holds */
-    var edge = TRIBS.map(function (t) { return t[0]; });
-    var fan = [[199, 596]].concat(edge.slice().sort(function (a, b) {
-      return Math.atan2(a[1] - 640, a[0] - 200) - Math.atan2(b[1] - 640, b[0] - 200);
-    }));
-    var hull = hullCurve(fan.concat([[200, 650]]));
-    if (hull) g += '<path d="' + hull + '" fill="#F2E2B8" opacity=".42" stroke="#C9A24A" stroke-width="' + f1(0.8 * u) + '" stroke-dasharray="' + f1(2.4 * u) + ' ' + f1(1.6 * u) + '"/>';
+    /* the sheet, over the whole of the coils it holds */
+    var fan = 'M' + MESO_APEX.join(',');
+    for (var i = 0; i < MESO_EDGE.length; i++) {
+      var p0 = MESO_EDGE[Math.max(0, i - 1)], p1 = MESO_EDGE[i], p2 = MESO_EDGE[Math.min(MESO_EDGE.length - 1, i + 1)];
+      fan += (i ? ' Q' + f1(p1[0]) + ',' + f1(p1[1]) + ' ' + f1((p1[0] + p2[0]) / 2) + ',' + f1((p1[1] + p2[1]) / 2)
+                : ' L' + f1(p1[0]) + ',' + f1(p1[1]));
+    }
+    fan += ' L' + MESO_EDGE[MESO_EDGE.length - 1].join(',') + ' Z';
+    g += '<path d="' + fan + '" fill="#F7E9C2" opacity=".5" stroke="#B8912F" stroke-width="' + f1(1.3 * u) +
+         '" stroke-dasharray="' + f1(3.4 * u) + ' ' + f1(2.2 * u) + '" stroke-linejoin="round"/>';
+    /* a few creases across the sheet, so it reads as a sheet and not as a tint */
+    [0.28, 0.5, 0.72].forEach(function (k) {
+      var i = Math.floor(k * (MESO_EDGE.length - 1)), e = MESO_EDGE[i];
+      g += '<path d="M' + MESO_APEX.join(',') + ' Q' + f1((MESO_APEX[0] + e[0]) / 2 + 6) + ',' + f1((MESO_APEX[1] + e[1]) / 2) +
+           ' ' + f1(e[0]) + ',' + f1(e[1]) + '" fill="none" stroke="#B8912F" stroke-width="' + f1(0.5 * u) + '" opacity=".55"/>';
+    });
 
     /* the veins inside it, gathering from every loop into the one trunk */
-    TRIBS.forEach(function (t) { g += tube(t, w * 0.72, '#2F3E8F'); });
+    TRIBS.forEach(function (t) { g += tube(t, w * 0.7, '#2F3E8F'); });
     g += tube(PORTAL, w * 1.5, '#2F3E8F') + tube(PORTAL, w * 0.5, '#6F7FD1');
 
     /* the absorbed food, travelling: glucose and amino acids, from the gut wall to the liver */
     TRIBS.forEach(function (t, i) {
-      var route = t.concat(PORTAL.slice(1));
-      g += drops(route, i % 2 ? '#BC235B' : '#E8A33D', r, 6.4, 2, -i * 1.1);
+      g += drops(t.concat(PORTAL.slice(1)), i % 2 ? '#BC235B' : '#E8A33D', r, 6.6, 2, -i * 0.9);
     });
 
-    /* the liver, outlined on its own artwork, so the destination is unmistakable */
-    if (ctx.outline) {
-      var liv = ctx.outline('liver', 2);
-      if (liv && liv.length > 6) {
-        var d = 'M' + liv.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' L') + ' Z';
-        g += '<path d="' + d + '" fill="#E8A33D" opacity=".16"/>' +
-             '<path d="' + d + '" fill="none" stroke="#E8A33D" stroke-width="' + f1(2.2 * u) + '" stroke-linejoin="round" opacity=".95"/>';
-      }
-    }
+    /* the mesentery on its own, so the fan above is recognisable */
+    var ix = 252, iy = 374, iw = 74, ih = iw * 821 / 903;      /* the picture's own proportions */
+    g += '<rect x="' + f1(ix - 1.6) + '" y="' + f1(iy - 1.6) + '" width="' + f1(iw + 3.2) + '" height="' + f1(ih + 3.2) +
+         '" rx="2.4" fill="#FFFDF9" stroke="#B9AE9B" stroke-width="' + f1(0.5 * u) + '"/>' +
+         '<image href="assets/photos/mesentery-render.jpg" xlink:href="assets/photos/mesentery-render.jpg" x="' + f1(ix) +
+         '" y="' + f1(iy) + '" width="' + f1(iw) + '" height="' + f1(ih) + '" preserveAspectRatio="xMidYMid slice"/>' +
+         label('the mesentery on its own:\none sheet, holding every loop', ix, iy + ih + fs * 1.2, ix + iw * 0.5, iy + ih, fs * 0.9, 'start');
 
     if (ctx.compact) return g +
-      label('liver', 64, 452, 112, 466, fs, 'start') +
-      label('hepatic portal vein', 214, 566, 196, 566, fs, 'start') +
-      label('mesentery', 236, 700, 214, 690, fs, 'start');
+      label('liver', 64, 452, 108, 470, fs, 'start') +
+      label('hepatic portal vein', 60, 560, 176, 540, fs, 'start') +
+      label('mesentery', 96, 726, 140, 706, fs, 'start');
     return g +
-      label('liver — the food is\ndelivered here first', 58, 448, 110, 466, fs, 'start') +
-      label('hepatic portal vein —\ncarries the absorbed glucose\nand amino acids to the liver', 214, 556, 194, 566, fs, 'start') +
-      label('mesentery — the sheet that\nholds the intestine; the veins\ninside it collect the food', 232, 694, 212, 682, fs, 'start') +
-      label('absorbed from every loop', 96, 742, 150, 712, fs, 'start');
+      label('liver — the food is\ndelivered here first', 58, 448, 106, 470, fs, 'start') +
+      label('hepatic portal vein —\ncarries the absorbed glucose\nand amino acids to the liver', 40, 548, 172, 532, fs, 'start') +
+      label('mesentery — the sheet that holds\nthe intestine; the veins inside it\ncollect the food from every loop', 60, 716, 130, 700, fs, 'start');
   }
 
   global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal };
