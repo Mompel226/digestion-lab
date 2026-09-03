@@ -509,12 +509,12 @@
     });
 
     /* the mesentery on its own, so the fan above is recognisable */
-    var ix = 252, iy = 374, iw = 74, ih = iw * 821 / 903;      /* the picture's own proportions */
+    var ix = 262, iy = 372, iw = 96, ih = iw * 821 / 903;      /* clear of the liver, and big enough to read */
     g += '<rect x="' + f1(ix - 1.6) + '" y="' + f1(iy - 1.6) + '" width="' + f1(iw + 3.2) + '" height="' + f1(ih + 3.2) +
          '" rx="2.4" fill="#FFFDF9" stroke="#B9AE9B" stroke-width="' + f1(0.5 * u) + '"/>' +
          '<image href="assets/photos/mesentery-render.jpg" xlink:href="assets/photos/mesentery-render.jpg" x="' + f1(ix) +
          '" y="' + f1(iy) + '" width="' + f1(iw) + '" height="' + f1(ih) + '" preserveAspectRatio="xMidYMid slice"/>' +
-         label('the mesentery on its own:\none sheet, holding every loop', ix, iy + ih + fs * 1.2, ix + iw * 0.5, iy + ih, fs * 0.9, 'start');
+         label('the mesentery on its own —\none sheet, holding every loop', ix, iy + ih + fs * 1.25, null, null, fs * 0.92, 'start');
 
     if (ctx.compact) return g +
       label('liver', 64, 452, 108, 470, fs, 'start') +
