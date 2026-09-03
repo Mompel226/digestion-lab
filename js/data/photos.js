@@ -92,7 +92,7 @@ window.PHOTOS = {
       "t": "video",
       "src": "villus-absorption",
       "kind": "Animation",
-      "cap": "Now watch it happen. The molecules cross a wall one cell thick and vanish into the vessels running through the middle of the villus.",
+      "cap": "Now watch it happen. A protein is broken into <b>amino acids</b> in the lumen; they cross the <b>epithelium</b> — one layer of <b>enterocytes</b>, with the brush border of <b>microvilli</b> on their lumen side — and pass into the blood <b>capillaries</b> (purple, with red blood cells) running through the middle of the villus. The yellow vessel beside them is the <b>lacteal</b>: that is where fatty acids and glycerol would go instead.",
       "after": 12
     },
     {
