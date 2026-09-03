@@ -398,9 +398,60 @@
       ],
       note:[164, 428, 'Large surface area · short diffusion distance · steep concentration gradient', 'middle']
     });
+    /* A magnifying lens on the wall of the villus: click it and one of the "little squares" —
+       an enterocyte, the epithelial cell — opens enlarged beside the villus, with its brush
+       border of microvilli, its mitochondria and its nucleus named. */
+    var lens =
+      '<g class="fig-lens" role="button" tabindex="0" aria-expanded="false">' +
+        '<title>Zoom in on one cell of the wall (an enterocyte)</title>' +
+        '<circle class="lens__glass" cx="206" cy="132" r="12.5" fill="#FFFDF9" stroke="#14572B" stroke-width="2"/>' +
+        '<circle cx="206" cy="132" r="6.4" fill="none" stroke="#14572B" stroke-width="1.6"/>' +
+        '<line x1="210.6" y1="136.6" x2="216" y2="142" stroke="#14572B" stroke-width="2.8" stroke-linecap="round"/>' +
+        '<text class="fs" x="206" y="156" text-anchor="middle" style="fill:#14572B;font-weight:700">one cell</text>' +
+      '</g>';
+    function mito(x, y, a) {
+      return '<g transform="translate(' + x + ',' + y + ') rotate(' + a + ')"><ellipse rx="10" ry="5.2" fill="#F3C98A" stroke="#B57A2A" stroke-width="1.1"/>' +
+             '<path d="M-5,-3 q2,3 0,6 M0,-3.5 q2,3.5 0,7 M5,-3 q2,3 0,6" fill="none" stroke="#B57A2A" stroke-width="0.9"/></g>';
+    }
+    var villi = '';
+    for (var k = 0; k < 20; k++) { var vx = 250.5 + k * 4.2; villi += '<line x1="' + vx + '" y1="66" x2="' + vx + '" y2="44" stroke="#B94B6A" stroke-width="1.9" stroke-linecap="round"/>'; }
+    var cell =
+      '<g class="fig-cell">' +
+        '<line x1="218" y1="132" x2="228" y2="132" stroke="#14572B" stroke-width="1.4" stroke-dasharray="3 2"/>' +
+        '<rect x="228" y="-12" width="256" height="442" rx="10" fill="#FFFDF9" stroke="#C9C0AE" stroke-width="1"/>' +
+        '<text class="fb" x="240" y="8">One enterocyte</text>' +
+        '<text class="fs" x="240" y="23">an epithelial cell of the villus wall, enlarged</text>' +
+        '<g class="fig-cell__close" role="button" tabindex="0"><title>Close</title><circle cx="470" cy="6" r="9" fill="#F1EDE3" stroke="#B9AE9B" stroke-width="1"/>' +
+          '<text x="470" y="10.5" text-anchor="middle" style="font:700 13px Calibri,Carlito,sans-serif;fill:#3A3A3A">×</text></g>' +
+        /* the cell body with its brush border */
+        '<rect x="246" y="66" width="88" height="258" rx="9" fill="#FBEAE2" stroke="#8A4B5E" stroke-width="1.7"/>' +
+        villi +
+        mito(266, 118, -20) + mito(316, 140, 25) + mito(268, 176, 15) + mito(314, 202, -30) + mito(268, 236, -10) +
+        '<ellipse cx="290" cy="278" rx="22" ry="27" fill="#CFA6C6" stroke="#7A4E7A" stroke-width="1.4"/>' +
+        '<ellipse cx="284" cy="270" rx="6" ry="7" fill="#9E6E9A"/>' +
+        /* labels beside it */
+        '<text class="fl" x="344" y="52">microvilli</text>' +
+        '<text class="fs" x="344" y="66">its own membrane, folded —</text>' +
+        '<text class="fs" x="344" y="79">the brush border</text>' +
+        '<path class="ld" d="M340,55 L336,55"/>' +
+        '<text class="fl" x="344" y="106">cell membrane</text>' +
+        '<path class="ld" d="M340,102 L334,102"/>' +
+        '<text class="fl" x="344" y="146">mitochondria</text>' +
+        '<text class="fs" x="344" y="160">energy from respiration</text>' +
+        '<text class="fs" x="344" y="173">for active transport</text>' +
+        '<path class="ld" d="M340,142 L326,141"/>' +
+        '<text class="fl" x="344" y="216">cytoplasm</text>' +
+        '<path class="ld" d="M340,212 L300,212"/>' +
+        '<text class="fl" x="344" y="282">nucleus</text>' +
+        '<path class="ld" d="M340,278 L312,278"/>' +
+        '<text class="fs" x="240" y="348">Its base sits on the capillaries and the lacteal:</text>' +
+        '<text class="fs" x="240" y="361">the food molecules cross this one cell and they are in.</text>' +
+        '<text class="fs" x="240" y="382">Liver cells have a name too — hepatocytes.</text>' +
+        '<text class="fs" x="240" y="410" style="fill:#14572B">click the lens or × to close</text>' +
+      '</g>';
     return {
-      svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + '</svg>'),
-      cap:'<b>The villus.</b> Four adaptations, each with a reason: villi and microvilli give a <b>large surface area</b>; the wall is <b>one cell thick</b> so the diffusion distance is short; a <b>dense capillary network</b> carries nutrients away and keeps the concentration gradient steep; a <b>lacteal</b> takes the fatty acids and glycerol.'
+      svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + lens + cell + '</svg>'),
+      cap:'<b>The villus.</b> Four adaptations, each with a reason: villi and microvilli give a <b>large surface area</b>; the wall is <b>one cell thick</b> so the diffusion distance is short; a <b>dense capillary network</b> carries nutrients away and keeps the concentration gradient steep; a <b>lacteal</b> takes the fatty acids and glycerol. The little squares of the wall are the epithelial cells — <b>enterocytes</b>: click the lens to see one enlarged.'
     };
   }
 
