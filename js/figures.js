@@ -386,7 +386,7 @@
       mol(290, 250, -140, -16, '#0F6E8C', '3.8s', '1.9s') +
       mol(12, 90, 88, 18, '#0F6E8C', '3.6s', '2.7s');
     var base = plateFig(art, {
-      viewBox:'-158 -18 646 452', leftX:-24, rightX:296, minGap:26, top:20, bottom:410,
+      viewBox:'-158 -18 646 486', leftX:-24, rightX:296, minGap:26, top:20, bottom:410,
       hide:[19,20,21,22,23,24,25,26],
       labels:[
         { side:'left',  ly:96,  at:[82,104], text:'Microvilli', sub:'the brush border' },
@@ -418,17 +418,17 @@
     var cell =
       '<g class="fig-cell">' +
         '<line x1="218" y1="132" x2="228" y2="132" stroke="#14572B" stroke-width="1.4" stroke-dasharray="3 2"/>' +
-        '<rect x="228" y="-12" width="256" height="442" rx="10" fill="#FFFDF9" stroke="#C9C0AE" stroke-width="1"/>' +
+        '<rect x="228" y="-12" width="256" height="476" rx="10" fill="#FFFDF9" stroke="#C9C0AE" stroke-width="1"/>' +
         '<text class="fb" x="240" y="8">One enterocyte</text>' +
         '<text class="fs" x="240" y="23">an epithelial cell of the villus wall, enlarged</text>' +
         '<g class="fig-cell__close" role="button" tabindex="0"><title>Close</title><circle cx="470" cy="6" r="9" fill="#F1EDE3" stroke="#B9AE9B" stroke-width="1"/>' +
           '<text x="470" y="10.5" text-anchor="middle" style="font:700 13px Calibri,Carlito,sans-serif;fill:#3A3A3A">×</text></g>' +
         /* the cell body with its brush border */
-        '<rect x="246" y="66" width="88" height="258" rx="9" fill="#FBEAE2" stroke="#8A4B5E" stroke-width="1.7"/>' +
+        '<rect x="246" y="66" width="88" height="222" rx="9" fill="#FBEAE2" stroke="#8A4B5E" stroke-width="1.7"/>' +
         villi +
-        mito(266, 118, -20) + mito(316, 140, 25) + mito(268, 176, 15) + mito(314, 202, -30) + mito(268, 236, -10) +
-        '<ellipse cx="290" cy="278" rx="22" ry="27" fill="#CFA6C6" stroke="#7A4E7A" stroke-width="1.4"/>' +
-        '<ellipse cx="284" cy="270" rx="6" ry="7" fill="#9E6E9A"/>' +
+        mito(266, 116, -20) + mito(316, 136, 25) + mito(268, 170, 15) + mito(314, 192, -30) +
+        '<ellipse cx="290" cy="248" rx="21" ry="25" fill="#CFA6C6" stroke="#7A4E7A" stroke-width="1.4"/>' +
+        '<ellipse cx="284" cy="241" rx="6" ry="7" fill="#9E6E9A"/>' +
         /* labels beside it */
         '<text class="fl" x="344" y="52">microvilli</text>' +
         '<text class="fs" x="344" y="66">its own membrane, folded —</text>' +
@@ -440,14 +440,18 @@
         '<text class="fs" x="344" y="160">energy from respiration</text>' +
         '<text class="fs" x="344" y="173">for active transport</text>' +
         '<path class="ld" d="M340,142 L326,141"/>' +
-        '<text class="fl" x="344" y="216">cytoplasm</text>' +
-        '<path class="ld" d="M340,212 L300,212"/>' +
-        '<text class="fl" x="344" y="282">nucleus</text>' +
-        '<path class="ld" d="M340,278 L312,278"/>' +
-        '<text class="fs" x="240" y="348">Its base sits on the capillaries and the lacteal:</text>' +
-        '<text class="fs" x="240" y="361">the food molecules cross this one cell and they are in.</text>' +
-        '<text class="fs" x="240" y="382">Liver cells have a name too — hepatocytes.</text>' +
-        '<text class="fs" x="240" y="410" style="fill:#14572B">click the lens or × to close</text>' +
+        '<text class="fl" x="344" y="212">cytoplasm</text>' +
+        '<path class="ld" d="M340,208 L300,208"/>' +
+        '<text class="fl" x="344" y="252">nucleus</text>' +
+        '<path class="ld" d="M340,248 L311,248"/>' +
+        '<text class="fs" x="240" y="303">Food crosses this one cell, then it is in the</text>' +
+        '<text class="fs" x="240" y="316">capillaries or the lacteal just beneath it.</text>' +
+        /* the real thing: a transmission electron micrograph of the same border */
+        '<image href="assets/zoom/microvilli-tem-band.jpg" x="246" y="324" width="230" height="92" preserveAspectRatio="xMidYMid slice"/>' +
+        '<rect x="246" y="324" width="230" height="92" fill="none" stroke="#B9AE9B" stroke-width="0.8"/>' +
+        '<text class="fs" x="240" y="430" style="fill:#1A1A1A;font-weight:600">The real thing: a transmission electron</text>' +
+        '<text class="fs" x="240" y="442" style="fill:#1A1A1A;font-weight:600">micrograph — black and white because it uses</text>' +
+        '<text class="fs" x="240" y="454" style="fill:#1A1A1A;font-weight:600">electrons, not light, so there is no colour.</text>' +
       '</g>';
     return {
       svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + lens + cell + '</svg>'),

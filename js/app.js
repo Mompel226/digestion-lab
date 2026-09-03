@@ -318,10 +318,16 @@
     if ((st.learn.examFocus || []).length) {
       var ef = document.createElement('div');
       ef.className = 'examfocus';
+      /* plain text here, no term chips: the box is about the words to write, not the colour code */
       ef.innerHTML = '<div class="examfocus__h">In the exam — what to write here</div><ul>' +
         st.learn.examFocus.map(function (b) {
           var tag = typeof b === 'object' && b.tag ? '<b class="examfocus__tag">' + esc(b.tag) + '</b> ' : '';
-          return '<li>' + tag + M(typeof b === 'string' ? b : b.text) + '</li>';
+          if (typeof b === 'object' && b.qa) {
+            return '<li>' + tag + '<dl class="examfocus__qa">' + b.qa.map(function (p) {
+              return '<dt>' + esc(p[0]) + '</dt><dd>' + esc(p[1]) + '</dd>';
+            }).join('') + '</dl></li>';
+          }
+          return '<li>' + tag + esc(typeof b === 'string' ? b : b.text) + '</li>';
         }).join('') + '</ul>';
       card.appendChild(ef);
     }
@@ -719,33 +725,27 @@
   /* ---------- guided tour ---------- */
   function tourBtn() { return document.getElementById('tJourney'); }
   function tourLabel() { return tourBtn().querySelector('.tool__txt'); }
-  function stopTourUI() {
-    var b = tourBtn();
-    if (!b || b.dataset.running !== '1') return;
-    window.Anatomy.stopTour();
+  /* The tour is the five processes of nutrition, as five animated scenes on the plate
+     (js/tour.js). The food stays inside the canal; the liver is only ever reached by
+     absorbed nutrients in the blood. */
+  function tourOff() {
+    var b = tourBtn(); if (!b) return;
     b.dataset.running = '';
     b.setAttribute('aria-pressed', 'false');
     tourLabel().textContent = 'Follow the food';
+  }
+  function stopTourUI() {
+    var b = tourBtn();
+    if (!b || b.dataset.running !== '1') return;
+    tourOff();
+    if (window.Tour) window.Tour.stop();
   }
   function startTour() {
     var b = tourBtn();
     b.dataset.running = '1';
     b.setAttribute('aria-pressed', 'true');
     tourLabel().textContent = 'Stop the tour';
-    var stops = window.Anatomy.ORGANS.filter(function (o) { return o.id !== 'duodenum'; })
-      .filter(function (o) { return window.Anatomy.state.showBeyond || !o.beyond; })
-      .map(function (o) { return { id:o.id, t:window.Anatomy.stopFor(o.id) }; })
-      .sort(function (a, b2) { return a.t - b2.t; });
-    window.Anatomy.tour(stops, {
-      travelMs:1500, holdMs:3200,
-      onArrive:function (s) { open(s.id, true); },
-      onDone:function () {
-        b.dataset.running = '';
-        b.setAttribute('aria-pressed', 'false');
-        tourLabel().textContent = 'Follow the food';
-        toast('The meal has finished its journey — about 9 metres, and roughly a day.');
-      }
-    });
+    if (window.Tour) window.Tour.start(open, tourOff);
   }
 
 

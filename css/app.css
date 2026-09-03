@@ -842,3 +842,21 @@ body[data-mode="practice"] .panel__inner::before{
 .figbox__stage.is-cell .fig-cell{display:block}
 .figbox__stage.is-cell .fig-lens .lens__glass{fill:#FFE7A8}
 .figbox__stage .fig-cell__close{cursor:pointer}
+.examfocus__qa{margin:6px 0 0;display:grid;grid-template-columns:minmax(0,1fr);gap:2px 0}
+.examfocus__qa dt{font-weight:600;color:#3A2E14;margin-top:5px}
+.examfocus__qa dd{margin:0 0 2px 0;padding-left:14px;color:#5A4A1E;border-left:2px solid #E2B95F}
+
+/* ---- Follow the food: the five processes, one card over the plate ---- */
+.tourcard{
+  position:absolute;left:10px;right:10px;top:50px;z-index:12;
+  background:rgba(255,253,249,.96);border:1.5px solid var(--green);border-radius:var(--r-lg);
+  padding:10px 14px 10px;box-shadow:var(--shadow-lg);font-size:13.5px;line-height:1.45;color:var(--ink)
+}
+.tourcard__top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.tourcard__step{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
+.tourcard__def{margin:0 0 5px;font-weight:600}
+.tourcard__note{margin:0 0 8px;color:#3A4A3A;font-size:12.8px}
+.tourcard__btns{display:flex;gap:6px;flex-wrap:wrap}
+.tourcard__btns .btn{padding:4px 12px;font-size:12.5px}
+.tourcard__btns .btn[disabled]{opacity:.45;cursor:default}
+#bodySvg .tourfx circle{filter:drop-shadow(0 0 1px rgba(0,0,0,.35))}

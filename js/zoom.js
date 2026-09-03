@@ -433,7 +433,9 @@
       (ins.labels || []).forEach(function (L) { drawLabel(L, ipl, fs * (ins.fs || 0.92), null); });
       gLabels = keep;
       if (ins.cap) {
-        var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(y + h + fs * 1.15), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
+        var capLines = String(ins.cap).split('\n').length;
+        var cy0 = ins.capTop ? y - fs * 0.55 - (capLines - 1) * fs * 0.88 * 1.15 : y + h + fs * 1.15;   /* above the picture when asked */
+        var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(cy0), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
         String(ins.cap).split('\n').forEach(function (l, i) { var ts = el('tspan', { x:f1(x + w / 2), dy:i ? '1.15em' : '0' }, t); ts.textContent = l; });
       }
       var capText = String(ins.cap || s.label || '').replace(/\n/g, ' ');
