@@ -5,14 +5,14 @@
   'use strict';
 
   var ORDER = ['diet','overview','mouth','salivary-glands','epiglottis','oesophagus','stomach',
-               'liver','gall-bladder','pancreas','ileum-villi','colon',
+               'liver','pancreas','ileum-villi','colon',
                'rectum-anus','molecules-lab'];
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
     diet:['sameBalance'], overview:[], mouth:['chewing'],
     'salivary-glands':['starchPath'], epiglottis:[], oesophagus:[],
-    stomach:[], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
+    stomach:[], liver:['emulsify'], pancreas:[],
     'ileum-villi':['starchPath','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath']
@@ -23,7 +23,7 @@
     'diet:sameBalance':6,
     'mouth:chewing':2,
     'salivary-glands:starchPath':2,
-    'gall-bladder:emulsify':3,
+    'liver:emulsify':5,
     'ileum-villi:starchPath':10, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
     'molecules-lab:starchPath':0
@@ -649,8 +649,13 @@
   }
 
   /* ---------- open a station ---------- */
+  function canon(id) {
+    if (id === 'duodenum') return 'ileum-villi';         /* the duodenum is read at the small-intestine station */
+    if (id === 'gall-bladder') return 'liver';           /* the gall bladder is read with the liver: one bile story */
+    return id;
+  }
   function open(id, fromTour, focusTerm, cameFrom) {
-    if (id === 'duodenum') id = 'ileum-villi';          /* the duodenum is read at the small-intestine station */
+    id = canon(id);
     if (!S[id]) return;
     current = id;
     tab = 'learn';
@@ -1065,11 +1070,11 @@
       toast('Progress cleared.');
     });
 
-    var start = (location.hash || '').slice(1);
+    var start = canon((location.hash || '').slice(1));
     open(S[start] ? start : ORDER[0]);
     paintHeader();
     window.addEventListener('hashchange', function () {
-      var id = location.hash.slice(1);
+      var id = canon(location.hash.slice(1));
       if (S[id] && id !== current) open(id);
     });
   }

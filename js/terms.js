@@ -153,8 +153,8 @@
   /* term -> the station that explains it */
   var JUMP = {
     'peristalsis':'oesophagus', 'peristaltic':'oesophagus', 'bolus':'oesophagus',
-    'bile':'gall-bladder', 'emulsification':'gall-bladder', 'emulsifies':'gall-bladder',
-    'emulsify':'gall-bladder', 'emulsifying':'gall-bladder',
+    'bile':'liver', 'emulsification':'liver', 'emulsifies':'liver',
+    'emulsify':'liver', 'emulsifying':'liver',
     'villus':'ileum-villi', 'villi':'ileum-villi', 'microvilli':'ileum-villi',
     'lacteal':'ileum-villi', 'lacteals':'ileum-villi', 'circular folds':'ileum-villi',
     'pepsin':'stomach', 'gastric juice':'stomach', 'hydrochloric acid':'stomach', 'chyme':'stomach',
