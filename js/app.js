@@ -333,6 +333,25 @@
     }
     pane.appendChild(card);
 
+    /* A recap of an earlier topic that this station rests on: a little always in view, the rest
+       (graphs, the words that earn marks, how it is asked) behind one expandable section. */
+    var rc = st.learn && st.learn.recap;
+    if (rc) {
+      var R = document.createElement('div');
+      R.className = 'card recap';
+      var figs = (rc.figs || []).map(function (f) {
+        return '<figure><img src="assets/photos/' + esc(f.src) + '" alt="" loading="lazy"><figcaption>' + M(f.cap) + '</figcaption></figure>';
+      }).join('');
+      var body = (rc.more || []).map(function (sec) {
+        return '<div class="recap__h">' + esc(sec.h) + '</div><ul>' + (sec.items || []).map(function (t) { return '<li>' + M(t) + '</li>'; }).join('') + '</ul>';
+      }).join('');
+      var ex = (rc.exam || []).length ? '<div class="recap__exam"><div class="recap__h">In the exam — how it is asked</div><ul>' + rc.exam.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul></div>' : '';
+      R.innerHTML = '<div class="card__h">' + esc(rc.title) + '</div><p class="recap__intro">' + M(rc.intro) + '</p>' +
+        '<details><summary>' + esc(rc.open || 'Open the recap') + '</summary><div class="recap__body">' +
+        (figs ? '<div class="recap__figs">' + figs + '</div>' : '') + body + ex + '</div></details>';
+      pane.appendChild(R);
+    }
+
     var extras = media.filter(function (x) { return x.more; });
     if (extras.length) {
       var d = document.createElement('details');

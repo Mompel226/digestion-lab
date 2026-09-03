@@ -69,6 +69,7 @@ for (const st of STATIONS) {
     const a = st.activities[i], id = st.id + ':' + i, t = a.type;
     const p = { type: t, prompt: a.prompt };
     if (a.table) p.table = a.table;          /* presentation only */
+    if (a.img) { p.img = a.img; if (a.imgCap) p.imgCap = a.imgCap; }   /* a graph or photograph the question is about */
     const v = {};
     nAct++;
 
