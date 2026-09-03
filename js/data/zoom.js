@@ -377,12 +377,18 @@ window.ZOOM_DETAIL = {
       {
         "t": "swallowing",
         "kind": "act",
-        "corner": "bl"
+        "at": [
+          62,
+          252
+        ]
       },
       {
         "t": "bolus",
         "kind": "food",
-        "corner": "bl"
+        "at": [
+          62,
+          252
+        ]
       }
     ]
   },
@@ -395,12 +401,18 @@ window.ZOOM_DETAIL = {
       {
         "t": "peristalsis",
         "kind": "act",
-        "corner": "tl"
+        "at": [
+          58,
+          414
+        ]
       },
       {
         "t": "bolus",
         "kind": "food",
-        "corner": "tl"
+        "at": [
+          58,
+          414
+        ]
       }
     ]
   },
@@ -936,10 +948,10 @@ window.ZOOM_DETAIL = {
             ],
             "cap": "one cell of a villus",
             "link": [
-              0.6,
-              0.2,
-              0.86,
-              0.34
+              0.33,
+              0.09,
+              0.47,
+              0.28
             ]
           }
         ],
@@ -1050,18 +1062,18 @@ window.ZOOM_DETAIL = {
         },
         "img": "zoom/villi-lm.jpg",
         "fixed": [
-          64,
+          100,
           566,
           112
         ],
         "box": [
-          64,
+          100,
           566,
           112,
           219
         ],
         "window": [
-          61,
+          97,
           563,
           118,
           225
@@ -1111,9 +1123,9 @@ window.ZOOM_DETAIL = {
       {
         "at": 12,
         "cam": {
-          "cx": 196,
-          "cy": 596,
-          "w": 330
+          "cx": 206,
+          "cy": 602,
+          "w": 360
         },
         "keep": true,
         "noback": true,
