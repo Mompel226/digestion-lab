@@ -902,10 +902,12 @@ body[data-mode="practice"] .panel__inner::before{
 @media (prefers-reduced-motion:reduce){.tourcard{transition:none}.tourcard.is-moving{opacity:1;transform:none}}
 /* a spotlit organ: the drawn organ itself lights up, so nothing is traced behind its neighbours */
 #bodySvg .art .op.is-spot{filter:saturate(1.5) brightness(1.08) drop-shadow(0 0 2.4px #E8A33D) !important;opacity:1 !important}
-/* the key words on the plate: what is being done here, and what the food is called at this point */
-#bodySvg .detail .dl__key rect{stroke:#FFFDF9}
-#bodySvg .detail .dl__key text{font-family:Calibri,Carlito,"Segoe UI",-apple-system,sans-serif;font-weight:800;
-  letter-spacing:.07em;fill:#fff;stroke:none;paint-order:normal}
-#bodySvg .detail .dl__key--act rect{fill:#8A2C55}
-#bodySvg .detail .dl__key--food rect{fill:#A8641A}
-#bodySvg .detail .dl__keysub{font-weight:600;fill:#3A3A3A;stroke:#FFFDF9;stroke-width:.3em;paint-order:stroke;letter-spacing:0}
+/* the key words on the plate: what happens here, and what the food is called at this point.
+   Plain ink cards with square corners — the five processes own the round coloured chips, and a
+   second coloured pill would read as part of that system when it is not. */
+#bodySvg .detail .dl__keycard{fill:#FFFDF9;stroke:#4A4A4A;opacity:.97}
+#bodySvg .detail .dl__keybar{fill:#2B2B2B;stroke:none}
+#bodySvg .detail .dl__key text{font-family:Calibri,Carlito,"Segoe UI",-apple-system,sans-serif;stroke:none;paint-order:normal}
+#bodySvg .detail .dl__keycap{font-weight:600;fill:#6B6B6B;letter-spacing:.1em}
+#bodySvg .detail .dl__keyword{font-weight:800;fill:#1F2A1F;letter-spacing:.05em}
+#bodySvg .detail .dl__shot{pointer-events:auto;cursor:zoom-in}

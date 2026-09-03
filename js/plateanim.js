@@ -508,13 +508,18 @@
       g += drops(t.concat(PORTAL.slice(1)), i % 2 ? '#BC235B' : '#E8A33D', r, 6.6, 2, -i * 0.9);
     });
 
-    /* the mesentery on its own, so the fan above is recognisable */
-    var ix = 262, iy = 372, iw = 96, ih = iw * 821 / 903;      /* clear of the liver, and big enough to read */
-    g += '<rect x="' + f1(ix - 1.6) + '" y="' + f1(iy - 1.6) + '" width="' + f1(iw + 3.2) + '" height="' + f1(ih + 3.2) +
+    /* the mesentery on its own, so the fan above is recognisable — click it to see it full size */
+    var ix = 250, iy = 366, iw = 128, ih = iw * 821 / 903;     /* clear of the liver, in the space on the right */
+    g += '<g class="dl__shot" data-lightbox="photos/mesentery-render.jpg" ' +
+         'data-cap="The mesentery: one sheet of membrane fanning out from the back wall of the abdomen, holding the six to seven metres of small intestine. The veins running inside it collect the absorbed food and join the hepatic portal vein.">' +
+         '<rect x="' + f1(ix - 1.8) + '" y="' + f1(iy - 1.8) + '" width="' + f1(iw + 3.6) + '" height="' + f1(ih + 3.6) +
          '" rx="2.4" fill="#FFFDF9" stroke="#B9AE9B" stroke-width="' + f1(0.5 * u) + '"/>' +
          '<image href="assets/photos/mesentery-render.jpg" xlink:href="assets/photos/mesentery-render.jpg" x="' + f1(ix) +
          '" y="' + f1(iy) + '" width="' + f1(iw) + '" height="' + f1(ih) + '" preserveAspectRatio="xMidYMid slice"/>' +
-         label('the mesentery on its own —\none sheet, holding every loop', ix, iy + ih + fs * 1.25, null, null, fs * 0.92, 'start');
+         '<circle cx="' + f1(ix + iw - fs * 0.9) + '" cy="' + f1(iy + fs * 0.9) + '" r="' + f1(fs * 0.62) + '" fill="#FFFDF9" stroke="#B9AE9B" stroke-width="0.4"/>' +
+         '<text class="dl__t" x="' + f1(ix + iw - fs * 0.9) + '" y="' + f1(iy + fs * 1.18) + '" font-size="' + f1(fs * 0.78) + '" text-anchor="middle">\u2922</text>' +
+         '</g>' +
+         label('the mesentery on its own\nclick to see it full size', ix + iw / 2, iy + ih + fs * 1.3, null, null, fs * 0.92, 'middle');
 
     if (ctx.compact) return g +
       label('liver', 64, 452, 108, 470, fs, 'start') +

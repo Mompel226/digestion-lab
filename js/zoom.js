@@ -137,6 +137,13 @@
     keyImgFront = el('image', { mask:'url(#detailKey)', preserveAspectRatio:'none', width:'0', height:'0' }, keyWrap);
     spotLine = el('g', { 'class':'detail__spot', fill:'none', stroke:'#D9962B', 'stroke-linejoin':'round', opacity:'.9' }, layer);
     gAnim = el('g', { 'class':'detail__anim' }, layer);
+    /* a photograph drawn inside an animation can still be opened full size */
+    gAnim.addEventListener('click', function (ev) {
+      var t = ev.target.closest ? ev.target.closest('[data-lightbox]') : null;
+      if (!t) return;
+      ev.stopPropagation();
+      if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + t.getAttribute('data-lightbox'), t.getAttribute('data-cap') || '', 'Photograph');
+    });
     gLabels = el('g', { 'class':'detail__labels' }, layer);
     gInsets = el('g', { 'class':'detail__insets' }, layer);
     var hits = svg.querySelector('.hits');
@@ -279,30 +286,30 @@
     });
   }
 
-  /* The words that carry the marks, on the plate itself: what is being done to the food here
-     (mastication, peristalsis, churning …) and what the food is called at this point (food,
-     bolus, chyme, faeces). One shape for both, two colours, so a reader learns to look for them:
-     the action in one colour, the name of the food in the other. They stack in a corner of the
-     view, clear of the organ's own labels. */
+  /* The words that carry the marks, on the plate itself: what is being done to the food here, and
+     what the food is called at this point. Deliberately NOT a coloured pill — the round coloured
+     chips already mean the five processes, and a second set of coloured pills read as the same
+     system. These are plain cards: square corners, an ink bar, the word in ink, and a line of
+     small type saying which of the two kinds it is. */
   function drawKeys(keys, frame, fs) {
     var n = {};
     keys.forEach(function (K) {
       var corner = K.corner || 'tl', i = n[corner] = (n[corner] || 0) + 1;
-      var txt = String(K.t).toUpperCase();
-      var h = fs * 1.65, w = txt.length * fs * 0.66 + fs * 1.5, pad = fs * 0.9, gap = fs * 0.55;
-      /* the caption strip sits along the bottom of the plate, so a bottom-corner word starts above it */
-      var padBottom = fs * 3.4;
+      var word = String(K.t).toUpperCase();
+      var cap = K.cap || (K.kind === 'food' ? 'the food is now' : 'what happens here');
+      var h = fs * 2.6, w = Math.max(word.length * fs * 0.68, cap.length * fs * 0.44) + fs * 1.6;
+      var pad = fs * 0.9, gap = fs * 0.5, padBottom = fs * 3.4;
       var x = K.at ? K.at[0] : (corner.indexOf('r') >= 0 ? frame.x + frame.w - pad - w : frame.x + pad);
-      var y = K.at ? K.at[1] : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - (i - 1) * (h + gap)
-                                                         : frame.y + pad + (i - 1) * (h + gap));
-      var g = el('g', { 'class':'dl__key dl__key--' + (K.kind === 'food' ? 'food' : 'act') }, gLabels);
-      el('rect', { x:f1(x), y:f1(y), width:f1(w), height:f1(h), rx:f1(h / 2), 'stroke-width':f1(fs * 0.09) }, g);
-      var t = el('text', { x:f1(x + w / 2), y:f1(y + h * 0.68), 'text-anchor':'middle', 'font-size':f1(fs * 0.92) }, g);
-      t.textContent = txt;
-      if (K.sub) {
-        var st = el('text', { 'class':'dl__keysub', x:f1(x + w / 2), y:f1(y + h + fs * 0.95), 'text-anchor':'middle', 'font-size':f1(fs * 0.78) }, g);
-        st.textContent = K.sub;
-      }
+      var y = K.at ? K.at[1] + (i - 1) * (h + gap)
+                   : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - (i - 1) * (h + gap)
+                                               : frame.y + pad + (i - 1) * (h + gap));
+      var g = el('g', { 'class':'dl__key' }, gLabels);
+      el('rect', { 'class':'dl__keycard', x:f1(x), y:f1(y), width:f1(w), height:f1(h), 'stroke-width':f1(fs * 0.075) }, g);
+      el('rect', { 'class':'dl__keybar', x:f1(x), y:f1(y), width:f1(fs * 0.3), height:f1(h) }, g);
+      var c = el('text', { 'class':'dl__keycap', x:f1(x + fs * 0.85), y:f1(y + fs * 0.95), 'font-size':f1(fs * 0.6) }, g);
+      c.textContent = cap;
+      var t = el('text', { 'class':'dl__keyword', x:f1(x + fs * 0.85), y:f1(y + fs * 2.1), 'font-size':f1(fs * 0.98) }, g);
+      t.textContent = word;
     });
   }
 
