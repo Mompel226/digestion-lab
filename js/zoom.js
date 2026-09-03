@@ -355,9 +355,13 @@
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
     /* organs the step covers with its own picture are hidden, so nothing shows twice */
-    hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = [];
-    (s.hide || []).forEach(function (organ) {
-      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) { p.style.opacity = '0'; hidden.push(p); });
+    hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
+    (s.hide || []).forEach(function (h) {
+      var organ = typeof h === 'string' ? h : h.organ, keep = typeof h === 'string' ? null : h.except, inv = svg.getScreenCTM().inverse();
+      Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
+        if (keep) { var r = p.getBoundingClientRect(), a = pt(inv, r.left, r.top), b = pt(inv, r.right, r.bottom); if (a.x >= keep[0] - 2 && a.y >= keep[1] - 2 && b.x <= keep[2] + 2 && b.y <= keep[3] + 2) return; }
+        p.style.display = 'none'; hidden.push(p);
+      });
     });
     svg.classList.toggle('keep-organ', !!s.keep);
     var frame = frameFor(detailCam || CAM[detail.organ]);
@@ -510,12 +514,12 @@
     steps = detail ? (detail.steps || [detail]) : [];
     stepIdx = -1; lis = null;
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
-    hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = [];
+    hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
     if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
   }
-  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.opacity = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
     svg = svgEl; build(); setBox(frameFor(null));
     global.addEventListener('resize', function () { if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); });
