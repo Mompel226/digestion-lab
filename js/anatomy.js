@@ -79,28 +79,32 @@
     { id:'rectum-anus',     label:'Rectum and anus',    side:'left',  ly:782, anchor:[176,776] }
   ];
 
-  /* The route a meal takes, in artwork coordinates — traced on the plate: the oral cavity, the
-     pharynx, down the oesophagus, into the stomach at the cardia and round to the pylorus, the
-     duodenal loop, a long meander through the coils of the jejunum and ileum, the caecum, then up,
-     across and down the colon to the rectum. Landmarks along it are found at run time (marks). */
-  var CANAL = 'M124,128 C127,129.7 136,134.3 142,138 C148,141.7 155,144.3 160,150 C165,155.7 169.2,165.3 172,172 C174.8,178.7 176,182.8 177,190 C178,197.2 177.8,203.3 178,215 C178.2,226.7 178,245.8 178,260 C178,274.2 178.2,287.5 178,300 C177.8,312.5 176.8,323.3 177,335 C177.2,346.7 178,358.3 179,370 C180,381.7 181.5,394.7 183,405 C184.5,415.3 183.2,425 188,432 C192.8,439 203.7,442 212,447 C220.3,452 230.7,455.8 238,462 C245.3,468.2 252.3,476.8 256,484 C259.7,491.2 262,499.2 260,505 C258,510.8 251,516 244,519 C237,522 226.3,522.7 218,523 C209.7,523.3 201,522.2 194,521 C187,519.8 180.3,515.2 176,516 C171.7,516.8 173,522.3 168,526 C163,529.7 153,532.3 146,538 C139,543.7 129,552.7 126,560 C123,567.3 125.3,575.3 128,582 C130.7,588.7 135.3,596.7 142,600 C148.7,603.3 160.7,603.3 168,602 C175.3,600.7 179.8,591.3 186,592 C192.2,592.7 197.7,602.3 205,606 C212.3,609.7 221.7,613 230,614 C238.3,615 248,609 255,612 C262,615 269.8,625.3 272,632 C274.2,638.7 272.5,647.3 268,652 C263.5,656.7 253.8,660 245,660 C236.2,660 225,651.7 215,652 C205,652.3 195,662 185,662 C175,662 164.5,651.7 155,652 C145.5,652.3 134.2,658.7 128,664 C121.8,669.3 116,678.7 118,684 C120,689.3 131.3,695 140,696 C148.7,697 160,689.3 170,690 C180,690.7 190,699.7 200,700 C210,700.3 220.3,691.7 230,692 C239.7,692.3 251.7,697.3 258,702 C264.3,706.7 270.2,715.3 268,720 C265.8,724.7 253.8,729.3 245,730 C236.2,730.7 225,723.7 215,724 C205,724.3 195,732 185,732 C175,732 164.5,728 155,724 C145.5,720 135.8,712.7 128,708 C120.2,703.3 112.7,700 108,696 C103.3,692 101.5,691.7 100,684 C98.5,676.3 99.2,661.5 99,650 C98.8,638.5 98.3,625 99,615 C99.7,605 99.5,596.7 103,590 C106.5,583.3 112.2,577.2 120,575 C127.8,572.8 136.7,576.2 150,577 C163.3,577.8 184.2,580.2 200,580 C215.8,579.8 233,575 245,576 C257,577 265.8,580 272,586 C278.2,592 280.3,601.3 282,612 C283.7,622.7 282,637 282,650 C282,663 284,678 282,690 C280,702 277,713.3 270,722 C263,730.7 250.8,737 240,742 C229.2,747 214.5,748.7 205,752 C195.5,755.3 187.5,756.5 183,762 C178.5,767.5 179.2,777.7 178,785 C176.8,792.3 176.3,802.5 176,806';
-  var LANDMARKS = { mouth:[126,130], pharynx:[176,190], oesophagus:[178,300], cardia:[188,432], stomach:[250,490],
-                    pylorus:[176,516], duodenum:[128,582], jejunum:[205,606], ileum:[200,700], caecum:[104,694],
-                    colon:[200,580], sigmoid:[240,742], anus:[176,806] };
-  var marks = null;
-  function findMarks() {
-    var p = document.getElementById('canalPath'); if (!p) return null;
-    var L = p.getTotalLength(), N = 1600, pts = [];
-    for (var i = 0; i <= N; i++) { var q = p.getPointAtLength(L * i / N); pts.push([q.x, q.y]); }
-    var out = {};
-    Object.keys(LANDMARKS).forEach(function (k) {
-      var lm = LANDMARKS[k], best = 0, bd = 1e9;
-      pts.forEach(function (q, i) { var dd = (q[0] - lm[0]) * (q[0] - lm[0]) + (q[1] - lm[1]) * (q[1] - lm[1]); if (dd < bd) { bd = dd; best = i; } });
-      out[k] = best / N;
-    });
-    out.anus = 1; return out;
-  }
-  function getMarks() { if (!marks) marks = findMarks(); return marks; }
+  /* The route a meal takes, in artwork coordinates. These points are NOT drawn by eye: each
+     organ's interior was taken from the plate's own paths (isPointInFill), the loop walls of the
+     small intestine were carved out of it with the artwork's own outline strokes, and the route
+     was then walked along the deepest line through each tube from its entry to its exit
+     (tools/trace-canal.js). So the bolus travels inside the drawn oesophagus, round the stomach
+     from the cardia to the pylorus, through the duodenal loop, along the corridors between the
+     coils of the jejunum and ileum, and up, across and down the colon.
+
+     MARKS are the places along that route, as fractions of its length, measured at the same time.
+     Anything that needs a position on the canal — a station's parked bolus, a tour scene — asks
+     for a landmark by name, so nothing depends on a number guessed off a picture. */
+  var CANAL_PTS = ('109,127 117.3,131.7 125.6,137.6 132.9,142.7 140.6,145.9 149.3,148 157.9,149.6 165.3,151.6 169.4,156.1 168,164.1 168.1,175.6 174.3,196.5 177.1,229.1 175.9,259.5 176.1,279.8 176.9,291.9 176.9,300.9 176.3,318.6 177.4,356.8 184.6,410.9 198.6,456.7 212.9,477.9 225.1,484.1 234.1,488.4 235.1,496.8 229.5,507.6 221.3,516.6 211.3,521.9 199.5,523.6 187.2,521.5 177.1,517.7 169.7,515.7 162.8,514.8 154.8,513.8 145.7,514.3 136.8,517.7 129.8,524 125.2,532.2 123.2,542.4 124.6,555.2 130.8,568.6 142.7,579.3 160.6,585.2 178.3,588.6 186.6,591.5 186.9,591.1 184.7,588.5 181.4,587 177.6,588 174.5,592.9 173.4,600.2 176.3,605.8 183.9,608.5 193.9,610.8 200.8,614.4 202.7,619.5 201.7,625.6 199.3,631.6 194.5,635 186.6,633.6 176.1,628.5 163.6,623.3 151.7,619.4 145.2,615.1 145.7,608.9 149.3,601.9 149.9,596.5 143.8,593.7 133.1,592.5 123.2,591.6 115.8,590.9 110.1,591.5 106.7,594.7 106.1,602.3 107.6,617.1 110.6,636.2 115.4,649.4 120.6,652.4 124.7,649.1 129.4,644.1 139.1,640.1 152.3,638.9 161.3,640.9 162.4,644.6 157.5,648.5 149.4,651.7 141.6,654.4 137.3,658.5 137.8,664.4 142.3,669.1 149.5,668.8 159.2,662.9 169.6,655.6 178.2,650.8 185.6,650 194.6,651.3 204.7,653.1 211.5,656.3 213,660.9 211.7,665.9 211.6,670.7 215,675.9 221.6,680.9 228.4,684.9 232.5,688.8 232.3,693.9 228.4,699.4 222.9,702.9 217.2,702.9 212.8,699.5 209.4,694 205.4,687.9 200.6,682.8 195.6,679.3 190.1,676.5 184.4,673.9 179.1,672.3 174.4,672.4 171.6,674.6 172,677.9 176.1,681.3 182.4,685.3 187.8,690.1 189.4,694.6 187,696.8 181.3,696.5 173.2,694.4 164.3,691.9 156.6,690.3 151.3,690.5 148.6,693.2 149.7,697.5 156.8,702.1 169.3,705.8 183.2,708.3 194.2,710.1 199.8,712.9 198,716.4 185.6,718.8 165.2,717.5 146.8,711.4 136.6,700.9 132.1,689.9 128.2,682.4 122.6,679.3 116.9,678.9 111.6,684.6 105.8,692.2 98.8,687.2 91.1,672.3 84.5,659.3 80.8,647.6 79.7,631.1 80.2,611.3 81.5,594.8 83.6,582.6 87.6,573 94.8,567.9 104.3,569.2 113.5,574.4 121.4,579.8 130.4,584.1 141.9,587.4 155,589.5 167.2,589.8 177.1,588.4 185.2,586.6 191.6,584.9 196.3,583.6 200.6,582.4 206.1,580.9 212.8,578.4 219.4,575.6 227.3,572.5 238.1,567.3 251.1,560.3 263.3,555.8 272.4,561.4 277.9,585.6 279.9,620.4 279.4,646.3 277.6,659.3 274.9,668.2 271.6,676.7 268.4,684.6 265.1,691.7 262,698.1 259.1,704.7 255,711.5 249.5,717.7 243.1,723.1 235.3,728.1 224.8,730.9 210.9,729.7 195.9,726.6 183.9,727.6 177.3,738.7 175.5,758.9 175.8,780.8 176,800').split(' ').map(function (p) { var q = p.split(','); return [+q[0], +q[1]]; });
+  var CANAL = (function (P) {
+    var d = 'M' + P[0][0] + ',' + P[0][1];
+    for (var i = 0; i < P.length - 1; i++) {
+      var p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)];
+      d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ',' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) +
+           ' ' + (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ',' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) +
+           ' ' + p2[0] + ',' + p2[1];
+    }
+    return d;
+  })(CANAL_PTS);
+  var MARKS = { mouth:0.018, pharynx:0.042, oesophagus:0.098, cardia:0.155, stomach:0.201,
+                pylorus:0.239, duodenum:0.267, jejunum:0.345, ileum:0.604, caecum:0.693,
+                colon:0.816, sigmoid:0.952, anus:1 };
+  function getMarks() { return MARKS; }
 
   /* ---------- helpers ---------- */
   function el(name, attrs, parent) {
@@ -383,13 +387,12 @@
   var STATION_MARK = { 'mouth':'mouth', 'salivary-glands':'mouth', 'epiglottis':'pharynx', 'oesophagus':'oesophagus',
                        'stomach':'stomach', 'liver':'duodenum', 'gall-bladder':'duodenum', 'pancreas':'duodenum',
                        'duodenum':'duodenum', 'ileum-villi':'ileum', 'colon':'colon', 'rectum-anus':'anus' };
-  var STOP_T = {};
   function stopFor(id) { var m = getMarks(), k = STATION_MARK[id]; if (!m || !k) return null; return k === 'anus' ? 0.995 : m[k]; }
 
   global.Anatomy = {
     ORGANS:ORGANS, state:state, render:render, highlight:paint,
     tour:tour, stopTour:stopTour, travel:travel, stopJourney:stopJourney,
-    placeBolus:placeBolus, STOP_T:STOP_T, marks:getMarks,
+    placeBolus:placeBolus, marks:getMarks,
     stopFor:stopFor
   };
 })(window);
