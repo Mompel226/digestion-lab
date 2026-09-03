@@ -51,7 +51,7 @@ window.PHOTOS = {
       "t": "photo",
       "src": "pancreas-dissection.jpg",
       "kind": "Photograph",
-      "cap": "<b>A real liver</b>, seen in a dissection with the pancreas below it and the <b>hepatic portal vein</b> bringing blood up from the gut — the vessel named in the sentence above.",
+      "cap": "<b>A real liver, in a living animal.</b> This is surgery, not a dissection of a cadaver — and you can tell: the duodenum is pink with fine red vessels because oxygenated blood is still flowing through it, and the liver is a deep, glossy red-brown. Below them runs the purple <b>hepatic portal vein</b>, bringing blood up from the gut to the liver — the vessel named in the sentence above. Compare the grey, bloodless vessels of the cadaver at the small-intestine station.",
       "after": 3,
       "maxw": 300
     }
@@ -72,11 +72,11 @@ window.PHOTOS = {
       "t": "pair",
       "kind": "Photograph and 3-D render",
       "after": 4,
-      "cap": "<b>The organ itself — alive.</b> Left is not a dissection: it is surgery on a living animal, with loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries their blood vessels. Look at the colour. The vessels are pinkish-red because oxygenated blood is still flowing through them — clearest at the level of the duodenum — and those are the vessels that carry the absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine.",
+      "cap": "<b>The organ itself.</b> Left, a dissection of a cadaver: loops of jejunum lifted to show the fan-shaped <b>mesentery</b> that carries their blood vessels. Look at the colour — the vessels are grey, not pink, because no oxygenated blood flows through them any more (compare the living tissue in the photograph at the liver station). In life, those are the vessels that carry the absorbed nutrients away. Right, the whole mesentery drawn in 3-D: one sheet of membrane fanning out from the back wall of the abdomen to hold the six to seven metres of small intestine.",
       "of": [
         {
           "photo": "intestine-dissection.jpg",
-          "label": "Surgery on a living animal: jejunum and its mesentery",
+          "label": "Dissection: jejunum and its mesentery",
           "maxw": 800,
           "w": 52
         },
@@ -99,9 +99,9 @@ window.PHOTOS = {
       "t": "photo",
       "src": "surface-area-levels.jpg",
       "kind": "Illustration",
-      "cap": "The three levels drawn in one picture, if you want to see how they nest: the tube with its <b>circular folds</b> (a), the <b>villi</b> standing on a fold (b), and one epithelial cell with its <b>microvilli</b> (c, top right).",
-      "maxw": 800,
-      "more": true
+      "cap": "<b>All three levels in one picture — read it a, b, c.</b> (a) The tube, cut open: the ridges running round the inside are the <b>circular folds</b>. The little box on one fold is zoomed into (b): the fold's whole surface is covered in <b>villi</b>, each one a finger of tissue built from many cells, with blood vessels running up inside. The little box on one villus is zoomed into (c): the wall of the villus is a single layer of cells, and the one cell pulled out at the top right shows the <b>microvilli</b> — the fringe on its top edge, which is just its own membrane folded. Three levels, one inside the next.",
+      "after": 9,
+      "maxw": 900
     },
     {
       "t": "photo",

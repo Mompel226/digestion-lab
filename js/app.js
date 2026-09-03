@@ -13,7 +13,7 @@
     diet:['sameBalance'], overview:[], mouth:['chewing'],
     'salivary-glands':['starchPath'], epiglottis:[], oesophagus:[],
     stomach:[], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
-    'ileum-villi':['starchPath','surfaceArea','villus'],
+    'ileum-villi':['starchPath','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath']
   };
@@ -24,7 +24,7 @@
     'mouth:chewing':2,
     'salivary-glands:starchPath':2,
     'gall-bladder:emulsify':3,
-    'ileum-villi:starchPath':10, 'ileum-villi:surfaceArea':9, 'ileum-villi:villus':11,
+    'ileum-villi:starchPath':10, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
     'molecules-lab:starchPath':0
   };
@@ -210,7 +210,8 @@
       var bc = document.createElement('span');
       bc.className = 'chip chip--beyond';
       bc.textContent = 'Beyond the syllabus';
-      bc.title = 'Not required by IGCSE 0610 — worth knowing, but not examined.';
+      bc.className += ' tip'; bc.tabIndex = 0;
+      bc.setAttribute('data-tip', 'Not required by IGCSE 0610 — worth knowing, but not examined.');
       chips.appendChild(bc);
     }
     host.appendChild(chips);
@@ -279,8 +280,8 @@
       var badge = '';
       /* typeof check matters: a JS string has a built-in .sup() method, so
          'b.sup' is truthy for every plain bullet. */
-      if (typeof b === 'object' && b.sup) badge = '<span class="sup" title="Supplement: examined on Paper 4 (Extended) only">S</span>';
-      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext" title="Not in the 2026–28 syllabus — taught for understanding">extension</span>';
+      if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
+      if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
       li.innerHTML = badge + M(txt);
       list.appendChild(li);
       media.filter(function (x) { return !x.more && x.after === i; })
@@ -961,11 +962,33 @@
   var toastT = null;
   function toast(msg) {
     var t = document.getElementById('toast');
+    t.style.pointerEvents = '';
     t.textContent = msg;
     t.classList.add('show');
     clearTimeout(toastT);
     toastT = setTimeout(function () { t.classList.remove('show'); }, 2800);
   }
+
+  /* Instant tooltips for the badges. A native title takes about a second to appear and never
+     appears on a touch screen; these show on hover at once, on keyboard focus, and on a tap. */
+  /* A magnifying lens drawn on a figure opens its close-up (one enterocyte on the villus). */
+  document.addEventListener('click', function (e) {
+    var lens = e.target.closest ? e.target.closest('.fig-lens, .fig-cell__close') : null;
+    if (lens) {
+      var stage = lens.closest('svg');
+      var open = stage.classList.toggle('is-cell');
+      var btn = stage.querySelector('.fig-lens');
+      if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+      e.preventDefault(); return;
+    }
+    var tip = e.target.closest ? e.target.closest('.tip') : null;
+    Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { if (el !== tip) el.classList.remove('is-open'); });
+    if (tip) { e.preventDefault(); tip.classList.toggle('is-open'); }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { el.classList.remove('is-open'); });
+    if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('fig-lens')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles:true })); }
+  });
 
   /* ---------- boot ---------- */
   function boot() {
@@ -1051,24 +1074,43 @@
     });
   }
 
-  /* GitHub Pages caches the HTML for ten minutes, so a student can sit on an old
-     copy without knowing. Ask the server for a plain version stamp and say so. */
+  /* GitHub Pages caches the HTML for ten minutes, so a student can sit on an old copy
+     without knowing. The page's own stamp is read from its script tags — the deploy bumps
+     those — never from a constant here (a constant went stale and the banner never left).
+     And the stamp file and the page are cached separately, so the banner only shows once
+     the server's index.html itself carries a newer stamp: then a reload really helps. */
+  var pageVersion = (function () {
+    var sc = document.querySelector('script[src*="stations.js"]');
+    var m = sc && (sc.getAttribute('src') || '').match(/[?&]v=(\d+)/);
+    return m ? m[1] : null;
+  })();
+  var updateShown = false;
   function checkForUpdate() {
+    if (!pageVersion || updateShown || document.hidden) return;
     fetch('version.txt', { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.text() : null; })
       .then(function (v) {
-        if (!v) return;
-        v = v.trim();
-        if (v && v !== '1788344782') {
-          var t = document.getElementById('toast');
-          t.innerHTML = 'A newer version of this page is available. ' +
-            '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
-            'onclick="location.reload(true)">Reload</button>';
-          t.classList.add('show');
-        }
+        v = v && v.trim();
+        if (!v || v === pageVersion) return;
+        return fetch(location.pathname, { cache: 'reload' })
+          .then(function (r) { return r.ok ? r.text() : ''; })
+          .then(function (html) {
+            var m = html.match(/stations\.js\?v=(\d+)/);
+            if (!m || m[1] === pageVersion) return;
+            updateShown = true;
+            var t = document.getElementById('toast');
+            t.innerHTML = 'A newer version of this page is available. ' +
+              '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
+              'onclick="location.reload()">Reload</button>';
+            t.style.pointerEvents = 'auto';
+            t.classList.add('show');
+          });
       }).catch(function () {});
   }
   setTimeout(checkForUpdate, 4000);
+  setInterval(checkForUpdate, 10 * 60 * 1000);
+  window.LabUpdateCheck = checkForUpdate;                 /* for testing the banner logic */
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) setTimeout(checkForUpdate, 800); });
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
