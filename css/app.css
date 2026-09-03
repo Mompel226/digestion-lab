@@ -814,8 +814,14 @@ body[data-mode="practice"] .panel__inner::before{
 /* going further: one list, three kinds of tag */
 .later__ref--ib{background:#EFE9F8;color:#4C2E85;border-color:#C9B8E6}
 .later__ref--beyond{background:#F1F1EE;color:#5A5A5A;border-color:#C9C9C4;font-style:italic}
-/* the zoom-in cue between an inset and the picture it is a piece of */
-#bodySvg .detail .dl__zoom rect,#bodySvg .detail .dl__zoom line{stroke:#E8A33D;fill:none;opacity:.92;stroke-linejoin:round}
+/* the zoom-in cue between an inset and the picture it is a piece of: a filled cone opening from
+   the boxed piece to the enlarged view, every line drawn over a pale halo so it reads on a dark
+   micrograph as clearly as on a pale illustration */
+#bodySvg .detail .dl__zoomcone{fill:#E8A33D;opacity:.2;stroke:none}
+#bodySvg .detail .dl__zoomhalo{stroke:#FFFDF9;fill:none;opacity:.9;stroke-linejoin:round;stroke-linecap:round}
+#bodySvg .detail .dl__zoomedge{stroke:#A85E12;fill:none;stroke-linecap:round}
+#bodySvg .detail .dl__zoombox{stroke:#A85E12;fill:none;stroke-linejoin:round}
+#bodySvg .detail .dl__zoomtick{stroke:#5E3208;fill:none;stroke-linecap:round;stroke-linejoin:round}
 
 /* ---- instant tooltips on the badges (hover, keyboard focus, or a tap) ---- */
 .tip{position:relative;cursor:help}
@@ -896,3 +902,10 @@ body[data-mode="practice"] .panel__inner::before{
 @media (prefers-reduced-motion:reduce){.tourcard{transition:none}.tourcard.is-moving{opacity:1;transform:none}}
 /* a spotlit organ: the drawn organ itself lights up, so nothing is traced behind its neighbours */
 #bodySvg .art .op.is-spot{filter:saturate(1.5) brightness(1.08) drop-shadow(0 0 2.4px #E8A33D) !important;opacity:1 !important}
+/* the key words on the plate: what is being done here, and what the food is called at this point */
+#bodySvg .detail .dl__key rect{stroke:#FFFDF9}
+#bodySvg .detail .dl__key text{font-family:Calibri,Carlito,"Segoe UI",-apple-system,sans-serif;font-weight:800;
+  letter-spacing:.07em;fill:#fff;stroke:none;paint-order:normal}
+#bodySvg .detail .dl__key--act rect{fill:#8A2C55}
+#bodySvg .detail .dl__key--food rect{fill:#A8641A}
+#bodySvg .detail .dl__keysub{font-weight:600;fill:#3A3A3A;stroke:#FFFDF9;stroke-width:.3em;paint-order:stroke;letter-spacing:0}

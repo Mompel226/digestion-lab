@@ -319,6 +319,18 @@ window.ZOOM_DETAIL = {
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5"
       }
+    ],
+    "keys": [
+      {
+        "t": "mastication",
+        "kind": "act",
+        "corner": "bl"
+      },
+      {
+        "t": "food",
+        "kind": "food",
+        "corner": "bl"
+      }
     ]
   },
   "salivary-glands": {
@@ -333,7 +345,14 @@ window.ZOOM_DETAIL = {
     "fit": true,
     "full": true,
     "label": "The three pairs of salivary glands, and the ducts that carry saliva into the mouth",
-    "credit": "OpenStax College, CC BY 3.0"
+    "credit": "OpenStax College, CC BY 3.0",
+    "keys": [
+      {
+        "t": "food",
+        "kind": "food",
+        "corner": "bl"
+      }
+    ]
   },
   "epiglottis": {
     "organ": "epiglottis",
@@ -353,13 +372,37 @@ window.ZOOM_DETAIL = {
     ],
     "anim": "swallow",
     "label": "Swallowing: the larynx rises and the epiglottis tips over the windpipe, so the bolus goes down the oesophagus",
-    "credit": "Patrick J. Lynch, CC BY 2.5"
+    "credit": "Patrick J. Lynch, CC BY 2.5",
+    "keys": [
+      {
+        "t": "swallowing",
+        "kind": "act",
+        "corner": "bl"
+      },
+      {
+        "t": "bolus",
+        "kind": "food",
+        "corner": "bl"
+      }
+    ]
   },
   "oesophagus": {
     "organ": "oesophagus",
     "anim": "peristalsis",
     "noback": true,
-    "label": "Peristalsis: the wall itself moves — circular muscle contracts behind the bolus and relaxes ahead of it"
+    "label": "Peristalsis: the wall itself moves — circular muscle contracts behind the bolus and relaxes ahead of it",
+    "keys": [
+      {
+        "t": "peristalsis",
+        "kind": "act",
+        "corner": "tl"
+      },
+      {
+        "t": "bolus",
+        "kind": "food",
+        "corner": "tl"
+      }
+    ]
   },
   "stomach": {
     "organ": "stomach",
@@ -492,6 +535,18 @@ window.ZOOM_DETAIL = {
             "anchor": "start"
           }
         ]
+      }
+    ],
+    "keys": [
+      {
+        "t": "churning",
+        "kind": "act",
+        "corner": "tr"
+      },
+      {
+        "t": "chyme",
+        "kind": "food",
+        "corner": "tr"
       }
     ]
   },
@@ -1056,9 +1111,9 @@ window.ZOOM_DETAIL = {
       {
         "at": 12,
         "cam": {
-          "cx": 178,
-          "cy": 590,
-          "w": 300
+          "cx": 196,
+          "cy": 596,
+          "w": 330
         },
         "keep": true,
         "noback": true,
@@ -1078,6 +1133,18 @@ window.ZOOM_DETAIL = {
         "spotlight": [
           "liver"
         ]
+      }
+    ],
+    "keys": [
+      {
+        "t": "absorption",
+        "kind": "act",
+        "corner": "tl"
+      },
+      {
+        "t": "chyme",
+        "kind": "food",
+        "corner": "tl"
       }
     ]
   },
@@ -1154,6 +1221,18 @@ window.ZOOM_DETAIL = {
         ],
         "anchor": "start"
       }
+    ],
+    "keys": [
+      {
+        "t": "reabsorption of water",
+        "kind": "act",
+        "corner": "tl"
+      },
+      {
+        "t": "chyme → faeces",
+        "kind": "food",
+        "corner": "tl"
+      }
     ]
   },
   "rectum-anus": {
@@ -1196,6 +1275,18 @@ window.ZOOM_DETAIL = {
           0.62,
           0.97
         ]
+      }
+    ],
+    "keys": [
+      {
+        "t": "egestion",
+        "kind": "act",
+        "corner": "tl"
+      },
+      {
+        "t": "faeces",
+        "kind": "food",
+        "corner": "tl"
       }
     ]
   }

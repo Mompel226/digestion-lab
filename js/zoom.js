@@ -279,6 +279,33 @@
     });
   }
 
+  /* The words that carry the marks, on the plate itself: what is being done to the food here
+     (mastication, peristalsis, churning …) and what the food is called at this point (food,
+     bolus, chyme, faeces). One shape for both, two colours, so a reader learns to look for them:
+     the action in one colour, the name of the food in the other. They stack in a corner of the
+     view, clear of the organ's own labels. */
+  function drawKeys(keys, frame, fs) {
+    var n = {};
+    keys.forEach(function (K) {
+      var corner = K.corner || 'tl', i = n[corner] = (n[corner] || 0) + 1;
+      var txt = String(K.t).toUpperCase();
+      var h = fs * 1.65, w = txt.length * fs * 0.66 + fs * 1.5, pad = fs * 0.9, gap = fs * 0.55;
+      /* the caption strip sits along the bottom of the plate, so a bottom-corner word starts above it */
+      var padBottom = fs * 3.4;
+      var x = K.at ? K.at[0] : (corner.indexOf('r') >= 0 ? frame.x + frame.w - pad - w : frame.x + pad);
+      var y = K.at ? K.at[1] : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - (i - 1) * (h + gap)
+                                                         : frame.y + pad + (i - 1) * (h + gap));
+      var g = el('g', { 'class':'dl__key dl__key--' + (K.kind === 'food' ? 'food' : 'act') }, gLabels);
+      el('rect', { x:f1(x), y:f1(y), width:f1(w), height:f1(h), rx:f1(h / 2), 'stroke-width':f1(fs * 0.09) }, g);
+      var t = el('text', { x:f1(x + w / 2), y:f1(y + h * 0.68), 'text-anchor':'middle', 'font-size':f1(fs * 0.92) }, g);
+      t.textContent = txt;
+      if (K.sub) {
+        var st = el('text', { 'class':'dl__keysub', x:f1(x + w / 2), y:f1(y + h + fs * 0.95), 'text-anchor':'middle', 'font-size':f1(fs * 0.78) }, g);
+        st.textContent = K.sub;
+      }
+    });
+  }
+
   /* ---------- the spotlight: the organ being read about, in full colour ---------- */
   function loadSpot(cb) {
     if (SPOT) { cb(); return; }
@@ -433,6 +460,7 @@
     /* labels: each picture's own, then the step's */
     placed.forEach(function (p) { (p.d.labels || []).forEach(function (L) { drawLabel(L, p.pl, fs, frame); }); });
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
+    drawKeys(s.keys || detail.keys || [], frame, fs);
 
     if (s.spot && placed[0]) { spotImg._href = 'assets/' + placed[0].d.img; spot(s.spot, placed[0].pl, win); }
     if (s.spotKey && placed[0]) spotByColour(s.spotKey, placed[0], win, s);
@@ -464,9 +492,13 @@
       if (ins.link) {
         var tgt = placed[0] ? placed[0].pl : (s.animBox ? { x:s.animBox[0], y:s.animBox[1], W:s.animBox[2], H:s.animBox[3] } : null);
         if (tgt) {
+          /* A magnification, drawn as one: the piece being looked at is boxed on the big picture,
+             the box's corners open out to the corners of the enlarged view, and the space between
+             them is filled — so the eye reads "this bit, made bigger" rather than two pictures and
+             a couple of lines. Everything is drawn twice, a pale halo under a dark line, so it
+             holds up over a dark micrograph as well as over a pale illustration. */
           var lk = ins.link, bx = x + lk[0] * w, by = y + lk[1] * h, bw = (lk[2] - lk[0]) * w, bh = (lk[3] - lk[1]) * h;
           var zg = el('g', { 'class':'dl__zoom' }, g);
-          el('rect', { x:f1(bx), y:f1(by), width:f1(bw), height:f1(bh), fill:'none', 'stroke-width':f1(fs * 0.14) }, zg);
           var horizontal = Math.abs((x + w / 2) - (tgt.x + tgt.W / 2)) > Math.abs((y + h / 2) - (tgt.y + tgt.H / 2));
           var c1, c2, t1, t2, cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
           if (horizontal) {
@@ -476,9 +508,22 @@
             var ey = y + h / 2 < tgt.y + tgt.H / 2 ? tgt.y : tgt.y + tgt.H, syy = ey === tgt.y ? by + bh : by;
             c1 = [bx, syy]; c2 = [bx + bw, syy]; t1 = [cl(bx, tgt.x, tgt.x + tgt.W), ey]; t2 = [cl(bx + bw, tgt.x, tgt.x + tgt.W), ey];
           }
-          el('line', { x1:f1(c1[0]), y1:f1(c1[1]), x2:f1(t1[0]), y2:f1(t1[1]), 'stroke-width':f1(fs * 0.1) }, zg);
-          el('line', { x1:f1(c2[0]), y1:f1(c2[1]), x2:f1(t2[0]), y2:f1(t2[1]), 'stroke-width':f1(fs * 0.1) }, zg);
-          el('rect', { x:f1(tgt.x), y:f1(tgt.y), width:f1(tgt.W), height:f1(tgt.H), fill:'none', 'stroke-width':f1(fs * 0.12) }, zg);
+          el('path', { 'class':'dl__zoomcone', d:'M' + f1(c1[0]) + ',' + f1(c1[1]) + ' L' + f1(t1[0]) + ',' + f1(t1[1]) +
+                        ' L' + f1(t2[0]) + ',' + f1(t2[1]) + ' L' + f1(c2[0]) + ',' + f1(c2[1]) + ' Z' }, zg);
+          [[c1, t1], [c2, t2]].forEach(function (pair) {
+            el('line', { 'class':'dl__zoomhalo', x1:f1(pair[0][0]), y1:f1(pair[0][1]), x2:f1(pair[1][0]), y2:f1(pair[1][1]), 'stroke-width':f1(fs * 0.3) }, zg);
+            el('line', { 'class':'dl__zoomedge', x1:f1(pair[0][0]), y1:f1(pair[0][1]), x2:f1(pair[1][0]), y2:f1(pair[1][1]), 'stroke-width':f1(fs * 0.12) }, zg);
+          });
+          [['dl__zoomhalo', fs * 0.34], ['dl__zoombox', fs * 0.15]].forEach(function (kind) {
+            el('rect', { 'class':kind[0], x:f1(bx), y:f1(by), width:f1(bw), height:f1(bh), 'stroke-width':f1(kind[1]) }, zg);
+            el('rect', { 'class':kind[0], x:f1(tgt.x), y:f1(tgt.y), width:f1(tgt.W), height:f1(tgt.H), 'stroke-width':f1(kind[1]) }, zg);
+          });
+          /* corner ticks on the piece being magnified: the mark of a selection */
+          var tick = Math.min(bw, bh) * 0.34;
+          [[bx, by, 1, 1], [bx + bw, by, -1, 1], [bx, by + bh, 1, -1], [bx + bw, by + bh, -1, -1]].forEach(function (c) {
+            el('path', { 'class':'dl__zoomtick', 'stroke-width':f1(fs * 0.22),
+                         d:'M' + f1(c[0] + c[2] * tick) + ',' + f1(c[1]) + ' L' + f1(c[0]) + ',' + f1(c[1]) + ' L' + f1(c[0]) + ',' + f1(c[1] + c[3] * tick) }, zg);
+          });
         }
       }
       if (ins.to && placed[0]) {
