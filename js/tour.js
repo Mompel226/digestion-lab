@@ -27,10 +27,10 @@
       notes:[[0, 'Swallowed, then pushed down the oesophagus by peristalsis.'],
              [4200, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
              [8600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
-    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], cam:{ cx:186, cy:612, w:340 }, ms:10000,
+    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], cam:{ cx:186, cy:588, w:340 }, ms:10000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.']] },
-    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], cam:{ cx:186, cy:612, w:340 }, ms:11000,
+    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], cam:{ cx:186, cy:588, w:340 }, ms:11000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food. Glucose is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:700, w:290 }, ms:11000,
@@ -198,13 +198,20 @@
     var shift = pos === 'top' ? -f.h * share / 2 : pos === 'bottom' ? f.h * share / 2 : 0;
     global.Zoom.flyTo(global.Zoom.frameFor({ cx: cam.cx, cy: cam.cy + shift, w: cam.w }), ms == null ? 900 : ms);
   }
-  function focus(organ, also) {
+  function focus(organ, also, spot) {
     if (!global.Anatomy) return;
     global.Anatomy.state.active = organ; global.Anatomy.highlight();
-    /* a scene can light a second organ — the liver, while the nutrients travel to it */
+    /* a scene can light a second organ — the liver, while the nutrients travel to it — and can
+       spotlight one, which lights the organ as it is drawn rather than outlining a silhouette
+       that runs on behind whatever overlaps it */
+    Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op.is-spot'), function (p) { p.classList.remove('is-spot'); });
     (also || []).forEach(function (o) {
       Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op[data-organ="' + o + '"]'),
         function (p) { p.classList.remove('is-dim'); p.classList.add('is-on'); });
+    });
+    (spot || []).forEach(function (o) {
+      Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op[data-organ="' + o + '"]'),
+        function (p) { p.classList.remove('is-dim'); p.classList.add('is-on'); p.classList.add('is-spot'); });
     });
   }
   function play(i) {
@@ -215,7 +222,7 @@
     var sc = SCENES[i];
     if (typeof opener === 'function') opener(sc.station, true);
     camera(sc.cam, 900, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));
-    focus(sc.organ, sc.also); showCard(sc, i);
+    focus(sc.organ, sc.also, sc.spot); showCard(sc, i);
     if (!A) return;
     A.stopJourney();
     /* the landmarks along the canal (fractions of its length), found on the plate's own path */
@@ -263,6 +270,7 @@
   function stop(opts) {
     if (!running && idx < 0) return;
     if (card) card.classList.remove('is-moving');
+    Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op.is-spot'), function (p) { p.classList.remove('is-spot'); });
     var landing = idx >= SCENES.length || idx < 0 ? 'overview' : SCENES[idx].station;
     running = false; idx = -1;
     clearTimers(); clearFx();

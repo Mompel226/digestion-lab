@@ -894,3 +894,5 @@ body[data-mode="practice"] .panel__inner::before{
 .tourcard{transition:opacity .26s ease,transform .26s ease}
 .tourcard.is-moving{opacity:0;transform:translateY(var(--drift,8px))}
 @media (prefers-reduced-motion:reduce){.tourcard{transition:none}.tourcard.is-moving{opacity:1;transform:none}}
+/* a spotlit organ: the drawn organ itself lights up, so nothing is traced behind its neighbours */
+#bodySvg .art .op.is-spot{filter:saturate(1.5) brightness(1.08) drop-shadow(0 0 2.4px #E8A33D) !important;opacity:1 !important}
