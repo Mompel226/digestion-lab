@@ -575,7 +575,18 @@ window.ZOOM_DETAIL = {
       }
     ],
     "label": "The pancreas makes pancreatic juice in its acinar cells; its duct carries the juice to the duodenum, where the bile duct joins it",
-    "credit": "inset: OpenStax College, CC BY 3.0, from the 7.4 deck"
+    "credit": "inset: OpenStax College, CC BY 3.0, from the 7.4 deck",
+    "hide": [
+      {
+        "organ": "gall-bladder",
+        "except": [
+          94,
+          477,
+          147,
+          498
+        ]
+      }
+    ]
   },
   "ileum-villi": {
     "organ": "ileum-villi",
@@ -645,7 +656,7 @@ window.ZOOM_DETAIL = {
         "img": "zoom/lining-duodenum.jpg",
         "at": [
           262,
-          542,
+          552,
           70
         ],
         "cap": "duodenum lining",
@@ -658,7 +669,7 @@ window.ZOOM_DETAIL = {
         "img": "zoom/lining-jejunum.jpg",
         "at": [
           262,
-          614,
+          624,
           70
         ],
         "cap": "jejunum: the deepest folds",
@@ -671,7 +682,7 @@ window.ZOOM_DETAIL = {
         "img": "zoom/lining-ileum.jpg",
         "at": [
           262,
-          686,
+          696,
           70
         ],
         "cap": "ileum: shallower folds",
