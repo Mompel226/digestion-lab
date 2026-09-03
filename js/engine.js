@@ -191,8 +191,18 @@
     top.appendChild(h('span', 'act__n', 'Question ' + (idx + 1)));
     card.appendChild(top);
     if (a.prompt) card.appendChild(h('p', 'act__prompt', a.prompt));
+    if (a.img) card.appendChild(imgEl(a.img, a.imgCap));
     if (a.table) card.appendChild(tableEl(a.table));
     return card;
+  }
+
+  /* A graph or photograph the question is about — reading it is the skill being tested. */
+  function imgEl(src, cap) {
+    var fig = document.createElement('figure'); fig.className = 'qimg';
+    var im = document.createElement('img'); im.src = 'assets/photos/' + src; im.alt = cap || ''; im.loading = 'lazy';
+    fig.appendChild(im);
+    if (cap) { var fc = document.createElement('figcaption'); fc.textContent = cap; fig.appendChild(fc); }
+    return fig;
   }
 
   /* A data table is part of the question, not decoration: Paper 6 gives the

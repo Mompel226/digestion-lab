@@ -865,3 +865,25 @@ body[data-mode="practice"] .panel__inner::before{
 .tourcard__more{font-size:11px;color:var(--grey);text-align:right;line-height:1.35;display:flex;flex-direction:column;align-items:flex-end}
 .tourcard__link{background:none;border:0;padding:0;font:inherit;font-size:11.5px;font-weight:700;color:var(--green);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 .tourcard__link:hover{color:#0D3D1E}
+/* a graph or photograph inside a question */
+.qimg{margin:2px 0 14px;background:#fff;border:1px solid var(--edge);border-radius:var(--r);padding:8px 10px 6px;max-width:560px}
+.qimg img{display:block;width:100%;height:auto}
+.qimg figcaption{font-size:12.5px;color:var(--grey);margin-top:6px}
+/* the enzymes recap: a little always, the rest on request */
+.recap{border-left:4px solid var(--c-chem,#B23A6B)}
+.recap__intro{margin:0 0 10px;font-size:16px;line-height:1.55}
+.recap details{border:1px solid var(--edge);border-radius:var(--r);background:var(--card-2);padding:0}
+.recap summary{cursor:pointer;padding:10px 14px;font-weight:700;color:var(--green);list-style:none;display:flex;align-items:center;gap:8px}
+.recap summary::before{content:"▸";display:inline-block;transition:transform .15s}
+.recap details[open] summary::before{transform:rotate(90deg)}
+.recap summary::-webkit-details-marker{display:none}
+.recap__body{padding:4px 14px 14px}
+.recap__h{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--grey);margin:14px 0 6px}
+.recap__body ul{margin:0;padding-left:19px}
+.recap__body li{font-size:15px;line-height:1.55;margin-bottom:7px}
+.recap__figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:8px 0 4px}
+.recap__figs figure{margin:0;background:#fff;border:1px solid var(--edge);border-radius:var(--r);padding:8px}
+.recap__figs img{display:block;width:100%;height:auto}
+.recap__figs figcaption{font-size:12.5px;color:#3C3C3C;margin-top:6px;line-height:1.4}
+.recap__exam{background:#FFF8E6;border:1.5px solid #E2B95F;border-radius:var(--r);padding:10px 14px;margin-top:12px}
+.recap__exam .recap__h{color:#8A5A0E;margin-top:0}
