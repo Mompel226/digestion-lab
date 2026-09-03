@@ -274,6 +274,7 @@
     /* An exam bullet is a string, or {text, sup:true} for Supplement-only
        content, or {text, ext:true} for what the decks teach but 0610 does not
        examine. The badge lets a Core candidate see the fence. */
+    var rooms = (window.Zoom && window.Zoom.rooms) ? window.Zoom.rooms(st.id) : {};
     (st.learn.exam || []).forEach(function (b, i) {
       var li = document.createElement('li');
       var txt = typeof b === 'string' ? b : b.text;
@@ -283,6 +284,9 @@
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
       if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
       li.innerHTML = badge + M(txt);
+      /* Some sentences carry a view on the plate that deserves to be looked at. Those get extra
+         room, so the reader scrolls through them at a pace where each picture is actually seen. */
+      if (rooms[i]) li.style.minHeight = rooms[i] + 'px';
       list.appendChild(li);
       media.filter(function (x) { return !x.more && x.after === i; })
            .forEach(function (x) { li.appendChild(mediaBox(x)); });

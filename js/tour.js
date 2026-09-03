@@ -15,7 +15,6 @@
   var f1 = function (v) { return (+v).toFixed(1); };
 
   /* routes on the plate, in plate units (the same ones plateanim draws) */
-  var PORTAL = [[200, 650], [206, 620], [204, 592], [196, 564], [182, 536], [166, 508], [152, 486]];
   var BILE = [[144, 488], [150, 489], [156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
   var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
 
@@ -91,28 +90,16 @@
       svgEl('animate', { attributeName:'opacity', values:'0;1;1;0', keyTimes:'0;0.08;0.9;1', dur:dur + 's', begin:begin, repeatCount:rep, fill:'freeze' }, c);
     }
   }
-  /* nutrients leaving the intestine into the blood and up the portal vein to the liver */
-  function nutrientRoute(t) { return [canalPoint(t)].concat(PORTAL); }
-  /* the hepatic portal vein, drawn on the plate with its name — the vessel the absorbed
-     nutrients actually travel in, so nothing appears to float from the gut to the liver */
-  function vein(named) {
-    var g = fxLayer(); if (!g) return;
-    function tube(pts, w, col) {
-      var d = 'M' + pts[0][0] + ',' + pts[0][1];
-      for (var i = 1; i < pts.length - 1; i++) { var a = pts[i], b = pts[i + 1]; d += ' Q' + a[0] + ',' + a[1] + ' ' + (a[0] + b[0]) / 2 + ',' + (a[1] + b[1]) / 2; }
-      var last = pts[pts.length - 1]; d += ' L' + last[0] + ',' + last[1];
-      svgEl('path', { d: d, fill: 'none', stroke: col, 'stroke-width': f1(w), 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }, g);
-    }
-    tube(PORTAL, 4.6, '#2F3E8F'); tube(PORTAL, 1.6, '#6F7FD1');
-    [[[168, 640], [186, 645], [200, 650]], [[236, 650], [218, 650], [200, 650]], [[186, 690], [194, 672], [200, 650]]]
-      .forEach(function (t) { tube(t, 2.4, '#2F3E8F'); });
-    if (named) {
-      var t = svgEl('text', { x: 214, y: 560, 'font-size': '7.5', 'class': 'dl__t', 'text-anchor': 'start' }, g);
-      ['hepatic portal vein —', 'the absorbed glucose and amino', 'acids travel to the liver in it'].forEach(function (line, i) {
-        var ts = svgEl('tspan', { x: 214, dy: i ? '1.15em' : '0' }, t); ts.textContent = line;
-      });
-      svgEl('line', { x1: 212, y1: 558, x2: 199, y2: 556, 'class': 'dl__l', 'stroke-width': '0.7' }, g);
-    }
+  /* The mesentery and the hepatic portal vein — the same drawing the small-intestine station
+     uses, so the story is told once: the sheet that holds the gut, the veins inside it gathering
+     the absorbed food from every loop, and the liver outlined at the end of the road. */
+  function vein() {
+    var g = fxLayer(); if (!g || !global.PlateAnim || !global.PlateAnim.portal) return;
+    var cam = SCENES[Math.min(idx, SCENES.length - 1)].cam || { w: 340 };
+    g.innerHTML += global.PlateAnim.portal({
+      fs: cam.w / 40, u: cam.w / 200, compact: false,
+      outline: global.Zoom && global.Zoom.outline, outlineIn: global.Zoom && global.Zoom.outlineIn
+    });
   }
   function water(t) {
     var g = fxLayer(); if (!g) return;
@@ -253,15 +240,11 @@
       });
     } else if (sc.id === 'absorption') {
       A.travel(M.duodenum, M.ileum, 8200);
-      later(function () { vein(false); }, 1100);
-      [0.2, 0.42, 0.64, 0.86].forEach(function (k, i) {
-        later(function () { drops(nutrientRoute(mix(M.jejunum, M.ileum, k)), i % 2 ? '#BC235B' : '#E8A33D', 2.2, 5.5, 3); }, 1200 + i * 1500);
-      });
+      later(function () { vein(); }, 900);          /* the mesentery's veins do the collecting */
     } else if (sc.id === 'assimilation') {
       A.placeBolus(M.ileum);
-      vein(true);
-      drops(PORTAL, '#E8A33D', 2.2, 4.6, 4); drops(PORTAL, '#BC235B', 2, 5.4, 3);
-      drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.35)), '#E8A33D', 2.2, 5, 4); drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.7)), '#BC235B', 2.2, 5.6, 3);
+      vein();
+
     } else if (sc.id === 'egestion') {
       A.travel(M.ileum, 0.995, 8500, function () { later(function () { A.stopJourney(); }, 600); });
       [0.15, 0.35, 0.55, 0.75].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 800 + i * 700); });

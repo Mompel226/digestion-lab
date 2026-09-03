@@ -720,7 +720,7 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 6,
+        "at": 4,
         "cam": {
           "cx": 175,
           "cy": 640,
@@ -761,9 +761,9 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 1800,
-        "scroll": 130,
-        "fade": 650
+        "dwell": 700,
+        "fade": 520,
+        "sub": 0.55
       },
       {
         "at": 7,
@@ -824,9 +824,10 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1800,
-        "scroll": 130,
-        "fade": 650
+        "dwell": 700,
+        "scroll": 70,
+        "fade": 520,
+        "room": 210
       },
       {
         "at": 8,
@@ -887,9 +888,10 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1800,
-        "scroll": 130,
-        "fade": 650
+        "dwell": 700,
+        "scroll": 70,
+        "fade": 520,
+        "room": 210
       },
       {
         "at": 9,
@@ -941,9 +943,9 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 1800,
-        "scroll": 130,
-        "fade": 650
+        "dwell": 700,
+        "scroll": 60,
+        "fade": 520
       },
       {
         "at": 10,
@@ -964,9 +966,9 @@ window.ZOOM_DETAIL = {
           {
             "img": "zoom/microvilli-tem.jpg",
             "at": [
-              140,
-              470,
-              92
+              118,
+              486,
+              140
             ],
             "cap": "the brush border of one cell: every microvillus\nis wrapped in the membrane where maltase sits",
             "capTop": true,
@@ -979,9 +981,10 @@ window.ZOOM_DETAIL = {
           }
         ],
         "credit": "micrograph: L. Howard & K. Connolly, Dartmouth, public domain",
-        "dwell": 1500,
-        "scroll": 110,
-        "fade": 600
+        "dwell": 700,
+        "scroll": 60,
+        "fade": 500,
+        "room": 170
       },
       {
         "at": 11,
@@ -1046,9 +1049,9 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1300,
-        "scroll": 100,
-        "fade": 550
+        "dwell": 700,
+        "scroll": 60,
+        "fade": 500
       },
       {
         "at": 12,
