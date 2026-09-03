@@ -590,7 +590,17 @@ window.ZOOM_DETAIL = {
             "organ": "gall-bladder"
           }
         ],
-        "focus": "liver"
+        "focus": "liver",
+        "paint": [
+          {
+            "organ": "liver",
+            "largest": true,
+            "fill": "none",
+            "stroke": "#E8A33D",
+            "sw": 2.2,
+            "opacity": 0.95
+          }
+        ]
       }
     ]
   },
@@ -940,19 +950,19 @@ window.ZOOM_DETAIL = {
         "label": "Where maltase works: embedded in the membrane of the microvilli, so maltose is split on the cell surface and the glucose goes straight in",
         "insets": [
           {
-            "img": "zoom/microvilli-tem-tip.jpg",
+            "img": "zoom/microvilli-tem.jpg",
             "at": [
-              150,
-              480,
-              72
+              140,
+              470,
+              92
             ],
-            "cap": "three microvilli, each wrapped in\nits membrane — where maltase sits",
+            "cap": "the brush border of one cell: every microvillus\nis wrapped in the membrane where maltase sits",
             "capTop": true,
             "link": [
-              0.36,
-              0.06,
-              0.66,
-              0.42
+              0.3,
+              0.04,
+              0.72,
+              0.5
             ]
           }
         ],

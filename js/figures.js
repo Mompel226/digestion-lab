@@ -386,7 +386,7 @@
       mol(290, 250, -140, -16, '#0F6E8C', '3.8s', '1.9s') +
       mol(12, 90, 88, 18, '#0F6E8C', '3.6s', '2.7s');
     var base = plateFig(art, {
-      viewBox:'-158 -18 646 486', leftX:-24, rightX:296, minGap:26, top:20, bottom:410,
+      viewBox:'-158 -18 646 500', leftX:-24, rightX:296, minGap:26, top:20, bottom:410,
       hide:[19,20,21,22,23,24,25,26],
       labels:[
         { side:'left',  ly:96,  at:[82,104], text:'Microvilli', sub:'the brush border' },
@@ -418,7 +418,7 @@
     var cell =
       '<g class="fig-cell">' +
         '<line x1="218" y1="132" x2="228" y2="132" stroke="#14572B" stroke-width="1.4" stroke-dasharray="3 2"/>' +
-        '<rect x="228" y="-12" width="256" height="476" rx="10" fill="#FFFDF9" stroke="#C9C0AE" stroke-width="1"/>' +
+        '<rect x="228" y="-12" width="256" height="490" rx="10" fill="#FFFDF9" stroke="#C9C0AE" stroke-width="1"/>' +
         '<text class="fb" x="240" y="8">One enterocyte</text>' +
         '<text class="fs" x="240" y="23">an epithelial cell of the villus wall, enlarged</text>' +
         '<g class="fig-cell__close" role="button" tabindex="0"><title>Close</title><circle cx="470" cy="6" r="9" fill="#F1EDE3" stroke="#B9AE9B" stroke-width="1"/>' +
@@ -447,11 +447,20 @@
         '<text class="fs" x="240" y="303">Food crosses this one cell, then it is in the</text>' +
         '<text class="fs" x="240" y="316">capillaries or the lacteal just beneath it.</text>' +
         /* the real thing: a transmission electron micrograph of the same border */
+        /* the same brush border, for real: a gold box on the schematic's microvilli, joined to the
+           micrograph, which is labelled so nobody takes the fringe for villi */
+        '<rect x="244" y="40" width="92" height="30" rx="3" fill="none" stroke="#E8A33D" stroke-width="1.6"/>' +
+        '<line x1="244" y1="70" x2="246" y2="324" stroke="#E8A33D" stroke-width="1.1"/>' +
+        '<line x1="336" y1="70" x2="476" y2="324" stroke="#E8A33D" stroke-width="1.1"/>' +
         '<image href="assets/zoom/microvilli-tem-band.jpg" x="246" y="324" width="230" height="92" preserveAspectRatio="xMidYMid slice"/>' +
-        '<rect x="246" y="324" width="230" height="92" fill="none" stroke="#B9AE9B" stroke-width="0.8"/>' +
-        '<text class="fs" x="240" y="430" style="fill:#1A1A1A;font-weight:600">The real thing: a transmission electron</text>' +
-        '<text class="fs" x="240" y="442" style="fill:#1A1A1A;font-weight:600">micrograph — black and white because it uses</text>' +
-        '<text class="fs" x="240" y="454" style="fill:#1A1A1A;font-weight:600">electrons, not light, so there is no colour.</text>' +
+        '<rect x="246" y="324" width="230" height="92" fill="none" stroke="#E8A33D" stroke-width="1.6"/>' +
+        '<path d="M262,330 L262,352 M262,341 L300,341" stroke="#FFFDF9" stroke-width="3.2" fill="none"/><path d="M262,330 L262,352 M262,341 L300,341" stroke="#1A1A1A" stroke-width="1.2" fill="none"/>' +
+        '<text class="fs" x="304" y="345" style="fill:#fff;font-weight:700;paint-order:stroke;stroke:#1A1A1A;stroke-width:2.4px">microvilli — the brush border</text>' +
+        '<text class="fs" x="304" y="404" style="fill:#fff;font-weight:700;paint-order:stroke;stroke:#1A1A1A;stroke-width:2.4px">cytoplasm of the same cell</text>' +
+        '<text class="fs" x="240" y="430" style="fill:#1A1A1A;font-weight:600">The box above, photographed: a transmission</text>' +
+        '<text class="fs" x="240" y="442" style="fill:#1A1A1A;font-weight:600">electron micrograph of the top of one cell.</text>' +
+        '<text class="fs" x="240" y="454" style="fill:#1A1A1A;font-weight:600">Black and white because it uses electrons,</text>' +
+        '<text class="fs" x="240" y="466" style="fill:#1A1A1A;font-weight:600">not light — so there is no colour to record.</text>' +
       '</g>';
     return {
       svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + lens + cell + '</svg>'),

@@ -110,7 +110,7 @@
     var c = buildCard();
     c.hidden = false;
     c.classList.toggle('tourcard--bottom', sc.pos === 'bottom');
-    c.querySelector('.tourcard__more').innerHTML = '<button type="button" class="tourcard__link" data-act="learn">Learn more at the ' + sc.stationName + ' station</button><span>or click any organ on the plate</span>';
+    c.querySelector('.tourcard__more').innerHTML = '';                 /* the panel beside is already the station */
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
     c.querySelector('.tourcard__def').textContent = sc.def;
@@ -148,33 +148,37 @@
     camera(sc.cam, 900); focus(sc.organ); showCard(sc, i);
     if (!A) return;
     A.stopJourney();
+    /* the landmarks along the canal (fractions of its length), found on the plate's own path */
+    var M = A.marks() || { mouth:0.01, pharynx:0.04, stomach:0.24, duodenum:0.34, jejunum:0.38, ileum:0.62, caecum:0.68, colon:0.78, sigmoid:0.92, anus:1 };
+    var mix = function (a, b, k) { return a + (b - a) * k; };
     if (sc.id === 'ingestion') {
-      A.placeBolus(0.005);
-      later(function () { A.travel(0.005, 0.03, 4500); }, 900);
+      A.placeBolus(M.mouth * 0.3);
+      later(function () { A.travel(M.mouth * 0.3, mix(M.mouth, M.pharynx, 0.55), 4500); }, 900);
     } else if (sc.id === 'digestion') {
-      A.travel(0.03, 0.24, 4200, function () {
+      var st = M.stomach, w = 0.006;
+      A.travel(mix(M.mouth, M.pharynx, 0.55), st, 4200, function () {
         /* churning: the bolus is held in the stomach and wobbles */
-        later(function () { A.travel(0.24, 0.235, 400, function () { A.travel(0.235, 0.245, 500); }); }, 200);
-        later(function () { A.travel(0.245, 0.235, 500, function () { A.travel(0.235, 0.245, 500); }); }, 1300);
-        later(function () { A.travel(0.245, 0.235, 500, function () { A.travel(0.235, 0.245, 500); }); }, 2400);
+        later(function () { A.travel(st, st - w, 400, function () { A.travel(st - w, st + w, 500); }); }, 200);
+        later(function () { A.travel(st + w, st - w, 500, function () { A.travel(st - w, st + w, 500); }); }, 1300);
+        later(function () { A.travel(st + w, st - w, 500, function () { A.travel(st - w, st + w, 500); }); }, 2400);
         later(function () {
-          A.travel(0.245, 0.40, 3200, function () {
+          A.travel(st + w, M.duodenum, 3200, function () {
             drops(BILE, '#8DB43A', 2.2, 4.5, 5);
             drops(PANC, '#E8C95A', 2.2, 4.5, 5);
           });
         }, 4200);
       });
     } else if (sc.id === 'absorption') {
-      A.travel(0.40, 0.66, 8200);
-      [0.46, 0.52, 0.58, 0.63].forEach(function (t, k) {
-        later(function () { drops(nutrientRoute(t), k % 2 ? '#BC235B' : '#E8A33D', 2.2, 5.5, 3); }, 1200 + k * 1500);
+      A.travel(M.duodenum, M.ileum, 8200);
+      [0.2, 0.42, 0.64, 0.86].forEach(function (k, i) {
+        later(function () { drops(nutrientRoute(mix(M.jejunum, M.ileum, k)), i % 2 ? '#BC235B' : '#E8A33D', 2.2, 5.5, 3); }, 1200 + i * 1500);
       });
     } else if (sc.id === 'assimilation') {
-      A.placeBolus(0.66);
-      drops(nutrientRoute(0.5), '#E8A33D', 2.2, 5, 4); drops(nutrientRoute(0.6), '#BC235B', 2.2, 5.6, 3);
+      A.placeBolus(M.ileum);
+      drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.35)), '#E8A33D', 2.2, 5, 4); drops(nutrientRoute(mix(M.jejunum, M.ileum, 0.7)), '#BC235B', 2.2, 5.6, 3);
     } else if (sc.id === 'egestion') {
-      A.travel(0.66, 0.99, 8500, function () { later(function () { A.stopJourney(); }, 600); });
-      [0.74, 0.79, 0.84, 0.89].forEach(function (t, k) { later(function () { water(t); }, 800 + k * 700); });
+      A.travel(M.ileum, 0.995, 8500, function () { later(function () { A.stopJourney(); }, 600); });
+      [0.15, 0.35, 0.55, 0.75].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 800 + i * 700); });
     }
     later(function () { play(i + 1); }, sc.ms);
   }
