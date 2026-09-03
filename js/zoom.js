@@ -179,6 +179,18 @@
     }
     return out;
   }
+  /* outline points of every path of an organ whose box lies inside `box` [x0,y0,x1,y1] */
+  function outlineIn(organ, box, step) {
+    var root = svg.getScreenCTM().inverse(), out = [];
+    Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
+      if (p.tagName !== 'path') return;
+      var r = p.getBoundingClientRect(), a = pt(root, r.left, r.top), b = pt(root, r.right, r.bottom);
+      if (a.x < box[0] - 2 || a.y < box[1] - 2 || b.x > box[2] + 2 || b.y > box[3] + 2) return;
+      var L = p.getTotalLength(), m = p.getScreenCTM();
+      for (var s = 0; s < L; s += (step || 2)) { var q = p.getPointAtLength(s), sx = m.a * q.x + m.c * q.y + m.e, sy = m.b * q.x + m.d * q.y + m.f; out.push([root.a * sx + root.c * sy + root.e, root.b * sx + root.d * sy + root.f]); }
+    });
+    return out;
+  }
   /* is this plate point inside the organ's own artwork? (the plate's paths carry transforms, so
      the test goes plate -> screen -> each path's local space) */
   function inFillFor(organ) {
@@ -430,7 +442,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:ppu(frame) < 2.2, inFill:inFillFor, outline:outlineFor, focus:s.focus || detail.organ });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:s.focus || detail.organ });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;

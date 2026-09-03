@@ -503,6 +503,13 @@ window.ZOOM_DETAIL = {
     "focus": "liver",
     "paint": [
       {
+        "organ": "pancreas",
+        "largest": true,
+        "fill": "#E89E55",
+        "stroke": "#201B17",
+        "sw": 0.6
+      },
+      {
         "organ": "liver",
         "largest": true,
         "fill": "none",
@@ -521,86 +528,32 @@ window.ZOOM_DETAIL = {
     "focus": "gall-bladder",
     "paint": [
       {
-        "organ": "gall-bladder",
-        "largest": false,
-        "fill": "none",
-        "stroke": "#E8A33D",
-        "sw": 2,
-        "opacity": 0.95,
-        "only": [
-          96,
-          479,
-          145,
-          496
-        ]
+        "organ": "pancreas",
+        "largest": true,
+        "fill": "#E89E55",
+        "stroke": "#201B17",
+        "sw": 0.6
       }
     ],
     "label": "The gall bladder lies under the liver; it stores bile and empties it down the bile duct into the duodenum"
   },
   "pancreas": {
     "organ": "pancreas",
-    "img": "zoom/pancreas-render2.jpg",
-    "roi": [
-      0.18,
-      0.37,
-      0.64,
-      0.34
-    ],
-    "pad": 0.45,
-    "label": "The pancreas, with its duct running along it into the duodenum",
-    "credit": "OpenStax College / AnatomyZone, from the 7.4 deck",
-    "labels": [
+    "keep": true,
+    "noback": true,
+    "anim": "bileflow",
+    "focus": "pancreas",
+    "paint": [
       {
-        "t": "pancreas",
-        "at": [
-          0.5,
-          0.6
-        ],
-        "tx": [
-          0.56,
-          0.86
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "pancreatic duct",
-        "at": [
-          0.6,
-          0.5
-        ],
-        "tx": [
-          0.66,
-          0.24
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "duodenum",
-        "at": [
-          0.09,
-          0.55
-        ],
-        "tx": [
-          0.02,
-          0.9
-        ],
-        "anchor": "start"
+        "organ": "pancreas",
+        "largest": true,
+        "fill": "none",
+        "stroke": "#E8A33D",
+        "sw": 2.2,
+        "opacity": 0.95
       }
     ],
-    "box": [
-      168,
-      522,
-      92,
-      32
-    ],
-    "grow": 1.25,
-    "crop": [
-      0.17,
-      0.02,
-      1,
-      1
-    ],
-    "anim": "juiceflow"
+    "label": "The pancreas makes pancreatic juice, which its duct carries to the duodenum, where the bile duct joins it"
   },
   "ileum-villi": {
     "organ": "ileum-villi",
