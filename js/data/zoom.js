@@ -590,106 +590,402 @@ window.ZOOM_DETAIL = {
   },
   "ileum-villi": {
     "organ": "ileum-villi",
-    "img": "zoom/small-intestine-illus.jpg",
-    "roi": [
-      0.41,
-      0.08,
-      0.4,
-      0.78
-    ],
-    "full": true,
-    "label": "The small intestine: duodenum, jejunum and ileum, and what their linings look like",
-    "credit": "OpenStax College, CC BY 3.0 · linings from the 7.5 deck",
-    "labels": [
+    "label": "The small intestine, level by level",
+    "steps": [
       {
-        "t": "duodenum",
-        "at": [
-          0.5,
-          0.2
-        ],
-        "tx": [
+        "at": 0,
+        "img": "zoom/small-intestine-illus.jpg",
+        "roi": [
+          0.41,
+          0.08,
           0.4,
-          0.12
+          0.78
         ],
-        "anchor": "end"
-      },
-      {
-        "t": "jejunum",
-        "at": [
-          0.5,
-          0.38
+        "full": true,
+        "label": "The small intestine — duodenum, jejunum and ileum — and where bile and pancreatic juice come in",
+        "credit": "OpenStax College, CC BY 3.0",
+        "labels": [
+          {
+            "t": "duodenum",
+            "at": [
+              0.5,
+              0.2
+            ],
+            "tx": [
+              0.4,
+              0.12
+            ],
+            "anchor": "end"
+          },
+          {
+            "t": "jejunum",
+            "at": [
+              0.5,
+              0.38
+            ],
+            "tx": [
+              0.41,
+              0.3
+            ],
+            "anchor": "end"
+          },
+          {
+            "t": "ileum",
+            "at": [
+              0.5,
+              0.64
+            ],
+            "tx": [
+              0.41,
+              0.74
+            ],
+            "anchor": "end"
+          }
         ],
-        "tx": [
-          0.41,
-          0.3
-        ],
-        "anchor": "end"
-      },
-      {
-        "t": "ileum",
-        "at": [
-          0.5,
-          0.64
-        ],
-        "tx": [
-          0.41,
-          0.74
-        ],
-        "anchor": "end"
-      }
-    ],
-    "insets": [
-      {
-        "img": "zoom/pancreas-render2.jpg",
-        "at": [
-          262,
-          468,
-          70
-        ],
-        "cap": "where bile and pancreatic\njuice enter — click to enlarge",
-        "to": [
-          0.5,
-          0.2
+        "insets": [
+          {
+            "img": "zoom/pancreas-render2.jpg",
+            "at": [
+              262,
+              468,
+              70
+            ],
+            "cap": "where bile and pancreatic\njuice enter — click to enlarge",
+            "to": [
+              0.5,
+              0.2
+            ]
+          }
         ]
       },
       {
-        "img": "zoom/lining-duodenum.jpg",
-        "at": [
-          262,
-          552,
-          70
+        "at": 6,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "img": "photos/folds-real-photo.jpg",
+        "fixed": [
+          36,
+          592,
+          208
         ],
-        "cap": "duodenum lining",
-        "to": [
-          0.5,
-          0.2
+        "box": [
+          36,
+          592,
+          208,
+          117
+        ],
+        "window": [
+          33,
+          589,
+          214,
+          123
+        ],
+        "soft": 3,
+        "label": "Level 1 — circular folds, inside a real small intestine: about three times the area of a flat tube",
+        "credit": "photograph from the 7.5 deck",
+        "labels": [
+          {
+            "t": "level 1 · circular folds · ×3",
+            "at": [
+              0.5,
+              0.42
+            ],
+            "tx": [
+              0.5,
+              -0.17
+            ],
+            "anchor": "middle"
+          }
         ]
       },
       {
-        "img": "zoom/lining-jejunum.jpg",
-        "at": [
-          262,
-          624,
-          70
+        "at": 7,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "img": "zoom/villi-lm.jpg",
+        "fixed": [
+          150,
+          556,
+          106
         ],
-        "cap": "jejunum: the deepest folds",
-        "to": [
-          0.58,
-          0.4
+        "box": [
+          150,
+          556,
+          106,
+          207
+        ],
+        "window": [
+          147,
+          553,
+          112,
+          213
+        ],
+        "soft": 3,
+        "label": "Level 2 — villi: finger-like projections all over every fold, about ten times more area again",
+        "credit": "light micrograph, ×70, from the 7.5 deck",
+        "labels": [
+          {
+            "t": "level 2 · villi · ×10 more",
+            "at": [
+              0.5,
+              0.3
+            ],
+            "tx": [
+              0.5,
+              -0.08
+            ],
+            "anchor": "middle"
+          }
+        ],
+        "insets": [
+          {
+            "img": "photos/folds-real-photo.jpg",
+            "at": [
+              40,
+              612,
+              94
+            ],
+            "cap": "one fold, close up",
+            "link": [
+              0.44,
+              0.3,
+              0.6,
+              0.62
+            ]
+          }
         ]
       },
       {
-        "img": "zoom/lining-ileum.jpg",
-        "at": [
-          262,
-          696,
-          70
+        "at": 8,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "img": "zoom/microvilli-em.jpg",
+        "fixed": [
+          126,
+          596,
+          166
         ],
-        "cap": "ileum: shallower folds",
-        "to": [
-          0.55,
-          0.66
+        "box": [
+          126,
+          596,
+          166,
+          124
+        ],
+        "window": [
+          123,
+          593,
+          172,
+          130
+        ],
+        "soft": 3,
+        "label": "Level 3 — microvilli: folds of the cell membrane itself, only visible with an electron microscope; about twenty times more area again",
+        "credit": "electron micrograph, ×18,000, from the 7.5 deck",
+        "labels": [
+          {
+            "t": "level 3 · microvilli · ×20 more",
+            "at": [
+              0.78,
+              0.5
+            ],
+            "tx": [
+              0.5,
+              -0.14
+            ],
+            "anchor": "middle"
+          }
+        ],
+        "insets": [
+          {
+            "img": "zoom/villi-lm.jpg",
+            "at": [
+              40,
+              588,
+              68
+            ],
+            "cap": "one cell of a villus",
+            "link": [
+              0.6,
+              0.2,
+              0.86,
+              0.34
+            ]
+          }
         ]
+      },
+      {
+        "at": 9,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "noback": true,
+        "label": "The three levels together: folds × villi × microvilli — up to 600 times the surface area of a flat tube",
+        "credit": "from the 7.5 deck",
+        "insets": [
+          {
+            "img": "photos/folds-real-photo.jpg",
+            "at": [
+              38,
+              600,
+              92
+            ],
+            "cap": "circular folds · ×3"
+          },
+          {
+            "img": "zoom/villi-lm.jpg",
+            "at": [
+              138,
+              576,
+              46
+            ],
+            "cap": "villi · ×10"
+          },
+          {
+            "img": "zoom/microvilli-em.jpg",
+            "at": [
+              192,
+              600,
+              92
+            ],
+            "cap": "microvilli · ×20"
+          }
+        ],
+        "labels": [
+          {
+            "t": "together: up to 600× the area of a flat tube",
+            "plate": true,
+            "tx": [
+              162,
+              712
+            ],
+            "anchor": "middle"
+          }
+        ]
+      },
+      {
+        "at": 10,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "anim": "maltase",
+        "animBox": [
+          48,
+          588,
+          194,
+          126
+        ],
+        "label": "Where maltase works: embedded in the membrane of the microvilli, so maltose is split on the cell surface and the glucose goes straight in",
+        "insets": [
+          {
+            "img": "zoom/microvilli-em.jpg",
+            "at": [
+              252,
+              606,
+              58
+            ],
+            "cap": "the microvilli, ×18,000",
+            "link": [
+              0.62,
+              0.06,
+              0.98,
+              0.94
+            ]
+          }
+        ]
+      },
+      {
+        "at": 11,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "img": "zoom/villi-lm.jpg",
+        "fixed": [
+          64,
+          566,
+          112
+        ],
+        "box": [
+          64,
+          566,
+          112,
+          219
+        ],
+        "window": [
+          61,
+          563,
+          118,
+          225
+        ],
+        "soft": 3,
+        "label": "Inside a villus: a wall one cell thick, and capillaries and a lacteal running up the middle",
+        "credit": "light micrograph, ×70, from the 7.5 deck",
+        "labels": [
+          {
+            "t": "lumen",
+            "at": [
+              0.68,
+              0.14
+            ],
+            "tx": [
+              1.1,
+              0.06
+            ]
+          },
+          {
+            "t": "epithelium —\none cell thick",
+            "at": [
+              0.42,
+              0.34
+            ],
+            "tx": [
+              1.1,
+              0.3
+            ]
+          },
+          {
+            "t": "the core: capillaries\nand a lacteal",
+            "at": [
+              0.18,
+              0.55
+            ],
+            "tx": [
+              1.1,
+              0.56
+            ]
+          }
+        ]
+      },
+      {
+        "at": 12,
+        "cam": {
+          "cx": 170,
+          "cy": 568,
+          "w": 270
+        },
+        "keep": true,
+        "noback": true,
+        "anim": "portal",
+        "animBox": [
+          140,
+          470,
+          120,
+          220
+        ],
+        "label": "The hepatic portal vein: absorbed glucose and amino acids go straight to the liver"
       }
     ]
   },

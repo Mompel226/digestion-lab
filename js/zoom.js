@@ -244,8 +244,9 @@
      plate:true); `tx` the text position in the same terms; else dx/dy in
      ems from the feature. Labels the camera would cut are not drawn. */
   function drawLabel(L, pl, fs, frame) {
-    var ax, ay, tx, ty;
-    if (L.plate) { ax = L.at[0]; ay = L.at[1]; }
+    var ax = null, ay = null, tx, ty, caption = !L.at;     /* no feature: a caption, text only */
+    if (caption) { if (!L.plate && !pl) return; }
+    else if (L.plate) { ax = L.at[0]; ay = L.at[1]; }
     else { if (!pl) return; ax = pl.x + L.at[0] * pl.W; ay = pl.y + L.at[1] * pl.H; }
     if (L.tx) { if (L.plate) { tx = L.tx[0]; ty = L.tx[1]; } else { tx = pl.x + L.tx[0] * pl.W; ty = pl.y + L.tx[1] * pl.H; } }
     else { tx = ax + (L.dx || 1.2) * fs; ty = ay + (L.dy || 0) * fs; }
@@ -259,8 +260,10 @@
     var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
     if (sx === x0) sx -= fs * 0.25; else if (sx === x0 + tw) sx += fs * 0.25;
     if (sy === yTop) sy -= fs * 0.15; else if (sy === yBot) sy += fs * 0.15;
-    el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) }, gLabels);
-    el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, gLabels);
+    if (!caption) {
+      el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) }, gLabels);
+      el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, gLabels);
+    }
     var t = el('text', { 'class':'dl__t', x:f1(tx), y:f1(ty), 'font-size':f1(fs), 'text-anchor':anchor }, gLabels);
     lines.forEach(function (l, i) {
       var ts = el('tspan', { x:f1(tx), dy:i ? '1.15em' : '0' }, t);
@@ -440,6 +443,26 @@
       var bt = el('text', { 'class':'dl__t', 'font-size':f1(fs * 0.78), 'text-anchor':'middle', y:f1(fs * 0.28) }, badge); bt.textContent = '⤢';
       g.addEventListener('click', function (ev) { ev.stopPropagation(); if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + ins.img, capText, 'Photograph'); });
       g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); g.dispatchEvent(new MouseEvent('click')); } });
+      if (ins.link) {
+        var tgt = placed[0] ? placed[0].pl : (s.animBox ? { x:s.animBox[0], y:s.animBox[1], W:s.animBox[2], H:s.animBox[3] } : null);
+        if (tgt) {
+          var lk = ins.link, bx = x + lk[0] * w, by = y + lk[1] * h, bw = (lk[2] - lk[0]) * w, bh = (lk[3] - lk[1]) * h;
+          var zg = el('g', { 'class':'dl__zoom' }, g);
+          el('rect', { x:f1(bx), y:f1(by), width:f1(bw), height:f1(bh), fill:'none', 'stroke-width':f1(fs * 0.14) }, zg);
+          var horizontal = Math.abs((x + w / 2) - (tgt.x + tgt.W / 2)) > Math.abs((y + h / 2) - (tgt.y + tgt.H / 2));
+          var c1, c2, t1, t2, cl = function (v, a, b) { return Math.max(a, Math.min(b, v)); };
+          if (horizontal) {
+            var ex = x + w / 2 < tgt.x + tgt.W / 2 ? tgt.x : tgt.x + tgt.W, sxx = ex === tgt.x ? bx + bw : bx;
+            c1 = [sxx, by]; c2 = [sxx, by + bh]; t1 = [ex, cl(by, tgt.y, tgt.y + tgt.H)]; t2 = [ex, cl(by + bh, tgt.y, tgt.y + tgt.H)];
+          } else {
+            var ey = y + h / 2 < tgt.y + tgt.H / 2 ? tgt.y : tgt.y + tgt.H, syy = ey === tgt.y ? by + bh : by;
+            c1 = [bx, syy]; c2 = [bx + bw, syy]; t1 = [cl(bx, tgt.x, tgt.x + tgt.W), ey]; t2 = [cl(bx + bw, tgt.x, tgt.x + tgt.W), ey];
+          }
+          el('line', { x1:f1(c1[0]), y1:f1(c1[1]), x2:f1(t1[0]), y2:f1(t1[1]), 'stroke-width':f1(fs * 0.1) }, zg);
+          el('line', { x1:f1(c2[0]), y1:f1(c2[1]), x2:f1(t2[0]), y2:f1(t2[1]), 'stroke-width':f1(fs * 0.1) }, zg);
+          el('rect', { x:f1(tgt.x), y:f1(tgt.y), width:f1(tgt.W), height:f1(tgt.H), fill:'none', 'stroke-width':f1(fs * 0.12) }, zg);
+        }
+      }
       if (ins.to && placed[0]) {
         var ax = placed[0].pl.x + ins.to[0] * placed[0].pl.W, ay = placed[0].pl.y + ins.to[1] * placed[0].pl.H;
         var sx = ax < x ? x - 2 : x + w + 2, sy = y + h / 2;

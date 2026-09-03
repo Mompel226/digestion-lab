@@ -13,7 +13,7 @@
     diet:['sameBalance'], overview:[], mouth:['chewing'],
     'salivary-glands':['starchPath'], epiglottis:[], oesophagus:[],
     stomach:[], liver:[], 'gall-bladder':['emulsify'], pancreas:[],
-    'ileum-villi':['starchPath','villus'],
+    'ileum-villi':['starchPath','surfaceArea','villus'],
     colon:['waterColon'], 'rectum-anus':['egestVsExcrete'],
     'molecules-lab':['starchPath']
   };
@@ -24,7 +24,7 @@
     'mouth:chewing':2,
     'salivary-glands:starchPath':2,
     'gall-bladder:emulsify':3,
-    'ileum-villi:starchPath':2, 'ileum-villi:villus':11,
+    'ileum-villi:starchPath':10, 'ileum-villi:surfaceArea':9, 'ileum-villi:villus':11,
     'colon:waterColon':1, 'rectum-anus:egestVsExcrete':3,
     'molecules-lab:starchPath':0
   };
@@ -312,12 +312,17 @@
       card.appendChild(g);
     }
 
-    if ((st.learn.real || []).length) {
-      var r = document.createElement('div');
-      r.className = 'real';
-      r.innerHTML = '<div class="real__h">Real science — not examined</div><ul>' +
-        st.learn.real.map(function (b) { return '<li>' + M(b) + '</li>'; }).join('') + '</ul>';
-      card.appendChild(r);
+    /* What the examiner asks here: the words to write, Core and Supplement kept apart,
+       and how the questions are phrased. Only stations with a real exam footprint carry one. */
+    if ((st.learn.examFocus || []).length) {
+      var ef = document.createElement('div');
+      ef.className = 'examfocus';
+      ef.innerHTML = '<div class="examfocus__h">In the exam — what to write here</div><ul>' +
+        st.learn.examFocus.map(function (b) {
+          var tag = typeof b === 'object' && b.tag ? '<b class="examfocus__tag">' + esc(b.tag) + '</b> ' : '';
+          return '<li>' + tag + M(typeof b === 'string' ? b : b.text) + '</li>';
+        }).join('') + '</ul>';
+      card.appendChild(ef);
     }
     pane.appendChild(card);
 
@@ -334,12 +339,17 @@
       pane.appendChild(d);
     }
 
-    if ((st.later || []).length) {
+    /* One section for everything past the examined content — the 0610 topics this links to, what
+       IB adds, and the real science 0610 leaves out. Each item is tagged, and none of it repeats
+       the list above (what is examined lives there, badged Core, S or extension). */
+    var further = (st.learn && st.learn.further) || [];
+    if (further.length) {
       var L = document.createElement('div');
       L.className = 'card later';
-      L.innerHTML = '<div class="card__h">Where this comes back later in the course</div>' +
-        '<ul class="later__list">' + st.later.map(function (x) {
-          return '<li><span class="later__ref">' + esc(x.ref) + '</span>' + M(x.text) + '</li>';
+      L.innerHTML = '<div class="card__h">Going further — links to other topics, IB, and beyond the syllabus</div>' +
+        '<ul class="later__list">' + further.map(function (x) {
+          var kind = /^IB/.test(x.ref) ? ' later__ref--ib' : /^(Beyond|Not in)/.test(x.ref) ? ' later__ref--beyond' : '';
+          return '<li><span class="later__ref' + kind + '">' + esc(x.ref) + '</span>' + M(x.text) + '</li>';
         }).join('') + '</ul>';
       pane.appendChild(L);
     }

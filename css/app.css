@@ -803,3 +803,16 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* some stations show the plate's own drawing of the organ, undimmed, with labels over it */
 #bodySvg.has-detail.keep-organ .art .op.is-on{opacity:1 !important}
+
+/* ---- in the exam: what to write here ---- */
+.examfocus{background:#FFF8E6;border:1.5px solid #E2B95F;border-radius:var(--r);padding:12px 15px;margin-top:14px}
+.examfocus__h{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:#8A5A0E;margin-bottom:7px}
+.examfocus ul{margin:0;padding-left:19px}
+.examfocus li{font-size:14.5px;color:#3A2E14;margin-bottom:7px;line-height:1.5}
+.examfocus li:last-child{margin-bottom:0}
+.examfocus__tag{color:#8A5A0E}
+/* going further: one list, three kinds of tag */
+.later__ref--ib{background:#EFE9F8;color:#4C2E85;border-color:#C9B8E6}
+.later__ref--beyond{background:#F1F1EE;color:#5A5A5A;border-color:#C9C9C4;font-style:italic}
+/* the zoom-in cue between an inset and the picture it is a piece of */
+#bodySvg .detail .dl__zoom rect,#bodySvg .detail .dl__zoom line{stroke:#E8A33D;fill:none;opacity:.92;stroke-linejoin:round}
