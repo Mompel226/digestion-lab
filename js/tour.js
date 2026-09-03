@@ -28,10 +28,10 @@
       notes:[[0, 'Swallowed, then pushed down the oesophagus by peristalsis.'],
              [4200, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
              [8600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
-    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', cam:{ cx:192, cy:620, w:300 }, ms:10000,
+    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], cam:{ cx:186, cy:612, w:340 }, ms:10000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.']] },
-    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', cam:{ cx:176, cy:556, w:300 }, ms:11000,
+    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], cam:{ cx:186, cy:612, w:340 }, ms:11000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food. Glucose is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:700, w:290 }, ms:11000,
@@ -40,7 +40,23 @@
              [5500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
   ];
 
-  var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null;
+  var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
+
+  /* A fade is only safe while the page is actually being drawn: a transition does not advance in
+     a hidden tab, so a card faded out there would still be invisible when the reader came back.
+     When the page is hidden, or the reader asks for less motion, the card simply moves. */
+  function canAnimate() {
+    return !document.hidden && !(global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }
+  function fadeIn(c, drift, ms) {
+    if (!canAnimate()) { c.classList.remove('is-moving'); return; }
+    c.style.setProperty('--drift', drift);
+    c.classList.add('is-moving');
+    later(function () { c.classList.remove('is-moving'); }, ms || 40);
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden && card) card.classList.remove('is-moving');   /* never come back to a blank card */
+  });
 
   function svgEl(name, attrs, parent) {
     var n = document.createElementNS(NS, name);
@@ -128,13 +144,31 @@
     return card;
   }
   function showCard(sc, i) {
-    var c = buildCard();
+    var c = buildCard(), was = at;
     c.hidden = false;
     /* pos is where the card sits: one place, or a list of [ms, place] so the card moves out of
-       the way as the food does — in digestion it starts low, so the oesophagus is never covered */
-    var place = function (p) { c.classList.toggle('tourcard--bottom', p === 'bottom'); };
+       the way as the food does — in digestion it starts low, so the oesophagus is never covered.
+       Moving between the two is a fade and a drift towards where it is going, and the camera
+       re-frames at the same time so the organ stays in the space that is left. */
+    var place = function (p, animate) {
+      if (p === at && animate) return;
+      if (!animate || !canAnimate()) {
+        c.classList.toggle('tourcard--bottom', p === 'bottom');
+        if (animate) camera(sc.cam, 700, p);
+        at = p; return;
+      }
+      /* out, drifting the way it is going; then in from the other side */
+      c.style.setProperty('--drift', p === 'bottom' ? '16px' : '-16px');
+      c.classList.add('is-moving');
+      camera(sc.cam, 700, p);
+      later(function () {
+        c.classList.toggle('tourcard--bottom', p === 'bottom');
+        at = p;
+        fadeIn(c, p === 'bottom' ? '-16px' : '16px', 30);
+      }, 260);
+    };
     if (typeof sc.pos === 'string') place(sc.pos);
-    else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1]); }, q[0]); }); }
+    else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1], true); }, q[0]); }); }
     c.querySelector('.tourcard__more').innerHTML = '';                 /* the panel beside is already the station */
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
@@ -144,11 +178,14 @@
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
       '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
       '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button>';
+    /* fade in, drifting from the side the card was on, so a scene change reads as a move */
+    fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 40);
     sc.notes.slice(1).forEach(function (n) { later(function () { c.querySelector('.tourcard__note').textContent = n[1]; }, n[0]); });
   }
   function showEnd() {
-    var c = buildCard();
-    c.classList.add('tourcard--bottom');
+    var c = buildCard(), wasEnd = at;
+    c.classList.add('tourcard--bottom'); at = 'bottom';
+    fadeIn(c, wasEnd === 'top' ? '-16px' : '16px', 40);
     c.querySelector('.tourcard__more').innerHTML = '<span>click any organ on the plate to learn more</span>';
     c.querySelector('.tourcard__chip').innerHTML = '<b>Five processes, in order</b>';
     c.querySelector('.tourcard__step').textContent = '';
@@ -158,19 +195,40 @@
   }
 
   /* ---------- the scenes ---------- */
-  function camera(cam, ms) { if (global.Zoom) global.Zoom.flyTo(global.Zoom.frameFor(cam), ms || 900); }
-  function focus(organ) {
+  /* How much of the plate the card is covering, as a fraction of its height — measured, so the
+     framing is right whatever the window size or how long the card's text is. */
+  function cardShare() {
+    var host = document.querySelector('.bodycol');
+    if (!host || !card || card.hidden) return 0;
+    var h = host.getBoundingClientRect().height;
+    return h ? Math.min(0.42, card.getBoundingClientRect().height / h + 0.04) : 0;
+  }
+  /* The organ is centred in the band the card leaves free, not in the whole column: with the card
+     at the top the view sits lower, with it at the bottom it sits higher. */
+  function camera(cam, ms, pos) {
+    if (!global.Zoom || !cam) return;
+    var f = global.Zoom.frameFor(cam), share = cardShare();
+    var shift = pos === 'top' ? -f.h * share / 2 : pos === 'bottom' ? f.h * share / 2 : 0;
+    global.Zoom.flyTo(global.Zoom.frameFor({ cx: cam.cx, cy: cam.cy + shift, w: cam.w }), ms == null ? 900 : ms);
+  }
+  function focus(organ, also) {
     if (!global.Anatomy) return;
     global.Anatomy.state.active = organ; global.Anatomy.highlight();
+    /* a scene can light a second organ — the liver, while the nutrients travel to it */
+    (also || []).forEach(function (o) {
+      Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op[data-organ="' + o + '"]'),
+        function (p) { p.classList.remove('is-dim'); p.classList.add('is-on'); });
+    });
   }
   function play(i) {
     clearTimers(); clearFx();
     var A = global.Anatomy;
-    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); camera({ cx:180, cy:430, w:420 }, 1000); showEnd(); return; }
+    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); showEnd(); camera({ cx:180, cy:430, w:420 }, 1000, 'bottom'); return; }
     idx = i; running = true;
     var sc = SCENES[i];
     if (typeof opener === 'function') opener(sc.station, true);
-    camera(sc.cam, 900); focus(sc.organ); showCard(sc, i);
+    camera(sc.cam, 900, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));
+    focus(sc.organ, sc.also); showCard(sc, i);
     if (!A) return;
     A.stopJourney();
     /* the landmarks along the canal (fractions of its length), found on the plate's own path */
@@ -221,6 +279,7 @@
   }
   function stop(opts) {
     if (!running && idx < 0) return;
+    if (card) card.classList.remove('is-moving');
     var landing = idx >= SCENES.length || idx < 0 ? 'overview' : SCENES[idx].station;
     running = false; idx = -1;
     clearTimers(); clearFx();

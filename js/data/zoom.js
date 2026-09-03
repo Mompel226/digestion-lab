@@ -761,7 +761,9 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 1700
+        "dwell": 1800,
+        "scroll": 130,
+        "fade": 650
       },
       {
         "at": 7,
@@ -822,7 +824,9 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1700
+        "dwell": 1800,
+        "scroll": 130,
+        "fade": 650
       },
       {
         "at": 8,
@@ -883,7 +887,9 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1700
+        "dwell": 1800,
+        "scroll": 130,
+        "fade": 650
       },
       {
         "at": 9,
@@ -935,7 +941,9 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 1700
+        "dwell": 1800,
+        "scroll": 130,
+        "fade": 650
       },
       {
         "at": 10,
@@ -971,7 +979,9 @@ window.ZOOM_DETAIL = {
           }
         ],
         "credit": "micrograph: L. Howard & K. Connolly, Dartmouth, public domain",
-        "dwell": 1400
+        "dwell": 1500,
+        "scroll": 110,
+        "fade": 600
       },
       {
         "at": 11,
@@ -1036,7 +1046,9 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 1200
+        "dwell": 1300,
+        "scroll": 100,
+        "fade": 550
       },
       {
         "at": 12,
