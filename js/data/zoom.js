@@ -584,7 +584,13 @@ window.ZOOM_DETAIL = {
           120,
           220
         ],
-        "label": "The hepatic portal vein: the absorbed glucose and amino acids reach the liver first"
+        "label": "The hepatic portal vein: the absorbed glucose and amino acids reach the liver first",
+        "hide": [
+          {
+            "organ": "gall-bladder"
+          }
+        ],
+        "focus": "liver"
       }
     ]
   },
@@ -1032,7 +1038,12 @@ window.ZOOM_DETAIL = {
           120,
           220
         ],
-        "label": "The hepatic portal vein: absorbed glucose and amino acids go straight to the liver"
+        "label": "The hepatic portal vein: absorbed glucose and amino acids go straight to the liver",
+        "hide": [
+          {
+            "organ": "gall-bladder"
+          }
+        ]
       }
     ]
   },

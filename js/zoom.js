@@ -184,10 +184,18 @@
     var root = svg.getScreenCTM().inverse(), out = [];
     Array.prototype.forEach.call(svg.querySelectorAll('.art .op[data-organ="' + organ + '"]'), function (p) {
       if (p.tagName !== 'path') return;
+      /* a path the step has hidden has no layout box (its rect collapses to the screen origin), so it
+         is shown for the measurement and hidden again — the outline is wanted precisely when the
+         plate's own drawing is hidden and redrawn */
+      var wasHidden = p.style.display === 'none';
+      if (wasHidden) p.style.display = '';
       var r = p.getBoundingClientRect(), a = pt(root, r.left, r.top), b = pt(root, r.right, r.bottom);
-      if (a.x < box[0] - 2 || a.y < box[1] - 2 || b.x > box[2] + 2 || b.y > box[3] + 2) return;
-      var L = p.getTotalLength(), m = p.getScreenCTM();
-      for (var s = 0; s < L; s += (step || 2)) { var q = p.getPointAtLength(s), sx = m.a * q.x + m.c * q.y + m.e, sy = m.b * q.x + m.d * q.y + m.f; out.push([root.a * sx + root.c * sy + root.e, root.b * sx + root.d * sy + root.f]); }
+      var inside = !(a.x < box[0] - 2 || a.y < box[1] - 2 || b.x > box[2] + 2 || b.y > box[3] + 2);
+      if (inside) {
+        var L = p.getTotalLength(), m = p.getScreenCTM();
+        for (var s = 0; s < L; s += (step || 2)) { var q = p.getPointAtLength(s), sx = m.a * q.x + m.c * q.y + m.e, sy = m.b * q.x + m.d * q.y + m.f; out.push([root.a * sx + root.c * sy + root.e, root.b * sx + root.d * sy + root.f]); }
+      }
+      if (wasHidden) p.style.display = 'none';
     });
     return out;
   }
