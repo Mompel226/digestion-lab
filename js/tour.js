@@ -46,8 +46,9 @@
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
              [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
-             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria.'],
-             [23800, 'Pepsin, a protease, digests protein into polypeptides — the acid gives it the low pH it needs.'],
+             /* One sentence, not two. Splitting pepsin off gave the scene an extra step that the
+                animation has no counterpart for, and everything after it read late. */
+             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria and gives pepsin, a protease, the acid pH it needs to digest protein into polypeptides.'],
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
