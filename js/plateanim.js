@@ -49,7 +49,7 @@
      frame can sit a hundred units outside the narrow one a phone shows, so every label
      is slid back inside before it is drawn — the leader is then measured from where the
      text actually ended up, so it still points at its dot. */
-  var FRAME = null, MOVING = false;
+  var FRAME = null, MOVING = false, TIGHT = false;
 
   /* A label that travel() will translate afterwards must not be clamped: the clamp
      only sees where it starts, so sliding it inside the frame just moves the whole
@@ -72,6 +72,12 @@
       /* the key cards sit a little above the bottom edge; keep text clear of that band */
       var T = FRAME.y + m, B = FRAME.y + FRAME.h * 0.80, th = yBot - yTop;
       var ny = th > B - T ? T : Math.max(T, Math.min(B - th, yTop));
+      /* on a phone the Whole body button floats over the frame's top right corner and
+         paints above the plate, so nothing legible may be left underneath it */
+      if (TIGHT) {
+        var bx = FRAME.x + FRAME.w * 0.60, by = FRAME.y + FRAME.h * 0.13;
+        if (nx + tw > bx && ny < by && by + th <= B) ny = by;
+      }
       tx += nx - x0; ty += ny - yTop;
       x0 = nx; yTop = ny; yBot = ny + th;
     }
@@ -666,6 +672,6 @@
   /* every animation goes through here so the frame is known before any label is written */
   global.PlateAnim = {};
   Object.keys(ANIMS).forEach(function (k) {
-    global.PlateAnim[k] = function (ctx) { FRAME = (ctx && ctx.frame) || null; try { return ANIMS[k](ctx); } finally { FRAME = null; } };
+    global.PlateAnim[k] = function (ctx) { FRAME = (ctx && ctx.frame) || null; TIGHT = !!(ctx && ctx.compact); try { return ANIMS[k](ctx); } finally { FRAME = null; TIGHT = false; } };
   });
 })(window);
