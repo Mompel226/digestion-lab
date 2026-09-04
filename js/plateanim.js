@@ -442,10 +442,13 @@
     }
     var mlx = mx - dx * .9 - r * 1.5, yOff = L * .38;
     g += rider('maltose', [mlx, mlx, mlx, mlx, mlx, mlx], [sy + yOff, sy + yOff, ay + yOff, ay + yOff, ay + yOff, ay + yOff], '0;1;1;1;0;0', '0;0.05;0.4;0.52;0.57;1', 'end');
-    var gl = [mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * .9 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5];
+    var gl = [mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5];
     var gr = [mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * 2.2 + r * 1.5, mx + dx * 2.2 + r * 1.5];
     var gy = [sy + yOff, sy + yOff, ay + yOff, ay + yOff, ey + yOff, ey + yOff];
-    g += rider('glucose', gl, gy, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'end') + rider('glucose', gr, gy, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'start');
+    /* the two glucose names ride out with their own halves, and start clear of where "maltose"
+       was, so the crossfade never puts two words in the same place */
+    var gyL = gy.map(function (v, i) { return i < 4 ? v + L * 1.2 : v + yOff; });
+    g += rider('glucose', gl, gyL, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'end') + rider('glucose', gr, gy, '0;0;0;1;1;0', '0;0.56;0.58;0.64;0.9;1', 'start');
     if (ctx.compact) return g +
       label('lumen', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
       label('maltase in\nthe membrane', mx + pw / 2 + L * 1.4, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
