@@ -32,5 +32,5 @@ window.LAB_CONFIG = {
      trailing slash.
 
      The full version is in the hub README, under "Sign-in: what the Client ID is". */
-  googleClientId: '',
+  googleClientId: '749068441640-jgh9s0rbg8ed9hl14mtv6kdhg5jg6ddf.apps.googleusercontent.com',
 };
