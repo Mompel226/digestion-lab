@@ -572,5 +572,7 @@
     else if (e.key === 'ArrowRight') next();
     else if (e.key === 'ArrowLeft') back();
   }
-  global.Tour = { start:start, stop:stop, next:next, back:back, isRunning:function () { return running; }, SCENES:SCENES };
+  global.Tour = { start:start, stop:stop, next:next, back:back, isRunning:function () { return running; }, SCENES:SCENES,
+    peek:function () { return { idx:idx, noteAt:noteAt, notes:(SCENES[idx] || {}).notes ? SCENES[idx].notes.length : -1,
+                                paused:paused, noteTimers:noteTimers.length, pending:pending.length }; } };
 })(window);
