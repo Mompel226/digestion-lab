@@ -796,10 +796,10 @@ window.ZOOM_DETAIL = {
               0.2
             ],
             "tx": [
-              0.4,
-              0.12
+              0.62,
+              0.13
             ],
-            "anchor": "end"
+            "anchor": "start"
           },
           {
             "t": "jejunum",
@@ -808,8 +808,8 @@ window.ZOOM_DETAIL = {
               0.38
             ],
             "tx": [
-              0.41,
-              0.3
+              0.36,
+              0.34
             ],
             "anchor": "end"
           },
@@ -820,8 +820,8 @@ window.ZOOM_DETAIL = {
               0.64
             ],
             "tx": [
-              0.41,
-              0.74
+              0.36,
+              0.7
             ],
             "anchor": "end"
           }
@@ -830,13 +830,13 @@ window.ZOOM_DETAIL = {
           {
             "img": "zoom/pancreas-render2.jpg",
             "at": [
-              262,
-              468,
-              70
+              246,
+              706,
+              92
             ],
             "cap": "where bile and pancreatic\njuice enter — click to enlarge",
             "to": [
-              0.5,
+              0.62,
               0.2
             ]
           }
