@@ -1041,7 +1041,13 @@
     if (tip) { e.preventDefault(); tip.classList.toggle('is-open'); }
   });
   document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { el.classList.remove('is-open'); });
+    if (e.key === 'Escape') {
+      Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { el.classList.remove('is-open'); });
+      Array.prototype.forEach.call(document.querySelectorAll('svg.figbox__stage[data-view]'), function (st) {
+        st.removeAttribute('data-view');
+        Array.prototype.forEach.call(st.querySelectorAll('.fig-lens[data-view]'), function (b) { b.setAttribute('aria-expanded', 'false'); });
+      });
+    }
     if ((e.key === 'Enter' || e.key === ' ') && e.target.classList && e.target.classList.contains('fig-lens')) { e.preventDefault(); e.target.dispatchEvent(new MouseEvent('click', { bubbles:true })); }
   });
 
