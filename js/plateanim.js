@@ -69,6 +69,27 @@
     return out;
   }
 
+  /* A label that travels with the thing it names. A leader line to a moving object is worse than
+     useless — it points at where the object was — so the word goes alongside and moves with it. */
+  function moving(t, xs, ys, K, dur, fs, anchor, op, opK) {
+    var out = '<text class="dl__t" font-size="' + f1(fs) + '" text-anchor="' + (anchor || 'end') + '" x="' + f1(xs[0]) + '" y="' + f1(ys[0]) + '" opacity="0">' + t;
+    out += A + '"x" values="' + xs.map(f1).join(';') + '" keyTimes="' + K + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(xs.length - 1) + '"/>';
+    out += A + '"y" values="' + ys.map(f1).join(';') + '" keyTimes="' + K + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(ys.length - 1) + '"/>';
+    out += A + '"opacity" values="' + op + '" keyTimes="' + opK + '" dur="' + dur + 's" repeatCount="indefinite"/>';
+    return out + '</text>';
+  }
+
+  /* A whole label — text, leader and dot — that rides with the feature it names.
+     The contraction and the relaxation travel down the tube, so a leader pinned to
+     one height points at them for a single instant and lies for the rest of the cycle. */
+  function travel(inner, dys, K, dur, op, opK) {
+    return '<g opacity="0">' +
+      '<animateTransform attributeName="transform" type="translate" values="' + dys.map(function (v) { return '0 ' + f1(v); }).join(';') +
+      '" keyTimes="' + K + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(dys.length - 1) + '"/>' +
+      A + '"opacity" values="' + op + '" keyTimes="' + opK + '" dur="' + dur + 's" repeatCount="indefinite"/>' +
+      inner + '</g>';
+  }
+
   /* ---------------- peristalsis, on the plate's own oesophagus ---------------- */
   function peristalsis(ctx) {
     var b = ctx.box, fs = ctx.fs, u = ctx.u;
@@ -76,7 +97,7 @@
     var hw = b.w * 0.34;                                   /* half-width of the tube at rest */
     var TUBE = { cx:cx, y0:y0, y1:y1, w:hw, bulge:hw * 0.55, sBulge:hw * 1.1,
                  squeeze:hw * 0.62, behind:hw * 2.6, sSq:hw * 0.9, open:hw * 0.22, ahead:hw * 3.4, sOpen:hw * 1.3 };
-    var STEPS = 24, DUR = 4.8, from = y0 - hw * 1.2, to = y1 + hw * 1.6;
+    var STEPS = 24, DUR = 7.6, from = y0 - hw * 1.2, to = y1 + hw * 1.6;
     var wall = tubeFrames(TUBE, from, to, STEPS), by = seq(from, to, STEPS);
     var marks = '', k, n = 12;
     for (k = 0; k < n; k++) {
@@ -88,7 +109,13 @@
           A + '"stroke-width" values="' + f1(0.9 * u) + ';' + f1(2.2 * u) + ';' + f1(0.9 * u) + '" dur="' + DUR + 's" begin="' + f1(ph) + 's" repeatCount="indefinite"/></line>';
       });
     }
-    var ly = y0 + (y1 - y0) * 0.36, rx = cx + hw * 2.9;
+    var rx = cx + hw * 2.9;
+    /* base positions are read at the first frame (bolus at `from`); the group is then
+       translated by however far the bolus has moved, so each dot stays on its own feature */
+    var yBehind = from - TUBE.behind, yAhead = from + TUBE.ahead;
+    var dys = by.split(';').map(function (v) { return +v - from; });
+    var KT = Array.apply(null, Array(STEPS + 1)).map(function (_, i) { return (i / STEPS).toFixed(3); }).join(';');
+    var ENV = '0;1;1;0;0', ENVK = '0;0.14;0.72;0.82;1';
     return marks +
       '<path fill="#F6E3DD" stroke="#C4776A" stroke-width="' + f1(1.5 * u) + '" stroke-linejoin="round" d="' + tubeFrame(TUBE, from) + '">' +
         A + '"d" values="' + wall + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(STEPS) + '"/></path>' +
@@ -96,13 +123,13 @@
         A + '"cy" values="' + by + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(STEPS) + '"/>' +
         A + '"ry" values="' + f1(hw * .78) + ';' + f1(hw * .9) + ';' + f1(hw * .72) + ';' + f1(hw * .9) + ';' + f1(hw * .78) + '" dur="' + DUR + 's" repeatCount="indefinite"/></ellipse>' +
       label('from the mouth', cx, y0 - hw * 2.2, null, null, fs * 0.85, 'middle') +
-      label('to the stomach', cx, y1 + hw * 3.2, null, null, fs * 0.85, 'middle') +
-      (ctx.compact
-        ? label('muscle contracts\nbehind the bolus', rx, ly, cx + hw * 1.15, ly + fs * 0.6, fs) +
-          label('relaxes ahead', rx, ly + fs * 4, cx + hw * 1.15, ly + fs * 4.2, fs)
-        : label('circular muscle contracts\nbehind the bolus and\nsqueezes it along', rx, ly, cx + hw * 1.15, ly + fs * 0.6, fs) +
-          label('the wall ahead relaxes\nto receive it', rx, ly + fs * 5.2, cx + hw * 1.15, ly + fs * 5.6, fs)) +
-      label('the bolus', cx - hw * 2.9, y0 + (y1 - y0) * 0.62, cx - hw * 0.9, y0 + (y1 - y0) * 0.62 + fs * 0.3, fs, 'end');
+      label('to the stomach', cx - hw * 2.6, y1 - hw * 0.9, cx - hw * 0.9, y1 - hw * 0.4, fs * 0.85, 'end') +
+      travel(label(ctx.compact ? 'muscle contracts\nbehind the bolus' : 'circular muscle contracts\nbehind the bolus and\nsqueezes it along',
+                   rx, yBehind - fs * 1.15, cx + hw * 0.55, yBehind, fs), dys, KT, DUR, ENV, ENVK) +
+      travel(label(ctx.compact ? 'relaxes ahead' : 'the wall ahead relaxes\nto receive it',
+                   rx, yAhead - fs * 0.3, cx + hw * 1.35, yAhead, fs), dys, KT, DUR, ENV, ENVK) +
+      moving('the bolus', by.split(';').map(function () { return cx - hw * 1.5; }), by.split(';').map(function (v) { return +v + fs * 0.35; }),
+             KT, DUR, fs, 'end', '0;1;1;0;0', '0;0.06;0.72;0.80;1');   /* clear of the label at the cardia */
   }
 
   /* ---------------- swallowing, drawn on the head section ---------------- */
@@ -110,12 +137,12 @@
     var im = ctx.img, fs = ctx.fs, u = ctx.u;
     if (!im) return '';
     function P(nx, ny) { return [im.x + nx * im.W, im.y + ny * im.H]; }
-    var DUR = 6.5;
+    var DUR = 7.6;
     /* the bolus: along the oral cavity (the dark space between palate and
        tongue), driven back, down the pharynx behind the folded epiglottis,
        then on down the oesophagus — where it lengthens to fit the tube.
        Every point was read off the picture's pixels. */
-    var route = [P(.26, .565), P(.34, .563), P(.42, .575), P(.46, .615), P(.49, .67), P(.52, .75), P(.55, .82), P(.556, .86), P(.558, .90), P(.559, .95), P(.56, 1.0), P(.56, 1.05)];
+    var route = [P(.26, .569), P(.34, .565), P(.42, .577), P(.47, .615), P(.50, .67), P(.52, .75), P(.518, .82), P(.540, .86), P(.556, .90), P(.573, .95), P(.583, 1.0), P(.583, 1.05)];
     var K = '0;0.09;0.18;0.27;0.36;0.45;0.53;0.6;0.66;0.72;0.77;0.8;1';
     var xs = route.map(function (q) { return f1(q[0]); }); xs.push(xs[xs.length - 1]);
     var ys = route.map(function (q) { return f1(q[1]); }); ys.push(ys[ys.length - 1]);
@@ -159,7 +186,12 @@
       label(ctx.compact ? 'windpipe' : 'trachea (windpipe)\nto the lungs', tr[0] - im.W * .06, tr[1], tr[0], tr[1] - fs * .3, fs, 'end') +
       label(ctx.compact ? 'oesophagus' : 'oesophagus\nto the stomach', oe[0] + im.W * .06, oe[1] + fs * .3, oe[0], oe[1], fs) +
       label('pharynx', ph[0] + im.W * .07, ph[1], ph[0], ph[1], fs) +
-      (ctx.compact ? '' : label('the bolus, in the mouth', tg[0] + fs * 0.6, tg[1] + fs * 3.2, tg[0] + fs * 0.3, tg[1] - fs * .4, fs, 'start'));
+      (ctx.compact ? '' : moving('the bolus', route.map(function (q) { return q[0] - im.W * 0.03; }).concat([route[route.length - 1][0] - im.W * 0.03]),
+                                  route.map(function (q) { return q[1] + im.H * 0.012; }).concat([route[route.length - 1][1] + im.H * 0.012]),
+                                  K, DUR, fs, 'end',
+                                  /* the word takes hold as the tongue drives the bolus back (before that it would sit off
+                                     the left of the picture) and lets go once the bolus is in the oesophagus (below the picture) */
+                                  '0;0;1;1;0;0', '0;0.12;0.19;0.55;0.63;1'));
   }
 
   /* ---------------- churning, on the plate's stomach ---------------- */
@@ -270,10 +302,10 @@
       '<path fill="none" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
       food + squirt +
       (ctx.compact
-        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', top.x - 10, top.y - fs * 3.4, gc.x - 2, gc.y - fs * 3, fs, 'middle') +
+        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', 286, 452, 272, 470, fs, 'start') +
           label('gastric juice:\nHCl + pepsin', mid.x, mid.y + fs * .4, null, null, fs, 'middle') +
           label('chyme through the\npyloric sphincter', 146, 574, 168, 519, fs, 'start')
-        : label('peristaltic waves of the muscular\nwall squeeze towards the pylorus —\nthis is physical digestion', top.x - 10, top.y - fs * 3.6, gc.x - 2, gc.y - fs * 3, fs, 'middle') +
+        : label('peristaltic waves\nsqueeze towards the\npylorus — this is\nphysical digestion', 286, 448, 271, 468, fs, 'start') +
           label('gastric juice\n(hydrochloric acid\n+ pepsin)', mid.x, mid.y - fs * .2, null, null, fs, 'middle') +
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
@@ -393,7 +425,7 @@
      that pass into the cytoplasm. */
   function maltase(ctx) {
     var b = ctx.box, fs = ctx.fs, u = ctx.u, x0 = b.x, y0 = b.y, W = b.w, H = b.h;
-    var my = y0 + H * 0.52, th = H * 0.2, hr = th * 0.17, mx = x0 + W * 0.44, pw = th * 1.7, D = 7;
+    var my = y0 + H * 0.52, th = H * 0.2, hr = th * 0.17, mx = x0 + W * 0.50, pw = th * 1.7, D = 7;
     var g = '<rect x="' + f1(x0) + '" y="' + f1(y0) + '" width="' + f1(W) + '" height="' + f1(my - y0) + '" fill="#E3F1F7"/>' +
             '<rect x="' + f1(x0) + '" y="' + f1(my) + '" width="' + f1(W) + '" height="' + f1(y0 + H - my) + '" fill="#FBEBD3"/>';
     /* the bilayer: heads on the outside, tails to the middle */
@@ -415,7 +447,7 @@
          ' L' + f1(mx + pw / 2) + ',' + f1(pb - th * .3) + ' Q' + f1(mx + pw / 2) + ',' + f1(pb) + ' ' + f1(mx + pw / 2 - th * .3) + ',' + f1(pb) +
          ' L' + f1(mx - pw / 2 + th * .3) + ',' + f1(pb) + ' Q' + f1(mx - pw / 2) + ',' + f1(pb) + ' ' + f1(mx - pw / 2) + ',' + f1(pb - th * .3) + ' Z" fill="#EE8FA6" stroke="#B94B6A" stroke-width="' + f1(hr * .22) + '" stroke-linejoin="round"/>';
     /* maltose arrives from the lumen, sits in the active site, and leaves as two glucose molecules */
-    var sy = y0 + H * 0.1, ay = pt + r * .05, ey = y0 + H * 0.9, dx = r * 1.05;
+    var sy = y0 + H * 0.17, ay = pt + r * .05, ey = y0 + H * 0.84, dx = r * 1.05;   /* lanes: the riding words clear both captions */
     function sugar(sign, endX, endY) {
       var xs = [mx + sign * dx * .9, mx + sign * dx * .9, mx + sign * dx * .9, mx + sign * dx * .9, endX, endX].map(f1).join(';');
       var ys = [sy, sy, ay, ay, endY, endY].map(f1).join(';');
@@ -440,7 +472,7 @@
         A + '"y" values="' + ys.map(f1).join(';') + '" keyTimes="' + KT + '" dur="' + D + 's" repeatCount="indefinite" ' + SPL + '/>' +
         A + '"opacity" values="' + op + '" keyTimes="' + opK + '" dur="' + D + 's" repeatCount="indefinite"/></text>';
     }
-    var mlx = mx - dx * .9 - r * 1.5, yOff = L * .38;
+    var mlx = mx - dx * .9 - r * 2.4, yOff = L * .38;
     g += rider('maltose', [mlx, mlx, mlx, mlx, mlx, mlx], [sy + yOff, sy + yOff, ay + yOff, ay + yOff, ay + yOff, ay + yOff], '0;1;1;1;0;0', '0;0.05;0.4;0.52;0.57;1', 'end');
     var gl = [mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5, mx - dx * 2.2 - r * 1.5];
     var gr = [mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * .9 + r * 1.5, mx + dx * 2.2 + r * 1.5, mx + dx * 2.2 + r * 1.5];
@@ -456,7 +488,7 @@
     return g +
       label('lumen of the small intestine', x0 + W * .03, y0 + L * 1.1, null, null, L, 'start') +
       label('maltase — embedded\nin the membrane', mx + pw / 2 + L * 2.2, my - th * 1.05, mx + pw / 2 - th * .1, my - th * .55, L, 'start') +
-      label('cell membrane\nof a microvillus', x0 + W * .03, my - th * 1.05, x0 + W * .1, my - th / 2 + hr * .2, L, 'start') +
+      label('cell membrane\nof a microvillus', x0 + W * .03, my - th * 1.55, x0 + W * .1, my - th / 2 + hr * .2, L, 'start') +
       label('cytoplasm of the epithelial cell', x0 + W * .03, y0 + H - L * .5, null, null, L, 'start');
   }
 
@@ -512,7 +544,7 @@
     });
 
     /* the mesentery on its own, so the fan above is recognisable — click it to see it full size */
-    var ix = 250, iy = 366, iw = 128, ih = iw * 821 / 903;     /* clear of the liver, in the space on the right */
+    var ix = 304, iy = 548, iw = 96, ih = iw * 821 / 903;      /* beside the mesentery: clear of the colon at 301, inside the tour's frame at 405 */
     g += '<g class="dl__shot" data-lightbox="photos/mesentery-render.jpg" ' +
          'data-cap="The mesentery: one sheet of membrane fanning out from the back wall of the abdomen, holding the six to seven metres of small intestine. The veins running inside it collect the absorbed food and join the hepatic portal vein.">' +
          '<rect x="' + f1(ix - 1.8) + '" y="' + f1(iy - 1.8) + '" width="' + f1(iw + 3.6) + '" height="' + f1(ih + 3.6) +
@@ -522,7 +554,7 @@
          '<circle cx="' + f1(ix + iw - fs * 0.9) + '" cy="' + f1(iy + fs * 0.9) + '" r="' + f1(fs * 0.62) + '" fill="#FFFDF9" stroke="#B9AE9B" stroke-width="0.4"/>' +
          '<text class="dl__t" x="' + f1(ix + iw - fs * 0.9) + '" y="' + f1(iy + fs * 1.18) + '" font-size="' + f1(fs * 0.78) + '" text-anchor="middle">\u2922</text>' +
          '</g>' +
-         label('the mesentery on its own\nclick to see it full size', ix + iw / 2, iy + ih + fs * 1.3, null, null, fs * 0.92, 'middle');
+         label('the mesentery on its own\nclick to see it full size', ix + iw / 2, iy + ih + fs * 1.3, null, null, fs * 0.82, 'middle');
 
     if (ctx.compact) return g +
       label('liver', 64, 452, 108, 470, fs, 'start') +

@@ -26,7 +26,7 @@
   var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
   var CAM = {
-    'mouth':           { cx:132, cy:146, w:150 },
+    'mouth':           { cx:150, cy:146, w:190 },   /* room to the right of the pharynx for its label */
     'salivary-glands': { cx:146, cy:146, w:160 },
     'epiglottis':      { cx:152, cy:190, w:190 },
     'oesophagus':      { cx:178, cy:318, w:250 },
