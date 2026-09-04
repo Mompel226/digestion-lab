@@ -856,7 +856,7 @@ window.ZOOM_DETAIL = {
             "sw": 0.9,
             "clip": {
               "canal": [
-                0.345,
+                0,
                 0.484
               ],
               "step": 4
@@ -871,7 +871,7 @@ window.ZOOM_DETAIL = {
             "clip": {
               "canal": [
                 0.484,
-                0.7
+                1
               ],
               "step": 4
             }
