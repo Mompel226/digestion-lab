@@ -619,11 +619,12 @@
       /* An inset carries no arrow to a feature unless it is linked, so one that would sit
          off the frame or under the key cards is simply slid back in. A linked one stays
          put: its cone is drawn to the big picture and moving it would point at nothing. */
+      var idx = 0, idy = 0;
       if (!ins.link) {
         var ib = g.getBBox(), im = frame.w * 0.025;
         var iL = frame.x + im, iR = frame.x + frame.w - im, iT = frame.y + im, iB = frame.y + frame.h * 0.80;
-        var idx = ib.x < iL ? iL - ib.x : (ib.x + ib.width > iR ? Math.max(iL - ib.x, iR - ib.x - ib.width) : 0);
-        var idy = ib.y < iT ? iT - ib.y : (ib.y + ib.height > iB ? Math.max(iT - ib.y, iB - ib.y - ib.height) : 0);
+        idx = ib.x < iL ? iL - ib.x : (ib.x + ib.width > iR ? Math.max(iL - ib.x, iR - ib.x - ib.width) : 0);
+        idy = ib.y < iT ? iT - ib.y : (ib.y + ib.height > iB ? Math.max(iT - ib.y, iB - ib.y - ib.height) : 0);
         if (idx || idy) g.setAttribute('transform', 'translate(' + f1(idx) + ',' + f1(idy) + ')');
       }
       if (ins.link) {
@@ -666,8 +667,8 @@
       if (ins.to && placed[0]) {
         var ax = placed[0].pl.x + ins.to[0] * placed[0].pl.W, ay = placed[0].pl.y + ins.to[1] * placed[0].pl.H;
         var sx = ax < x ? x - 2 : x + w + 2, sy = y + h / 2;
-        el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) }, g);
-        el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, g);
+        el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax - idx), y2:f1(ay - idy), 'stroke-width':f1(fs * 0.09) }, g);
+        el('circle', { 'class':'dl__d', cx:f1(ax - idx), cy:f1(ay - idy), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, g);
       }
     });
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
