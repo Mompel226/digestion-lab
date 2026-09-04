@@ -605,5 +605,17 @@
       label('mesentery — the sheet that holds\nthe intestine; the veins inside it\ncollect the food from every loop', 60, 716, 130, 700, fs, 'start');
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal };
+  /* Saliva running into the mouth, the same idea as bile into the duodenum: along the
+     parotid duct across the cheek, and up from the submandibular and sublingual glands into
+     the floor of the mouth. The routes follow where those ducts are actually drawn on the
+     plate, so the drops travel down the artwork rather than across it. */
+  function saliva(ctx) {
+    var r = Math.max(1.6, ctx.u * 1.6);
+    return drops([[158, 131], [148, 130], [138, 129], [130, 131], [124, 134], [120, 139]],
+                 '#8FC7E8', r, 3.2, 4, 0) +
+           drops([[146, 171], [140, 166], [134, 161], [128, 156], [124, 151]],
+                 '#8FC7E8', r, 3.2, 4, -1.6);
+  }
+
+  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva };
 })(window);

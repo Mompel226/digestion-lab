@@ -395,12 +395,12 @@ window.ZOOM_DETAIL = {
         "t": "sublingual gland",
         "plate": true,
         "at": [
-          124,
+          118,
           164
         ],
         "tx": [
-          69,
-          183
+          67,
+          178
         ],
         "anchor": "start"
       }
@@ -411,7 +411,8 @@ window.ZOOM_DETAIL = {
         "kind": "food",
         "corner": "tl"
       }
-    ]
+    ],
+    "anim": "saliva"
   },
   "epiglottis": {
     "organ": "epiglottis",
