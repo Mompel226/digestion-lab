@@ -953,7 +953,8 @@
       Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) c += rec.per[k]; });
       perStation[id] = s.done + '/' + s.total + (c ? ' in ' + c : '');
     });
-    var payload = { app:'digestion-lab', name:name.trim(), form:form, mode:mode,
+    var payload = { app:'digestion-lab', token:(window.LAB_CONFIG || {}).submitToken || '',
+                    name:name.trim(), form:form, mode:mode,
                     score:t.done, total:t.total, code:code,
                     complete: mode === 'test' ? t.tried === t.total : t.done === t.total,
                     checks:t.checks, firstTime:t.first1, tried:t.tried,
