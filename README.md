@@ -152,7 +152,6 @@ js/data/stations.js   GENERATED — presentation + hashes, no answers
 js/data/keys.enc.js   GENERATED — the answers, encrypted
 tools/build.mjs       master content -> the two generated files
 tools/rekey.mjs       kept from when answers could be released; nothing uses it now
-apps-script/Code.gs   the submission receiver
 js/data/photos.js     which photographs appear at which station
 js/data/anatomy-art.js  the body plate (public domain)
 js/data/figure-art.js   the tooth and villus plates (public domain)
