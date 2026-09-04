@@ -441,12 +441,13 @@
     var FILL = drops(RHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r, 4.6, 4, 0) + drops(LHD.concat(CHD.slice(1), CYST.slice(1)), BILE, r * .9, 4.6, 3, 1.5);
     var REL = drops([[144, 488], [150, 489], [156, 490]].concat(CBD.slice(1)), BILE, r, 4.2, 5, 0) + drops(RHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .85, 5.6, 3, 1.2) + drops(LHD.concat(CHD.slice(1), CBD.slice(1)), BILE, r * .8, 5.6, 2, 2.9);
     var phase = function (first) { return A + '"opacity" values="' + (first ? '1;1;0;0' : '0;0;1;1') + '" keyTimes="0;0.5;0.5;1" dur="16s" repeatCount="indefinite"/>'; };
-    var lblFill = ctx.compact ? 'between meals:\nthe gall bladder\nfills and stores' : 'between meals —\nthe way into the duodenum is shut,\nso the bile fills the gall bladder';
-    var lblRel = ctx.compact ? 'during a meal:\nreleased from both' : 'during a meal —\nthe gall bladder squeezes its bile out,\nand fresh bile from the liver flows too';
-    if (mode === 'fill') g += FILL + label(lblFill, 150, 578, null, null, fs, 'start');
-    else if (mode === 'release') g += REL + label(lblRel, 150, 578, null, null, fs, 'start');
-    else g += '<g opacity="1">' + phase(true) + FILL + label(lblFill, 150, 578, null, null, fs, 'start') + '</g>' +
-              '<g opacity="0">' + phase(false) + REL + label(lblRel, 150, 578, null, null, fs, 'start') + '</g>';
+    /* The phase used to be written on the plate here, at (150,578) — three lines that landed
+       on the duodenum's own label, and that said word for word what the caption strip under
+       the plate already says. The strip does it better and has room for it. */
+    if (mode === 'fill') g += FILL;
+    else if (mode === 'release') g += REL;
+    else g += '<g opacity="1">' + phase(true) + FILL + '</g>' +
+              '<g opacity="0">' + phase(false) + REL + '</g>';
     if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
