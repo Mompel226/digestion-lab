@@ -17,6 +17,12 @@
   /* routes on the plate, in plate units (the same ones plateanim draws) */
   var BILE = [[144, 488], [150, 489], [156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
   var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
+  /* Saliva, the same idea as bile: two short ducts into the mouth so the glands are seen to
+     be doing something rather than just being named. The parotid runs forward across the
+     cheek; the submandibular and sublingual come up into the floor of the mouth. Plate
+     coordinates, taken from where those organs actually sit in the artwork. */
+  var SAL_PAROTID = [[168, 141], [160, 141], [152, 140], [144, 139], [137, 139]];
+  var SAL_SUBMAND = [[145, 172], [141, 166], [137, 159], [134, 152], [132, 146]];
 
   /* Timings are set by how long the words take to read, not by how long the movement takes: a
      scene lasts about a word every third of a second, and the notes inside it are spaced the same
@@ -61,6 +67,10 @@
 
   var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
   var pending = [], paused = false;
+  /* Which sentence of the current scene the card is showing: -1 is the definition, 0.. are
+     the notes. Next and Back step through these, not through whole scenes — a reader who
+     missed a sentence wants that sentence again, not the last two minutes again. */
+  var noteAt = -1, noteTimers = [];
   var curCam = null;                 /* the leg of the camera track the scene is on */
 
   /* A fade is only safe while the page is actually being drawn: a transition does not advance in
@@ -175,8 +185,27 @@
         timers.push(r.t);
       });
       try { if (svg) svg.unpauseAnimations(); } catch (e) {}
+      rearmNotes();
     }
-    paintPause();
+    paintPause(); paintStep();
+  }
+
+  /* Stepping by hand cancels the sentences still queued for the scene. Put them back, spaced
+     as they were from the one now showing, so Play carries on instead of leaving the rest of
+     the scene silent. */
+  function rearmNotes() {
+    var sc = SCENES[idx];
+    if (!sc || !sc.notes || !sc.notes.length || noteTimers.length) return;
+    var base = noteAt >= 0 ? sc.notes[noteAt][0] : 0;
+    for (var k = noteAt + 1; k < sc.notes.length; k++) {
+      (function (j) {
+        noteTimers.push(later(function () {
+          noteAt = j;
+          if (card) say(card, 'note', sc.notes[j][1]);
+          paintStep();
+        }, Math.max(400, sc.notes[j][0] - base)));
+      })(k);
+    }
   }
 
   function paintPause() {
@@ -201,6 +230,18 @@
     return fx;
   }
   function clearFx() { if (fx) fx.innerHTML = ''; }
+
+  /* An organ that is secreting should look like it. Without this the drops appear out of a
+     grey silhouette, and only the liver read as the source because the bile happens to start
+     on top of it — the pancreas was doing the same work with nothing to show for it. */
+  function lightSecretors(list, ms) {
+    var on = [];
+    (list || []).forEach(function (o) {
+      Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op[data-organ="' + o + '"]'),
+        function (p) { p.classList.remove('is-dim'); p.classList.add('is-on'); on.push(p); });
+    });
+    if (ms) later(function () { on.forEach(function (p) { p.classList.remove('is-on'); }); }, ms);
+  }
   /* the drawn extras (droplets, the mesentery's veins) fade rather than blink */
   function fxFade(to, ms) {
     var g = fxLayer(); if (!g) return;
@@ -309,17 +350,20 @@
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
       '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false"' +
         ' title="Hold the tour here" aria-label="Pause the tour">\u23F8 Pause</button>' +
-      '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
+      '<button type="button" class="btn" data-act="next">Next</button>' +
       /* Not the same as Pause, and it should not read like it: this ends the tour and opens
          the station it had reached, so you can read that organ properly. The end-of-tour
          card already calls the same action Close. */
       '<button type="button" class="btn btn--ghost" data-act="stop"' +
         ' title="End the tour and open this station">Close</button>';
-    paintPause();
+    paintPause(); paintStep();
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
     fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
-    sc.notes.forEach(function (n) { later(function () { say(c, 'note', n[1]); }, lead + n[0]); });
+    noteAt = -1; noteTimers = [];
+    sc.notes.forEach(function (n, k) {
+      noteTimers.push(later(function () { noteAt = k; say(c, 'note', n[1]); }, lead + n[0]));
+    });
   }
 
   function showEnd() { swapCard(fillEnd); }
@@ -409,6 +453,11 @@
     if (sc.id === 'ingestion') {
       /* chewing: the meal sits in the mouth and works, and is still there when the scene ends */
       A.placeBolus(M.mouth * 0.3);
+      later(function () {
+        drops(SAL_PAROTID, '#8FC7E8', 1.9, 3.4, 4);
+        drops(SAL_SUBMAND, '#8FC7E8', 1.9, 3.4, 4);
+        lightSecretors(['salivary-glands'], 8000);
+      }, LEAD + 900);
       later(function () { A.travel(M.mouth * 0.3, M.mouth, 2600); }, LEAD + 1200);
       later(function () { A.travel(M.mouth, M.mouth * 0.6, 1800); }, LEAD + 5000);
       later(function () { A.travel(M.mouth * 0.6, M.mouth, 1800); }, LEAD + 8000);
@@ -427,6 +476,7 @@
               A.travel(st + w, M.duodenum, 3600, function () {
                 drops(BILE, '#8DB43A', 2.2, 4.5, 6);
                 drops(PANC, '#E8C95A', 2.2, 4.5, 6);
+                lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
             }, 6000);
           });
@@ -448,8 +498,49 @@
     later(function () { fadeOut(card, '-10px'); fxFade(0, 280); }, Math.max(600, span - 320));
     later(function () { play(i + 1); }, span);
   }
-  function next() { if (!running) return; play(Math.min(idx + 1, SCENES.length)); }
-  function back() { if (!running) return; play(Math.max(idx - 1, 0)); }
+  /* Next and Back move one sentence. At either end of a scene they move to the next or the
+     previous scene, as they always did. Stepping hands control to the reader, so it also
+     pauses: otherwise the sentence you just went back for would be replaced a moment later
+     by the one that was already on its way. Press Play to let it run on. */
+  function stepNote(dir) {
+    if (!running) return;
+    var sc = SCENES[idx];
+    if (!sc || !sc.notes || !sc.notes.length) {
+      play(dir > 0 ? Math.min(idx + 1, SCENES.length) : Math.max(idx - 1, 0));
+      return;
+    }
+    var k = noteAt + dir;
+    if (k >= sc.notes.length) { play(Math.min(idx + 1, SCENES.length)); return; }
+    if (k < -1) { play(Math.max(idx - 1, 0)); return; }
+
+    /* cancel the sentences still queued for this scene; the reader is driving now */
+    noteTimers.forEach(function (t) { if (t) clearTimeout(t); });
+    pending = pending.filter(function (r) {
+      if (noteTimers.indexOf(r.t) < 0) return true;
+      if (r.t) clearTimeout(r.t);
+      return false;
+    });
+    noteTimers = [];
+
+    noteAt = k;
+    if (card) {
+      if (k < 0) say(card, 'def', sc.def, true);
+      else say(card, 'note', sc.notes[k][1]);
+    }
+    setPaused(true);
+    paintStep();
+  }
+  function next() { stepNote(1); }
+  function back() { stepNote(-1); }
+
+  /* Back is only dead at the very beginning, and Next reads Finish only on the last
+     sentence of the last scene. */
+  function paintStep() {
+    if (!card) return;
+    var sc = SCENES[idx], b = card.querySelector('[data-act="back"]'), n = card.querySelector('[data-act="next"]');
+    if (b) b.disabled = (idx <= 0 && noteAt <= -1);
+    if (n && sc) n.textContent = (idx === SCENES.length - 1 && noteAt >= sc.notes.length - 1) ? 'Finish' : 'Next';
+  }
   function start(openFn, doneFn) {
     opener = openFn; onStop = doneFn;
     if (typeof opener === 'function') opener('overview', true);   /* the station whose text is the five processes */
