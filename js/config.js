@@ -25,6 +25,11 @@ window.LAB_CONFIG = {
   masteryOpen: true,
   masteryNote: 'Mastery is closed while the test is running.',
 
+  /* Optional. If you set SUBMIT_TOKEN in the Apps Script, put the same word here or
+     hand-ins are refused. It stops anyone who merely finds the /exec URL from posting
+     to it; it is not a secret, because this file is published with the site. */
+  submitToken: '',
+
   /* The answers are not in the site at all, in any mode, so there is no
      password to set here. Students are told which parts are wrong and have
      to work out the rest.
