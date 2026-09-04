@@ -859,7 +859,7 @@ window.ZOOM_DETAIL = {
                 0.345,
                 0.484
               ],
-              "width": 21
+              "step": 4
             }
           },
           {
@@ -873,7 +873,7 @@ window.ZOOM_DETAIL = {
                 0.484,
                 0.7
               ],
-              "width": 21
+              "step": 4
             }
           }
         ]
