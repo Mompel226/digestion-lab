@@ -407,7 +407,7 @@ window.ZOOM_DETAIL = {
       163,
       186,
       32,
-      326
+      300
     ]
   },
   "stomach": {
