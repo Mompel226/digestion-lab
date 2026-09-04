@@ -43,7 +43,7 @@
     'stomach':        { cx:192, cy:508, w:200 },
     'liver':          { cx:161, cy:468, w:220 },
     'gall-bladder':   { cx:155, cy:492, w:200 },
-    'pancreas':       { cx:205, cy:535, w:210 },
+    'pancreas':       { cx:170, cy:535, w:240 },
     'duodenum':       { cx:165, cy:548, w:190 },
     'ileum-villi':    { cx:190, cy:622, w:300 },
     'colon':          { cx:178, cy:652, w:280 },
@@ -593,8 +593,8 @@
          lightbox — the ⤢ badge already says it opens. */
       var capw = 0;
       String(ins.cap || '').split('\n').forEach(function (l) { capw = Math.max(capw, l.length * fs * 0.88 * 0.52); });
-      var tight = !ins.link && (ppu(frame) < 1.6 || capw > frame.w * 0.95);
-      var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? 1.4 : 1), h = w * ins.h / ins.w;
+      var tight = !ins.link && (ppu(frame) < 1.6 || capw > frame.w * 0.95 || ins.nocap);
+      var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? (ins.big == null ? 1.4 : ins.big) : 1), h = w * ins.h / ins.w;
       var g = el('g', { 'class':'inset' }, gInsets);
       el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
