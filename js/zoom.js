@@ -23,33 +23,31 @@
 
   var VIEW = { x:-88, y:-12, w:530, h:848 };          /* the plate's home view */
   var ASPECT = VIEW.h / VIEW.w;
-  /* The shape of the panel the plate is actually being drawn in. It used to be this constant,
-     the plate's own tall proportions — so on a phone, where the panel is short and wide, every
-     frame was built tall, fitted by its height, and the body ended up small and pushed to one
-     side with the rest of the plate showing around it. */
-  function aspect() {
-    var r = svg && svg.getBoundingClientRect();
-    return r && r.width > 1 && r.height > 1 ? r.height / r.width : ASPECT;
-  }
+
   var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
   /* Centred on the organ they frame. These used to sit tens of units off it — the stomach
      46 to its right, the gall bladder 52 to its left — which a tall desktop panel hides but
      a phone's short wide one does not: the body reads as pushed to one side, or as floating
      high with empty plate below it. Measured against each organ's own painted extent. */
+  /* Centred on the organ each one frames — measured against its painted extent, because the
+     stomach sat 46 units right of its own and the gall bladder 52 left, which a tall panel
+     hides and a phone's does not. Only cx and cy: the widths are what they were, because the
+     width sets the scale, and the scale decides whether an animation draws its full labels
+     or its compact ones. */
   var CAM = {
-    'mouth':           { cx:150, cy:146, w:190, h:110 },   /* room to the right of the pharynx for its label */
-    'salivary-glands': { cx:146, cy:146, w:160, h:110 },
-    'epiglottis':      { cx:152, cy:190, w:190, h:120 },
-    'oesophagus':      { cx:178, cy:318, w:250, h:260 },
-    'stomach':         { cx:196, cy:515, w:215, h:200 },
-    'liver':           { cx:161, cy:475, w:230, h:160 },
-    'gall-bladder':    { cx:160, cy:492, w:215, h:170 },
-    'pancreas':        { cx:205, cy:535, w:210, h:130 },
-    'duodenum':        { cx:165, cy:545, w:190, h:160 },
-    'ileum-villi':     { cx:190, cy:638, w:300, h:200 },
-    'colon':           { cx:178, cy:655, w:280, h:310 },
-    'rectum-anus':     { cx:177, cy:784, w:95, h:70 }    /* close in: the drawn canal is only ~30 units across */
+    'mouth':          { cx:150, cy:146, w:190 },   /* room to the right of the pharynx for its label */
+    'salivary-glands': { cx:146, cy:146, w:160 },
+    'epiglottis':     { cx:152, cy:190, w:190 },
+    'oesophagus':     { cx:178, cy:318, w:250 },
+    'stomach':        { cx:192, cy:508, w:200 },
+    'liver':          { cx:161, cy:468, w:220 },
+    'gall-bladder':   { cx:155, cy:492, w:200 },
+    'pancreas':       { cx:205, cy:535, w:210 },
+    'duodenum':       { cx:165, cy:548, w:190 },
+    'ileum-villi':    { cx:190, cy:622, w:300 },
+    'colon':          { cx:178, cy:641, w:280 },
+    'rectum-anus':    { cx:177, cy:784, w:95 }    /* close in: the drawn canal is only ~30 units across */
   };
   /* the organ shapes inside the biliary plate, found by their fill colour */
   var SPOT_FILLS = { liver:['#967348', '#c58c55'], 'gall-bladder':['#d1e8c5'], pancreas:['#e89e55'],
@@ -67,12 +65,7 @@
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
-    /* `h` is how much of the body this shot has to show vertically. On a tall panel the
-       width decides everything; on a short one a tall organ would be cropped, so the frame
-       widens until its height covers what the shot needs. */
-    var a = aspect(), w = cam.w;
-    if (cam.h) w = Math.max(w, cam.h / a);
-    var h = w * a;
+    var w = cam.w, h = w * ASPECT;
     return { x:cam.cx - w / 2, y:cam.cy - h * 0.46, w:w, h:h };
   }
   function zoomOf(b) { return VIEW.w / b.w; }
