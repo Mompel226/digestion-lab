@@ -71,12 +71,18 @@ brought back, and every three minutes — puts the student into Test mode, and g
 Mastery with the message you typed in **B2**. Tick it again afterwards. No redeploy, no
 new version of the site.
 
-Two honest limits. It needs the Sheet set up (see *Collecting the results* below): with no
-`submitUrl` there is nothing to ask, and Mastery stays open. And it is a classroom control, not security — this
+**Without the Sheet** there is nothing to ask, so `js/config.js` is the switch instead:
+set `masteryOpen: false`, commit and push, and Mastery is closed for everyone on their next
+load; set it back afterwards. Slower than a checkbox — a push takes a minute or two to go
+live — but it needs no spreadsheet at all. With `submitUrl` set, the Sheet wins and the
+config value is only the starting position. And it is a classroom control, not security — this
 is a static site, and a determined student can work around anything the browser is told.
 It stops the ordinary case and makes the rule visible, which is what it is for. If the
 Sheet cannot be reached the page keeps the last answer it had, so a dropped connection
-never locks a class out of their homework.
+never changes anything.
+
+The only way to make a test genuinely un-grindable is **different questions in the test**.
+The switch closes the obvious door; it is not a substitute for a separate question bank.
 
 ## How the answers are kept out of the page
 

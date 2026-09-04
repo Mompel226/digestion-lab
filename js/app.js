@@ -847,8 +847,20 @@
      work round anything the browser is told. It stops the ordinary case and makes the rule
      visible, which is what it is for. */
   var GATE_KEY = 'digestion-lab.gate';
-  var gate = { masteryOpen:true, note:'' };
-  try { var g = JSON.parse(localStorage.getItem(GATE_KEY) || 'null'); if (g && typeof g.masteryOpen === 'boolean') gate = g; } catch (e) {}
+  var CFG = window.LAB_CONFIG || {};
+  /* Where the switch comes from:
+       no submitUrl  — config.js is the whole truth. masteryOpen:false closes Mastery
+                       for everyone with a commit and a push, no spreadsheet needed.
+       submitUrl set — the Sheet decides, live; config.js is only the starting position
+                       until the first answer arrives, and the last answer is remembered
+                       so a dropped connection does not change anything. */
+  var gate = { masteryOpen: CFG.masteryOpen !== false, note: CFG.masteryNote || '' };
+  if (CFG.submitUrl) {
+    try {
+      var g = JSON.parse(localStorage.getItem(GATE_KEY) || 'null');
+      if (g && typeof g.masteryOpen === 'boolean') gate = g;
+    } catch (e) {}
+  }
 
   function askGate(cb) {
     var url = (window.LAB_CONFIG || {}).submitUrl;
