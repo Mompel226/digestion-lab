@@ -897,9 +897,13 @@ body[data-mode="practice"] .panel__inner::before{
 .recap__figs figcaption{font-size:13.5px;color:#2E2E2E;line-height:1.5}
 .recap__figs{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
 /* the tour card moves between top and bottom with a fade and a drift, never a jump */
-.tourcard{transition:opacity .26s ease,transform .26s ease}
+.tourcard{transition:opacity .3s ease,transform .3s ease}
 .tourcard.is-moving{opacity:0;transform:translateY(var(--drift,8px))}
-@media (prefers-reduced-motion:reduce){.tourcard{transition:none}.tourcard.is-moving{opacity:1;transform:none}}
+/* one line of the card changing inside a scene: fade the words, do not blink them */
+.tourcard__note{transition:opacity .24s ease}
+.tourcard__note.is-swap{opacity:0}
+#bodySvg .tourfx{transition:opacity .3s ease}
+@media (prefers-reduced-motion:reduce){.tourcard,.tourcard__note,#bodySvg .tourfx{transition:none}.tourcard.is-moving{opacity:1;transform:none}.tourcard__note.is-swap{opacity:1}}
 /* a spotlit organ: the drawn organ itself lights up, so nothing is traced behind its neighbours */
 #bodySvg .art .op.is-spot{filter:saturate(1.5) brightness(1.08) drop-shadow(0 0 2.4px #E8A33D) !important;opacity:1 !important}
 /* the key words on the plate: what happens here, and what the food is called at this point.

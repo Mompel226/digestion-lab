@@ -25,12 +25,20 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15000, 'top']], cam:{ cx:190, cy:420, w:320 }, ms:30000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15600, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:32000,
+      /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
+         whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
+         and then the bolus appears, already in the stomach. Each leg is [when, camera, how long]. */
+      cams:[[0,     { cx:150, cy:196, w:250 }, 900],
+            [6900,  { cx:186, cy:470, w:330 }, 7700],
+            [15200, { cx:196, cy:498, w:300 }, 1300],
+            [22600, { cx:182, cy:520, w:330 }, 1300]],
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
-      notes:[[0, 'Swallowing: the epiglottis folds over the opening of the windpipe, so the bolus goes into the oesophagus and not the airway.'],
-             [6000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
-             [13000, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
-             [21000, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
+      notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
+             [3400, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
+             [7400, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
+             [14600, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
+             [22600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
@@ -47,6 +55,7 @@
 
 
   var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
+  var curCam = null;                 /* the leg of the camera track the scene is on */
 
   /* A fade is only safe while the page is actually being drawn: a transition does not advance in
      a hidden tab, so a card faded out there would still be invisible when the reader came back.
@@ -59,6 +68,20 @@
     c.style.setProperty('--drift', drift);
     c.classList.add('is-moving');
     later(function () { c.classList.remove('is-moving'); }, ms || 40);
+  }
+  function fadeOut(c, drift) {
+    if (!c || c.hidden || !canAnimate()) return false;
+    if (c.classList.contains('is-moving')) return true;            /* already on its way out */
+    c.style.setProperty('--drift', drift || '-10px');
+    c.classList.add('is-moving');
+    return true;
+  }
+  /* Change one line of the card without it blinking: fade the words out, swap, fade back in. */
+  function swapText(el, text) {
+    if (!el) return;
+    if (!canAnimate()) { el.textContent = text; return; }
+    el.classList.add('is-swap');
+    later(function () { el.textContent = text; el.classList.remove('is-swap'); }, 240);
   }
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden && card) card.classList.remove('is-moving');   /* never come back to a blank card */
@@ -86,6 +109,12 @@
     return fx;
   }
   function clearFx() { if (fx) fx.innerHTML = ''; }
+  /* the drawn extras (droplets, the mesentery's veins) fade rather than blink */
+  function fxFade(to, ms) {
+    var g = fxLayer(); if (!g) return;
+    g.style.transition = canAnimate() ? 'opacity ' + (ms || 300) + 'ms ease' : 'none';
+    g.style.opacity = to;
+  }
   /* a run of droplets along a route: circles on an animateMotion, fading in and out */
   function drops(route, col, r, dur, n, once) {
     var g = fxLayer(); if (!g) return;
@@ -137,8 +166,17 @@
     });
     return card;
   }
-  function showCard(sc, i) {
-    var c = buildCard(), was = at;
+  /* A scene change is a cross-fade, not a cut: the card that is leaving fades out first, the
+     camera starts moving, and the new card fades in once the plate has begun to settle. */
+  function swapCard(fill) {
+    var c = buildCard();
+    if (c.hidden || c.classList.contains('is-moving') || !canAnimate()) { fill(c); return; }
+    fadeOut(c, '-10px');
+    later(function () { fill(c); }, 260);
+  }
+  function showCard(sc, i) { swapCard(function (c) { fillCard(c, sc, i); }); }
+  function fillCard(c, sc, i) {
+    var was = at;
     c.hidden = false;
     /* pos is where the card sits: one place, or a list of [ms, place] so the card moves out of
        the way as the food does — in digestion it starts low, so the oesophagus is never covered.
@@ -148,18 +186,18 @@
       if (p === at && animate) return;
       if (!animate || !canAnimate()) {
         c.classList.toggle('tourcard--bottom', p === 'bottom');
-        if (animate) camera(sc.cam, 700, p);
+        if (animate) camera(curCam || sc.cam, 700, p);
         at = p; return;
       }
       /* out, drifting the way it is going; then in from the other side */
       c.style.setProperty('--drift', p === 'bottom' ? '16px' : '-16px');
       c.classList.add('is-moving');
-      camera(sc.cam, 700, p);
+      camera(curCam || sc.cam, 700, p);
       later(function () {
         c.classList.toggle('tourcard--bottom', p === 'bottom');
         at = p;
         fadeIn(c, p === 'bottom' ? '-16px' : '16px', 30);
-      }, 260);
+      }, 300);
     };
     if (typeof sc.pos === 'string') place(sc.pos);
     else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1], true); }, q[0]); }); }
@@ -167,19 +205,25 @@
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
     c.querySelector('.tourcard__def').textContent = sc.def;
+    c.querySelector('.tourcard__note').classList.remove('is-swap');
     c.querySelector('.tourcard__note').textContent = sc.notes[0][1];
     c.querySelector('.tourcard__btns').innerHTML =
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
       '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
       '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button>';
-    /* fade in, drifting from the side the card was on, so a scene change reads as a move */
-    fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 40);
-    sc.notes.slice(1).forEach(function (n) { later(function () { c.querySelector('.tourcard__note').textContent = n[1]; }, n[0]); });
+    /* in, drifting from the side the card was on — after the camera has begun to move, so the
+       plate leads and the words follow it */
+    fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
+    sc.notes.slice(1).forEach(function (n) { later(function () { swapText(c.querySelector('.tourcard__note'), n[1]); }, n[0]); });
   }
-  function showEnd() {
-    var c = buildCard(), wasEnd = at;
+
+  function showEnd() { swapCard(fillEnd); }
+  function fillEnd(c) {
+    var wasEnd = at;
+    c.hidden = false;
     c.classList.add('tourcard--bottom'); at = 'bottom';
-    fadeIn(c, wasEnd === 'top' ? '-16px' : '16px', 40);
+    c.querySelector('.tourcard__note').classList.remove('is-swap');
+    fadeIn(c, wasEnd === 'top' ? '-16px' : '16px', 300);
     c.querySelector('.tourcard__more').innerHTML = '<span>click any organ on the plate to learn more</span>';
     c.querySelector('.tourcard__chip').innerHTML = '<b>Five processes, in order</b>';
     c.querySelector('.tourcard__step').textContent = '';
@@ -229,13 +273,19 @@
     });
   }
   function play(i) {
-    clearTimers(); clearFx();
+    clearTimers(); clearFx(); fxFade(0, 0);
     var A = global.Anatomy;
-    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); showEnd(); camera({ cx:180, cy:430, w:420 }, 1000, 'bottom'); return; }
+    if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); curCam = { cx:180, cy:430, w:420 }; showEnd(); camera(curCam, 1000, 'bottom'); return; }
     idx = i; running = true;
     var sc = SCENES[i];
     if (typeof opener === 'function') opener(sc.station, true);
-    camera(sc.cam, 900, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));
+    curCam = sc.cam;
+    camera(sc.cam, 1100, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));   /* the plate leads, unhurried */
+    /* the camera track: the view follows the food instead of waiting at the far end for it */
+    (sc.cams || []).slice(1).forEach(function (leg) {
+      later(function () { curCam = leg[1]; camera(leg[1], leg[2] || 900, at); }, leg[0]);
+    });
+    later(function () { fxFade(1, 320); }, 120);
     focus(sc.organ, sc.also, sc.spot, sc.hide); showCard(sc, i);
     if (!A) return;
     /* the landmarks along the canal (fractions of its length), found on the plate's own path */
@@ -252,9 +302,9 @@
       var st = M.stomach, w = 0.006;
       /* swallow: up to the pharynx, a beat while the epiglottis closes the airway, then down */
       A.placeBolus(M.mouth);
-      A.travel(M.mouth, swallowed, 2200, function () {
+      A.travel(M.mouth, swallowed, 3200, function () {
         later(function () {
-          A.travel(swallowed, st, 7000, function () {              /* down the oesophagus, unhurried */
+          A.travel(swallowed, st, 7400, function () {              /* down the oesophagus, unhurried */
             /* churning: the bolus is held in the stomach and wobbles */
             later(function () { A.travel(st, st - w, 700, function () { A.travel(st - w, st + w, 800); }); }, 300);
             later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 2200);
@@ -266,7 +316,7 @@
               });
             }, 6000);
           });
-        }, 1600);                                                   /* the beat at the epiglottis */
+        }, 4000);                                                   /* the beat at the epiglottis */
       });
     } else if (sc.id === 'absorption') {
       A.placeBolus(M.duodenum);
@@ -280,6 +330,7 @@
       A.travel(M.ileum, 0.995, 13000, function () { later(function () { A.stopJourney(); }, 900); });
       [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 1200 + i * 1400); });
     }
+    later(function () { fadeOut(card, '-10px'); fxFade(0, 280); }, Math.max(600, sc.ms - 320));
     later(function () { play(i + 1); }, sc.ms);
   }
   function next() { if (!running) return; play(Math.min(idx + 1, SCENES.length)); }
