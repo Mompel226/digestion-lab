@@ -50,10 +50,10 @@
                 animation has no counterpart for, and everything after it read late. */
              [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria and gives pepsin, a protease, the acid pH it needs to digest protein into polypeptides. The bolus is now chyme.'],
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
-    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
+    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:24000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
-      notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
-             [9000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
+      notes:[[0, 'The small, soluble molecules — glucose, amino acids, fatty acids and glycerol — pass through the villus wall into the blood. Most of the water is absorbed here too.'],
+             [12000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
     { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
@@ -449,7 +449,7 @@
             later(function () {
               A.travel(st + w, M.duodenum, 3600, function () {
                 drops(BILE, '#8DB43A', 2.2, 4.5, 6);
-                drops(PANC, '#E8C95A', 2.2, 4.5, 6);
+                drops(PANC, '#C97B2E', 2.2, 4.5, 6);
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
             }, 8600);
