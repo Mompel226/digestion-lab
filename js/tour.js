@@ -247,9 +247,11 @@
       '<div class="tourcard__top"><span class="tourcard__chip"></span><span class="tourcard__step"></span></div>' +
       '<div class="tourcard__say"><p class="tourcard__eyebrow"></p><p class="tourcard__line"></p></div>' +
       '<div class="tourcard__foot"><div class="tourcard__btns"><button type="button" class="btn btn--ghost" data-act="back">Back</button>' +
-      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false" aria-label="Pause the tour">⏸ Pause</button>' +
+      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false"' +
+        ' title="Hold the tour here" aria-label="Pause the tour">⏸ Pause</button>' +
       '<button type="button" class="btn" data-act="next">Next</button>' +
-      '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button></div><div class="tourcard__more"></div></div>';
+      '<button type="button" class="btn btn--ghost" data-act="stop"' +
+        ' title="End the tour and open this station">Close</button></div><div class="tourcard__more"></div></div>';
     host.appendChild(card);
     card.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
@@ -305,9 +307,14 @@
        put it only in the card's first markup and it disappears the moment a scene plays. */
     c.querySelector('.tourcard__btns').innerHTML =
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
-      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false" aria-label="Pause the tour">\u23F8 Pause</button>' +
+      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false"' +
+        ' title="Hold the tour here" aria-label="Pause the tour">\u23F8 Pause</button>' +
       '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
-      '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button>';
+      /* Not the same as Pause, and it should not read like it: this ends the tour and opens
+         the station it had reached, so you can read that organ properly. The end-of-tour
+         card already calls the same action Close. */
+      '<button type="button" class="btn btn--ghost" data-act="stop"' +
+        ' title="End the tour and open this station">Close</button>';
     paintPause();
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
