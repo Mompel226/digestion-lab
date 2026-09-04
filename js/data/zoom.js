@@ -1246,13 +1246,13 @@ window.ZOOM_DETAIL = {
         "plate": true,
         "at": [
           190,
-          552
+          566
         ],
         "tx": [
-          232,
-          512
+          190,
+          536
         ],
-        "anchor": "start"
+        "anchor": "middle"
       },
       {
         "t": "caecum",
@@ -1262,10 +1262,10 @@ window.ZOOM_DETAIL = {
           713
         ],
         "tx": [
-          48,
+          98,
           744
         ],
-        "anchor": "start"
+        "anchor": "middle"
       },
       {
         "t": "rectum",
@@ -1275,7 +1275,7 @@ window.ZOOM_DETAIL = {
           778
         ],
         "tx": [
-          208,
+          210,
           770
         ],
         "anchor": "start"
@@ -1288,8 +1288,8 @@ window.ZOOM_DETAIL = {
           800
         ],
         "tx": [
-          208,
-          806
+          210,
+          808
         ],
         "anchor": "start"
       }
