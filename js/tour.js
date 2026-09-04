@@ -301,10 +301,14 @@
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
     sizeSay(c, [['def', sc.def]].concat(sc.notes.map(function (n) { return ['note', n[1]]; })));
     say(c, 'def', sc.def, true);
+    /* This row is rebuilt for every scene, so the pause button has to be rebuilt with it —
+       put it only in the card's first markup and it disappears the moment a scene plays. */
     c.querySelector('.tourcard__btns').innerHTML =
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
+      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false" aria-label="Pause the tour">\u23F8 Pause</button>' +
       '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
       '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button>';
+    paintPause();
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
     fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
