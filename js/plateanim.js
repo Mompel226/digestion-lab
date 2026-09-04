@@ -43,13 +43,6 @@
     return out.join(';');
   }
   function ease(steps) { var s = [], i; for (i = 0; i < steps; i++) s.push('0.42 0 0.58 1'); return s.join(';'); }
-  function crPoint(P, u) {
-    var n = P.length - 1, i = Math.min(Math.floor(u * n), n - 1), t = u * n - i;
-    var p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(n, i + 2)];
-    var t2 = t * t, t3 = t2 * t;
-    return [0.5 * ((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
-            0.5 * ((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)];
-  }
 
   /* a label in the plate's detail style: text with a halo, a leader, a dot */
   function label(t, tx, ty, ax, ay, fs, anchor) {
@@ -311,7 +304,6 @@
       });
       return smoothArr(s, 3);
     }
-    function insidePoly(P, x, y) { var c = false; for (var i = 0, j = P.length - 1; i < P.length; j = i++) { var xi = P[i][0], yi = P[i][1], xj = P[j][0], yj = P[j][1]; if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) c = !c; } return c; }
     function outerPts(rings) {
       var s = ringAll(rings);
       return smoothPts(W.map(function (w, k) { return [w.x + w.nx * s[k], w.y + w.ny * s[k]]; }), 1);

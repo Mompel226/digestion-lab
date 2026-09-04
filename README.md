@@ -48,46 +48,16 @@ Progress is saved in the browser. **Reset** clears it.
 
 ---
 
-## The two modes
+## How it works
 
-| Mode | Attempts | Shows the answer? | For |
-|---|---|---|---|
-| **Mastery** (default) | unlimited | **no** — only which parts are wrong | homework; hand in when every question is right, or hand in progress on the way |
-| **Test** | one per question | **no** | a check under exam conditions; hand in whatever you scored |
+Check as often as you like. You are told which parts are wrong, **never the answer** — you
+have to work it out. Keep going until every question is right, then hand in. You can also
+hand in part way, to show the work so far; the row says `progress` rather than `complete`.
 
-The answers are never shown, in either mode, and are not in the site at all (see below).
-Each mode keeps its own record, so a Test never wipes Mastery progress.
-
-### Closing Mastery during a test
-
-Mastery lets a student check as often as they like. If it is open during a test they can
-grind the answers out there and then walk through the test knowing them, and the test
-measures nothing. So Mastery can be **closed for everyone, live**:
-
-> Open the Sheet the submissions go to ▸ **Settings** tab ▸ untick **Mastery open**.
-
-Every open page picks that up within a couple of minutes — on load, whenever the tab is
-brought back, and every three minutes — puts the student into Test mode, and greys out
-Mastery with the message you typed in **B2**. Tick it again afterwards. No redeploy, no
-new version of the site.
-
-Mastery is switched **per class**: 9A can be sitting a test while 9B does its homework. The
-page has to be able to say which class it is in, so hand out a link with the class in it —
-`https://mompel226.github.io/digestion-lab/?class=9A` — and it is remembered from then on.
-Students who arrive by the plain link are asked once, and only if a test is actually running.
-
-**Without the Sheet** there is nothing to ask, so `js/config.js` is the switch instead:
-set `masteryOpen: false`, commit and push, and Mastery is closed for everyone on their next
-load; set it back afterwards. Slower than a checkbox — a push takes a minute or two to go
-live — but it needs no spreadsheet at all. With `submitUrl` set, the Sheet wins and the
-config value is only the starting position. And it is a classroom control, not security — this
-is a static site, and a determined student can work around anything the browser is told.
-It stops the ordinary case and makes the rule visible, which is what it is for. If the
-Sheet cannot be reached the page keeps the last answer it had, so a dropped connection
-never changes anything.
-
-The only way to make a test genuinely un-grindable is **different questions in the test**.
-The switch closes the obvious door; it is not a substitute for a separate question bank.
+There are no modes and no test: this is a revision app, and a test in a page the student
+controls could not be enforced anyway. What is worth having is the record of the work —
+how many checks it took and how many were right first time — and that is what a hand-in
+carries.
 
 ## How the answers are kept out of the page
 
@@ -119,24 +89,25 @@ the encrypted answer key written out for your own checking — the site never lo
 
 ## Collecting the results
 
-The marks do not live here. One Google Sheet collects **every** Biology Lab — a tab per
-lab, the Classroom rosters beside them, and the switch that closes Mastery during a test.
-One script, one deployment, one URL.
+The marks do not live here. One Google Sheet collects **every** Biology Lab — a tab per lab,
+with your Google Classroom rosters beside them. One script, one deployment, one URL.
 
 **Set it up once, in the hub repo:**
 [IGCSE-revision-app ▸ The marks spreadsheet](https://github.com/Mompel226/IGCSE-revision-app#the-marks-spreadsheet)
 — five minutes, with both files in full, ready to copy.
 
-Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`.
-That one setting does three things:
+Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`, and
+the OAuth Client ID as `googleClientId`. A hand-in is then written to the **Digestion** tab,
+with the work behind the score: how many checks it took, how many were right first time, how
+long they had been at it, and the per-station breakdown.
 
-* a hand-in is written to the **Digestion** tab of that Sheet;
-* the tab records the work behind the score — checks, right first time, working since,
-  and the per-station breakdown — so a Mastery run shows the grinding, not just the total;
-* Mastery can be closed for everyone during a test, from a checkbox in the Sheet.
+**The lab is public and stays public.** Anyone in the world can work through it and hand in.
+Signing in is what lets a hand-in be attributed: it is recorded only when the Google account
+that signed in is on the teacher's Students tab, and ignored otherwise — nothing is written
+down for anyone else, not even their email. Everybody gets their completion code on screen.
 
-Leave `submitUrl` empty and the lab still works: students get their completion code on
-screen to paste into Google Classroom, and Mastery stays open.
+Leave either setting empty and nothing is recorded anywhere; the lab still works and still
+gives out codes.
 
 Every submission carries a **completion code** derived from the name, class and score,
 salted with the lab's id. The script recomputes it and writes `CHECK` if the two disagree,

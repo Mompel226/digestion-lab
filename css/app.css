@@ -78,14 +78,6 @@ h1,h2,h3,h4{margin:0;font-weight:700;line-height:1.25}
 .hbtn:hover{background:rgba(255,255,255,.24)}
 
 /* ---------- mode selector, hand-in, dialogs ---------- */
-.modewrap{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.22);border-radius:var(--r-pill);padding:3px 5px 3px 12px}
-.modewrap__lbl{font-size:12px;opacity:.75;white-space:nowrap}
-.modesel{
-  background:rgba(255,255,255,.16);color:#fff;border:1px solid rgba(255,255,255,.26);
-  border-radius:var(--r-pill);padding:4px 10px;font:inherit;font-size:13px;cursor:pointer
-}
-.modesel option{color:#1A1A1A;background:#fff}
 .hbtn--go{background:#8FE0A8;color:#0E3D1E;border-color:#8FE0A8;font-weight:700}
 .hbtn--go:hover:not(:disabled){background:#A6EBBC}
 .hbtn--go:disabled{background:rgba(255,255,255,.10);color:rgba(255,255,255,.55);
@@ -735,7 +727,6 @@ body[data-mode="practice"] .panel__inner::before{
   .stat--stations{display:none}
   .hbtn{padding:6px 11px}
   .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700}
-  .modewrap__lbl{display:none} .modewrap{padding:3px 4px}
   #btnHelp{width:32px;padding:0;display:grid;place-items:center;height:30px}
   .st-title{font-size:21px}
   .match{grid-template-columns:1fr}
@@ -943,7 +934,7 @@ body[data-mode="practice"] .panel__inner::before{
 .hbtn--part{background:#F4EAD2;border-color:#C9A227;color:#6B5210}
 .hbtn--part:hover{background:#EFE0BC}
 
-/* choosing a class, asked only when a test is actually running */
-.modal__box--slim{max-width:420px}
-.clsgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.clsgrid .btn{min-width:64px;justify-content:center}
+
+/* handing in: who you are, and the Google button */
+.signinbox{margin:10px 0 4px;min-height:44px;display:flex;justify-content:center}
+.who{margin:8px 0 2px;font-size:13.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}

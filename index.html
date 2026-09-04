@@ -11,7 +11,7 @@
 <!-- The tab icon: the alimentary canal itself — oesophagus, stomach, a loop of intestine —
      drawn as one continuous tube on the app's own green. It was a pair of lungs. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2314572B'/><g fill='none' stroke='%23FFFFFF' stroke-linecap='round'><path d='M16.5 4.5 V9.5' stroke-width='3'/><path d='M16.5 9.5 C10 9.5 6.5 14 8.8 18.2 C11 22 17.6 21.8 18.6 17' stroke-width='3.2'/><path d='M18.6 17 C23 18.4 24 23 20.4 25.4 C16.4 28 10.6 26 10.6 22.4' stroke-width='3'/></g></svg>">
-<link rel="stylesheet" href="css/app.css?v=1788503966">
+<link rel="stylesheet" href="css/app.css?v=1788514430">
 </head>
 <body>
 <div class="app">
@@ -37,13 +37,6 @@
       <span class="stat stat--stations" title="Stations finished">
         <b><span id="stDone">0</span>/<span id="stTotal">15</span></b> <span class="stat__lbl">stations</span>
       </span>
-      <label class="modewrap" id="modeWrap" title="Mastery: check as often as you like, never told the answer. Test: one attempt each, then hand in.">
-        <span class="modewrap__lbl">Mode</span>
-        <select id="modeSel" class="modesel">
-          <option value="mastery">Mastery</option>
-          <option value="test">Test</option>
-        </select>
-      </label>
       <button class="hbtn hbtn--go" id="btnSubmit" hidden disabled>Hand in</button>
       <a class="hbtn" href="https://mompel226.github.io/IGCSE-revision-app/"
          title="All of the Biology Labs">← All labs</a>
@@ -107,12 +100,12 @@
     <ul>
       <li><b>Click any organ</b> on the body, or any step on the bar along the bottom.</li>
       <li>Each station has two tabs: <b>Learn</b> — what you must know — and <b>Practise</b>, the questions.</li>
-      <li><b>Mastery</b>: check as often as you like. You are told which parts are wrong, <b>never the answer</b>. <b>Test</b>: one attempt per question. Answer them all, then <b>Hand in</b>.</li>
+      <li><b>Check as often as you like.</b> You are told which parts are wrong, <b>never the answer</b> — you have to work it out. Keep going until it is all right, then <b>Hand in</b>.</li>
       <li><b>Follow the food</b> plays the whole journey, mouth to anus, and opens each station as it arrives.</li>
       <li>An underlined word can be clicked: <b>🔍</b> opens a picture there and then, <b>↗</b> jumps to the station that explains it and brings you back.</li>
       <li>Your work is saved <b>in this browser on this device</b>. Use the same computer each time, and hand in before you clear your browsing data.</li>
     </ul>
-    <p class="fineprint">The answers are never shown, in either mode. Each mode keeps its own record, so a Test never wipes your Mastery progress. Dr&nbsp;Mompel can close Mastery while a test is running — if it is closed, the mode list says so.</p>
+    <p class="fineprint">The answers are never shown. To hand your work to Dr&nbsp;Mompel you sign in with your school Google account, so he knows whose it is; anyone else is welcome to use the lab and will still get a completion code.</p>
 
     <details class="helpmore">
       <summary>What the colours mean</summary>
@@ -155,20 +148,21 @@
   </div>
 </div>
 
-<script src="js/config.js?v=1788503966"></script>
-<script src="js/data/stations.js?v=1788503966"></script>
-<script src="js/data/photos.js?v=1788503966"></script>
-<script src="js/data/figure-art.js?v=1788503966"></script>
-<script src="js/data/anatomy-art.js?v=1788503966"></script>
-<script src="js/data/zoom.js?v=1788503966"></script>
-<script src="js/plateanim.js?v=1788503966"></script>
-  <script src="js/zoom.js?v=1788503966"></script>
-<script src="js/anatomy.js?v=1788503966"></script>
-<script src="js/tour.js?v=1788503966"></script>
-<script src="js/terms.js?v=1788503966"></script>
-<script src="js/figures.js?v=1788503966"></script>
-<script src="js/marking.js?v=1788503966"></script>
-<script src="js/engine.js?v=1788503966"></script>
-<script src="js/app.js?v=1788503966"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/config.js?v=1788514430"></script>
+<script src="js/data/stations.js?v=1788514430"></script>
+<script src="js/data/photos.js?v=1788514430"></script>
+<script src="js/data/figure-art.js?v=1788514430"></script>
+<script src="js/data/anatomy-art.js?v=1788514430"></script>
+<script src="js/data/zoom.js?v=1788514430"></script>
+<script src="js/plateanim.js?v=1788514430"></script>
+  <script src="js/zoom.js?v=1788514430"></script>
+<script src="js/anatomy.js?v=1788514430"></script>
+<script src="js/tour.js?v=1788514430"></script>
+<script src="js/terms.js?v=1788514430"></script>
+<script src="js/figures.js?v=1788514430"></script>
+<script src="js/marking.js?v=1788514430"></script>
+<script src="js/engine.js?v=1788514430"></script>
+<script src="js/app.js?v=1788514430"></script>
 </body>
 </html>
