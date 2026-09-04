@@ -119,6 +119,23 @@
     return { done:done, total:total, tried:tried, checks:checks, first1:first1, from:from };
   }
 
+  /* On a phone the "Whole body" button floats on the plate rather than sitting in the row
+     of toggles above it. That row wraps, so its height is not a number CSS can know —
+     measure it and hand it over. */
+  function sizeTools() {
+    var tools = document.querySelector('.bodycol__tools'), col = document.querySelector('.bodycol');
+    if (!tools || !col) return;
+    var h = tools.getBoundingClientRect().height;
+    if (h) col.style.setProperty('--toolsH', Math.round(h) + 'px');
+  }
+  window.addEventListener('resize', sizeTools);
+  if (window.ResizeObserver) {
+    var ro = new ResizeObserver(sizeTools);
+    var tools0 = document.querySelector('.bodycol__tools');
+    if (tools0) ro.observe(tools0);
+  }
+  sizeTools();
+
   /* ---------- header ---------- */
   function paintHeader() {
     var t = totals(), pct = t.total ? t.done / t.total : 0, C = 2 * Math.PI * 11;
