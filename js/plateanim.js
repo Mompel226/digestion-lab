@@ -370,7 +370,9 @@
     var last = pts[pts.length - 1]; d += ' L' + last[0] + ',' + last[1];
     return '<path d="' + d + '" fill="none" stroke="' + col + '" stroke-width="' + f1(w) + '" stroke-linecap="round" stroke-linejoin="round"/>';
   }
-  var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55', PDUCT = '#B08D2E';
+  /* The bile duct is green because bile is; the pancreatic duct must NOT be, or a student
+     reads green leaving the pancreas and concludes the pancreas makes bile. Brown. */
+  var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55', PDUCT = '#9A6A34';
   var RHD = [[108, 444], [122, 458], [140, 470]], LHD = [[180, 448], [162, 462], [140, 470]];
   var CHD = [[140, 470], [150, 480], [156, 490]], CYST = [[156, 490], [150, 489], [144, 488]];
   var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
