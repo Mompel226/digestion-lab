@@ -1309,44 +1309,48 @@ window.ZOOM_DETAIL = {
   },
   "rectum-anus": {
     "organ": "rectum-anus",
-    "img": "zoom/large-intestine-illus.jpg",
-    "roi": [
-      0.46,
-      0.62,
-      0.12,
-      0.36
+    "focus": "rectum-anus",
+    "spotlight": [
+      "rectum-anus"
     ],
-    "box": [
-      157,
-      741,
-      35,
-      71
+    "keep": true,
+    "noback": true,
+    "paint": [
+      {
+        "organ": "rectum-anus",
+        "fill": "none",
+        "stroke": "#7A4E7A",
+        "sw": 0.7,
+        "opacity": 0.7
+      }
     ],
-    "pad": 1,
     "label": "Rectum and anal canal",
-    "credit": "OpenStax College, CC BY 3.0, labels ours",
     "labels": [
       {
         "t": "rectum — stores faeces",
+        "plate": true,
         "at": [
-          0.5,
-          0.8
+          177,
+          772
         ],
         "tx": [
-          0.62,
-          0.78
-        ]
+          166,
+          770
+        ],
+        "anchor": "end"
       },
       {
         "t": "anus — egestion",
+        "plate": true,
         "at": [
-          0.5,
-          0.965
+          177,
+          806
         ],
         "tx": [
-          0.62,
-          0.97
-        ]
+          188,
+          810
+        ],
+        "anchor": "start"
       }
     ],
     "keys": [
