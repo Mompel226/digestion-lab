@@ -266,26 +266,37 @@
   }
   function f1(v) { return (+v).toFixed(1); }
 
-  /* A band that follows the canal itself, from one fraction of its length to another. The
-     small intestine is drawn as one coiled shape, so this is how a part of it can be given
-     its own colour: not by slicing the picture in half, which cuts across the coils, but by
-     following the tube and stopping where that part of the gut stops. */
-  function canalRibbon(from, to, width) {
+  /* Which part of a drawn organ belongs to which stretch of gut.
+     The small intestine is drawn as one coiled blob, far wider than the canal's own route
+     through it, so a band drawn along that route colours only about half of it and leaves
+     stripes. Instead every square of the shape is asked which stretch of the canal it lies
+     nearest to, and joins that one. The boundary then follows the tube — it bends with the
+     coils — and the whole organ is coloured, with no slice across the picture. */
+  var CANAL_PTS = null;
+  function canalPoints() {
+    if (CANAL_PTS) return CANAL_PTS;
     var p = document.getElementById('canalPath');
     if (!p) return null;
-    var L = p.getTotalLength(), half = (width || 20) / 2, N = 90;
-    var left = [], right = [];
-    for (var i = 0; i <= N; i++) {
-      var d = (from + (to - from) * (i / N)) * L;
-      var q = p.getPointAtLength(d);
-      var a = p.getPointAtLength(Math.max(0, d - 1.5));
-      var b = p.getPointAtLength(Math.min(L, d + 1.5));
-      var dx = b.x - a.x, dy = b.y - a.y, m = Math.hypot(dx, dy) || 1;
-      var nx = -dy / m * half, ny = dx / m * half;
-      left.push([q.x + nx, q.y + ny]);
-      right.push([q.x - nx, q.y - ny]);
+    var L = p.getTotalLength(), N = 400, out = [];
+    for (var i = 0; i <= N; i++) { var q = p.getPointAtLength((i / N) * L); out.push([q.x, q.y, i / N]); }
+    CANAL_PTS = out;
+    return out;
+  }
+  function canalPart(box, from, to, step) {
+    var pts = canalPoints();
+    if (!pts) return null;
+    var g = step || 4, quads = [];
+    for (var x = box.x; x < box.x1; x += g) {
+      for (var y = box.y; y < box.y1; y += g) {
+        var cx = x + g / 2, cy = y + g / 2, best = 0, bd = Infinity;
+        for (var i = 0; i < pts.length; i++) {
+          var dx = pts[i][0] - cx, dy = pts[i][1] - cy, d = dx * dx + dy * dy;
+          if (d < bd) { bd = d; best = pts[i][2]; }
+        }
+        if (best >= from && best < to) quads.push([[x, y], [x + g, y], [x + g, y + g], [x, y + g]]);
+      }
     }
-    return left.concat(right.reverse());
+    return quads;
   }
 
   /* a label: text with a halo, a leader line and a dot on the feature.
@@ -507,11 +518,19 @@
            small intestine is a single coiled path, but the jejunum and the ileum are halves of
            it. The clip goes on a wrapper with no transform, so its points stay in plate space. */
         var host = gImgs;
-        var poly = pp.clip && pp.clip.canal ? canalRibbon(pp.clip.canal[0], pp.clip.canal[1], pp.clip.width) : pp.clip;
-        if (poly && poly.length) {
+        var shapes = null;
+        if (pp.clip && pp.clip.canal) {
+          var r = path.getBoundingClientRect(), iv = svg.getScreenCTM().inverse();
+          var q1 = pt(iv, r.left, r.top), q2 = pt(iv, r.right, r.bottom);
+          shapes = canalPart({ x:q1.x - 2, y:q1.y - 2, x1:q2.x + 2, y1:q2.y + 2 },
+                             pp.clip.canal[0], pp.clip.canal[1], pp.clip.step);
+        } else if (pp.clip) { shapes = [pp.clip]; }
+        if (shapes && shapes.length) {
           var id = 'clip' + (clipN++);
           var cp = el('clipPath', { id:id, clipPathUnits:'userSpaceOnUse' }, defs);
-          el('polygon', { points:poly.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' ') }, cp);
+          shapes.forEach(function (sh) {
+            el('polygon', { points:sh.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' ') }, cp);
+          });
           host = el('g', { 'clip-path':'url(#' + id + ')' }, gImgs);
         }
         var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, host);
