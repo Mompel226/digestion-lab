@@ -25,7 +25,7 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15600, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:32000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15600, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:35000,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
          and then the bolus appears, already in the stomach. Each leg is [when, camera, how long]. */
@@ -34,11 +34,16 @@
             [15200, { cx:196, cy:498, w:300 }, 1300],
             [22600, { cx:182, cy:520, w:330 }, 1300]],
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
+      /* Read these out loud before changing them. The first three used to land 3.4s and 4s
+         apart, which is under two words a second for a sentence of seventeen — the reader
+         sees the words move, not what they say. Each note now gets at least five seconds,
+         and still arrives with the picture it belongs to: the camera starts travelling at
+         6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
-             [3400, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
-             [7400, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
-             [14600, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
-             [22600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
+             [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
+             [10600, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
+             [16800, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
+             [23600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
@@ -55,6 +60,7 @@
 
 
   var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
+  var pending = [], paused = false;
   var curCam = null;                 /* the leg of the camera track the scene is on */
 
   /* A fade is only safe while the page is actually being drawn: a transition does not advance in
@@ -125,8 +131,62 @@
     if (parent) parent.appendChild(n);
     return n;
   }
-  function later(fn, ms) { var t = setTimeout(function () { if (running) fn(); }, ms); timers.push(t); return t; }
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+  /* Everything the tour does later goes through here, and every one of those is remembered
+     with the time it is due. That is what makes pausing possible: on pause the timers are
+     cancelled and what is left of each wait is kept; on play they are set again for what
+     remains. Without the record, pausing would either lose the rest of the scene or replay
+     it from the top. */
+  function later(fn, ms) {
+    var rec = { fn:fn, left:ms || 0, due:Date.now() + (ms || 0), t:null };
+    var fire = function () {
+      rec.t = null;
+      var k = pending.indexOf(rec); if (k >= 0) pending.splice(k, 1);
+      if (running && !paused) fn();
+    };
+    if (!paused) rec.t = setTimeout(fire, rec.left);
+    rec.fire = fire;
+    pending.push(rec);
+    if (rec.t) timers.push(rec.t);
+    return rec.t;
+  }
+  function clearTimers() {
+    timers.forEach(clearTimeout); timers = [];
+    pending.forEach(function (r) { if (r.t) clearTimeout(r.t); });
+    pending = [];
+  }
+
+  /* The drawn animations are SMIL, so the browser can hold them still for us. */
+  function plateSvg() { return document.getElementById('bodySvg'); }
+
+  function setPaused(v) {
+    if (!running || paused === v) return;
+    paused = v;
+    var svg = plateSvg(), now = Date.now();
+    if (paused) {
+      pending.forEach(function (r) {
+        if (r.t) { clearTimeout(r.t); r.t = null; }
+        r.left = Math.max(0, r.due - now);
+      });
+      try { if (svg) svg.pauseAnimations(); } catch (e) {}
+    } else {
+      pending.forEach(function (r) {
+        r.due = now + r.left;
+        r.t = setTimeout(r.fire, r.left);
+        timers.push(r.t);
+      });
+      try { if (svg) svg.unpauseAnimations(); } catch (e) {}
+    }
+    paintPause();
+  }
+
+  function paintPause() {
+    if (!card) return;
+    var b = card.querySelector('[data-act="pause"]');
+    if (!b) return;
+    b.textContent = paused ? '▶ Play' : '⏸ Pause';
+    b.setAttribute('aria-label', paused ? 'Play the tour' : 'Pause the tour');
+    b.setAttribute('aria-pressed', paused ? 'true' : 'false');
+  }
   function canalPoint(t) {
     var p = document.getElementById('canalPath');
     if (!p) return [150, 500];
@@ -187,12 +247,14 @@
       '<div class="tourcard__top"><span class="tourcard__chip"></span><span class="tourcard__step"></span></div>' +
       '<div class="tourcard__say"><p class="tourcard__eyebrow"></p><p class="tourcard__line"></p></div>' +
       '<div class="tourcard__foot"><div class="tourcard__btns"><button type="button" class="btn btn--ghost" data-act="back">Back</button>' +
+      '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false" aria-label="Pause the tour">⏸ Pause</button>' +
       '<button type="button" class="btn" data-act="next">Next</button>' +
       '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button></div><div class="tourcard__more"></div></div>';
     host.appendChild(card);
     card.addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
       var act = b.getAttribute('data-act');
+      if (act === 'pause') { setPaused(!paused); return; }
       if (act === 'next') next(); else if (act === 'back') back(); else if (act === 'stop') stop({ reopen:true }); else if (act === 'again') start(opener, onStop);
       else if (act === 'learn') { var sc = SCENES[idx]; stop(); if (sc && typeof opener === 'function') opener(sc.station); }
     });
@@ -313,6 +375,8 @@
     var A = global.Anatomy;
     if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); curCam = { cx:180, cy:430, w:420 }; showEnd(); camera(curCam, 1000, 'bottom'); return; }
     idx = i; running = true;
+    if (paused) { paused = false; try { var _s = plateSvg(); if (_s) _s.unpauseAnimations(); } catch (e) {} }
+    paintPause();
     var sc = SCENES[i];
     /* The definition has the card to itself first, so the scene's own clock starts after it:
        the food waits where the last scene left it while the reader takes in what the word means. */
@@ -389,6 +453,7 @@
     Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op.is-spot'), function (p) { p.classList.remove('is-spot'); });
     var landing = idx >= SCENES.length || idx < 0 ? 'overview' : SCENES[idx].station;
     running = false; idx = -1;
+    if (paused) { paused = false; try { var _s2 = plateSvg(); if (_s2) _s2.unpauseAnimations(); } catch (e) {} }
     clearTimers(); clearFx();
     if (global.Anatomy) global.Anatomy.stopJourney();
     if (card) card.hidden = true;
