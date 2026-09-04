@@ -56,7 +56,9 @@
      journey and lands it in a pile at the far end. */
   function mlabel() { MOVING = true; try { return label.apply(null, arguments); } finally { MOVING = false; } }
 
-  function label(t, tx, ty, ax, ay, fs, anchor) {
+  /* `a2` is a second target: one word, two leaders — the structure on the drawing and the
+     same structure in the photograph beside it, so the eye reads them as one thing. */
+  function label(t, tx, ty, ax, ay, fs, anchor, a2) {
     var lines = String(t).split('\n');
     var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
     var tw = wmax * fs * 0.52;
@@ -83,6 +85,13 @@
       if (sy === yTop) sy -= fs * 0.15; else if (sy === yBot) sy += fs * 0.15;
       out = '<line class="dl__l" x1="' + f1(sx) + '" y1="' + f1(sy) + '" x2="' + f1(ax) + '" y2="' + f1(ay) + '" stroke-width="' + f1(fs * 0.09) + '"/>' +
             '<circle class="dl__d" cx="' + f1(ax) + '" cy="' + f1(ay) + '" r="' + f1(fs * 0.22) + '" stroke-width="' + f1(fs * 0.08) + '"/>' + out;
+      if (a2) {
+        var bx = Math.max(x0, Math.min(x0 + tw, a2[0])), by = Math.max(yTop, Math.min(yBot, a2[1]));
+        if (bx === x0) bx -= fs * 0.25; else if (bx === x0 + tw) bx += fs * 0.25;
+        if (by === yTop) by -= fs * 0.15; else if (by === yBot) by += fs * 0.15;
+        out = '<line class="dl__l" x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(a2[0]) + '" y2="' + f1(a2[1]) + '" stroke-width="' + f1(fs * 0.09) + '"/>' +
+              '<circle class="dl__d" cx="' + f1(a2[0]) + '" cy="' + f1(a2[1]) + '" r="' + f1(fs * 0.22) + '" stroke-width="' + f1(fs * 0.08) + '"/>' + out;
+      }
     }
     return out;
   }
@@ -430,12 +439,17 @@
         g += tube([a, [a[0] + nx * side * len * .6 + tx / L * 3, a[1] + ny * side * len * .6 + ty / L * 3], [a[0] + nx * side * len + tx / L * 6, a[1] + ny * side * len + ty / L * 6]], w * .55, PDUCT);
       }
       g += drops(PANC, JUICE, r, 4, 4, 0);
-      if (ctx.compact) return g + label('pancreas', 252, 498, 242, 512, fs, 'middle') + label('pancreatic duct', 150, 566, 200, 528, fs, 'start') + label('duodenum', 74, 598, 128, 584, fs, 'start');
+      /* Each word points twice: at the drawing and at the same structure in the
+         photograph on the left, so the two read as one picture. */
+      if (ctx.compact) return g +
+        label('pancreas', 230, 452, 230, 492, fs, 'middle', [117, 500]) +
+        label('pancreatic duct', 196, 596, 177, 539, fs, 'start') +
+        label('duodenum', 60, 590, 140, 585, fs, 'start', [80, 520]);
       return g +
-        label('pancreas — makes\npancreatic juice', 254, 488, 242, 511, fs, 'middle') +
-        label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
-        label('the bile duct\njoins it here', 104, 560, 146, 553, fs, 'start') +
-        label('duodenum', 74, 600, 128, 588, fs, 'start');
+        label('pancreas — makes\npancreatic juice', 230, 444, 230, 492, fs, 'middle', [117, 500]) +
+        label('pancreatic duct\ncarries the juice', 196, 590, 177, 539, fs, 'start') +
+        label('the bile duct\njoins it here', 196, 628, 140, 566, fs, 'start') +
+        label('duodenum', 60, 590, 140, 585, fs, 'start', [80, 520]);
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
