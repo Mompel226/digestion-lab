@@ -832,15 +832,17 @@ window.ZOOM_DETAIL = {
           {
             "img": "zoom/pancreas-render2.jpg",
             "at": [
-              246,
-              706,
-              92
+              215,
+              424,
+              118
             ],
-            "cap": "where bile and pancreatic\njuice enter — click to enlarge",
+            "cap": "where bile and pancreatic juice enter",
             "to": [
               0.62,
               0.2
-            ]
+            ],
+            "big": 1,
+            "capTop": true
           }
         ],
         "dropWhite": true
