@@ -846,6 +846,22 @@
      This is a classroom control, not security: it is a static site, and a determined reader can
      work round anything the browser is told. It stops the ordinary case and makes the rule
      visible, which is what it is for. */
+  /* Which class the reader is in. Mastery is switched per class, so the page has to be
+     able to say. It is remembered once and comes from whichever of these happens first:
+     a ?class=9A link the teacher hands out, the class they choose when handing in, or
+     the small picker that appears only if a test is actually running for some class. */
+  var CLASS_KEY = 'digestion-lab.class';
+  function myClass() { try { return localStorage.getItem(CLASS_KEY) || ''; } catch (e) { return ''; } }
+  function setMyClass(c) {
+    c = String(c || '').trim().toUpperCase();
+    if (!c) return;
+    try { localStorage.setItem(CLASS_KEY, c); } catch (e) {}
+  }
+  (function () {
+    var m = /[?&]class=([^&#]+)/i.exec(location.search);
+    if (m) setMyClass(decodeURIComponent(m[1]));
+  })();
+
   var GATE_KEY = 'digestion-lab.gate';
   var CFG = window.LAB_CONFIG || {};
   /* Where the switch comes from:
@@ -869,7 +885,8 @@
     function cleanup() { try { delete window[name]; } catch (e) { window[name] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
     window[name] = function (data) { done = true; cleanup(); cb(data); };
     s.onerror = function () { if (!done) { done = true; cleanup(); cb(null); } };
-    s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'q=gate&callback=' + name + '&t=' + Date.now();
+    s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'q=gate&callback=' + name +
+            '&cls=' + encodeURIComponent(myClass()) + '&t=' + Date.now();
     setTimeout(function () { if (!done) { done = true; cleanup(); cb(null); } }, 6000);
     document.head.appendChild(s);
   }
@@ -899,6 +916,31 @@
       gate = { masteryOpen:data.masteryOpen, note:String(data.note || '') };
       try { localStorage.setItem(GATE_KEY, JSON.stringify(gate)); } catch (e) {}
       applyGate(quiet && !changed);
+      /* a test is running somewhere and we do not know whose class this is */
+      if (data.needClass && !myClass()) askClass();
+    });
+  }
+
+  /* Only ever shown when it matters: some class is sitting a test in this lab. */
+  function askClass() {
+    if (document.getElementById('clsDlg')) return;
+    var list = (window.LAB_CONFIG || {}).classes || [];
+    var dlg = document.createElement('div');
+    dlg.className = 'modal'; dlg.id = 'clsDlg';
+    dlg.innerHTML = '<div class="modal__box modal__box--slim">' +
+      '<h2>Which class are you in?</h2>' +
+      '<p class="st-sub">A test is running in one of the classes, so the lab needs to know which ' +
+      'one you are in before Mastery can open. You only have to answer this once.</p>' +
+      '<div class="clsgrid">' + list.map(function (c) {
+        return '<button type="button" class="btn" data-cls="' + c + '">' + c + '</button>';
+      }).join('') + '</div></div>';
+    document.body.appendChild(dlg);
+    dlg.addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-cls]');
+      if (!b) return;
+      setMyClass(b.getAttribute('data-cls'));
+      dlg.remove();
+      refreshGate(false);
     });
   }
 
@@ -930,7 +972,9 @@
       ', <b>' + t.first1 + '</b> right first time.</p>' +
       '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
       '<label class="fld"><span>Your class</span><select id="subForm">' +
-      (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
+      (cfg.classes || ['Other']).map(function (c) {
+        return '<option' + (c === myClass() ? ' selected' : '') + '>' + c + '</option>';
+      }).join('') +
       '</select></label><div id="subMsg" class="submsg"></div>';
     dlg.hidden = false;
     document.getElementById('subGo').onclick = doSubmit;
@@ -945,6 +989,7 @@
     var msg = document.getElementById('subMsg');
     var go = document.getElementById('subGo');
     if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
+    setMyClass(form);                       /* now the gate knows which class this reader is in */
     var t = totals();
     var code = completionCode(name, form, t.done + '/' + t.total);
     var perStation = {};

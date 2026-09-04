@@ -71,6 +71,11 @@ brought back, and every three minutes — puts the student into Test mode, and g
 Mastery with the message you typed in **B2**. Tick it again afterwards. No redeploy, no
 new version of the site.
 
+Mastery is switched **per class**: 9A can be sitting a test while 9B does its homework. The
+page has to be able to say which class it is in, so hand out a link with the class in it —
+`https://mompel226.github.io/digestion-lab/?class=9A` — and it is remembered from then on.
+Students who arrive by the plain link are asked once, and only if a test is actually running.
+
 **Without the Sheet** there is nothing to ask, so `js/config.js` is the switch instead:
 set `masteryOpen: false`, commit and push, and Mastery is closed for everyone on their next
 load; set it back afterwards. Slower than a checkbox — a push takes a minute or two to go
