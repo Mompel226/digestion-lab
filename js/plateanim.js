@@ -444,12 +444,12 @@
       if (ctx.compact) return g +
         label('pancreas', 230, 452, 230, 492, fs, 'middle', [117, 500]) +
         label('pancreatic duct', 196, 596, 177, 539, fs, 'start') +
-        label('duodenum', 60, 590, 140, 585, fs, 'start', [80, 520]);
+        label('duodenum', 52, 622, 142, 578, fs, 'start', [82, 526]);
       return g +
         label('pancreas — makes\npancreatic juice', 230, 444, 230, 492, fs, 'middle', [117, 500]) +
         label('pancreatic duct\ncarries the juice', 196, 590, 177, 539, fs, 'start') +
         label('the bile duct\njoins it here', 196, 628, 140, 566, fs, 'start') +
-        label('duodenum', 60, 590, 140, 585, fs, 'start', [80, 520]);
+        label('duodenum', 52, 622, 142, 578, fs, 'start', [82, 526]);
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
