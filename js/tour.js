@@ -30,6 +30,7 @@
   var SCENES = [
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
+      seek:['mouth'],
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
@@ -45,6 +46,9 @@
          sees the words move, not what they say. Each note now gets at least five seconds,
          and still arrives with the picture it belongs to: the camera starts travelling at
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
+      /* Where the food is when each sentence shows, so stepping moves the picture with the
+         words instead of leaving the bolus wherever the clock had got to. */
+      seek:['mouth', 'swallowed', 'oesoph', 'stomach', 'stomach', 'duodenum'],
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
              [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
@@ -55,14 +59,17 @@
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
+      seek:['duodenum', 'jejunum'],
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
              [9000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
     { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
+      seek:['ileum', 'ileum'],
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
              [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
+      seek:['ileum', 'colon'],
       notes:[[0, 'In the colon the remaining water is reabsorbed into the blood, and what is left becomes faeces.'],
              [9500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
   ];
@@ -73,7 +80,7 @@
   /* Which sentence of the current scene the card is showing: -1 is the definition, 0.. are
      the notes. Next and Back step through these, not through whole scenes — a reader who
      missed a sentence wants that sentence again, not the last two minutes again. */
-  var noteAt = -1, noteTimers = [];
+  var noteAt = -1, noteTimers = [], manual = false;
   var curCam = null;                 /* the leg of the camera track the scene is on */
 
   /* A fade is only safe while the page is actually being drawn: a transition does not advance in
@@ -188,7 +195,8 @@
         timers.push(r.t);
       });
       try { if (svg) svg.unpauseAnimations(); } catch (e) {}
-      rearmNotes();
+      if (manual) { manual = false; rearmFrom(noteAt); }
+      else rearmNotes();
     }
     paintPause(); paintStep();
   }
@@ -209,6 +217,77 @@
         }, Math.max(400, sc.notes[j][0] - base)));
       })(k);
     }
+  }
+
+  /* A landmark name from a scene's seek map, as a fraction along the canal. */
+  function markAt(name) {
+    var A = global.Anatomy; if (!A) return null;
+    var M = A.marks() || { mouth:0.01, pharynx:0.04, stomach:0.24, duodenum:0.34, jejunum:0.38,
+                           ileum:0.62, caecum:0.68, colon:0.78, sigmoid:0.92, anus:1 };
+    var mix = function (a, b, k) { return a + (b - a) * k; };
+    switch (name) {
+      case 'mouth':     return M.mouth;
+      case 'swallowed': return mix(M.mouth, M.pharynx, 0.55);
+      case 'oesoph':    return mix(mix(M.mouth, M.pharynx, 0.55), M.stomach, 0.55);
+      case 'stomach':   return M.stomach;
+      case 'duodenum':  return M.duodenum;
+      case 'jejunum':   return mix(M.duodenum, M.ileum, 0.6);
+      case 'ileum':     return M.ileum;
+      case 'colon':     return mix(M.caecum, M.sigmoid, 0.55);
+      case 'anus':      return 0.995;
+    }
+    return null;
+  }
+
+  /* Put the whole picture where that sentence belongs: the camera leg that covers it, the
+     side of the plate the card sits on, and the food itself. Stepping used to move only the
+     words, so the bolus stayed wherever the clock had reached and pressing Play spent a long
+     time catching up — or never did. */
+  function seekPicture(sc, k, ms) {
+    var T = k < 0 ? 0 : (sc.notes && sc.notes[k] ? sc.notes[k][0] : 0);
+    var cam = sc.cam;
+    (sc.cams || []).forEach(function (leg) { if (leg[0] <= T) cam = leg[1]; });
+    var place = typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos.length ? sc.pos[0][1] : null);
+    if (sc.pos && typeof sc.pos !== 'string') sc.pos.forEach(function (q) { if (q[0] <= T) place = q[1]; });
+    if (card && place) { card.classList.toggle('tourcard--bottom', place === 'bottom'); at = place; }
+    curCam = cam;
+    camera(cam, ms == null ? 520 : ms, place || at);
+
+    var A = global.Anatomy;
+    if (!A || !sc.seek) return;
+    var f = markAt(sc.seek[Math.max(0, k)]);
+    if (f == null) return;
+    A.stopJourney();
+    A.placeBolus(f);
+  }
+
+  /* After a manual step the scene's own chain of animations has been cancelled, so Play
+     cannot simply resume it. Instead the remaining sentences are re-armed with their original
+     spacing, and the food travels from each one's landmark to the next — the picture keeps up
+     with the words rather than replaying a schedule that no longer matches them. */
+  function rearmFrom(k) {
+    var sc = SCENES[idx];
+    if (!sc || !sc.notes || !sc.notes.length) return;
+    var A = global.Anatomy;
+    var base = k >= 0 ? sc.notes[k][0] : 0;
+    for (var j = Math.max(0, k) + (k < 0 ? 0 : 1); j < sc.notes.length; j++) {
+      (function (n) {
+        var gap = Math.max(500, sc.notes[n][0] - base);
+        var from = markAt((sc.seek || [])[Math.max(0, n - 1)]);
+        var to = markAt((sc.seek || [])[n]);
+        noteTimers.push(later(function () {
+          noteAt = n;
+          if (card) say(card, 'note', sc.notes[n][1]);
+          seekPicture(sc, n, 700);
+          paintStep();
+        }, gap));
+        if (A && from != null && to != null && Math.abs(to - from) > 0.001) {
+          noteTimers.push(later(function () { A.travel(from, to, Math.max(600, gap - 500)); },
+                                Math.max(200, gap - Math.max(600, gap - 500))));
+        }
+      })(j);
+    }
+    later(function () { play(idx + 1); }, Math.max(1500, sc.ms - base));
   }
 
   function paintPause() {
@@ -363,7 +442,7 @@
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
     fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
-    noteAt = -1; noteTimers = [];
+    noteAt = -1; noteTimers = []; manual = false;
     sc.notes.forEach(function (n, k) {
       noteTimers.push(later(function () { noteAt = k; say(c, 'note', n[1]); }, lead + n[0]));
     });
@@ -517,20 +596,19 @@
     if (k >= sc.notes.length) { play(Math.min(idx + 1, SCENES.length)); return; }
     if (k < -1) { play(Math.max(idx - 1, 0)); return; }
 
-    /* cancel the sentences still queued for this scene; the reader is driving now */
-    noteTimers.forEach(function (t) { if (t) clearTimeout(t); });
-    pending = pending.filter(function (r) {
-      if (noteTimers.indexOf(r.t) < 0) return true;
-      if (r.t) clearTimeout(r.t);
-      return false;
-    });
+    /* The reader is driving now. Everything the scene had queued goes — the sentences and the
+       chain of animations behind them — because a schedule built for the clock no longer
+       matches where the reader has moved to. Play rebuilds it from here. */
+    clearTimers();
     noteTimers = [];
+    manual = true;
 
     noteAt = k;
     /* Instant, not faded. say() otherwise schedules the swap 240ms later, and the setPaused
        below holds that timer — so the card faded out and the words never arrived. A reader
        who pressed a button wants the sentence now anyway. */
     if (card) say(card, k < 0 ? 'def' : 'note', k < 0 ? sc.def : sc.notes[k][1], true);
+    seekPicture(sc, k, 420);          /* the picture goes where the sentence is */
     setPaused(true);
     paintStep();
   }
