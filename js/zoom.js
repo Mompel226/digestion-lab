@@ -46,7 +46,7 @@
 
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
   var keyImg = null, keyImgFront = null, keyWrap = null, keyCache = {};
-  var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, softBlur = null;
+  var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, gKeys = null, softBlur = null;
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
@@ -146,6 +146,7 @@
     });
     gLabels = el('g', { 'class':'detail__labels' }, layer);
     gInsets = el('g', { 'class':'detail__insets' }, layer);
+    gKeys = el('g', { 'class':'detail__keys' }, layer);      /* last, so nothing can cover a key word */
     var hits = svg.querySelector('.hits');
     if (hits) svg.insertBefore(layer, hits.nextSibling); else svg.appendChild(layer);
 
@@ -303,7 +304,7 @@
       var y = K.at ? K.at[1] + (i - 1) * (h + gap)
                    : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - (i - 1) * (h + gap)
                                                : frame.y + pad + (i - 1) * (h + gap));
-      var g = el('g', { 'class':'dl__key' }, gLabels);
+      var g = el('g', { 'class':'dl__key' }, gKeys);
       el('rect', { 'class':'dl__keycard', x:f1(x), y:f1(y), width:f1(w), height:f1(h), 'stroke-width':f1(fs * 0.075) }, g);
       el('rect', { 'class':'dl__keybar', x:f1(x), y:f1(y), width:f1(fs * 0.3), height:f1(h) }, g);
       var c = el('text', { 'class':'dl__keycap', x:f1(x + fs * 0.85), y:f1(y + fs * 0.95), 'font-size':f1(fs * 0.6) }, g);
@@ -396,7 +397,7 @@
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
-    gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
+    gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
     /* organs the step covers with its own picture are hidden, so nothing shows twice */
