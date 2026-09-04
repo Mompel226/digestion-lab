@@ -7,7 +7,7 @@ window.LAB_CONFIG = {
      Paste the /exec URL of your deployed Apps Script web app here.
      Leave it empty and the app still works — students get a completion
      code to paste into Google Classroom instead. */
-  submitUrl: '',
+  submitUrl: 'https://script.google.com/macros/s/AKfycbzwjMHaa88OL_GzR8wZ2mV6a8rs1CKYahbW5iOTQPyzWzCGIrAZPApGsP2oujK34tRc/exec',
 
   /* Shown on the submission form so you can tell classes apart. */
   classes: ['9A', '9B', '9C', '9D', '9E', 'Other'],
