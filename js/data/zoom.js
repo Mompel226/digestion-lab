@@ -427,58 +427,6 @@ window.ZOOM_DETAIL = {
       },
       {
         "at": 1,
-        "img": "zoom/stomach-wall-block.jpg",
-        "fixed": [
-          154,
-          372,
-          168
-        ],
-        "window": [
-          148,
-          366,
-          180,
-          236
-        ],
-        "label": "The stomach wall: the lining with its gastric glands, then three layers of muscle",
-        "credit": "Encyclopædia Britannica, from the 7.3 deck",
-        "labels": [
-          {
-            "t": "gastric glands\nmake gastric juice",
-            "at": [
-              0.4,
-              0.36
-            ],
-            "tx": [
-              0.7,
-              0.2
-            ]
-          },
-          {
-            "t": "mucus-coated lining",
-            "at": [
-              0.3,
-              0.1
-            ],
-            "tx": [
-              0.62,
-              0.05
-            ]
-          },
-          {
-            "t": "three muscle layers\nrunning in different\ndirections",
-            "at": [
-              0.45,
-              0.72
-            ],
-            "tx": [
-              0.68,
-              0.62
-            ]
-          }
-        ]
-      },
-      {
-        "at": 4,
         "img": "photos/stomach-inside.jpg",
         "fixed": [
           150,
@@ -539,6 +487,58 @@ window.ZOOM_DETAIL = {
               0.95
             ],
             "anchor": "start"
+          }
+        ]
+      },
+      {
+        "at": 5,
+        "img": "zoom/stomach-wall-block.jpg",
+        "fixed": [
+          154,
+          372,
+          168
+        ],
+        "window": [
+          148,
+          366,
+          180,
+          236
+        ],
+        "label": "The stomach wall: the lining with its gastric glands, then three layers of muscle",
+        "credit": "Encyclopædia Britannica, from the 7.3 deck",
+        "labels": [
+          {
+            "t": "gastric glands\nmake gastric juice",
+            "at": [
+              0.4,
+              0.36
+            ],
+            "tx": [
+              0.7,
+              0.2
+            ]
+          },
+          {
+            "t": "mucus-coated lining",
+            "at": [
+              0.3,
+              0.1
+            ],
+            "tx": [
+              0.62,
+              0.05
+            ]
+          },
+          {
+            "t": "three muscle layers\nrunning in different\ndirections",
+            "at": [
+              0.45,
+              0.72
+            ],
+            "tx": [
+              0.68,
+              0.62
+            ]
           }
         ]
       }
