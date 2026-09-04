@@ -860,8 +860,11 @@ body[data-mode="practice"] .panel__inner::before{
 }
 .tourcard__top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
 .tourcard__step{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--grey)}
-.tourcard__def{margin:0 0 5px;font-weight:600}
-.tourcard__note{margin:0 0 8px;color:#3A4A3A;font-size:12.8px}
+/* one thing to read at a time: the eyebrow says which, the line says it */
+.tourcard__say{margin:0 0 8px}
+.tourcard__eyebrow{margin:0 0 3px;font-size:9.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--grey)}
+.tourcard__line{margin:0;font-size:13px;line-height:1.45;color:#3A4A3A}
+.tourcard__line--def{font-weight:600;color:var(--ink)}
 .tourcard__btns{display:flex;gap:6px;flex-wrap:wrap}
 .tourcard__btns .btn{padding:4px 12px;font-size:12.5px}
 .tourcard__btns .btn[disabled]{opacity:.45;cursor:default}
@@ -899,11 +902,16 @@ body[data-mode="practice"] .panel__inner::before{
 /* the tour card moves between top and bottom with a fade and a drift, never a jump */
 .tourcard{transition:opacity .3s ease,transform .3s ease}
 .tourcard.is-moving{opacity:0;transform:translateY(var(--drift,8px))}
-/* one line of the card changing inside a scene: fade the words, do not blink them */
-.tourcard__note{transition:opacity .24s ease}
-.tourcard__note.is-swap{opacity:0}
+/* what the card is saying changing inside a scene: fade the words, do not blink them */
+.tourcard__say{transition:opacity .24s ease}
+.tourcard__say.is-swap{opacity:0}
+/* the badge is loud while the definition is being read and quiet once the commentary starts,
+   so there is only ever one thing asking to be read */
+.tourcard__chip .chip{transition:font-size .25s ease,padding .25s ease,opacity .25s ease}
+.tourcard.is-notes .tourcard__chip .chip{font-size:10px;padding:2px 8px;opacity:.8}
+.tourcard.is-notes .tourcard__chip .chip__n{margin-right:4px}
 #bodySvg .tourfx{transition:opacity .3s ease}
-@media (prefers-reduced-motion:reduce){.tourcard,.tourcard__note,#bodySvg .tourfx{transition:none}.tourcard.is-moving{opacity:1;transform:none}.tourcard__note.is-swap{opacity:1}}
+@media (prefers-reduced-motion:reduce){.tourcard,.tourcard__say,.tourcard__chip .chip,#bodySvg .tourfx{transition:none}.tourcard.is-moving{opacity:1;transform:none}.tourcard__say.is-swap{opacity:1}}
 /* a spotlit organ: the drawn organ itself lights up, so nothing is traced behind its neighbours */
 #bodySvg .art .op.is-spot{filter:saturate(1.5) brightness(1.08) drop-shadow(0 0 2.4px #E8A33D) !important;opacity:1 !important}
 /* the key words on the plate: what happens here, and what the food is called at this point.
@@ -914,4 +922,5 @@ body[data-mode="practice"] .panel__inner::before{
 #bodySvg .detail .dl__key text{font-family:Calibri,Carlito,"Segoe UI",-apple-system,sans-serif;stroke:none;paint-order:normal}
 #bodySvg .detail .dl__keycap{font-weight:600;fill:#6B6B6B;letter-spacing:.1em}
 #bodySvg .detail .dl__keyword{font-weight:800;fill:#1F2A1F;letter-spacing:.05em}
+#bodySvg .detail .dl__keysub{font-weight:600;fill:#4A4A4A}
 #bodySvg .detail .dl__shot{pointer-events:auto;cursor:zoom-in}

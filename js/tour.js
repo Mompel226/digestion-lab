@@ -76,12 +76,44 @@
     c.classList.add('is-moving');
     return true;
   }
-  /* Change one line of the card without it blinking: fade the words out, swap, fade back in. */
-  function swapText(el, text) {
-    if (!el) return;
-    if (!canAnimate()) { el.textContent = text; return; }
-    el.classList.add('is-swap');
-    later(function () { el.textContent = text; el.classList.remove('is-swap'); }, 240);
+  /* The card says one thing at a time. Two blocks of words — a definition that never changes
+     above a note that does — makes the change easy to miss: the reader has to notice that the
+     lower half moved. So the definition has the card to itself while it is read, and then hands
+     over to the running commentary, each note fading through the one before. The eyebrow says
+     which of the two you are reading. */
+  var SAY = { def:'what the word means', note:'what is happening' };
+  function say(c, kind, text, instant) {
+    var box = c.querySelector('.tourcard__say');
+    if (!box) return;
+    var set = function () {
+      c.classList.toggle('is-notes', kind !== 'def');
+      box.querySelector('.tourcard__eyebrow').textContent = SAY[kind] || '';
+      var line = box.querySelector('.tourcard__line');
+      line.textContent = text;
+      line.classList.toggle('tourcard__line--def', kind === 'def');
+    };
+    if (instant || !canAnimate()) { box.classList.remove('is-swap'); set(); return; }
+    box.classList.add('is-swap');
+    later(function () { set(); box.classList.remove('is-swap'); }, 240);
+  }
+  /* Hold the card at the height of its longest line, so handing over does not make it jump. */
+  function sizeSay(c, strings) {
+    var box = c.querySelector('.tourcard__say'); if (!box) return;
+    var line = box.querySelector('.tourcard__line'), eb = box.querySelector('.tourcard__eyebrow');
+    var keepLine = line.textContent, keepEb = eb.textContent, keepDef = line.classList.contains('tourcard__line--def');
+    box.style.minHeight = ''; var max = 0;
+    strings.forEach(function (t) {
+      line.textContent = t[1]; line.classList.toggle('tourcard__line--def', t[0] === 'def');
+      eb.textContent = SAY[t[0]] || '';
+      max = Math.max(max, box.offsetHeight);
+    });
+    line.textContent = keepLine; eb.textContent = keepEb; line.classList.toggle('tourcard__line--def', keepDef);
+    box.style.minHeight = max ? max + 'px' : '';
+  }
+  /* How long the definition keeps the card to itself: the time it takes to read it. */
+  function leadFor(sc) {
+    var words = String(sc.def || '').split(/\s+/).length;
+    return Math.min(8000, Math.max(3500, Math.round(words * 300)));
   }
   document.addEventListener('visibilitychange', function () {
     if (!document.hidden && card) card.classList.remove('is-moving');   /* never come back to a blank card */
@@ -153,7 +185,7 @@
     card.className = 'tourcard'; card.hidden = true; card.setAttribute('role', 'region'); card.setAttribute('aria-live', 'polite');
     card.innerHTML =
       '<div class="tourcard__top"><span class="tourcard__chip"></span><span class="tourcard__step"></span></div>' +
-      '<p class="tourcard__def"></p><p class="tourcard__note"></p>' +
+      '<div class="tourcard__say"><p class="tourcard__eyebrow"></p><p class="tourcard__line"></p></div>' +
       '<div class="tourcard__foot"><div class="tourcard__btns"><button type="button" class="btn btn--ghost" data-act="back">Back</button>' +
       '<button type="button" class="btn" data-act="next">Next</button>' +
       '<button type="button" class="btn btn--ghost" data-act="stop">Stop</button></div><div class="tourcard__more"></div></div>';
@@ -199,14 +231,14 @@
         fadeIn(c, p === 'bottom' ? '-16px' : '16px', 30);
       }, 300);
     };
+    var lead = leadFor(sc);
     if (typeof sc.pos === 'string') place(sc.pos);
-    else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1], true); }, q[0]); }); }
+    else if (sc.pos && sc.pos.length) { place(sc.pos[0][1]); sc.pos.slice(1).forEach(function (q) { later(function () { place(q[1], true); }, lead + q[0]); }); }
     c.querySelector('.tourcard__more').innerHTML = '';                 /* the panel beside is already the station */
     c.querySelector('.tourcard__chip').innerHTML = '<span class="chip chip--' + sc.id + '"><i class="chip__n">' + (i + 1) + '</i>' + sc.name + '</span>';
     c.querySelector('.tourcard__step').textContent = (i + 1) + ' of ' + SCENES.length;
-    c.querySelector('.tourcard__def').textContent = sc.def;
-    c.querySelector('.tourcard__note').classList.remove('is-swap');
-    c.querySelector('.tourcard__note').textContent = sc.notes[0][1];
+    sizeSay(c, [['def', sc.def]].concat(sc.notes.map(function (n) { return ['note', n[1]]; })));
+    say(c, 'def', sc.def, true);
     c.querySelector('.tourcard__btns').innerHTML =
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
       '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
@@ -214,7 +246,7 @@
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
     fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
-    sc.notes.slice(1).forEach(function (n) { later(function () { swapText(c.querySelector('.tourcard__note'), n[1]); }, n[0]); });
+    sc.notes.forEach(function (n) { later(function () { say(c, 'note', n[1]); }, lead + n[0]); });
   }
 
   function showEnd() { swapCard(fillEnd); }
@@ -222,13 +254,17 @@
     var wasEnd = at;
     c.hidden = false;
     c.classList.add('tourcard--bottom'); at = 'bottom';
-    c.querySelector('.tourcard__note').classList.remove('is-swap');
+    c.querySelector('.tourcard__say').classList.remove('is-swap');
+    c.querySelector('.tourcard__say').style.minHeight = '';
     fadeIn(c, wasEnd === 'top' ? '-16px' : '16px', 300);
     c.querySelector('.tourcard__more').innerHTML = '<span>click any organ on the plate to learn more</span>';
     c.querySelector('.tourcard__chip').innerHTML = '<b>Five processes, in order</b>';
     c.querySelector('.tourcard__step').textContent = '';
-    c.querySelector('.tourcard__def').textContent = 'Ingestion → digestion → absorption → assimilation → egestion.';
-    c.querySelector('.tourcard__note').textContent = 'The food itself only ever travels down one tube, the alimentary canal. Everything else — bile, pancreatic juice, the nutrients in the blood — moves in or out of that tube.';
+    var END1 = 'Ingestion → digestion → absorption → assimilation → egestion.';
+    var END2 = 'The food itself only ever travels down one tube, the alimentary canal. Everything else — bile, pancreatic juice, the nutrients in the blood — moves in or out of that tube.';
+    sizeSay(c, [['def', END1], ['note', END2]]);
+    say(c, 'def', END1, true);
+    later(function () { say(c, 'note', END2); }, 4200);
     c.querySelector('.tourcard__btns').innerHTML = '<button type="button" class="btn" data-act="again">Play again</button><button type="button" class="btn btn--ghost" data-act="stop">Close</button>';
   }
 
@@ -278,12 +314,15 @@
     if (i >= SCENES.length) { idx = SCENES.length; running = true; if (A) A.stopJourney(); if (typeof opener === 'function') opener('overview', true); curCam = { cx:180, cy:430, w:420 }; showEnd(); camera(curCam, 1000, 'bottom'); return; }
     idx = i; running = true;
     var sc = SCENES[i];
+    /* The definition has the card to itself first, so the scene's own clock starts after it:
+       the food waits where the last scene left it while the reader takes in what the word means. */
+    var LEAD = leadFor(sc);
     if (typeof opener === 'function') opener(sc.station, true);
     curCam = sc.cam;
     camera(sc.cam, 1100, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));   /* the plate leads, unhurried */
     /* the camera track: the view follows the food instead of waiting at the far end for it */
     (sc.cams || []).slice(1).forEach(function (leg) {
-      later(function () { curCam = leg[1]; camera(leg[1], leg[2] || 900, at); }, leg[0]);
+      later(function () { curCam = leg[1]; camera(leg[1], leg[2] || 900, at); }, LEAD + leg[0]);
     });
     later(function () { fxFade(1, 320); }, 120);
     focus(sc.organ, sc.also, sc.spot, sc.hide); showCard(sc, i);
@@ -295,14 +334,14 @@
     if (sc.id === 'ingestion') {
       /* chewing: the meal sits in the mouth and works, and is still there when the scene ends */
       A.placeBolus(M.mouth * 0.3);
-      later(function () { A.travel(M.mouth * 0.3, M.mouth, 2600); }, 1200);
-      later(function () { A.travel(M.mouth, M.mouth * 0.6, 1800); }, 5000);
-      later(function () { A.travel(M.mouth * 0.6, M.mouth, 1800); }, 8000);
+      later(function () { A.travel(M.mouth * 0.3, M.mouth, 2600); }, LEAD + 1200);
+      later(function () { A.travel(M.mouth, M.mouth * 0.6, 1800); }, LEAD + 5000);
+      later(function () { A.travel(M.mouth * 0.6, M.mouth, 1800); }, LEAD + 8000);
     } else if (sc.id === 'digestion') {
       var st = M.stomach, w = 0.006;
       /* swallow: up to the pharynx, a beat while the epiglottis closes the airway, then down */
       A.placeBolus(M.mouth);
-      A.travel(M.mouth, swallowed, 3200, function () {
+      later(function () { A.travel(M.mouth, swallowed, 3200, function () {
         later(function () {
           A.travel(swallowed, st, 7400, function () {              /* down the oesophagus, unhurried */
             /* churning: the bolus is held in the stomach and wobbles */
@@ -317,21 +356,22 @@
             }, 6000);
           });
         }, 4000);                                                   /* the beat at the epiglottis */
-      });
+      }); }, LEAD);
     } else if (sc.id === 'absorption') {
       A.placeBolus(M.duodenum);
-      A.travel(M.duodenum, M.ileum, 13000);
-      later(function () { vein(); }, 1400);          /* the mesentery's veins do the collecting */
+      later(function () { A.travel(M.duodenum, M.ileum, 13000); }, LEAD);
+      later(function () { vein(); }, LEAD + 1400);    /* the mesentery's veins do the collecting */
     } else if (sc.id === 'assimilation') {
       A.placeBolus(M.ileum);
-      vein();
+      later(function () { vein(); }, LEAD);
     } else if (sc.id === 'egestion') {
       A.placeBolus(M.ileum);
-      A.travel(M.ileum, 0.995, 13000, function () { later(function () { A.stopJourney(); }, 900); });
-      [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 1200 + i * 1400); });
+      later(function () { A.travel(M.ileum, 0.995, 13000, function () { later(function () { A.stopJourney(); }, 900); }); }, LEAD);
+      [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, LEAD + 1200 + i * 1400); });
     }
-    later(function () { fadeOut(card, '-10px'); fxFade(0, 280); }, Math.max(600, sc.ms - 320));
-    later(function () { play(i + 1); }, sc.ms);
+    var span = sc.ms + LEAD;
+    later(function () { fadeOut(card, '-10px'); fxFade(0, 280); }, Math.max(600, span - 320));
+    later(function () { play(i + 1); }, span);
   }
   function next() { if (!running) return; play(Math.min(idx + 1, SCENES.length)); }
   function back() { if (!running) return; play(Math.max(idx - 1, 0)); }

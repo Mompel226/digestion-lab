@@ -304,17 +304,24 @@
      system. These are plain cards: square corners, an ink bar, the word in ink, and a line of
      small type saying which of the two kinds it is. */
   function drawKeys(keys, frame, fs) {
-    var n = {};
+    /* cards stack by the height already used in that corner, not by how many there are:
+       a card with a second line is taller, and counting would overlap it */
+    var used = {};
     keys.forEach(function (K) {
-      var corner = K.corner || 'tl', i = n[corner] = (n[corner] || 0) + 1;
+      var corner = K.corner || 'tl', stack = used[corner] || 0;
       var word = String(K.t).toUpperCase();
       var cap = K.cap || (K.kind === 'food' ? 'the food is now' : 'what happens here');
-      var h = fs * 2.6, w = Math.max(word.length * fs * 0.68, cap.length * fs * 0.44) + fs * 1.6;
+      /* a second line, quieter than the word: for a station where more than one thing happens
+         (the small intestine finishes digestion as well as absorbing) */
+      var sub = K.sub || '';
+      var h = fs * (sub ? 3.5 : 2.6);
+      var w = Math.max(word.length * fs * 0.68, cap.length * fs * 0.44, sub.length * fs * 0.42) + fs * 1.6;
       var pad = fs * 0.9, gap = fs * 0.5, padBottom = fs * 3.4;
       var x = K.at ? K.at[0] : (corner.indexOf('r') >= 0 ? frame.x + frame.w - pad - w : frame.x + pad);
-      var y = K.at ? K.at[1] + (i - 1) * (h + gap)
-                   : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - (i - 1) * (h + gap)
-                                               : frame.y + pad + (i - 1) * (h + gap));
+      var y = K.at ? K.at[1] + stack
+                   : (corner.indexOf('b') >= 0 ? frame.y + frame.h - padBottom - h - stack
+                                               : frame.y + pad + stack);
+      used[corner] = stack + h + gap;
       var g = el('g', { 'class':'dl__key' }, gKeys);
       el('rect', { 'class':'dl__keycard', x:f1(x), y:f1(y), width:f1(w), height:f1(h), 'stroke-width':f1(fs * 0.075) }, g);
       el('rect', { 'class':'dl__keybar', x:f1(x), y:f1(y), width:f1(fs * 0.3), height:f1(h) }, g);
@@ -322,6 +329,10 @@
       c.textContent = cap;
       var t = el('text', { 'class':'dl__keyword', x:f1(x + fs * 0.85), y:f1(y + fs * 2.1), 'font-size':f1(fs * 0.98) }, g);
       t.textContent = word;
+      if (sub) {
+        var u = el('text', { 'class':'dl__keysub', x:f1(x + fs * 0.85), y:f1(y + fs * 3.1), 'font-size':f1(fs * 0.56) }, g);
+        u.textContent = sub;
+      }
     });
   }
 
