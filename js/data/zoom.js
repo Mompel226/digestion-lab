@@ -745,8 +745,8 @@ window.ZOOM_DETAIL = {
       {
         "img": "zoom/pancreas-acinar.jpg",
         "at": [
-          228,
-          556,
+          104,
+          386,
           78
         ],
         "cap": "inside: acinar cells make the juice —\ntrypsin, amylase, lipase (and, as extension,\nchymotrypsin, elastase, hydrogencarbonate)",
