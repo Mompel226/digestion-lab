@@ -365,10 +365,10 @@
       '<path fill="none" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
       food + squirt +
       (ctx.compact
-        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', 172, 420, 272, 470, fs, 'start') +
+        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', 178, 380, 272, 470, fs, 'start') +
           label('gastric juice:\nHCl + pepsin', mid.x, mid.y + fs * .4, null, null, fs, 'middle') +
           label('chyme through the\npyloric sphincter', 146, 574, 168, 519, fs, 'start')
-        : label('peristaltic waves\nsqueeze towards the\npylorus — this is\nphysical digestion', 232, 424, 271, 468, fs, 'start') +
+        : label('peristaltic waves\nsqueeze towards the\npylorus — this is\nphysical digestion', 236, 396, 271, 468, fs, 'start') +
           label('gastric juice\n(hydrochloric acid\n+ pepsin)', mid.x, mid.y - fs * .2, null, null, fs, 'middle') +
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
@@ -483,9 +483,9 @@
       label('left hepatic duct', 186, 436, 176, 450, fs, 'start') +
       label('common hepatic duct', 158, 470, 149, 479, fs, 'start') +
       label('cystic duct', 126, 470, 148, 488, fs, 'end') +
-      label('gall bladder —\nstores bile', 96, 512, 118, 490, fs, 'start') +
-      label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
-      label('duodenum', 74, 574, 128, 584, fs, 'start');
+      label('gall bladder —\nstores bile', 56, 494, 116, 490, fs, 'start') +
+      label('common bile duct —\nbile to the duodenum', 180, 540, 149, 538, fs, 'start') +
+      label('duodenum', 58, 578, 134, 576, fs, 'start');
   }
 
   /* ---------------- maltase, embedded in the membrane of a microvillus ---------------- */
