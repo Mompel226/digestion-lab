@@ -5,9 +5,9 @@
    We hash what the student did and compare. A wrong answer can be
    reported as wrong; a right answer cannot be read out of the file.
 
-   The plain answers and the explanations live in an AES-GCM blob that
-   only opens with the teacher password. That password is typed into
-   this browser, used to derive a key locally, and never sent anywhere.
+   The answers themselves are not in the site at all — there is no mode
+   that shows them, so nothing here can produce one. A student is told
+   which parts are wrong and works out the rest.
 
    The canonical forms below must stay byte-identical to tools/build.mjs.
    ============================================================ */
@@ -15,7 +15,6 @@
   'use strict';
 
   var enc = new TextEncoder();
-  var vault = null;                       /* set once unlocked */
 
   function hex(buf) {
     var b = new Uint8Array(buf), s = '';
@@ -76,43 +75,5 @@
     });
   }
 
-  /* ---------- unlocking practice mode ---------- */
-  function fromHex(s) {
-    var a = new Uint8Array(s.length / 2);
-    for (var i = 0; i < a.length; i++) a[i] = parseInt(s.substr(i * 2, 2), 16);
-    return a;
-  }
-  function fromB64(s) {
-    var bin = atob(s), a = new Uint8Array(bin.length);
-    for (var i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
-    return a;
-  }
-
-  function unlock(password) {
-    var V = global.ANSWER_VAULT;
-    if (!V) return Promise.reject(new Error('no vault'));
-    return crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey'])
-      .then(function (base) {
-        return crypto.subtle.deriveKey(
-          { name: 'PBKDF2', salt: fromHex(V.salt), iterations: V.iter, hash: 'SHA-256' },
-          base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
-      })
-      .then(function (key) {
-        return crypto.subtle.decrypt({ name: 'AES-GCM', iv: fromHex(V.iv) }, key, fromB64(V.ct));
-      })
-      .then(function (plain) {
-        vault = JSON.parse(new TextDecoder().decode(plain));
-        return true;
-      });
-      /* a wrong password fails the GCM auth tag and rejects — nothing to leak */
-  }
-
-  global.Marking = {
-    check: check,
-    norm: norm,
-    unlock: unlock,
-    isUnlocked: function () { return !!vault; },
-    lock: function () { vault = null; },
-    answer: function (id) { return vault ? vault[id] : null; }
-  };
+  global.Marking = { check: check, norm: norm };
 })(window);

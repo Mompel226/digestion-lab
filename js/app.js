@@ -51,9 +51,9 @@
                     egestVsExcrete:0, waterColon:.3, chewing:.2, starchPath:.2, sameBalance:.4 };
 
   var S = {};                       /* stations by id */
-  var MODES = { mastery:'Mastery', test:'Test', practice:'Practice' };
+  var MODES = { mastery:'Mastery', test:'Test' };
   var mode = localStorage.getItem('digestion-lab.mode') || 'mastery';
-  if (mode === 'practice') mode = 'mastery';        /* practice needs the password again each session */
+  if (!MODES[mode]) mode = 'mastery';
   var progress = load();
   var current = null;
   var tab = 'learn';
@@ -112,9 +112,9 @@
     return { done:n, total:total, tried:t };
   }
   function totals() {
-    var done = 0, total = 0;
-    ORDER.forEach(function (id) { var s = stationScore(id); done += s.done; total += s.total; });
-    return { done:done, total:total };
+    var done = 0, total = 0, tried = 0;
+    ORDER.forEach(function (id) { var s = stationScore(id); done += s.done; total += s.total; tried += s.tried; });
+    return { done:done, total:total, tried:tried };
   }
 
   /* ---------- header ---------- */
@@ -125,11 +125,14 @@
     document.body.setAttribute('data-mode', mode);
     var sub = document.getElementById('btnSubmit');
     if (sub) {
-      var ready = mode === 'mastery' && t.total > 0 && t.done === t.total;
-      sub.hidden = mode !== 'mastery';
+      /* Mastery is handed in when everything is right; a Test is handed in when every
+         question has been attempted — one attempt is all there is, so the score stands. */
+      var ready = t.total > 0 && (mode === 'test' ? t.tried === t.total : t.done === t.total);
+      sub.hidden = false;
       sub.disabled = !ready;
-      sub.title = ready ? 'Hand in your completed work'
-        : 'Answer all ' + t.total + ' questions correctly in Mastery mode to hand in';
+      sub.title = ready ? 'Hand in your work'
+        : mode === 'test' ? 'Answer all ' + t.total + ' questions to hand in your test'
+                          : 'Answer all ' + t.total + ' questions correctly to hand in';
     }
     document.getElementById('ringFg').setAttribute('stroke-dasharray',
       (C * pct).toFixed(1) + ' ' + C.toFixed(1));
@@ -800,49 +803,71 @@
 
   /* ---------- modes ---------- */
   function setMode(m, opts) {
-    if (m === 'practice' && !window.Marking.isUnlocked()) { askPassword(); return; }
+    if (!MODES[m]) m = 'mastery';
+    if (m === 'mastery' && !gate.masteryOpen) {          /* closed while a test is running */
+      document.getElementById('modeSel').value = mode;
+      toast(gate.note || 'Mastery is closed at the moment — Test only.');
+      return;
+    }
     mode = m;
     localStorage.setItem('digestion-lab.mode', m);
     window.Engine.setMode(m);
-    if (m !== 'practice') window.Marking.lock();
     paintHeader(); paintRail(); paintPanel();
     if (!opts || !opts.quiet) toast(MODES[m] + ' mode');
   }
 
-  function askPassword() {
-    var dlg = document.getElementById('pwDlg');
-    var inp = document.getElementById('pwInput');
-    var err = document.getElementById('pwErr');
-    err.textContent = ''; inp.value = '';
-    dlg.hidden = false;
-    setTimeout(function () { inp.focus(); }, 30);
+  /* ---------- the teacher's gate ----------
+     Mastery lets a reader check as often as they like, so if it is open during a test they can
+     grind the answers out there and then walk through the test knowing them. The gate lets Dr
+     Mompel close Mastery for everyone while a test is running, from a checkbox in the Sheet the
+     submissions go to. It is read over JSONP, because the page is served from a different origin
+     to the Apps Script.
 
-    function close() {
-      dlg.hidden = true;
-      document.getElementById('modeSel').value = mode;
-      go.removeEventListener('click', submit);
-      inp.removeEventListener('keydown', onKey);
+     This is a classroom control, not security: it is a static site, and a determined reader can
+     work round anything the browser is told. It stops the ordinary case and makes the rule
+     visible, which is what it is for. */
+  var GATE_KEY = 'digestion-lab.gate';
+  var gate = { masteryOpen:true, note:'' };
+  try { var g = JSON.parse(localStorage.getItem(GATE_KEY) || 'null'); if (g && typeof g.masteryOpen === 'boolean') gate = g; } catch (e) {}
+
+  function askGate(cb) {
+    var url = (window.LAB_CONFIG || {}).submitUrl;
+    if (!url) { cb(null); return; }
+    var name = '__labGate' + Math.random().toString(36).slice(2), s = document.createElement('script'), done = false;
+    function cleanup() { try { delete window[name]; } catch (e) { window[name] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
+    window[name] = function (data) { done = true; cleanup(); cb(data); };
+    s.onerror = function () { if (!done) { done = true; cleanup(); cb(null); } };
+    s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'q=gate&callback=' + name + '&t=' + Date.now();
+    setTimeout(function () { if (!done) { done = true; cleanup(); cb(null); } }, 6000);
+    document.head.appendChild(s);
+  }
+  function applyGate(quiet) {
+    var sel = document.getElementById('modeSel');
+    var opt = sel && sel.querySelector('option[value="mastery"]');
+    if (opt) {
+      opt.disabled = !gate.masteryOpen;
+      opt.textContent = gate.masteryOpen ? 'Mastery' : 'Mastery — closed';
     }
-    function onKey(e) { if (e.key === 'Enter') submit(); }
-    function submit() {
-      err.textContent = 'Checking…';
-      window.Marking.unlock(inp.value).then(function () {
-        close();
-        mode = 'practice';
-        localStorage.setItem('digestion-lab.mode', 'practice');
-        window.Engine.setMode('practice');
-        paintHeader(); paintRail(); paintPanel();
-        toast('Practice mode — answers and explanations are shown');
-      }).catch(function () {
-        err.textContent = 'That password does not open the answers. Check with Dr Mompel.';
-        inp.select();
-      });
-    }
-    var go = document.getElementById('pwGo');
-    go.addEventListener('click', submit);
-    inp.addEventListener('keydown', onKey);
-    document.getElementById('pwCancel').onclick = close;
-    dlg.onclick = function (e) { if (e.target === dlg) close(); };
+    var wrap = document.getElementById('modeWrap');
+    if (wrap) wrap.title = gate.masteryOpen
+      ? 'Mastery: check as often as you like, never told the answer. Test: one attempt each, then hand in.'
+      : (gate.note || 'Mastery is closed while a test is running. Test: one attempt each question.');
+    if (!gate.masteryOpen && mode === 'mastery') {
+      mode = 'test';
+      localStorage.setItem('digestion-lab.mode', 'test');
+      window.Engine.setMode('test');
+      paintHeader(); paintRail(); paintPanel();
+      if (!quiet) toast(gate.note || 'Mastery is closed — this is a test.');
+    } else if (sel) { sel.value = mode; }
+  }
+  function refreshGate(quiet) {
+    askGate(function (data) {
+      if (!data || typeof data.masteryOpen !== 'boolean') return;    /* unreachable: keep what we had */
+      var changed = data.masteryOpen !== gate.masteryOpen;
+      gate = { masteryOpen:data.masteryOpen, note:String(data.note || '') };
+      try { localStorage.setItem(GATE_KEY, JSON.stringify(gate)); } catch (e) {}
+      applyGate(quiet && !changed);
+    });
   }
 
   /* ---------- handing in ---------- */
@@ -884,7 +909,7 @@
     var code = completionCode(name, form, t.done + '/' + t.total);
     var perStation = {};
     ORDER.forEach(function (id) { var s = stationScore(id); perStation[id] = s.done + '/' + s.total; });
-    var payload = { app:'digestion-lab', name:name.trim(), form:form, mode:'mastery',
+    var payload = { app:'digestion-lab', name:name.trim(), form:form, mode:mode,
                     score:t.done, total:t.total, code:code,
                     stations:perStation, at:new Date().toISOString() };
     var url = (window.LAB_CONFIG || {}).submitUrl;
@@ -1093,6 +1118,13 @@
     document.getElementById('modeSel').addEventListener('change', function () { setMode(this.value); });
     document.getElementById('btnSubmit').addEventListener('click', openSubmit);
 
+    /* Ask whether Mastery is open, now and whenever the reader comes back to the tab, so
+       closing it in the middle of a lesson takes effect without anyone reloading. */
+    applyGate(true);
+    refreshGate(true);
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshGate(false); });
+    setInterval(function () { if (!document.hidden) refreshGate(false); }, 180000);
+
     wireTermClicks(document.getElementById('panel'));
     window.addEventListener('resize', closePeek);
 
@@ -1117,7 +1149,7 @@
     });
     document.getElementById('btnReset').addEventListener('click', function () {
       if (!confirm('Clear all your answers and start again? This cannot be undone.')) return;
-      progress = { mastery:{}, test:{}, practice:{} };
+      progress = { mastery:{}, test:{} };
       try { localStorage.removeItem('digestion-lab.v2'); } catch (e) {}
       window.Anatomy.state.done = {};
       window.Anatomy.render(svg);
