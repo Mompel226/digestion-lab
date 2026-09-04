@@ -149,7 +149,6 @@ js/config.js          your Apps Script URL and class list — the two things you
 js/marking.js         hash-based marking — it can say wrong, not what
 js/terms.js           the colour language of the Learn tab
 js/data/stations.js   GENERATED — presentation + hashes, no answers
-js/data/keys.enc.js   GENERATED — the answers, encrypted
 tools/build.mjs       master content -> the two generated files
 tools/rekey.mjs       kept from when answers could be released; nothing uses it now
 js/data/photos.js     which photographs appear at which station
