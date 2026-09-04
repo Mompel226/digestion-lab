@@ -1157,74 +1157,75 @@ window.ZOOM_DETAIL = {
   },
   "colon": {
     "organ": "colon",
-    "img": "zoom/large-intestine-illus.jpg",
-    "roi": [
-      0.25,
-      0.02,
-      0.55,
-      0.96
+    "focus": "colon",
+    "noback": true,
+    "paint": [
+      {
+        "organ": "colon",
+        "fill": "none",
+        "stroke": "#2F6B34",
+        "sw": 1.5,
+        "opacity": 0.85
+      },
+      {
+        "organ": "rectum-anus",
+        "fill": "none",
+        "stroke": "#7A4E7A",
+        "sw": 1.5,
+        "opacity": 0.85
+      }
     ],
-    "pad": 0.25,
-    "label": "The large intestine: colon, rectum and anus",
-    "credit": "OpenStax College, CC BY 3.0, labels ours",
+    "label": "The large intestine: colon, caecum, rectum and anus",
     "labels": [
       {
         "t": "colon",
+        "plate": true,
         "at": [
-          0.72,
-          0.42
+          190,
+          552
         ],
         "tx": [
-          0.5,
-          0.3
+          232,
+          512
         ],
         "anchor": "start"
       },
       {
         "t": "caecum",
+        "plate": true,
         "at": [
-          0.3,
-          0.63
+          98,
+          713
         ],
         "tx": [
-          0.245,
-          0.73
-        ],
-        "anchor": "start"
-      },
-      {
-        "t": "appendix",
-        "at": [
-          0.37,
-          0.72
-        ],
-        "tx": [
-          0.245,
-          0.81
+          48,
+          744
         ],
         "anchor": "start"
       },
       {
         "t": "rectum",
+        "plate": true,
         "at": [
-          0.5,
-          0.82
+          177,
+          778
         ],
         "tx": [
-          0.62,
-          0.86
+          208,
+          770
         ],
         "anchor": "start"
       },
       {
         "t": "anus",
+        "plate": true,
         "at": [
-          0.5,
-          0.965
+          177,
+          800
         ],
         "tx": [
-          0.62,
-          0.98
+          208,
+          806
         ],
         "anchor": "start"
       }
