@@ -1158,21 +1158,26 @@ window.ZOOM_DETAIL = {
   "colon": {
     "organ": "colon",
     "focus": "colon",
+    "spotlight": [
+      "colon",
+      "rectum-anus"
+    ],
+    "keep": true,
     "noback": true,
     "paint": [
       {
         "organ": "colon",
         "fill": "none",
         "stroke": "#2F6B34",
-        "sw": 1.5,
-        "opacity": 0.85
+        "sw": 1.1,
+        "opacity": 0.6
       },
       {
         "organ": "rectum-anus",
         "fill": "none",
         "stroke": "#7A4E7A",
-        "sw": 1.5,
-        "opacity": 0.85
+        "sw": 1.1,
+        "opacity": 0.6
       }
     ],
     "label": "The large intestine: colon, caecum, rectum and anus",
