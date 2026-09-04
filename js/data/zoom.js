@@ -1338,10 +1338,10 @@ window.ZOOM_DETAIL = {
           764
         ],
         "tx": [
-          160,
-          762
+          196,
+          756
         ],
-        "anchor": "end"
+        "anchor": "start"
       },
       {
         "t": "anus — egestion",
