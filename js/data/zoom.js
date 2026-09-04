@@ -399,7 +399,7 @@ window.ZOOM_DETAIL = {
           164
         ],
         "tx": [
-          67,
+          64,
           178
         ],
         "anchor": "start"
@@ -1335,7 +1335,7 @@ window.ZOOM_DETAIL = {
           772
         ],
         "tx": [
-          166,
+          160,
           770
         ],
         "anchor": "end"
@@ -1345,11 +1345,11 @@ window.ZOOM_DETAIL = {
         "plate": true,
         "at": [
           177,
-          806
+          810
         ],
         "tx": [
-          188,
-          810
+          192,
+          814
         ],
         "anchor": "start"
       }
