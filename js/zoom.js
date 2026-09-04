@@ -23,6 +23,14 @@
 
   var VIEW = { x:-88, y:-12, w:530, h:848 };          /* the plate's home view */
   var ASPECT = VIEW.h / VIEW.w;
+  /* The shape of the panel the plate is actually being drawn in. It used to be this constant,
+     the plate's own tall proportions — so on a phone, where the panel is short and wide, every
+     frame was built tall, fitted by its height, and the body ended up small and pushed to one
+     side with the rest of the plate showing around it. */
+  function aspect() {
+    var r = svg && svg.getBoundingClientRect();
+    return r && r.width > 1 && r.height > 1 ? r.height / r.width : ASPECT;
+  }
   var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
   /* Centred on the organ they frame. These used to sit tens of units off it — the stomach
@@ -59,7 +67,7 @@
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
-    var w = cam.w, h = w * ASPECT;
+    var w = cam.w, h = w * aspect();
     return { x:cam.cx - w / 2, y:cam.cy - h * 0.46, w:w, h:h };
   }
   function zoomOf(b) { return VIEW.w / b.w; }
