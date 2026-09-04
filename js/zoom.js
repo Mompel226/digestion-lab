@@ -226,6 +226,16 @@
     var r = svg.getBoundingClientRect();
     return Math.min(r.width / frame.w, r.height / frame.h) || 1;
   }
+  /* What the reader will actually see once the camera has arrived. The frame is fitted inside the
+     plate column, so when the two aspects differ there is a margin of plate either side — empty
+     paper, which is both the right place for a card and a perfectly good place for a label.
+     Measured from the step's own frame, never from the camera mid-flight. */
+  function seenOf(frame) {
+    var r = svg.getBoundingClientRect();
+    var k = Math.min(r.width / frame.w, r.height / frame.h) || 1;
+    var w = r.width / k, h = r.height / k;
+    return { x: frame.x - (w - frame.w) / 2, y: frame.y - (h - frame.h) / 2, w: w, h: h };
+  }
 
   /* Register one picture: the organ inside it (roi, in fractions of the
      picture) is scaled and moved onto the organ's box on the plate. Options:
@@ -270,7 +280,8 @@
     var lines = String(L.t).split('\n');
     var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
     var tw = wmax * fs * 0.52, x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
-    if (frame && (x0 < frame.x - fs || x0 + tw > frame.x + frame.w + fs || ty - fs > frame.y + frame.h || ty < frame.y)) return;
+    var view = frame ? seenOf(frame) : null;
+    if (view && (x0 < view.x - fs || x0 + tw > view.x + view.w + fs || ty - fs > view.y + view.h || ty < view.y)) return;
     /* the leader leaves the text box at the point nearest the feature */
     var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
     var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
@@ -468,7 +479,7 @@
     /* labels: each picture's own, then the step's */
     placed.forEach(function (p) { (p.d.labels || []).forEach(function (L) { drawLabel(L, p.pl, fs, frame); }); });
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
-    drawKeys(s.keys || detail.keys || [], frame, fs);
+    drawKeys(s.keys || detail.keys || [], seenOf(frame), fs);
 
     if (s.spot && placed[0]) { spotImg._href = 'assets/' + placed[0].d.img; spot(s.spot, placed[0].pl, win); }
     if (s.spotKey && placed[0]) spotByColour(s.spotKey, placed[0], win, s);

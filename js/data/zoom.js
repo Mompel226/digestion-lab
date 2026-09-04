@@ -27,8 +27,8 @@ window.ZOOM_DETAIL = {
               0.545
             ],
             "tx": [
-              0.2,
-              0.49
+              0.12,
+              0.44
             ],
             "anchor": "start"
           },
@@ -39,10 +39,10 @@ window.ZOOM_DETAIL = {
               0.578
             ],
             "tx": [
-              0.44,
-              0.505
+              0.5,
+              0.44
             ],
-            "anchor": "end"
+            "anchor": "start"
           },
           {
             "t": "upper incisor",
@@ -626,9 +626,9 @@ window.ZOOM_DETAIL = {
       {
         "at": 8,
         "cam": {
-          "cx": 170,
-          "cy": 568,
-          "w": 270
+          "cx": 206,
+          "cy": 602,
+          "w": 360
         },
         "keep": true,
         "noback": true,
