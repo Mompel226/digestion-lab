@@ -119,7 +119,7 @@ lab, the Classroom rosters beside them, and the switch that closes Mastery durin
 One script, one deployment, one URL.
 
 **Set it up once, in the hub repo:**
-[IGCSE-revision-app/apps-script/README.md](https://github.com/Mompel226/IGCSE-revision-app/blob/master/apps-script/README.md)
+[IGCSE-revision-app ▸ The marks spreadsheet](https://github.com/Mompel226/IGCSE-revision-app#the-marks-spreadsheet)
 — five minutes, with both files in full, ready to copy.
 
 Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`.
