@@ -112,9 +112,15 @@
     return { done:n, total:total, tried:t };
   }
   function totals() {
-    var done = 0, total = 0, tried = 0;
-    ORDER.forEach(function (id) { var s = stationScore(id); done += s.done; total += s.total; tried += s.tried; });
-    return { done:done, total:total, tried:tried };
+    var done = 0, total = 0, tried = 0, checks = 0, first1 = 0, from = 0;
+    ORDER.forEach(function (id) {
+      var s = stationScore(id); done += s.done; total += s.total; tried += s.tried;
+      var rec = p(id);
+      Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) checks += rec.per[k]; });
+      Object.keys(rec.one || {}).forEach(function (k) { if (+k < s.total && rec.done[k]) first1++; });
+      if (rec.first && (!from || rec.first < from)) from = rec.first;
+    });
+    return { done:done, total:total, tried:tried, checks:checks, first1:first1, from:from };
   }
 
   /* ---------- header ---------- */
@@ -125,14 +131,20 @@
     document.body.setAttribute('data-mode', mode);
     var sub = document.getElementById('btnSubmit');
     if (sub) {
-      /* Mastery is handed in when everything is right; a Test is handed in when every
-         question has been attempted — one attempt is all there is, so the score stands. */
-      var ready = t.total > 0 && (mode === 'test' ? t.tried === t.total : t.done === t.total);
+      /* A Test is handed in once every question has been attempted — one attempt is all
+         there is, so the score stands. Mastery is finished at every question right, but it
+         can be handed in before that: the record of the grinding is worth having, and the
+         row says plainly whether it was complete. */
+      var done = mode === 'test' ? t.tried === t.total : t.done === t.total;
+      var ready = t.total > 0 && (done || (mode === 'mastery' && t.tried > 0));
       sub.hidden = false;
       sub.disabled = !ready;
-      sub.title = ready ? 'Hand in your work'
+      sub.classList.toggle('hbtn--part', ready && !done);
+      sub.textContent = done || !ready ? 'Hand in' : 'Hand in progress';
+      sub.title = done ? 'Hand in your finished work'
+        : ready ? 'Hand in what you have so far — ' + t.done + ' of ' + t.total + ' right'
         : mode === 'test' ? 'Answer all ' + t.total + ' questions to hand in your test'
-                          : 'Answer all ' + t.total + ' questions correctly to hand in';
+                          : 'Answer a question first';
     }
     document.getElementById('ringFg').setAttribute('stroke-dasharray',
       (C * pct).toFixed(1) + ' ' + C.toFixed(1));
@@ -655,6 +667,14 @@
       card.addEventListener('result', function (e) {
         if (!e.detail) return;
         var rec = p(st.id);
+        /* Count the work, not just the outcome: how many times this question was checked,
+           and whether it was right first time. Handing in 113/113 says nothing about the
+           hour it took; "214 checks, 71 right first time" is the evidence of grinding. */
+        rec.per = rec.per || {};
+        rec.per[i] = (rec.per[i] || 0) + 1;
+        if (!rec.first) rec.first = Date.now();
+        rec.last = Date.now();
+        if (e.detail.correct && !rec.done[i] && rec.per[i] === 1) { rec.one = rec.one || {}; rec.one[i] = true; }
         rec.tried[i] = true;
         if (e.detail.correct) rec.done[i] = true;
         save(); paintHeader(); paintRail(); refreshTabCount();
@@ -885,9 +905,17 @@
     var dlg = document.getElementById('subDlg');
     var body = document.getElementById('subBody');
     var cfg = window.LAB_CONFIG || {};
+    var complete = mode === 'test' ? t.tried === t.total : t.done === t.total;
+    var head = complete
+      ? (mode === 'test'
+          ? 'You have answered all <b>' + t.total + '</b> questions in Test mode, and scored <b>' + t.done + '</b>.'
+          : 'You have answered all <b>' + t.total + '</b> questions correctly in Mastery mode.')
+      : 'This is not finished yet: <b>' + t.done + '</b> of <b>' + t.total + '</b> right so far. ' +
+        'You can hand this in to show how far you have got — keep going afterwards and hand in again when it is all right.';
     body.innerHTML =
-      '<p class="st-sub">You have answered all <b>' + t.total + '</b> questions correctly in Mastery mode. ' +
-      'Fill this in to hand your work to Dr Mompel.</p>' +
+      '<p class="st-sub">' + head + ' Fill this in to hand your work to Dr Mompel.</p>' +
+      '<p class="fineprint">It will also show the work behind it: <b>' + t.checks + '</b> check' + (t.checks === 1 ? '' : 's') +
+      ', <b>' + t.first1 + '</b> right first time.</p>' +
       '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
       '<label class="fld"><span>Your class</span><select id="subForm">' +
       (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
@@ -908,9 +936,16 @@
     var t = totals();
     var code = completionCode(name, form, t.done + '/' + t.total);
     var perStation = {};
-    ORDER.forEach(function (id) { var s = stationScore(id); perStation[id] = s.done + '/' + s.total; });
+    ORDER.forEach(function (id) {
+      var s = stationScore(id), rec = p(id), c = 0;
+      Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) c += rec.per[k]; });
+      perStation[id] = s.done + '/' + s.total + (c ? ' in ' + c : '');
+    });
     var payload = { app:'digestion-lab', name:name.trim(), form:form, mode:mode,
                     score:t.done, total:t.total, code:code,
+                    complete: mode === 'test' ? t.tried === t.total : t.done === t.total,
+                    checks:t.checks, firstTime:t.first1, tried:t.tried,
+                    from: t.from ? new Date(t.from).toISOString() : '',
                     stations:perStation, at:new Date().toISOString() };
     var url = (window.LAB_CONFIG || {}).submitUrl;
     go.disabled = true;

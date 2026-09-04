@@ -938,3 +938,7 @@ body[data-mode="practice"] .panel__inner::before{
 .helpmore[open] > summary::before{content:"▾ "}
 .helpmore > summary:hover{color:#0D3D1E}
 .helpmore ul{margin:6px 0 2px}
+
+/* handing in unfinished Mastery work: allowed, and visibly not the same as finishing */
+.hbtn--part{background:#F4EAD2;border-color:#C9A227;color:#6B5210}
+.hbtn--part:hover{background:#EFE0BC}
