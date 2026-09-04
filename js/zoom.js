@@ -46,7 +46,7 @@
     'pancreas':       { cx:205, cy:535, w:210 },
     'duodenum':       { cx:165, cy:548, w:190 },
     'ileum-villi':    { cx:190, cy:622, w:300 },
-    'colon':          { cx:178, cy:641, w:280 },
+    'colon':          { cx:178, cy:652, w:280 },
     'rectum-anus':    { cx:177, cy:784, w:95 }    /* close in: the drawn canal is only ~30 units across */
   };
   /* the organ shapes inside the biliary plate, found by their fill colour */
