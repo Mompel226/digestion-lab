@@ -399,8 +399,8 @@ window.ZOOM_DETAIL = {
           164
         ],
         "tx": [
-          64,
-          178
+          66,
+          192
         ],
         "anchor": "start"
       }
@@ -776,52 +776,46 @@ window.ZOOM_DETAIL = {
     "steps": [
       {
         "at": 0,
-        "img": "zoom/small-intestine-illus.jpg",
-        "roi": [
-          0.41,
-          0.08,
-          0.4,
-          0.78
-        ],
-        "full": true,
-        "label": "The small intestine — duodenum, jejunum and ileum — and where bile and pancreatic juice come in",
-        "credit": "OpenStax College, CC BY 3.0",
+        "label": "The small intestine — duodenum, jejunum and ileum",
         "labels": [
           {
             "t": "duodenum",
+            "plate": true,
             "at": [
-              0.5,
-              0.2
+              118,
+              530
             ],
             "tx": [
-              0.4,
-              0.12
+              70,
+              524
             ],
-            "anchor": "end"
+            "anchor": "start"
           },
           {
             "t": "jejunum",
+            "plate": true,
             "at": [
-              0.5,
-              0.38
+              125,
+              615
             ],
             "tx": [
-              0.41,
-              0.3
+              56,
+              612
             ],
-            "anchor": "end"
+            "anchor": "start"
           },
           {
             "t": "ileum",
+            "plate": true,
             "at": [
-              0.5,
-              0.64
+              215,
+              685
             ],
             "tx": [
-              0.41,
-              0.74
+              252,
+              692
             ],
-            "anchor": "end"
+            "anchor": "start"
           }
         ],
         "insets": [
@@ -837,6 +831,29 @@ window.ZOOM_DETAIL = {
               0.5,
               0.2
             ]
+          }
+        ],
+        "focus": "ileum-villi",
+        "spotlight": [
+          "duodenum",
+          "ileum-villi"
+        ],
+        "keep": true,
+        "noback": true,
+        "paint": [
+          {
+            "organ": "duodenum",
+            "fill": "none",
+            "stroke": "#B4703C",
+            "sw": 1.0,
+            "opacity": 0.7
+          },
+          {
+            "organ": "ileum-villi",
+            "fill": "none",
+            "stroke": "#B4703C",
+            "sw": 1.0,
+            "opacity": 0.55
           }
         ]
       },
@@ -1273,11 +1290,11 @@ window.ZOOM_DETAIL = {
         "plate": true,
         "at": [
           177,
-          778
+          762
         ],
         "tx": [
           210,
-          770
+          756
         ],
         "anchor": "start"
       },
