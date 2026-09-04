@@ -1,5 +1,5 @@
 /* ============================================================
-   config.js — the two settings Dr Mompel changes.
+   config.js — the three settings Dr Mompel changes.
    ============================================================ */
 window.LAB_CONFIG = {
 

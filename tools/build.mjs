@@ -5,16 +5,14 @@
 
    Reads   ../digestion-lab-source/stations.master.js   (has the answers)
    Writes  js/data/stations.js    presentation + salted hashes, NO answers
-           js/data/keys.enc.js    the answers, AES-GCM encrypted
 
-   Why both:
-     · The hashes let the page mark an answer right or wrong without the
-       answer existing anywhere in the download.
-     · The encrypted blob holds the plain answers and the explanations.
-       It only opens with the teacher password, which is typed into the
-       browser and never sent anywhere.
+   The hashes let the page mark an answer right or wrong without the answer
+   existing anywhere in the download. Nothing in the site can say what the
+   answer is, because nothing in the site has it.
 
-   Change the password for a new year with:  node tools/rekey.mjs
+   Pass --vault to also write js/data/keys.enc.js, an AES-GCM encrypted copy
+   of the answers for your own checking. The site never loads it, .gitignore
+   keeps it out of the repo, and it is not published.
    ============================================================ */
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { webcrypto as crypto } from 'node:crypto';
