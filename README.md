@@ -18,7 +18,7 @@ epiglottis, oesophagus, stomach, liver and gall bladder, pancreas, small intesti
 jejunum and ileum), large intestine, rectum and anus, and a Molecules Lab that reaches back
 into Topics 3, 4 and 5.
 
-**107 questions** across seven kinds:
+**113 questions** across seven kinds:
 
 | Type | What the student does |
 |---|---|
@@ -97,9 +97,19 @@ with your Google Classroom rosters beside them. One script, one deployment, one 
 — five minutes, with both files in full, ready to copy.
 
 Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`, and
-the OAuth Client ID as `googleClientId`. A hand-in is then written to the **Digestion** tab,
-with the work behind the score: how many checks it took, how many were right first time, how
-long they had been at it, and the per-station breakdown.
+the OAuth Client ID as `googleClientId`.
+
+Once a class has been imported, **every student already has a row** on the **Digestion** tab —
+name and class filled in, marks blank. A hand-in fills their row in: the score, the %, whether
+they finished, how many checks it took, how many were right first time, how long they had been
+at it, and the per-station breakdown. A blank row is a student who has not handed in yet, not a
+gap in the data.
+
+**Handing in twice is fine and does not make a second row.** Hand in part way, keep working,
+hand in again: the same row is updated. The count of hand-ins and the date always move, but the
+score and everything with it are replaced only when the new attempt **beat** the last one — so a
+careless re-run cannot wipe out a good result. They are matched to their row by the school
+email they signed in with, never by the name they type.
 
 **The lab is public and stays public.** Anyone in the world can work through it and hand in.
 Signing in is what lets a hand-in be attributed: it is recorded only when the Google account
@@ -110,8 +120,9 @@ Leave either setting empty and nothing is recorded anywhere; the lab still works
 gives out codes.
 
 Every submission carries a **completion code** derived from the name, class and score,
-salted with the lab's id. The script recomputes it and writes `CHECK` if the two disagree,
-so an edited payload is visible at a glance.
+salted with the lab's id. The script recomputes it, and a hand-in whose code does not match —
+or whose score is impossible — is written to a separate **Rejected** tab with the reason and
+the payload, and never touches the student's row.
 
 ---
 
@@ -127,12 +138,14 @@ js/plateanim.js       swallowing, peristalsis and churning, drawn on the plate i
 js/figures.js         the animated "See it" diagrams
 js/engine.js          the activity engine (the seven question types)
 js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
-js/config.js          your Apps Script URL and class list — the two things you edit
+js/config.js          the three things you edit: the Apps Script URL, the OAuth
+                      client ID, and the class list
 js/marking.js         hash-based marking — it can say wrong, not what
 js/terms.js           the colour language of the Learn tab
 js/data/stations.js   GENERATED — presentation + hashes, no answers
-tools/build.mjs       master content -> the two generated files
-tools/rekey.mjs       kept from when answers could be released; nothing uses it now
+tools/build.mjs       master content -> js/data/stations.js
+tools/trace-canal.js  how the food's route through the canal was derived from the
+                      artwork's own geometry — a development tool, not loaded by the page
 js/data/photos.js     which photographs appear at which station
 js/data/anatomy-art.js  the body plate (public domain)
 js/data/figure-art.js   the tooth and villus plates (public domain)
