@@ -18,26 +18,33 @@
   var BILE = [[144, 488], [150, 489], [156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
   var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
 
+  /* Timings are set by how long the words take to read, not by how long the movement takes: a
+     scene lasts about a word every third of a second, and the notes inside it are spaced the same
+     way. Anyone who reads faster can press Next. */
   var SCENES = [
-    { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:7000,
+    { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [9500, 'top']], cam:{ cx:190, cy:420, w:320 }, ms:16000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15000, 'top']], cam:{ cx:190, cy:420, w:320 }, ms:30000,
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
-      notes:[[0, 'Swallowed, then pushed down the oesophagus by peristalsis.'],
-             [4200, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
-             [8600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
-    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], cam:{ cx:202, cy:594, w:362 }, ms:10000,
+      notes:[[0, 'Swallowing: the epiglottis folds over the opening of the windpipe, so the bolus goes into the oesophagus and not the airway.'],
+             [6000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
+             [13000, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
+             [21000, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
+    { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
-      notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.']] },
-    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], cam:{ cx:202, cy:594, w:362 }, ms:11000,
+      notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
+             [9000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
+    { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
-      notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food. Glucose is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
-    { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:700, w:290 }, ms:11000,
+      notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
+             [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
+    { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
-      notes:[[0, 'In the colon the remaining water is reabsorbed and what is left becomes faeces.'],
-             [5500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
+      notes:[[0, 'In the colon the remaining water is reabsorbed into the blood, and what is left becomes faeces.'],
+             [9500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
   ];
+
 
   var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
 
@@ -198,8 +205,15 @@
     var shift = pos === 'top' ? -f.h * share / 2 : pos === 'bottom' ? f.h * share / 2 : 0;
     global.Zoom.flyTo(global.Zoom.frameFor({ cx: cam.cx, cy: cam.cy + shift, w: cam.w }), ms == null ? 900 : ms);
   }
-  function focus(organ, also, spot) {
+  var hidden = [];
+  function unhide() { hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; }
+  function focus(organ, also, spot, hide) {
     if (!global.Anatomy) return;
+    unhide();
+    (hide || []).forEach(function (o) {
+      Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op[data-organ="' + o + '"]'),
+        function (p) { p.style.display = 'none'; hidden.push(p); });
+    });
     global.Anatomy.state.active = organ; global.Anatomy.highlight();
     /* a scene can light a second organ — the liver, while the nutrients travel to it — and can
        spotlight one, which lights the organ as it is drawn rather than outlining a silhouette
@@ -222,39 +236,49 @@
     var sc = SCENES[i];
     if (typeof opener === 'function') opener(sc.station, true);
     camera(sc.cam, 900, typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos[0][1]));
-    focus(sc.organ, sc.also, sc.spot); showCard(sc, i);
+    focus(sc.organ, sc.also, sc.spot, sc.hide); showCard(sc, i);
     if (!A) return;
-    A.stopJourney();
     /* the landmarks along the canal (fractions of its length), found on the plate's own path */
     var M = A.marks() || { mouth:0.01, pharynx:0.04, stomach:0.24, duodenum:0.34, jejunum:0.38, ileum:0.62, caecum:0.68, colon:0.78, sigmoid:0.92, anus:1 };
     var mix = function (a, b, k) { return a + (b - a) * k; };
+    var swallowed = mix(M.mouth, M.pharynx, 0.55);
     if (sc.id === 'ingestion') {
+      /* chewing: the meal sits in the mouth and works, and is still there when the scene ends */
       A.placeBolus(M.mouth * 0.3);
-      later(function () { A.travel(M.mouth * 0.3, mix(M.mouth, M.pharynx, 0.55), 4500); }, 900);
+      later(function () { A.travel(M.mouth * 0.3, M.mouth, 2600); }, 1200);
+      later(function () { A.travel(M.mouth, M.mouth * 0.6, 1800); }, 5000);
+      later(function () { A.travel(M.mouth * 0.6, M.mouth, 1800); }, 8000);
     } else if (sc.id === 'digestion') {
       var st = M.stomach, w = 0.006;
-      A.travel(mix(M.mouth, M.pharynx, 0.55), st, 4200, function () {
-        /* churning: the bolus is held in the stomach and wobbles */
-        later(function () { A.travel(st, st - w, 400, function () { A.travel(st - w, st + w, 500); }); }, 200);
-        later(function () { A.travel(st + w, st - w, 500, function () { A.travel(st - w, st + w, 500); }); }, 1300);
-        later(function () { A.travel(st + w, st - w, 500, function () { A.travel(st - w, st + w, 500); }); }, 2400);
+      /* swallow: up to the pharynx, a beat while the epiglottis closes the airway, then down */
+      A.placeBolus(M.mouth);
+      A.travel(M.mouth, swallowed, 2200, function () {
         later(function () {
-          A.travel(st + w, M.duodenum, 3200, function () {
-            drops(BILE, '#8DB43A', 2.2, 4.5, 5);
-            drops(PANC, '#E8C95A', 2.2, 4.5, 5);
+          A.travel(swallowed, st, 7000, function () {              /* down the oesophagus, unhurried */
+            /* churning: the bolus is held in the stomach and wobbles */
+            later(function () { A.travel(st, st - w, 700, function () { A.travel(st - w, st + w, 800); }); }, 300);
+            later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 2200);
+            later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 4000);
+            later(function () {
+              A.travel(st + w, M.duodenum, 3600, function () {
+                drops(BILE, '#8DB43A', 2.2, 4.5, 6);
+                drops(PANC, '#E8C95A', 2.2, 4.5, 6);
+              });
+            }, 6000);
           });
-        }, 4200);
+        }, 1600);                                                   /* the beat at the epiglottis */
       });
     } else if (sc.id === 'absorption') {
-      A.travel(M.duodenum, M.ileum, 8200);
-      later(function () { vein(); }, 900);          /* the mesentery's veins do the collecting */
+      A.placeBolus(M.duodenum);
+      A.travel(M.duodenum, M.ileum, 13000);
+      later(function () { vein(); }, 1400);          /* the mesentery's veins do the collecting */
     } else if (sc.id === 'assimilation') {
       A.placeBolus(M.ileum);
       vein();
-
     } else if (sc.id === 'egestion') {
-      A.travel(M.ileum, 0.995, 8500, function () { later(function () { A.stopJourney(); }, 600); });
-      [0.15, 0.35, 0.55, 0.75].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 800 + i * 700); });
+      A.placeBolus(M.ileum);
+      A.travel(M.ileum, 0.995, 13000, function () { later(function () { A.stopJourney(); }, 900); });
+      [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (k, i) { later(function () { water(mix(M.caecum, M.sigmoid, k)); }, 1200 + i * 1400); });
     }
     later(function () { play(i + 1); }, sc.ms);
   }
@@ -270,6 +294,7 @@
   function stop(opts) {
     if (!running && idx < 0) return;
     if (card) card.classList.remove('is-moving');
+    unhide();
     Array.prototype.forEach.call(document.querySelectorAll('#bodySvg .art .op.is-spot'), function (p) { p.classList.remove('is-spot'); });
     var landing = idx >= SCENES.length || idx < 0 ? 'overview' : SCENES[idx].station;
     running = false; idx = -1;
