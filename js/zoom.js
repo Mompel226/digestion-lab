@@ -789,6 +789,7 @@
 
   /* ---------- station ---------- */
   function setStation(id, opts) {
+    var was = !!detail;
     station = id;
     var quiet = opts && opts.tour;
     detail = (!quiet && (global.ZOOM_DETAIL || {})[id]) || null;
@@ -801,7 +802,11 @@
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
     spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = [];
-    if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, true); }
+    /* Coming from another station, the new picture used to appear at once while the camera was
+       still flying, which reads as a cut. It is dissolved instead: the old detail fades out, the
+       new one is put in behind it, and it fades up as the camera arrives. Arriving from the whole
+       body there is nothing to dissolve from, so that stays immediate. */
+    if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, !was); }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
   }
