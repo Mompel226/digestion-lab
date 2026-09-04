@@ -449,7 +449,7 @@
             later(function () {
               A.travel(st + w, M.duodenum, 3600, function () {
                 drops(BILE, '#8DB43A', 2.2, 4.5, 6);
-                drops(PANC, '#C97B2E', 2.2, 4.5, 6);
+                drops(PANC, '#9A6A34', 2.2, 4.5, 6);   /* the same brown as the duct drawn on the plate */
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
             }, 8600);
