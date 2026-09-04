@@ -127,6 +127,17 @@
     defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
     var filt = el('filter', { id:'detailSoft', x:'-20%', y:'-20%', width:'140%', height:'140%' }, defs);
     softBlur = el('feGaussianBlur', { stdDeviation:'14' }, filt);
+    /* Takes the printed paper out of an illustration: alpha is derived from how light each
+       pixel is, so white becomes transparent and the ink stays. mix-blend-mode cannot do this
+       here — the detail layer carries its own opacity, which isolates blending inside it, so
+       the picture would only ever multiply against its own group. */
+    var kw = el('filter', { id:'dropWhite', x:'0%', y:'0%', width:'100%', height:'100%',
+                            'color-interpolation-filters':'sRGB' }, defs);
+    el('feColorMatrix', { type:'luminanceToAlpha', in:'SourceGraphic', result:'lum' }, kw);
+    var ct = el('feComponentTransfer', { in:'lum', result:'mask' }, kw);
+    el('feFuncA', { type:'table', tableValues:'1 1 0.98 0.75 0' }, ct);
+    el('feComposite', { in:'SourceGraphic', in2:'mask', operator:'in' }, kw);
+
     var sh = el('filter', { id:'insetShadow', x:'-20%', y:'-20%', width:'140%', height:'150%' }, defs);
     el('feDropShadow', { dx:'0', dy:'1.2', stdDeviation:'1.6', 'flood-color':'#3a2e1c', 'flood-opacity':'.35' }, sh);
     /* explicit region: the default is the current viewport +10%, which clips a zoomed camera at a hard edge */
@@ -515,7 +526,7 @@
          a bright rectangle around the drawing. Multiplying it into the plate takes the white
          out (white times anything is that thing) and leaves the ink, so the drawing sits on
          the body rather than on a card stuck to it. */
-      if (d.blend || s.blend) im.style.mixBlendMode = d.blend || s.blend;
+      if (d.dropWhite || s.dropWhite) im.setAttribute('filter', 'url(#dropWhite)');
       placed.push({ d:d, pl:pl });
       bounds = bounds ? { x:Math.min(bounds.x, pl.x), y:Math.min(bounds.y, pl.y), x1:Math.max(bounds.x1, pl.x + pl.W), y1:Math.max(bounds.y1, pl.y + pl.H) }
                       : { x:pl.x, y:pl.y, x1:pl.x + pl.W, y1:pl.y + pl.H };

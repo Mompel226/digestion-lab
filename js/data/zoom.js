@@ -784,7 +784,6 @@ window.ZOOM_DETAIL = {
           0.78
         ],
         "full": true,
-        "blend": "multiply",
         "soft": 2,
         "noback": true,
         "label": "The small intestine — duodenum, jejunum and ileum — and where bile and pancreatic juice come in",
@@ -841,7 +840,8 @@ window.ZOOM_DETAIL = {
               0.2
             ]
           }
-        ]
+        ],
+        "dropWhite": true
       },
       {
         "at": 4,
