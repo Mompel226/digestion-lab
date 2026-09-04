@@ -45,15 +45,34 @@
   function ease(steps) { var s = [], i; for (i = 0; i < steps; i++) s.push('0.42 0 0.58 1'); return s.join(';'); }
 
   /* a label in the plate's detail style: text with a halo, a leader, a dot */
+  /* The frame the station is currently zoomed to. A label written for the wide desktop
+     frame can sit a hundred units outside the narrow one a phone shows, so every label
+     is slid back inside before it is drawn — the leader is then measured from where the
+     text actually ended up, so it still points at its dot. */
+  var FRAME = null;
+
   function label(t, tx, ty, ax, ay, fs, anchor) {
     var lines = String(t).split('\n');
+    var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
+    var tw = wmax * fs * 0.52;
+    var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
+    var x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
+
+    if (FRAME) {
+      var m = FRAME.w * 0.025;
+      var L = FRAME.x + m, R = FRAME.x + FRAME.w - m;
+      var nx = tw > R - L ? L + (R - L - tw) / 2 : Math.max(L, Math.min(R - tw, x0));
+      /* the key cards sit a little above the bottom edge; keep text clear of that band */
+      var T = FRAME.y + m, B = FRAME.y + FRAME.h - fs * 3.9, th = yBot - yTop;
+      var ny = th > B - T ? T : Math.max(T, Math.min(B - th, yTop));
+      tx += nx - x0; ty += ny - yTop;
+      x0 = nx; yTop = ny; yBot = ny + th;
+    }
+
     var out = '<text class="dl__t" x="' + f1(tx) + '" y="' + f1(ty) + '" font-size="' + f1(fs) + '" text-anchor="' + (anchor || 'start') + '">';
     lines.forEach(function (l, i) { out += '<tspan x="' + f1(tx) + '" dy="' + (i ? '1.15em' : '0') + '">' + l + '</tspan>'; });
     out += '</text>';
     if (ax != null) {
-      var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
-      var tw = wmax * fs * 0.52, x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
-      var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
       var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
       if (sx === x0) sx -= fs * 0.25; else if (sx === x0 + tw) sx += fs * 0.25;
       if (sy === yTop) sy -= fs * 0.15; else if (sy === yBot) sy += fs * 0.15;
@@ -620,5 +639,10 @@
                  '#8FC7E8', r, 3.2, 4, -1.6);
   }
 
-  global.PlateAnim = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva };
+  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva };
+  /* every animation goes through here so the frame is known before any label is written */
+  global.PlateAnim = {};
+  Object.keys(ANIMS).forEach(function (k) {
+    global.PlateAnim[k] = function (ctx) { FRAME = (ctx && ctx.frame) || null; try { return ANIMS[k](ctx); } finally { FRAME = null; } };
+  });
 })(window);
