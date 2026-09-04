@@ -472,7 +472,7 @@
     else if (mode === 'release') g += REL;
     else g += '<g opacity="1">' + phase(true) + FILL + '</g>' +
               '<g opacity="0">' + phase(false) + REL + '</g>';
-    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 74, 574, 128, 584, fs, 'start');
+    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 506, 118, 490, fs, 'start') + label('common bile duct', 176, 548, 162, 528, fs, 'start') + label('duodenum', 74, 578, 128, 588, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
       label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
