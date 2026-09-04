@@ -430,7 +430,7 @@
         g += tube([a, [a[0] + nx * side * len * .6 + tx / L * 3, a[1] + ny * side * len * .6 + ty / L * 3], [a[0] + nx * side * len + tx / L * 6, a[1] + ny * side * len + ty / L * 6]], w * .55, PDUCT);
       }
       g += drops(PANC, JUICE, r, 4, 4, 0);
-      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 150, 566, 200, 528, fs, 'start') + label('duodenum', 74, 574, 128, 584, fs, 'start');
+      if (ctx.compact) return g + label('pancreas', 252, 498, 242, 512, fs, 'middle') + label('pancreatic duct', 150, 566, 200, 528, fs, 'start') + label('duodenum', 74, 598, 128, 584, fs, 'start');
       return g +
         label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
