@@ -4,3 +4,4 @@ Thumbs.db
 # The authored master lives in ../digestion-lab-source/ and must never be published.
 stations.master.js
 *.master.js
+js/data/keys.enc.js

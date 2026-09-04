@@ -3,14 +3,14 @@
 
    Types: blank · drag · mcq · order · match · sort · ph
 
-   Three modes, set per session:
-     test      one attempt, then the card locks. Right or wrong only.
+   Two modes, set per session:
      mastery   check as often as you like. Right or wrong only —
                you have to think, not read the answer off the screen.
-     practice  check, and see the correct answer and why. Password only.
+     test      one attempt, then the card locks. Right or wrong only.
 
-   Marking goes through Marking.check(), which compares hashes, so in
-   test and mastery the correct answer is not present in the page at all.
+   Marking goes through Marking.check(), which compares hashes. The
+   correct answer is never in the page, in either mode: there is no way
+   to be shown it, only to be told which parts are wrong.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -20,7 +20,6 @@
 
   var MODE = 'mastery';
   function mode() { return MODE; }
-  function reveals() { return MODE === 'practice' && window.Marking.isUnlocked(); }
   function oneShot() { return MODE === 'test'; }
 
   /* ---------- utilities ---------- */
@@ -223,7 +222,7 @@
   }
 
   /* onCheck() must return a Promise of {correct,...} or null to abort */
-  function foot(card, onCheck, onReset, onShow) {
+  function foot(card, onCheck, onReset) {
     var f = h('div', 'act__foot');
     var check = h('button', 'btn', 'Check answer');
     var again = h('button', 'btn btn--quiet', 'Try again');
@@ -244,13 +243,10 @@
         verdict.textContent = res.correct ? '✓ Correct'
           : (res.total > 1 ? '✗ ' + res.score + ' of ' + res.total + ' right' : '✗ Not yet');
         check.style.display = 'none';
-        /* test mode: one attempt only. mastery/practice: keep trying. */
+        /* test mode: one attempt only. mastery: keep trying. */
         again.style.display = (!res.correct && !oneShot()) ? '' : 'none';
         if (oneShot()) card.dataset.locked = '1';
-        if (reveals() && onShow) {
-          var msg = onShow(res);
-          if (msg) { fb.className = 'feedback ' + (res.correct ? 'ok' : 'no'); fb.style.display = ''; fb.innerHTML = msg; }
-        } else if (!res.correct) {
+        if (!res.correct) {
           fb.className = 'feedback no'; fb.style.display = '';
           fb.innerHTML = oneShot()
             ? 'Not right. In test mode you get one attempt per question.'
@@ -314,12 +310,6 @@
       });
     }, function () {
       Object.keys(inputs).forEach(function (k) { inputs[k].classList.remove('ok', 'no'); });
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v || res.correct) return null;
-      return 'Correct answers: ' + Object.keys(v.answers).map(function (k) {
-        return 'gap <b>' + k + '</b> → ' + esc(v.answers[k]);
-      }).join(' &nbsp;·&nbsp; ');
     });
     return card;
   }
@@ -352,22 +342,11 @@
       var sel = Object.keys(picked).map(Number).sort(function (x, y) { return x - y; });
       if (!sel.length) return null;
       return window.Marking.check(a, id, sel).then(function (res) {
-        if (reveals()) {
-          var v = window.Marking.answer(id) || {};
-          btns.forEach(function (b, i) {
-            b.dataset.locked = '1';
-            var isC = (v.correct || []).indexOf(i) >= 0, isS = sel.indexOf(i) >= 0;
-            if (isC) b.classList.add('ok'); else if (isS) b.classList.add('no');
-            var why = (v.why || {})[i] != null ? v.why[i] : (v.why || {})[String(i)];
-            if (why && (isC || isS)) b.lastChild.appendChild(h('span', 'opt__why', why));
-          });
-        } else {
-          /* only what THEY chose is marked — the right answer stays hidden */
-          btns.forEach(function (b, i) {
-            if (oneShot()) b.dataset.locked = '1';
-            if (sel.indexOf(i) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
-          });
-        }
+        /* only what THEY chose is marked — the right answer stays hidden */
+        btns.forEach(function (b, i) {
+          if (oneShot()) b.dataset.locked = '1';
+          if (sel.indexOf(i) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
+        });
         return res;
       });
     }, function () {
@@ -426,10 +405,6 @@
       });
     }, function () {
       build(shuffle(a.items || []));
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v || res.correct) return null;
-      return 'Correct order: ' + v.items.map(function (t, i) { return (i + 1) + '. ' + esc(t); }).join(' &nbsp;·&nbsp; ');
     });
     return card;
   }
@@ -505,26 +480,14 @@
       var pairs = Object.keys(links).map(function (k) { return [Number(k), links[k]]; });
       if (pairs.length < (a.left || []).length) return null;
       return window.Marking.check(a, id, pairs).then(function (res) {
-        if (reveals()) {
-          var v = window.Marking.answer(id) || { pairs: [] };
-          var want = {}; v.pairs.forEach(function (p) { want[p[0]] = p[1]; });
-          lbtn.forEach(function (b, i) { b.dataset.locked = '1'; b.classList.add(links[i] === want[i] ? 'ok' : 'no'); });
-        } else {
-          lbtn.forEach(function (b) { if (oneShot()) b.dataset.locked = '1'; b.classList.add(res.correct ? 'ok' : 'no'); });
-        }
-        rbtn.forEach(function (b) { if (oneShot() || reveals()) b.dataset.locked = '1'; });
+        lbtn.forEach(function (b) { if (oneShot()) b.dataset.locked = '1'; b.classList.add(res.correct ? 'ok' : 'no'); });
+        rbtn.forEach(function (b) { if (oneShot()) b.dataset.locked = '1'; });
         return res;
       });
     }, function () {
       links = {}; sel = { side:null, i:null };
       lbtn.concat(rbtn).forEach(function (b) { b.dataset.locked = ''; b.classList.remove('ok', 'no', 'paired'); });
       repaint();
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v || res.correct) return null;
-      return 'Correct pairs: ' + v.pairs.map(function (p) {
-        return '<b>' + esc(a.left[p[0]]) + '</b> → ' + esc(a.right[p[1]]);
-      }).join(' &nbsp;·&nbsp; ');
     });
     return card;
   }
@@ -586,12 +549,6 @@
         Array.prototype.forEach.call(b.querySelectorAll('.tok'), function (t) { pool.appendChild(t); });
       });
       Array.prototype.forEach.call(pool.querySelectorAll('.tok'), function (t) { t.classList.remove('ok', 'no'); });
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v || res.correct) return null;
-      return 'Correct groups: ' + v.items.map(function (it) {
-        return esc(it.text) + ' → <b>' + esc(a.bins[it.bin]) + '</b>';
-      }).join(' &nbsp;·&nbsp; ');
     });
     return card;
   }
@@ -663,12 +620,6 @@
         var t = w.querySelector('.tok'); if (t) pool.appendChild(t);
       });
       tidy();
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v || res.correct) return null;
-      return 'Correct pairings: ' + v.slots.map(function (tok, j) {
-        return '<b>' + esc(a.slots[j].label) + '</b> → ' + esc(tok);
-      }).join(' &nbsp;·&nbsp; ');
     });
     return card;
   }
@@ -701,8 +652,8 @@
     var body = wrap.querySelector('.enzBody'), sub = wrap.querySelector('.sub'), msg = wrap.querySelector('.phMsg');
     var FIT = 'M20,66 L20,34 C20,26 26,20 34,20 L82,20 C90,20 96,26 96,34 L96,40 L112,40 L112,26 L140,26 L140,40 L156,40 L156,34 C156,26 162,20 170,20 L218,20 C226,20 232,26 232,34 L232,66 Z';
 
-    /* Live feedback would give the answer away by sliding, so outside practice
-       mode the enzyme only reacts once the student has committed to a value. */
+    /* Live feedback would give the answer away by sliding: the enzyme only reacts
+       once the student has committed to a value and asked to be marked. */
     function show(fits, near, d) {
       stateChip.className = 'ph__state ' + (fits ? 'on' : 'off');
       stateChip.textContent = fits ? (a.enzyme || 'Enzyme') + ' is working'
@@ -721,28 +672,17 @@
     }
     slider.addEventListener('input', function () {
       val.textContent = parseFloat(slider.value).toFixed(1);
-      if (!reveals()) return;
-      var v = window.Marking.answer(id);
-      if (!v) return;
-      var d = Math.abs(parseFloat(slider.value) - v.optimum);
-      show(d <= v.tolerance, d <= v.tolerance + 1.5, d);
     });
 
     foot(card, function () {
       return window.Marking.check(a, id, parseFloat(slider.value)).then(function (res) {
         if (oneShot()) slider.disabled = true;
-        var v = window.Marking.answer(id);
-        if (v) {
-          var d = Math.abs(parseFloat(slider.value) - v.optimum);
-          show(d <= v.tolerance, d <= v.tolerance + 1.5, d);
-        } else {
-          stateChip.className = 'ph__state ' + (res.correct ? 'on' : 'off');
-          stateChip.textContent = res.correct ? (a.enzyme || 'Enzyme') + ' is working'
-                                              : (a.enzyme || 'Enzyme') + ' is not at its best here';
-          if (res.correct) { body.setAttribute('d', FIT); body.setAttribute('fill', '#DDEDE2');
-                             body.setAttribute('stroke', '#14572B'); sub.setAttribute('y', 8);
-                             msg.textContent = 'substrate fits'; msg.setAttribute('fill', '#1E7A3E'); }
-        }
+        stateChip.className = 'ph__state ' + (res.correct ? 'on' : 'off');
+        stateChip.textContent = res.correct ? (a.enzyme || 'Enzyme') + ' is working'
+                                            : (a.enzyme || 'Enzyme') + ' is not at its best here';
+        if (res.correct) { body.setAttribute('d', FIT); body.setAttribute('fill', '#DDEDE2');
+                           body.setAttribute('stroke', '#14572B'); sub.setAttribute('y', 8);
+                           msg.textContent = 'substrate fits'; msg.setAttribute('fill', '#1E7A3E'); }
         return res;
       });
     }, function () {
@@ -750,10 +690,6 @@
       stateChip.className = 'ph__state off'; stateChip.textContent = 'Move the slider, then check';
       body.setAttribute('d', FIT); body.setAttribute('fill', '#DDEDE2'); body.setAttribute('stroke', '#14572B');
       msg.textContent = '';
-    }, function (res) {
-      var v = window.Marking.answer(id);
-      if (!v) return null;
-      return (res.correct ? '' : 'The optimum pH for ' + (a.enzyme || 'this enzyme') + ' is about <b>' + v.optimum + '</b>. ') + (v.explain || '');
     });
     return card;
   }

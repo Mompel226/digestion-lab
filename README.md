@@ -48,41 +48,50 @@ Progress is saved in the browser. **Reset** clears it.
 
 ---
 
-## The three modes
+## The two modes
 
 | Mode | Attempts | Shows the answer? | For |
 |---|---|---|---|
-| **Mastery** (default) | unlimited | no — only which parts are wrong | homework; students must answer every question to hand in |
-| **Test** | one per question | no | a timed check under exam conditions |
-| **Practice** 🔒 | unlimited | yes, with explanations | revision, after you release the password |
+| **Mastery** (default) | unlimited | **no** — only which parts are wrong | homework; every question must be right before it can be handed in |
+| **Test** | one per question | **no** | a check under exam conditions; hand in whatever you scored |
 
-Each mode keeps its own record, so a Test attempt never wipes Mastery progress.
+The answers are never shown, in either mode, and are not in the site at all (see below).
+Each mode keeps its own record, so a Test never wipes Mastery progress.
+
+### Closing Mastery during a test
+
+Mastery lets a student check as often as they like. If it is open during a test they can
+grind the answers out there and then walk through the test knowing them, and the test
+measures nothing. So Mastery can be **closed for everyone, live**:
+
+> Open the Sheet the submissions go to ▸ **Settings** tab ▸ untick **Mastery open**.
+
+Every open page picks that up within a couple of minutes — on load, whenever the tab is
+brought back, and every three minutes — puts the student into Test mode, and greys out
+Mastery with the message you typed in **B2**. Tick it again afterwards. No redeploy, no
+new version of the site.
+
+Two honest limits. It needs the Apps Script set up (below): with no `submitUrl` there is
+nothing to ask, and Mastery stays open. And it is a classroom control, not security — this
+is a static site, and a determined student can work around anything the browser is told.
+It stops the ordinary case and makes the rule visible, which is what it is for. If the
+Sheet cannot be reached the page keeps the last answer it had, so a dropped connection
+never locks a class out of their homework.
 
 ## How the answers are kept out of the page
 
-This is a static site: everything is downloaded to the student's browser. So the
-answers are not shipped at all.
+This is a static site: everything is downloaded to the student's browser. So the answers
+are not shipped at all.
 
-* Every question carries a **salted SHA-256 hash** of its correct answer. That is
-  enough to mark an answer right or wrong, and not enough to read it.
-* The plain answers and the explanations sit in **`js/data/keys.enc.js`**, an
-  AES-GCM blob. It opens only with the practice password, which is typed into the
-  browser, used to derive a key locally with PBKDF2, and **never sent anywhere**.
+* Every question carries a **salted SHA-256 hash** of its correct answer. That is enough
+  to mark an answer right or wrong, and not enough to read it.
+* There is **no mode that reveals an answer**, so nothing in the site needs the plain text
+  and nothing in the site contains it. `js/marking.js` can say *wrong*, and cannot say *what*.
 * Ordering questions ship **pre-shuffled**, so the file never lists the right sequence.
 
-Honest limits: multiple-choice and drag questions have small answer spaces, so a
-student who opens the developer tools and writes a brute-force loop could work
-some out. Typed answers are genuinely hard to reverse. And once you release the
-password, it will be shared — release it when you mean to.
-
-### Changing the password each year
-
-```bash
-node tools/rekey.mjs "Biology2026" "Biology2027"
-git commit -am "new password for 2027" && git push
-```
-
-The master content is never needed for this, and the answers never touch the disk.
+Honest limit: multiple-choice and drag questions have small answer spaces, so a student
+with the developer tools open and a brute-force loop could work some out. Typed answers
+are genuinely hard to reverse.
 
 ### Editing a question
 
@@ -90,21 +99,288 @@ The only file with the answers in plain text is **`../digestion-lab-source/stati
 which deliberately lives *outside* this repo so it is never published. Edit it, then:
 
 ```bash
-node tools/build.mjs "Biology2026"
+node tools/build.mjs
 ```
 
-which regenerates `js/data/stations.js` (presentation + hashes) and `js/data/keys.enc.js`.
+which regenerates `js/data/stations.js` (presentation + hashes). Add `--vault` if you want
+the encrypted answer key written out for your own checking — the site never loads it, and
+`.gitignore` keeps it out of the repo.
 
-## Collecting who has finished
+## Collecting the results, in a Google Sheet
 
-`apps-script/Code.gs` is a small Apps Script web app that appends a row to a Google
-Sheet each time a student hands in. Set-up instructions are in the file. Paste the
-deployed `/exec` URL into **`js/config.js`** as `submitUrl`.
+`apps-script/Code.gs` does two jobs: it records a row every time a student hands in, and it
+serves the Mastery switch above. Set-up is about five minutes.
 
-Each submission carries a **completion code** derived from the student's name, class
-and score. The Apps Script recomputes it and writes `CHECK` in the Code-check column
-if the two disagree, so an edited payload is visible at a glance. If the network call
-fails, the student still gets the code on screen to paste into Google Classroom.
+1. **New Google Sheet.** The name does not matter.
+2. **Copy its ID** out of the address bar — `docs.google.com/spreadsheets/d/`**`THIS BIT`**`/edit`.
+3. **Extensions ▸ Apps Script.** Delete what is there, paste in the whole of
+   [`apps-script/Code.gs`](apps-script/Code.gs) (reproduced below so you can copy it from
+   here), put the ID into `SHEET_ID`, and Save.
+4. **Run ▸ `setup`.** Pick `setup` in the function list and press Run. Authorise it when
+   asked — it is your own script, on your own Sheet. It builds both tabs.
+5. **Deploy ▸ New deployment ▸ Web app**, with *Execute as* **Me** and *Who has access*
+   **Anyone**. Deploy, then copy the `/exec` URL.
+6. **Paste that URL into `js/config.js`** as `submitUrl`, commit, push. Done.
+
+Whenever you edit the script afterwards: **Deploy ▸ Manage deployments ▸ pencil ▸ Version:
+New version ▸ Deploy.** Editing alone changes nothing — the old version keeps serving.
+
+You get two tabs. **Submissions**: when, name, class, mode, score, out of, %, the completion
+code, whether that code checks out, any flags, and the per-station breakdown. **Settings**:
+the *Mastery open* checkbox and the message shown when it is closed.
+
+Every submission carries a **completion code** derived from the name, class and score. The
+script recomputes it and writes `CHECK` if the two disagree, so an edited payload is visible
+at a glance. If the network call fails the student still gets the code on screen to paste
+into Google Classroom, so no work is lost.
+
+### Putting the marks into Google Classroom
+
+Classroom will only let a script grade work that **the same script created** — an assignment
+you made by hand in the Classroom UI cannot be graded through the API. So there are two
+routes, and the first needs no setup at all:
+
+**A — the code (works today).** Set a Classroom assignment that asks for the completion code.
+Students paste theirs in; you have the Sheet beside it as the record of who scored what.
+
+**B — marks pushed automatically.** The script creates the assignment, and then writes each
+student's score into it whenever you ask:
+
+1. In the Apps Script editor: **Services (+) ▸ Classroom ▸ Add**.
+2. Put your course ID in `COURSE_ID` — the long number in the Classroom address bar,
+   `classroom.google.com/c/`**`THIS BIT`**.
+3. Run **`createAssignment`** once. It publishes the assignment and writes its ID into the
+   Settings tab.
+4. After a test, run **`pushGrades`**. It takes each student's best score from the Sheet and
+   patches it into their submission, matching on name against the class list. A name it
+   cannot match is left alone and listed in the log — nothing is guessed.
+
+The whole file, ready to copy:
+
+```javascript
+/**
+ * Digestion Lab — submissions, and the Mastery switch
+ * ---------------------------------------------------
+ * One Apps Script does two jobs:
+ *   1. records a row in a Google Sheet every time a student hands in;
+ *   2. tells the site whether Mastery mode is open, so you can close it
+ *      for everyone while a test is running.
+ *
+ * SET UP  (about five minutes, once)
+ *  1. New Google Sheet. Name does not matter.
+ *  2. Copy its ID out of the address bar:
+ *       docs.google.com/spreadsheets/d/ >>>THIS BIT<<< /edit
+ *     and paste it into SHEET_ID below.
+ *  3. Extensions ▸ Apps Script. Delete what is there, paste this file, Save.
+ *  4. Run ▸ setup   (choose "setup" in the function list, press Run).
+ *     Authorise it when asked. It builds both tabs for you.
+ *  5. Deploy ▸ New deployment ▸ Web app
+ *       Execute as:      Me
+ *       Who has access:  Anyone
+ *     Deploy, copy the /exec URL.
+ *  6. Paste that URL into js/config.js as submitUrl, then commit and push.
+ *
+ * WHENEVER YOU EDIT THIS FILE: Deploy ▸ Manage deployments ▸ pencil ▸
+ * Version: New version ▸ Deploy. Editing alone changes nothing — the old
+ * version keeps serving until you redeploy.
+ */
+
+var SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE';
+var TAB_SUBMISSIONS = 'Submissions';
+var TAB_SETTINGS    = 'Settings';
+var EXPECTED_TOTAL  = 113;        // questions in the app; update if you add or remove some
+
+/* ============================================================
+   1. Recording a hand-in
+   ============================================================ */
+function doPost(e) {
+  try {
+    var d = JSON.parse(e.postData.contents);
+    if (d.app !== 'digestion-lab') return _text('ignored');
+
+    var name  = String(d.name || '').trim().slice(0, 80);
+    var form  = String(d.form || '').trim().slice(0, 20);
+    var mode  = String(d.mode || '').trim().slice(0, 20);
+    var score = Number(d.score) || 0;
+    var total = Number(d.total) || 0;
+
+    /* Recompute the code from the fields we were sent. If it does not match the
+       code the page produced, the payload was edited on the way here. */
+    var genuine = (_code(name, form, score + '/' + total) === String(d.code || ''));
+
+    var flags = [];
+    if (!genuine) flags.push('CODE MISMATCH');
+    if (total !== EXPECTED_TOTAL) flags.push('NOT ALL QUESTIONS');
+    if (mode === 'mastery' && score !== total) flags.push('MASTERY NOT COMPLETE');
+
+    _sheet().appendRow([
+      new Date(), name, form, mode,
+      score, total, total ? Math.round(score / total * 100) : 0,
+      d.code || '', genuine ? 'ok' : 'CHECK', flags.join('; '),
+      JSON.stringify(d.stations || {})
+    ]);
+    return _text('recorded');
+  } catch (err) {
+    return _text('error: ' + err);
+  }
+}
+
+/* ============================================================
+   2. The Mastery switch
+   The site asks this on load, when the tab is brought back, and every few
+   minutes. Untick "Mastery open" in the Settings tab and every student is
+   in Test mode within a couple of minutes, with no redeploy.
+   ============================================================ */
+function doGet(e) {
+  var q = (e && e.parameter) || {};
+  if (q.q === 'gate') {
+    var body = JSON.stringify({ masteryOpen: _masteryOpen(), note: _note() });
+    /* JSONP: the site is served from github.io, a different origin to this script */
+    if (q.callback) return _js(q.callback + '(' + body + ');');
+    return _json(body);
+  }
+  return _text('Digestion Lab endpoint is running. Mastery open: ' + _masteryOpen());
+}
+
+function _settings() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sh = ss.getSheetByName(TAB_SETTINGS);
+  if (!sh) {
+    sh = ss.insertSheet(TAB_SETTINGS);
+    sh.getRange('A1').setValue('Mastery open').setFontWeight('bold');
+    sh.getRange('B1').insertCheckboxes().setValue(true);
+    sh.getRange('A2').setValue('Message when closed').setFontWeight('bold');
+    sh.getRange('B2').setValue('Mastery is closed while the test is running.');
+    sh.getRange('A4').setValue('Untick B1 during a test: everyone is put into Test mode within a couple of minutes.');
+    sh.setColumnWidth(1, 190); sh.setColumnWidth(2, 380);
+  }
+  return sh;
+}
+function _masteryOpen() {
+  try { return _settings().getRange('B1').getValue() !== false; }
+  catch (err) { return true; }         /* if the sheet is unreachable, do not lock anyone out */
+}
+function _note() {
+  try { return String(_settings().getRange('B2').getValue() || ''); }
+  catch (err) { return ''; }
+}
+
+/* ============================================================
+   3. Helpers
+   ============================================================ */
+function _sheet() {
+  var ss = SpreadsheetApp.openById(SHEET_ID);
+  var sh = ss.getSheetByName(TAB_SUBMISSIONS) || ss.insertSheet(TAB_SUBMISSIONS);
+  if (sh.getLastRow() === 0) {
+    sh.appendRow(['When', 'Name', 'Class', 'Mode', 'Score', 'Out of', '%',
+                  'Code', 'Code check', 'Flags', 'Per station']);
+    sh.setFrozenRows(1);
+    sh.getRange('A1:K1').setFontWeight('bold');
+    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 190); sh.setColumnWidth(11, 320);
+  }
+  return sh;
+}
+
+/** Must stay identical to completionCode() in js/app.js. */
+function _code(name, form, score) {
+  var raw = String(name).trim().toLowerCase() + '|' + form + '|' + score + '|digestion-lab';
+  var s1 = 0, s2 = 0;
+  for (var i = 0; i < raw.length; i++) {
+    s1 = (s1 * 31 + raw.charCodeAt(i)) >>> 0;
+    s2 = (s2 ^ (s1 + i)) >>> 0;
+  }
+  var A = 'ACDEFGHJKLMNPQRTUVWXY3479';
+  function chunk(n) {
+    var o = '';
+    for (var i = 0; i < 4; i++) { o += A.charAt(n % A.length); n = Math.floor(n / A.length); }
+    return o;
+  }
+  return 'DL-' + chunk(s1) + '-' + chunk(s2);
+}
+
+function _text(m) { return ContentService.createTextOutput(m).setMimeType(ContentService.MimeType.TEXT); }
+function _json(m) { return ContentService.createTextOutput(m).setMimeType(ContentService.MimeType.JSON); }
+function _js(m)   { return ContentService.createTextOutput(m).setMimeType(ContentService.MimeType.JAVASCRIPT); }
+
+/** Run this once from the editor: builds both tabs and proves the Sheet ID works. */
+function setup() {
+  _sheet(); _settings();
+  Logger.log('Both tabs are ready. Mastery open: ' + _masteryOpen());
+}
+
+/* ============================================================
+   4. OPTIONAL — putting the marks into Google Classroom
+   ------------------------------------------------------------
+   Classroom will only let a script grade work that the SAME script created.
+   So the assignment has to be made from here, once, and then marks can be
+   pushed to it whenever you like.
+
+   To switch this on:
+     a. Services (+) ▸ Classroom ▸ Add.        (the advanced service)
+     b. Put your course ID in COURSE_ID below. It is the long number in the
+        Classroom address bar: classroom.google.com/c/ >>>THIS BIT<<<
+     c. Run  createAssignment  once. It writes the new assignment's ID into
+        the Settings tab for you.
+     d. After a test, run  pushGrades.
+
+   pushGrades matches a student by name against the class list. A name that
+   does not match is left alone and listed in the log — nothing is guessed.
+   ============================================================ */
+var COURSE_ID   = '';                 // e.g. '742193845012'
+var MAX_POINTS  = 113;                // usually the same as EXPECTED_TOTAL
+
+function createAssignment() {
+  if (!COURSE_ID) throw new Error('Put your course ID in COURSE_ID first.');
+  var work = Classroom.Courses.CourseWork.create({
+    title: 'Digestion Lab — Topic 7',
+    description: 'Open the lab, work through every station, then hand in.',
+    materials: [{ link: { url: 'https://mompel226.github.io/digestion-lab/' } }],
+    workType: 'ASSIGNMENT',
+    state: 'PUBLISHED',
+    maxPoints: MAX_POINTS
+  }, COURSE_ID);
+  _settings().getRange('A3').setValue('Classroom assignment ID').setFontWeight('bold');
+  _settings().getRange('B3').setValue(work.id);
+  Logger.log('Created assignment ' + work.id + ' — the ID is now in the Settings tab.');
+}
+
+function pushGrades() {
+  var workId = String(_settings().getRange('B3').getValue() || '');
+  if (!COURSE_ID || !workId) throw new Error('Run createAssignment first.');
+
+  /* the class list, by tidied-up name */
+  var roster = {}, page = null;
+  do {
+    var r = Classroom.Courses.Students.list(COURSE_ID, { pageSize: 100, pageToken: page });
+    (r.students || []).forEach(function (s) { roster[_tidy(s.profile.name.fullName)] = s.userId; });
+    page = r.nextPageToken;
+  } while (page);
+
+  /* the best score each student has handed in */
+  var rows = _sheet().getDataRange().getValues(), best = {};
+  for (var i = 1; i < rows.length; i++) {
+    var name = _tidy(rows[i][1]), score = Number(rows[i][4]) || 0;
+    if (!name) continue;
+    if (!(name in best) || score > best[name]) best[name] = score;
+  }
+
+  var done = 0, missing = [];
+  Object.keys(best).forEach(function (name) {
+    var userId = roster[name];
+    if (!userId) { missing.push(name); return; }
+    var subs = Classroom.Courses.CourseWork.StudentSubmissions.list(COURSE_ID, workId, { userId: userId });
+    var sub = (subs.studentSubmissions || [])[0];
+    if (!sub) { missing.push(name + ' (no submission)'); return; }
+    Classroom.Courses.CourseWork.StudentSubmissions.patch(
+      { assignedGrade: best[name], draftGrade: best[name] },
+      COURSE_ID, workId, sub.id, { updateMask: 'assignedGrade,draftGrade' });
+    done++;
+  });
+  Logger.log('Graded ' + done + '. Not matched: ' + (missing.join(', ') || 'none'));
+}
+
+function _tidy(s) { return String(s || '').toLowerCase().replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim(); }
+```
 
 ---
 
@@ -121,12 +397,12 @@ js/figures.js         the animated "See it" diagrams
 js/engine.js          the activity engine (the seven question types)
 js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
 js/config.js          your Apps Script URL and class list — the two things you edit
-js/marking.js         hash-based marking, and the password unlock
+js/marking.js         hash-based marking — it can say wrong, not what
 js/terms.js           the colour language of the Learn tab
 js/data/stations.js   GENERATED — presentation + hashes, no answers
 js/data/keys.enc.js   GENERATED — the answers, encrypted
 tools/build.mjs       master content -> the two generated files
-tools/rekey.mjs       change the practice password
+tools/rekey.mjs       kept from when answers could be released; nothing uses it now
 apps-script/Code.gs   the submission receiver
 js/data/photos.js     which photographs appear at which station
 js/data/anatomy-art.js  the body plate (public domain)
