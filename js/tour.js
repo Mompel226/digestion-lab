@@ -16,13 +16,11 @@
 
   /* routes on the plate, in plate units (the same ones plateanim draws) */
   var BILE = [[144, 488], [150, 489], [156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
-  var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
   /* Saliva, the same idea as bile: two short ducts into the mouth so the glands are seen to
-     be doing something rather than just being named. The parotid runs forward across the
-     cheek; the submandibular and sublingual come up into the floor of the mouth. Plate
-     coordinates, taken from where those organs actually sit in the artwork. */
+     be doing something rather than just being named. */
   var SAL_PAROTID = [[168, 141], [160, 141], [152, 140], [144, 139], [137, 139]];
   var SAL_SUBMAND = [[145, 172], [141, 166], [137, 159], [134, 152], [132, 146]];
+  var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
 
   /* Timings are set by how long the words take to read, not by how long the movement takes: a
      scene lasts about a word every third of a second, and the notes inside it are spaced the same
@@ -30,8 +28,6 @@
   var SCENES = [
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
-      seek:['mouth'],
-      fx:['saliva'],
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
@@ -47,35 +43,22 @@
          sees the words move, not what they say. Each note now gets at least five seconds,
          and still arrives with the picture it belongs to: the camera starts travelling at
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
-      /* Where the food is when each sentence shows, so stepping moves the picture with the
-         words instead of leaving the bolus wherever the clock had got to. */
-      seek:['mouth', 'swallowed', 'oesoph', 'stomach', 'stomach', 'duodenum'],
-      /* what the plate should be doing while that sentence is up */
-      fx:[null, null, null, 'churn', null, 'ducts'],
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
              [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
-             /* The card moves to the top at 16800 too, so this sentence is already there when it
-                arrives rather than replacing the oesophagus one a moment afterwards. */
              [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria.'],
              [23800, 'Pepsin, a protease, digests protein into polypeptides — the acid gives it the low pH it needs.'],
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
-      seek:['duodenum', 'jejunum'],
-      fx:[null, 'vein'],
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
              [9000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
     { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
-      seek:['ileum', 'ileum'],
-      fx:['vein', null],
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
              [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
-      seek:['ileum', 'colon'],
-      fx:[null, 'water'],
       notes:[[0, 'In the colon the remaining water is reabsorbed into the blood, and what is left becomes faeces.'],
              [9500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
   ];
@@ -83,10 +66,6 @@
 
   var card = null, fx = null, timers = [], running = false, idx = -1, opener = null, onStop = null, at = null;
   var pending = [], paused = false;
-  /* Which sentence of the current scene the card is showing: -1 is the definition, 0.. are
-     the notes. Next and Back step through these, not through whole scenes — a reader who
-     missed a sentence wants that sentence again, not the last two minutes again. */
-  var noteAt = -1, noteTimers = [], manual = false;
   var curCam = null;                 /* the leg of the camera track the scene is on */
 
   /* A fade is only safe while the page is actually being drawn: a transition does not advance in
@@ -201,132 +180,8 @@
         timers.push(r.t);
       });
       try { if (svg) svg.unpauseAnimations(); } catch (e) {}
-      if (manual) { manual = false; rearmFrom(noteAt); }
-      else rearmNotes();
     }
-    paintPause(); paintStep();
-  }
-
-  /* Stepping by hand cancels the sentences still queued for the scene. Put them back, spaced
-     as they were from the one now showing, so Play carries on instead of leaving the rest of
-     the scene silent. */
-  function rearmNotes() {
-    var sc = SCENES[idx];
-    if (!sc || !sc.notes || !sc.notes.length || noteTimers.length) return;
-    var base = noteAt >= 0 ? sc.notes[noteAt][0] : 0;
-    for (var k = noteAt + 1; k < sc.notes.length; k++) {
-      (function (j) {
-        noteTimers.push(later(function () {
-          noteAt = j;
-          if (card) say(card, 'note', sc.notes[j][1]);
-          paintStep();
-        }, Math.max(400, sc.notes[j][0] - base)));
-      })(k);
-    }
-  }
-
-  /* A landmark name from a scene's seek map, as a fraction along the canal. */
-  function markAt(name) {
-    var A = global.Anatomy; if (!A) return null;
-    var M = A.marks() || { mouth:0.01, pharynx:0.04, stomach:0.24, duodenum:0.34, jejunum:0.38,
-                           ileum:0.62, caecum:0.68, colon:0.78, sigmoid:0.92, anus:1 };
-    var mix = function (a, b, k) { return a + (b - a) * k; };
-    switch (name) {
-      case 'mouth':     return M.mouth;
-      case 'swallowed': return mix(M.mouth, M.pharynx, 0.55);
-      case 'oesoph':    return mix(mix(M.mouth, M.pharynx, 0.55), M.stomach, 0.55);
-      case 'stomach':   return M.stomach;
-      case 'duodenum':  return M.duodenum;
-      case 'jejunum':   return mix(M.duodenum, M.ileum, 0.6);
-      case 'ileum':     return M.ileum;
-      case 'colon':     return mix(M.caecum, M.sigmoid, 0.55);
-      case 'anus':      return 0.995;
-    }
-    return null;
-  }
-
-  /* Put the whole picture where that sentence belongs: the camera leg that covers it, the
-     side of the plate the card sits on, and the food itself. Stepping used to move only the
-     words, so the bolus stayed wherever the clock had reached and pressing Play spent a long
-     time catching up — or never did. */
-  function seekPicture(sc, k, ms) {
-    var T = k < 0 ? 0 : (sc.notes && sc.notes[k] ? sc.notes[k][0] : 0);
-    var cam = sc.cam;
-    (sc.cams || []).forEach(function (leg) { if (leg[0] <= T) cam = leg[1]; });
-    var place = typeof sc.pos === 'string' ? sc.pos : (sc.pos && sc.pos.length ? sc.pos[0][1] : null);
-    if (sc.pos && typeof sc.pos !== 'string') sc.pos.forEach(function (q) { if (q[0] <= T) place = q[1]; });
-    if (card && place) { card.classList.toggle('tourcard--bottom', place === 'bottom'); at = place; }
-    curCam = cam;
-    camera(cam, ms == null ? 520 : ms, place || at);
-
-    var A = global.Anatomy;
-    if (!A || !sc.seek) return;
-    var f = markAt(sc.seek[Math.max(0, k)]);
-    if (f == null) return;
-    A.stopJourney();
-    A.placeBolus(f);
-  }
-
-  /* After a manual step the scene's own chain of animations has been cancelled, so Play
-     cannot simply resume it. Instead the remaining sentences are re-armed with their original
-     spacing, and the food travels from each one's landmark to the next — the picture keeps up
-     with the words rather than replaying a schedule that no longer matches them. */
-  /* The effects a scene shows, callable by name. They also live inside the scene's own chain
-     of animations, which is fine while that chain is running — but stepping cancels it, and
-     the reader still needs the plate to do what the sentence says. This is what Play uses
-     after a step, and what stepping itself uses to arrive with the right picture. */
-  function runFx(name) {
-    var A = global.Anatomy;
-    if (!name) return;
-    if (name === 'saliva') {
-      drops(SAL_PAROTID, '#8FC7E8', 1.9, 3.4, 4);
-      drops(SAL_SUBMAND, '#8FC7E8', 1.9, 3.4, 4);
-      lightSecretors(['salivary-glands'], 8000);
-    } else if (name === 'ducts') {
-      drops(BILE, '#8DB43A', 2.2, 4.5, 6);
-      drops(PANC, '#E8C95A', 2.2, 4.5, 6);
-      lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
-    } else if (name === 'vein') {
-      vein();
-    } else if (name === 'water') {
-      var M = (A && A.marks()) || {};
-      var mix = function (a, b, t) { return a + (b - a) * t; };
-      [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (t, i) {
-        later(function () { water(mix(M.caecum || 0.68, M.sigmoid || 0.92, t)); }, i * 1200);
-      });
-    } else if (name === 'churn' && A) {
-      var st = markAt('stomach'), w = 0.006;
-      if (st == null) return;
-      [0, 1700, 3400].forEach(function (d, i) {
-        later(function () { A.travel(st + (i % 2 ? w : -w), st + (i % 2 ? -w : w), 800); }, d);
-      });
-    }
-  }
-
-  function rearmFrom(k) {
-    var sc = SCENES[idx];
-    if (!sc || !sc.notes || !sc.notes.length) return;
-    var A = global.Anatomy;
-    var base = k >= 0 ? sc.notes[k][0] : 0;
-    for (var j = Math.max(0, k) + (k < 0 ? 0 : 1); j < sc.notes.length; j++) {
-      (function (n) {
-        var gap = Math.max(500, sc.notes[n][0] - base);
-        var from = markAt((sc.seek || [])[Math.max(0, n - 1)]);
-        var to = markAt((sc.seek || [])[n]);
-        noteTimers.push(later(function () {
-          noteAt = n;
-          if (card) say(card, 'note', sc.notes[n][1]);
-          seekPicture(sc, n, 700);
-          runFx((sc.fx || [])[n]);
-          paintStep();
-        }, gap));
-        if (A && from != null && to != null && Math.abs(to - from) > 0.001) {
-          noteTimers.push(later(function () { A.travel(from, to, Math.max(600, gap - 500)); },
-                                Math.max(200, gap - Math.max(600, gap - 500))));
-        }
-      })(j);
-    }
-    later(function () { play(idx + 1); }, Math.max(1500, sc.ms - base));
+    paintPause();
   }
 
   function paintPause() {
@@ -352,9 +207,8 @@
   }
   function clearFx() { if (fx) fx.innerHTML = ''; }
 
-  /* An organ that is secreting should look like it. Without this the drops appear out of a
-     grey silhouette, and only the liver read as the source because the bile happens to start
-     on top of it — the pancreas was doing the same work with nothing to show for it. */
+  /* An organ that is secreting should look like it — otherwise the drops appear out of a grey
+     silhouette, and only the liver reads as a source because the bile starts on top of it. */
   function lightSecretors(list, ms) {
     var on = [];
     (list || []).forEach(function (o) {
@@ -471,20 +325,17 @@
       '<button type="button" class="btn btn--ghost" data-act="back"' + (i === 0 ? ' disabled' : '') + '>Back</button>' +
       '<button type="button" class="btn btn--ghost" data-act="pause" aria-pressed="false"' +
         ' title="Hold the tour here" aria-label="Pause the tour">\u23F8 Pause</button>' +
-      '<button type="button" class="btn" data-act="next">Next</button>' +
+      '<button type="button" class="btn" data-act="next">' + (i === SCENES.length - 1 ? 'Finish' : 'Next') + '</button>' +
       /* Not the same as Pause, and it should not read like it: this ends the tour and opens
          the station it had reached, so you can read that organ properly. The end-of-tour
          card already calls the same action Close. */
       '<button type="button" class="btn btn--ghost" data-act="stop"' +
         ' title="End the tour and open this station">Close</button>';
-    paintPause(); paintStep();
+    paintPause();
     /* in, drifting from the side the card was on — after the camera has begun to move, so the
        plate leads and the words follow it */
     fadeIn(c, was === 'top' ? '-16px' : was === 'bottom' ? '16px' : '8px', 260);
-    noteAt = -1; noteTimers = []; manual = false;
-    sc.notes.forEach(function (n, k) {
-      noteTimers.push(later(function () { noteAt = k; say(c, 'note', n[1]); }, lead + n[0]));
-    });
+    sc.notes.forEach(function (n) { later(function () { say(c, 'note', n[1]); }, lead + n[0]); });
   }
 
   function showEnd() { swapCard(fillEnd); }
@@ -620,49 +471,8 @@
     later(function () { fadeOut(card, '-10px'); fxFade(0, 280); }, Math.max(600, span - 320));
     later(function () { play(i + 1); }, span);
   }
-  /* Next and Back move one sentence. At either end of a scene they move to the next or the
-     previous scene, as they always did. Stepping hands control to the reader, so it also
-     pauses: otherwise the sentence you just went back for would be replaced a moment later
-     by the one that was already on its way. Press Play to let it run on. */
-  function stepNote(dir) {
-    if (!running) return;
-    var sc = SCENES[idx];
-    if (!sc || !sc.notes || !sc.notes.length) {
-      play(dir > 0 ? Math.min(idx + 1, SCENES.length) : Math.max(idx - 1, 0));
-      return;
-    }
-    var k = noteAt + dir;
-    if (k >= sc.notes.length) { play(Math.min(idx + 1, SCENES.length)); return; }
-    if (k < -1) { play(Math.max(idx - 1, 0)); return; }
-
-    /* The reader is driving now. Everything the scene had queued goes — the sentences and the
-       chain of animations behind them — because a schedule built for the clock no longer
-       matches where the reader has moved to. Play rebuilds it from here. */
-    clearTimers();
-    noteTimers = [];
-    manual = true;
-
-    noteAt = k;
-    /* Instant, not faded. say() otherwise schedules the swap 240ms later, and the setPaused
-       below holds that timer — so the card faded out and the words never arrived. A reader
-       who pressed a button wants the sentence now anyway. */
-    if (card) say(card, k < 0 ? 'def' : 'note', k < 0 ? sc.def : sc.notes[k][1], true);
-    seekPicture(sc, k, 420);          /* the picture goes where the sentence is */
-    runFx((sc.fx || [])[Math.max(0, k)]);   /* ...and does what that sentence says */
-    setPaused(true);
-    paintStep();
-  }
-  function next() { stepNote(1); }
-  function back() { stepNote(-1); }
-
-  /* Back is only dead at the very beginning, and Next reads Finish only on the last
-     sentence of the last scene. */
-  function paintStep() {
-    if (!card) return;
-    var sc = SCENES[idx], b = card.querySelector('[data-act="back"]'), n = card.querySelector('[data-act="next"]');
-    if (b) b.disabled = (idx <= 0 && noteAt <= -1);
-    if (n && sc) n.textContent = (idx === SCENES.length - 1 && noteAt >= sc.notes.length - 1) ? 'Finish' : 'Next';
-  }
+  function next() { if (!running) return; play(Math.min(idx + 1, SCENES.length)); }
+  function back() { if (!running) return; play(Math.max(idx - 1, 0)); }
   function start(openFn, doneFn) {
     opener = openFn; onStop = doneFn;
     if (typeof opener === 'function') opener('overview', true);   /* the station whose text is the five processes */
@@ -690,7 +500,5 @@
     else if (e.key === 'ArrowRight') next();
     else if (e.key === 'ArrowLeft') back();
   }
-  global.Tour = { start:start, stop:stop, next:next, back:back, isRunning:function () { return running; }, SCENES:SCENES,
-    peek:function () { return { idx:idx, noteAt:noteAt, notes:(SCENES[idx] || {}).notes ? SCENES[idx].notes.length : -1,
-                                paused:paused, noteTimers:noteTimers.length, pending:pending.length }; } };
+  global.Tour = { start:start, stop:stop, next:next, back:back, isRunning:function () { return running; }, SCENES:SCENES };
 })(window);
