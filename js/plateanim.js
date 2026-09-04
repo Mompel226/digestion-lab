@@ -49,7 +49,12 @@
      frame can sit a hundred units outside the narrow one a phone shows, so every label
      is slid back inside before it is drawn — the leader is then measured from where the
      text actually ended up, so it still points at its dot. */
-  var FRAME = null;
+  var FRAME = null, MOVING = false;
+
+  /* A label that travel() will translate afterwards must not be clamped: the clamp
+     only sees where it starts, so sliding it inside the frame just moves the whole
+     journey and lands it in a pile at the far end. */
+  function mlabel() { MOVING = true; try { return label.apply(null, arguments); } finally { MOVING = false; } }
 
   function label(t, tx, ty, ax, ay, fs, anchor) {
     var lines = String(t).split('\n');
@@ -58,7 +63,7 @@
     var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
     var x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
 
-    if (FRAME) {
+    if (FRAME && !MOVING) {
       var m = FRAME.w * 0.025;
       var L = FRAME.x + m, R = FRAME.x + FRAME.w - m;
       var nx = tw > R - L ? L + (R - L - tw) / 2 : Math.max(L, Math.min(R - tw, x0));
@@ -183,10 +188,10 @@
         A + '"ry" values="' + f1(hw * .78) + ';' + f1(hw * .9) + ';' + f1(hw * .72) + ';' + f1(hw * .9) + ';' + f1(hw * .78) + '" dur="' + DUR + 's" repeatCount="indefinite"/></ellipse>' +
       label('from the mouth', cxTop, y0 - hw * 2.2, null, null, fs * 0.85, 'middle') +
       label('to the stomach', cxEnd - hw * 2.8, y1 - hw * 1.1, cxEnd - hw * 0.9, y1 - hw * 0.5, fs * 0.85, 'end') +
-      travel(label(ctx.compact ? 'muscle contracts\nbehind the bolus' : 'circular muscle contracts\nbehind the bolus and\nsqueezes it along',
-                   rx, yBehind - fs * 1.15, cxTop + hw * 0.55, yBehind, fs), dxs, dys, KT, DUR, ENV, ENVK) +
-      travel(label(ctx.compact ? 'relaxes ahead' : 'the wall ahead relaxes\nto receive it',
-                   rx, yAhead - fs * 0.3, cxTop + hw * 1.35, yAhead, fs), dxs, dys, KT, DUR, ENV, ENVK) +
+      travel(mlabel(ctx.compact ? 'muscle\ncontracts\nbehind' : 'circular muscle contracts\nbehind the bolus and\nsqueezes it along',
+                    rx, yBehind - fs * 1.15, cxTop + hw * 0.55, yBehind, fs), dxs, dys, KT, DUR, ENV, ENVK) +
+      travel(mlabel(ctx.compact ? 'wall\nrelaxes\nahead' : 'the wall ahead relaxes\nto receive it',
+                    rx, yAhead - fs * 0.3, cxTop + hw * 1.35, yAhead, fs), dxs, dys, KT, DUR, ENV, ENVK) +
       moving('the bolus', ys.map(function (v) { return cxAt(v) - hw * 1.5; }), ys.map(function (v) { return v + fs * 0.35; }),
              KT, DUR, fs, 'end', '0;1;1;0;0', '0;0.06;0.72;0.80;1');   /* clear of the label at the cardia */
   }
