@@ -763,7 +763,7 @@ body[data-mode="practice"] .panel__inner::before{
 
 /* ---- the plate follows the text: camera + in-place detail ---- */
 #bodySvg.is-zoomed .labels{display:none}
-.bodycol.is-zoomed .bodycol__tools .tool--body{display:inline-flex}
+.bodycol.is-zoomed .tool--body{display:inline-flex}   /* wherever it currently lives */
 .tool--body{display:none}
 #bodySvg .detail{pointer-events:none;transition:opacity .35s ease}
 #bodySvg.has-detail .art .op.is-on{opacity:.25 !important}
