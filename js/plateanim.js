@@ -399,9 +399,9 @@
   var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55', PDUCT = '#9A6A34';
   var RHD = [[108, 444], [122, 458], [140, 470]], LHD = [[180, 448], [162, 462], [140, 470]];
   var CHD = [[140, 470], [150, 480], [156, 490]], CYST = [[156, 490], [150, 489], [144, 488]];
-  var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 556]];
+  var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 558], [137, 568], [134, 576]];
   /* the pancreatic duct, read off the plate's own artwork */
-  var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 559]];
+  var PANC = [[258, 504], [247, 510], [236, 515], [224, 520], [212, 524], [200, 528], [188, 534], [177, 539], [168, 546], [159, 556], [149, 561], [142, 568], [136, 575]];
   function sacOf(ctx) {
     var pts = ctx.outlineIn ? ctx.outlineIn('gall-bladder', [94, 477, 147, 498], 2) : [];
     var hull = hullCurve(pts); if (!hull) return null;
@@ -472,7 +472,11 @@
     else if (mode === 'release') g += REL;
     else g += '<g opacity="1">' + phase(true) + FILL + '</g>' +
               '<g opacity="0">' + phase(false) + REL + '</g>';
-    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 506, 118, 490, fs, 'start') + label('common bile duct', 176, 548, 162, 528, fs, 'start') + label('duodenum', 74, 578, 128, 588, fs, 'start');
+    if (ctx.compact) return g +
+      label('liver', 60, 400, 122, 436, fs, 'start') +
+      label('gall\nbladder', 56, 478, 116, 490, fs, 'start') +
+      label('common\nbile duct', 186, 542, 152, 530, fs, 'start') +
+      label('duodenum', 58, 578, 134, 576, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
       label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
