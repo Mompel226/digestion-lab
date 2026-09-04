@@ -47,6 +47,7 @@
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
   var keyImg = null, keyImgFront = null, keyWrap = null, keyCache = {};
   var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, gKeys = null, softBlur = null;
+  var defs = null, clipN = 0;                 /* for clipped paint copies, see applyStep */
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
@@ -113,7 +114,7 @@
     if (!svg) return;
     if (layer && layer.isConnected) return;
     layer = null;
-    var defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
+    defs = svg.querySelector('defs') || svg.insertBefore(document.createElementNS(NS, 'defs'), svg.firstChild);
     var filt = el('filter', { id:'detailSoft', x:'-20%', y:'-20%', width:'140%', height:'140%' }, defs);
     softBlur = el('feGaussianBlur', { stdDeviation:'14' }, filt);
     var sh = el('filter', { id:'insetShadow', x:'-20%', y:'-20%', width:'140%', height:'150%' }, defs);
@@ -480,7 +481,17 @@
         /* the path in plate units: screen matrix of the path, then back through the plate's own screen matrix
            (getCTM alone includes the viewport scaling in some browsers, so a clone drifts with the window size) */
         var m = svg.getScreenCTM().inverse().multiply(path.getScreenCTM()); if (!m) return;
-        var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, gImgs);
+        /* `clip` is a polygon in PLATE units, so one drawn shape can be coloured in parts — the
+           small intestine is a single coiled path, but the jejunum and the ileum are halves of
+           it. The clip goes on a wrapper with no transform, so its points stay in plate space. */
+        var host = gImgs;
+        if (pp.clip) {
+          var id = 'clip' + (clipN++);
+          var cp = el('clipPath', { id:id, clipPathUnits:'userSpaceOnUse' }, defs);
+          el('polygon', { points:pp.clip.map(function (q) { return q[0] + ',' + q[1]; }).join(' ') }, cp);
+          host = el('g', { 'clip-path':'url(#' + id + ')' }, gImgs);
+        }
+        var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, host);
         var c = el('path', { d:path.getAttribute('d'), fill:pp.fill || '#ccc', stroke:pp.stroke || 'none', 'stroke-width':pp.sw != null ? pp.sw : 1.2, 'stroke-linejoin':'round', opacity:pp.opacity != null ? pp.opacity : 1 }, g);
         if (pp.dash) c.setAttribute('stroke-dasharray', pp.dash);
       });

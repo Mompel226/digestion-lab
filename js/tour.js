@@ -28,7 +28,7 @@
   var SCENES = [
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
-      notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
+      notes:[[0, 'The meal goes in. Mastication — chewing and mixing with saliva — starts physical digestion at once, and saliva adds the first enzyme, amylase. The food is now a bolus.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
@@ -48,7 +48,7 @@
              [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
              /* One sentence, not two. Splitting pepsin off gave the scene an extra step that the
                 animation has no counterpart for, and everything after it read late. */
-             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria and gives pepsin, a protease, the acid pH it needs to digest protein into polypeptides.'],
+             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria and gives pepsin, a protease, the acid pH it needs to digest protein into polypeptides. The bolus is now chyme.'],
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
