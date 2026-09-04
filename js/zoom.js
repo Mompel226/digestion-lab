@@ -270,6 +270,7 @@
      plate:true); `tx` the text position in the same terms; else dx/dy in
      ems from the feature. Labels the camera would cut are not drawn. */
   function drawLabel(L, pl, fs, frame) {
+    if (global.__zoomTrace) console.log('[label]', JSON.stringify(L.t), 'plate=', !!L.plate, 'pl=', !!pl, 'fs=', fs);
     var ax = null, ay = null, tx, ty, caption = !L.at;     /* no feature: a caption, text only */
     if (caption) { if (!L.plate && !pl) return; }
     else if (L.plate) { ax = L.at[0]; ay = L.at[1]; }
@@ -281,7 +282,10 @@
     var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
     var tw = wmax * fs * 0.52, x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
     var view = frame ? seenOf(frame) : null;
-    if (view && (x0 < view.x - fs || x0 + tw > view.x + view.w + fs || ty - fs > view.y + view.h || ty < view.y)) return;
+    if (view && (x0 < view.x - fs || x0 + tw > view.x + view.w + fs || ty - fs > view.y + view.h || ty < view.y)) {
+      if (global.__zoomTrace) console.log('[label] CULLED', JSON.stringify(L.t), 'x0=', x0, 'tw=', tw, 'ty=', ty, 'view=', JSON.stringify(view));
+      return;
+    }
     /* the leader leaves the text box at the point nearest the feature */
     var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
     var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
@@ -489,6 +493,7 @@
 
     /* labels: each picture's own, then the step's */
     placed.forEach(function (p) { (p.d.labels || []).forEach(function (L) { drawLabel(L, p.pl, fs, frame); }); });
+    if (global.__zoomTrace) console.log('[step]', 'img=', !!s.img, 'labels=', (s.labels || []).length, 'specs=', specs.length);
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
     drawKeys(s.keys || detail.keys || [], seenOf(frame), fs);
 
