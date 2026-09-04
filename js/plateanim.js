@@ -406,12 +406,12 @@
         g += tube([a, [a[0] + nx * side * len * .6 + tx / L * 3, a[1] + ny * side * len * .6 + ty / L * 3], [a[0] + nx * side * len + tx / L * 6, a[1] + ny * side * len + ty / L * 6]], w * .55, PDUCT);
       }
       g += drops(PANC, JUICE, r, 4, 4, 0);
-      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 150, 578, 200, 528, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
+      if (ctx.compact) return g + label('pancreas', 236, 500, 240, 512, fs, 'middle') + label('pancreatic duct', 150, 566, 200, 528, fs, 'start') + label('duodenum', 74, 574, 128, 584, fs, 'start');
       return g +
         label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
         label('the bile duct\njoins it here', 104, 566, 146, 553, fs, 'start') +
-        label('duodenum', 96, 610, 131, 586, fs, 'start');
+        label('duodenum', 74, 574, 128, 584, fs, 'start');
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
@@ -448,7 +448,7 @@
     else if (mode === 'release') g += REL;
     else g += '<g opacity="1">' + phase(true) + FILL + '</g>' +
               '<g opacity="0">' + phase(false) + REL + '</g>';
-    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 96, 610, 131, 586, fs, 'start');
+    if (ctx.compact) return g + label('liver', 74, 410, 120, 438, fs, 'start') + label('gall bladder', 96, 514, 118, 490, fs, 'start') + label('common bile duct', 176, 534, 156, 514, fs, 'start') + label('duodenum', 74, 574, 128, 584, fs, 'start');
     return g +
       label('liver — makes bile', 74, 410, 120, 438, fs, 'start') +
       label('right hepatic duct', 78, 456, 112, 448, fs, 'end') +
@@ -457,7 +457,7 @@
       label('cystic duct', 126, 470, 148, 488, fs, 'end') +
       label('gall bladder —\nstores bile', 96, 512, 118, 490, fs, 'start') +
       label('common bile duct —\nbile to the duodenum', 176, 534, 156, 514, fs, 'start') +
-      label('duodenum', 96, 610, 131, 586, fs, 'start');
+      label('duodenum', 74, 574, 128, 584, fs, 'start');
   }
 
   /* ---------------- maltase, embedded in the membrane of a microvillus ---------------- */
