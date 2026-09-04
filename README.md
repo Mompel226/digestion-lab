@@ -40,6 +40,15 @@ egestion vs excretion, and the tooth section.
 
 **The plate follows the text.** As a station is read, the camera on the anatomical plate flies to the organ and a professional illustration of that organ fades in on the plate itself, registered over its outline. As the Learn text is scrolled, the picture gives way to the next one — the four tooth types photographed and labelled, a real molar cut open, the stomach wall — and three processes are animated on the plate: swallowing on the head section, peristalsis on the oesophagus, churning on the stomach. The liver, gall bladder, pancreas and duodenum share one labelled plate on which the organ being read about is spotlit. Nothing pops up over the page, and nothing on the plate is repeated in the text.
 
+**Follow the food** sends a meal along the whole canal in five scenes — ingestion, digestion,
+absorption, assimilation, egestion — with the camera travelling beside it. Saliva runs from the
+salivary glands into the mouth, bile and pancreatic juice into the duodenum, and whichever organ
+is secreting lights up as it does. The card reads one sentence at a time: **Next** and **Back**
+step a sentence, not a scene, so a sentence you missed is one press away, and stepping pauses so
+it waits for you. **⏸ Pause** holds everything, drawing included; **Close** ends the tour and
+opens the station it had reached. On a phone, **⤢ Whole body** on the plate pulls the camera
+back so you can tap a different organ without going to the rail at the bottom.
+
 **Real images from the lesson slides** — photographs, micrographs and electron
 micrographs taken from the class PowerPoints, so revision matches what was taught.
 Click any image to see it full size.
