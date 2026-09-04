@@ -434,8 +434,8 @@
       return g +
         label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
-        label('the bile duct\njoins it here', 104, 566, 146, 553, fs, 'start') +
-        label('duodenum', 74, 574, 128, 584, fs, 'start');
+        label('the bile duct\njoins it here', 104, 560, 146, 553, fs, 'start') +
+        label('duodenum', 74, 600, 128, 588, fs, 'start');
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
