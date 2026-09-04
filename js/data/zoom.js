@@ -1144,6 +1144,7 @@ window.ZOOM_DETAIL = {
     "keys": [
       {
         "t": "absorption",
+        "sub": "and digestion is completed",
         "kind": "act",
         "corner": "tl"
       },
