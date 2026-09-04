@@ -656,7 +656,7 @@
     if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, compact:ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:s.focus || detail.organ });
+      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, compact:ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:s.focus || detail.organ });
     }
     strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;
