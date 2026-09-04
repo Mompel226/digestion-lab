@@ -23,23 +23,23 @@ window.ZOOM_DETAIL = {
           {
             "t": "hard palate (bone)",
             "at": [
-              0.27,
-              0.545
+              0.3,
+              0.555
             ],
             "tx": [
-              0.12,
-              0.44
+              0.06,
+              0.47
             ],
             "anchor": "start"
           },
           {
             "t": "soft palate",
             "at": [
-              0.47,
-              0.578
+              0.484,
+              0.569
             ],
             "tx": [
-              0.5,
+              0.55,
               0.44
             ],
             "anchor": "start"
@@ -47,50 +47,50 @@ window.ZOOM_DETAIL = {
           {
             "t": "upper incisor",
             "at": [
-              0.176,
-              0.585
+              0.175,
+              0.584
             ],
             "tx": [
-              0.15,
-              0.51
+              0.02,
+              0.6
             ],
             "anchor": "end"
           },
           {
             "t": "lower incisor",
             "at": [
-              0.192,
-              0.66
+              0.169,
+              0.671
             ],
             "tx": [
-              0.15,
-              0.77
+              0.02,
+              0.72
             ],
             "anchor": "end"
           },
           {
             "t": "tongue",
             "at": [
-              0.33,
-              0.66
+              0.34,
+              0.655
             ],
             "tx": [
-              0.27,
-              0.8
+              0.235,
+              0.83
             ],
             "anchor": "start"
           },
           {
             "t": "throat (pharynx)",
             "at": [
-              0.53,
-              0.63
+              0.545,
+              0.7
             ],
             "tx": [
-              0.45,
-              0.66
+              0.575,
+              0.712
             ],
-            "anchor": "end"
+            "anchor": "start"
           }
         ],
         "img": "zoom/head-section.jpg",
@@ -402,6 +402,12 @@ window.ZOOM_DETAIL = {
         "kind": "food",
         "corner": "tl"
       }
+    ],
+    "animBox": [
+      163,
+      186,
+      32,
+      326
     ]
   },
   "stomach": {
@@ -1084,8 +1090,8 @@ window.ZOOM_DETAIL = {
           {
             "t": "epithelium —\none cell thick",
             "at": [
-              0.42,
-              0.34
+              0.81,
+              0.305
             ],
             "tx": [
               1.1,
