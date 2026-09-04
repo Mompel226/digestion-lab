@@ -5,9 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Digestion Lab — IGCSE Biology 0610 Topic 7</title>
 <meta name="description" content="An interactive revision simulation of human nutrition and the digestive system for Cambridge IGCSE Biology 0610.">
+<meta name="author" content="Dr Daniel Mompel Riera">
+<meta name="copyright" content="Dr Daniel Mompel Riera, NLCS Jeju">
 <meta name="theme-color" content="#14572B">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🫁</text></svg>">
-<link rel="stylesheet" href="css/app.css?v=1788493861">
+<link rel="stylesheet" href="css/app.css?v=1788498085">
 </head>
 <body>
 <div class="app">
@@ -31,15 +33,16 @@
       <span class="stat stat--stations" title="Stations finished">
         <b><span id="stDone">0</span>/<span id="stTotal">15</span></b> <span class="stat__lbl">stations</span>
       </span>
-      <label class="modewrap" title="Test: one attempt each. Mastery: keep trying until right. Practice: shows the answers (password).">
+      <label class="modewrap" id="modeWrap" title="Mastery: check as often as you like, never told the answer. Test: one attempt each, then hand in.">
         <span class="modewrap__lbl">Mode</span>
         <select id="modeSel" class="modesel">
           <option value="mastery">Mastery</option>
           <option value="test">Test</option>
-          <option value="practice">Practice 🔒</option>
         </select>
       </label>
       <button class="hbtn hbtn--go" id="btnSubmit" hidden disabled>Hand in</button>
+      <a class="hbtn" href="https://mompel226.github.io/IGCSE-revision-app/"
+         title="All of the Biology Labs">← All labs</a>
       <button class="hbtn" id="btnHelp"><span class="hbtn__long">How to use</span><span class="hbtn__short" aria-hidden="true">?</span></button>
       <button class="hbtn" id="btnReset" title="Clear every answer and start again">Reset</button>
     </div>
@@ -78,15 +81,7 @@
   <div class="lb__hint">Click anywhere to close</div></figure>
 </div>
 
-<div class="modal" id="pwDlg" hidden role="dialog" aria-modal="true" aria-label="Practice mode password">
-  <div class="modal__box modal__box--sm">
-    <h2>Practice mode</h2>
-    <p class="st-sub">Practice mode shows the correct answers and the explanations. Dr Mompel will give you the password when the topic is finished.</p>
-    <label class="fld"><span>Password</span><input id="pwInput" type="password" autocomplete="off"></label>
-    <div id="pwErr" class="submsg no"></div>
-    <div class="dlgrow"><button class="btn btn--quiet" id="pwCancel">Cancel</button><button class="btn" id="pwGo">Unlock</button></div>
-    <p class="fineprint">Your password is used in this browser only, to unlock the answers stored in the page. It is never sent anywhere.</p>
-  </div>
+
 </div>
 
 <div class="modal" id="subDlg" hidden role="dialog" aria-modal="true" aria-label="Hand in your work">
@@ -104,13 +99,12 @@
     <h2>Digestion Lab</h2>
     <p class="st-sub">Cambridge IGCSE Biology 0610 · Topic 7, Human nutrition</p>
 
-    <h3>The three modes</h3>
+    <h3>The two modes</h3>
     <ul>
-      <li><b>Mastery</b> (the normal one). Check as often as you like. You are told which parts are wrong, but never the answer — you have to work it out. Keep going until every question is right, then <b>Hand in</b>.</li>
-      <li><b>Test</b>. One attempt per question, then it locks. Use it to see how you would do under exam conditions.</li>
-      <li><b>Practice</b> 🔒. Shows the correct answers and explains every option. Dr&nbsp;Mompel gives out the password once the topic is finished.</li>
+      <li><b>Mastery</b> (the normal one). Check as often as you like. You are told which parts are wrong, but <b>never the answer</b> — you have to work it out. Keep going until every question is right, then <b>Hand in</b>.</li>
+      <li><b>Test</b>. One attempt per question, then it locks. Answer them all and hand in the score you got.</li>
     </ul>
-    <p class="fineprint">Switching mode keeps a separate record for each, so trying a Test does not wipe your Mastery progress.</p>
+    <p class="fineprint">The answers are never shown, in either mode. Each mode keeps its own record, so a Test never wipes your Mastery progress. Dr&nbsp;Mompel can close Mastery while a test is running — if it is closed, the mode list says so.</p>
 
     <h3>How to use it</h3>
     <ul>
@@ -160,24 +154,30 @@
       <li>Diet station photographs, from Wikimedia Commons: high-fibre foods by <i>formulatehealth</i> (CC BY 2.0); grain products by <i>Scott Bauer, USDA</i> (public domain); salmon by <i>DanaTentis</i> and beans by <i>Bean appreciator</i> (both CC0); butter by <i>markusspiske</i> (CC0) and olive oil by <i>ajay_suresh</i> (CC BY 2.0). Each is credited again on the card it appears in.</li>
       <li>All labels, animations, questions and page design are original to this simulation.</li>
     </ul>
+
+    <h3>Who made this</h3>
+    <p><b>Dr Daniel Mompel Riera</b> — Biology, North London Collegiate School Jeju.
+       Built for his IGCSE Biology classes. Questions or corrections:
+       <a href="mailto:dmompelriera@nlcsjeju.kr">dmompelriera@nlcsjeju.kr</a></p>
+    <p>This is one of the <a href="https://mompel226.github.io/IGCSE-revision-app/">Biology Labs</a>
+       — a lab for every topic on the human body.</p>
   </div>
 </div>
 
-<script src="js/config.js?v=1788493861"></script>
-<script src="js/data/stations.js?v=1788493861"></script>
-<script src="js/data/keys.enc.js?v=1788493861"></script>
-<script src="js/data/photos.js?v=1788493861"></script>
-<script src="js/data/figure-art.js?v=1788493861"></script>
-<script src="js/data/anatomy-art.js?v=1788493861"></script>
-<script src="js/data/zoom.js?v=1788493861"></script>
-<script src="js/plateanim.js?v=1788493861"></script>
-  <script src="js/zoom.js?v=1788493861"></script>
-<script src="js/anatomy.js?v=1788493861"></script>
-<script src="js/tour.js?v=1788493861"></script>
-<script src="js/terms.js?v=1788493861"></script>
-<script src="js/figures.js?v=1788493861"></script>
-<script src="js/marking.js?v=1788493861"></script>
-<script src="js/engine.js?v=1788493861"></script>
-<script src="js/app.js?v=1788493861"></script>
+<script src="js/config.js?v=1788498085"></script>
+<script src="js/data/stations.js?v=1788498085"></script>
+<script src="js/data/photos.js?v=1788498085"></script>
+<script src="js/data/figure-art.js?v=1788498085"></script>
+<script src="js/data/anatomy-art.js?v=1788498085"></script>
+<script src="js/data/zoom.js?v=1788498085"></script>
+<script src="js/plateanim.js?v=1788498085"></script>
+  <script src="js/zoom.js?v=1788498085"></script>
+<script src="js/anatomy.js?v=1788498085"></script>
+<script src="js/tour.js?v=1788498085"></script>
+<script src="js/terms.js?v=1788498085"></script>
+<script src="js/figures.js?v=1788498085"></script>
+<script src="js/marking.js?v=1788498085"></script>
+<script src="js/engine.js?v=1788498085"></script>
+<script src="js/app.js?v=1788498085"></script>
 </body>
 </html>
