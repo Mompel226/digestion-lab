@@ -278,24 +278,35 @@
     else { tx = ax + (L.dx || 1.2) * fs; ty = ay + (L.dy || 0) * fs; }
     var anchor = L.anchor || (tx < ax ? 'end' : 'start');
     var lines = String(L.t).split('\n');
-    var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
-    var tw = wmax * fs * 0.52, x0 = anchor === 'end' ? tx - tw : anchor === 'middle' ? tx - tw / 2 : tx;
-    var view = frame ? seenOf(frame) : null;
-    if (view && (x0 < view.x - fs || x0 + tw > view.x + view.w + fs || ty - fs > view.y + view.h || ty < view.y)) return;
-    /* the leader leaves the text box at the point nearest the feature */
-    var yTop = ty - fs * 0.85, yBot = ty + (lines.length - 1) * fs * 1.15 + fs * 0.25;
-    var sx = Math.max(x0, Math.min(x0 + tw, ax)), sy = Math.max(yTop, Math.min(yBot, ay));
-    if (sx === x0) sx -= fs * 0.25; else if (sx === x0 + tw) sx += fs * 0.25;
-    if (sy === yTop) sy -= fs * 0.15; else if (sy === yBot) sy += fs * 0.15;
-    if (!caption) {
-      el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) }, gLabels);
-      el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, gLabels);
-    }
+
+    /* Draw the words first and measure them. The leader used to start from a guess at the
+       text's width — characters × font size × 0.52 — which is out by a unit or two, so the
+       line began before the word ended or after it, and never quite touched. */
     var t = el('text', { 'class':'dl__t', x:f1(tx), y:f1(ty), 'font-size':f1(fs), 'text-anchor':anchor }, gLabels);
     lines.forEach(function (l, i) {
       var ts = el('tspan', { x:f1(tx), dy:i ? '1.15em' : '0' }, t);
       ts.textContent = l;
     });
+    var bb = t.getBBox();
+    var view = frame ? seenOf(frame) : null;
+    if (view && (bb.x < view.x - fs || bb.x + bb.width > view.x + view.w + fs ||
+                 bb.y > view.y + view.h || bb.y + bb.height < view.y)) { gLabels.removeChild(t); return; }
+    if (caption) return;
+
+    /* Leave from the middle of the edge the feature lies beyond, not from a corner: a line
+       from the corner of a word reads as pointing away from it. */
+    var x0b = bb.x, x1b = bb.x + bb.width, y0b = bb.y, y1b = bb.y + bb.height;
+    var pad = fs * 0.3, sx, sy;
+    if (ax > x1b)      { sx = x1b + pad; sy = (y0b + y1b) / 2; }
+    else if (ax < x0b) { sx = x0b - pad; sy = (y0b + y1b) / 2; }
+    else if (ay < y0b) { sy = y0b - pad; sx = Math.max(x0b, Math.min(x1b, ax)); }
+    else if (ay > y1b) { sy = y1b + pad; sx = Math.max(x0b, Math.min(x1b, ax)); }
+    else               { sx = ax; sy = ay; }        /* the feature is under the words */
+
+    var ln = el('line', { 'class':'dl__l', x1:f1(sx), y1:f1(sy), x2:f1(ax), y2:f1(ay), 'stroke-width':f1(fs * 0.09) });
+    var dt = el('circle', { 'class':'dl__d', cx:f1(ax), cy:f1(ay), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) });
+    gLabels.insertBefore(ln, t);                     /* behind the words, not over them */
+    gLabels.insertBefore(dt, t);
   }
 
   /* The words that carry the marks, on the plate itself: what is being done to the food here, and
