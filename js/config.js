@@ -19,12 +19,18 @@ window.LAB_CONFIG = {
      Google account that signed in is on your Students tab, and ignored otherwise. Everyone
      still gets their completion code on screen.
 
-     Paste the OAuth Client ID here (it ends .apps.googleusercontent.com), and the SAME id
-     into CLIENT_ID at the top of the Apps Script. Leave it empty and nothing is recorded
-     anywhere — the lab still works, and everyone still gets a code.
+     A Client ID is a name-tag for your app, issued by Google — not a secret, and visible
+     in this file on purpose. This page uses it to ask Google for a sign-in; the Apps Script
+     uses the SAME id to check the token it gets back was made for your app and not somebody
+     else's. Paste it in both places (it ends .apps.googleusercontent.com). Leave it empty
+     and nothing is recorded anywhere — the lab still works, and everyone still gets a code.
 
-     To make one: console.cloud.google.com ▸ APIs & Services ▸ Credentials ▸ Create
-     credentials ▸ OAuth client ID ▸ Web application, with
-     https://mompel226.github.io as an authorised JavaScript origin. */
+     To make one: console.cloud.google.com ▸ pick or make a project ▸ Google Auth Platform ▸
+     Branding (fill this in first — Google will not issue an id without it) ▸ Audience ▸
+     Publish app ▸ Credentials ▸ Create credentials ▸ OAuth client ID ▸ Web application,
+     with https://mompel226.github.io as an authorised JavaScript origin — no path, no
+     trailing slash.
+
+     The full version is in the hub README, under "Sign-in: what the Client ID is". */
   googleClientId: '',
 };
