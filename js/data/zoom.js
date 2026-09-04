@@ -324,12 +324,12 @@ window.ZOOM_DETAIL = {
       {
         "t": "mastication",
         "kind": "act",
-        "corner": "bl"
+        "corner": "tl"
       },
       {
         "t": "food",
         "kind": "food",
-        "corner": "bl"
+        "corner": "tl"
       }
     ]
   },
@@ -350,7 +350,7 @@ window.ZOOM_DETAIL = {
       {
         "t": "food",
         "kind": "food",
-        "corner": "bl"
+        "corner": "tl"
       }
     ]
   },
@@ -377,18 +377,12 @@ window.ZOOM_DETAIL = {
       {
         "t": "swallowing",
         "kind": "act",
-        "at": [
-          62,
-          252
-        ]
+        "corner": "tl"
       },
       {
         "t": "bolus",
         "kind": "food",
-        "at": [
-          62,
-          252
-        ]
+        "corner": "tl"
       }
     ]
   },
@@ -401,18 +395,12 @@ window.ZOOM_DETAIL = {
       {
         "t": "peristalsis",
         "kind": "act",
-        "at": [
-          58,
-          414
-        ]
+        "corner": "tl"
       },
       {
         "t": "bolus",
         "kind": "food",
-        "at": [
-          58,
-          414
-        ]
+        "corner": "tl"
       }
     ]
   },
@@ -553,12 +541,12 @@ window.ZOOM_DETAIL = {
       {
         "t": "churning",
         "kind": "act",
-        "corner": "tr"
+        "corner": "tl"
       },
       {
         "t": "chyme",
         "kind": "food",
-        "corner": "tr"
+        "corner": "tl"
       }
     ]
   },
