@@ -518,6 +518,11 @@
       var pl = placeImage(d, target, frame);
       var im = el('image', { href:'assets/' + d.img, x:f1(pl.x), y:f1(pl.y), width:f1(pl.W), height:f1(pl.H), preserveAspectRatio:'none' }, gImgs);
       im.setAttributeNS(XL, 'xlink:href', 'assets/' + d.img);
+      /* An illustration printed on white paper, laid on the plate, brings its paper with it —
+         a bright rectangle around the drawing. Multiplying it into the plate takes the white
+         out (white times anything is that thing) and leaves the ink, so the drawing sits on
+         the body rather than on a card stuck to it. */
+      if (d.blend || s.blend) im.style.mixBlendMode = d.blend || s.blend;
       placed.push({ d:d, pl:pl });
       bounds = bounds ? { x:Math.min(bounds.x, pl.x), y:Math.min(bounds.y, pl.y), x1:Math.max(bounds.x1, pl.x + pl.W), y1:Math.max(bounds.y1, pl.y + pl.H) }
                       : { x:pl.x, y:pl.y, x1:pl.x + pl.W, y1:pl.y + pl.H };
