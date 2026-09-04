@@ -782,12 +782,12 @@ window.ZOOM_DETAIL = {
             "t": "duodenum",
             "plate": true,
             "at": [
-              118,
-              530
+              125,
+              533
             ],
             "tx": [
-              44,
-              500
+              42,
+              535
             ],
             "anchor": "start"
           },
@@ -795,12 +795,12 @@ window.ZOOM_DETAIL = {
             "t": "jejunum",
             "plate": true,
             "at": [
-              125,
-              615
+              107,
+              593
             ],
             "tx": [
-              44,
-              585
+              42,
+              595
             ],
             "anchor": "start"
           },
@@ -808,12 +808,12 @@ window.ZOOM_DETAIL = {
             "t": "ileum",
             "plate": true,
             "at": [
-              215,
-              685
+              199,
+              712
             ],
             "tx": [
-              258,
-              700
+              250,
+              714
             ],
             "anchor": "start"
           }
@@ -851,44 +851,30 @@ window.ZOOM_DETAIL = {
           {
             "organ": "ileum-villi",
             "fill": "#E9A63C",
-            "opacity": 0.5,
+            "opacity": 0.55,
             "stroke": "#B47A18",
-            "sw": 1.0,
-            "clip": [
-              [
-                88,
-                540
+            "sw": 0.9,
+            "clip": {
+              "canal": [
+                0.345,
+                0.604
               ],
-              [
-                292,
-                540
-              ],
-              [
-                88,
-                748
-              ]
-            ]
+              "width": 21
+            }
           },
           {
             "organ": "ileum-villi",
             "fill": "#B5657F",
-            "opacity": 0.5,
+            "opacity": 0.55,
             "stroke": "#8A4560",
-            "sw": 1.0,
-            "clip": [
-              [
-                292,
-                540
+            "sw": 0.9,
+            "clip": {
+              "canal": [
+                0.604,
+                0.7
               ],
-              [
-                292,
-                748
-              ],
-              [
-                88,
-                748
-              ]
-            ]
+              "width": 21
+            }
           }
         ]
       },
