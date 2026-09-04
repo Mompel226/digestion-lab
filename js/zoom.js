@@ -591,7 +591,9 @@
          desktop size lands small and its caption spills past both edges and under the
          key cards. There the picture is enlarged instead and the caption left to the
          lightbox — the ⤢ badge already says it opens. */
-      var tight = ppu(frame) < 1.6 && !ins.link;
+      var capw = 0;
+      String(ins.cap || '').split('\n').forEach(function (l) { capw = Math.max(capw, l.length * fs * 0.88 * 0.52); });
+      var tight = !ins.link && (ppu(frame) < 1.6 || capw > frame.w * 0.95);
       var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? 1.4 : 1), h = w * ins.h / ins.w;
       var g = el('g', { 'class':'inset' }, gInsets);
       el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
@@ -619,7 +621,7 @@
          put: its cone is drawn to the big picture and moving it would point at nothing. */
       if (!ins.link) {
         var ib = g.getBBox(), im = frame.w * 0.025;
-        var iL = frame.x + im, iR = frame.x + frame.w - im, iT = frame.y + im, iB = frame.y + frame.h - fs * 3.9;
+        var iL = frame.x + im, iR = frame.x + frame.w - im, iT = frame.y + im, iB = frame.y + frame.h * 0.80;
         var idx = ib.x < iL ? iL - ib.x : (ib.x + ib.width > iR ? Math.max(iL - ib.x, iR - ib.x - ib.width) : 0);
         var idy = ib.y < iT ? iT - ib.y : (ib.y + ib.height > iB ? Math.max(iT - ib.y, iB - ib.y - ib.height) : 0);
         if (idx || idy) g.setAttribute('transform', 'translate(' + f1(idx) + ',' + f1(idy) + ')');

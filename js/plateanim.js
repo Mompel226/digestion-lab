@@ -68,7 +68,7 @@
       var L = FRAME.x + m, R = FRAME.x + FRAME.w - m;
       var nx = tw > R - L ? L + (R - L - tw) / 2 : Math.max(L, Math.min(R - tw, x0));
       /* the key cards sit a little above the bottom edge; keep text clear of that band */
-      var T = FRAME.y + m, B = FRAME.y + FRAME.h - fs * 3.9, th = yBot - yTop;
+      var T = FRAME.y + m, B = FRAME.y + FRAME.h * 0.80, th = yBot - yTop;
       var ny = th > B - T ? T : Math.max(T, Math.min(B - th, yTop));
       tx += nx - x0; ty += ny - yTop;
       x0 = nx; yTop = ny; yBot = ny + th;
