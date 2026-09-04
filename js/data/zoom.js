@@ -399,8 +399,8 @@ window.ZOOM_DETAIL = {
           164
         ],
         "tx": [
-          66,
-          192
+          58,
+          198
         ],
         "anchor": "start"
       }
@@ -786,8 +786,8 @@ window.ZOOM_DETAIL = {
               530
             ],
             "tx": [
-              70,
-              524
+              44,
+              500
             ],
             "anchor": "start"
           },
@@ -799,8 +799,8 @@ window.ZOOM_DETAIL = {
               615
             ],
             "tx": [
-              56,
-              612
+              44,
+              585
             ],
             "anchor": "start"
           },
@@ -812,8 +812,8 @@ window.ZOOM_DETAIL = {
               685
             ],
             "tx": [
-              252,
-              692
+              258,
+              700
             ],
             "anchor": "start"
           }
@@ -843,17 +843,52 @@ window.ZOOM_DETAIL = {
         "paint": [
           {
             "organ": "duodenum",
-            "fill": "none",
-            "stroke": "#B4703C",
-            "sw": 1.0,
-            "opacity": 0.7
+            "fill": "#C2542B",
+            "opacity": 0.55,
+            "stroke": "#8E3A18",
+            "sw": 1.1
           },
           {
             "organ": "ileum-villi",
-            "fill": "none",
-            "stroke": "#B4703C",
+            "fill": "#E9A63C",
+            "opacity": 0.5,
+            "stroke": "#B47A18",
             "sw": 1.0,
-            "opacity": 0.55
+            "clip": [
+              [
+                88,
+                540
+              ],
+              [
+                292,
+                540
+              ],
+              [
+                88,
+                748
+              ]
+            ]
+          },
+          {
+            "organ": "ileum-villi",
+            "fill": "#B5657F",
+            "opacity": 0.5,
+            "stroke": "#8A4560",
+            "sw": 1.0,
+            "clip": [
+              [
+                292,
+                540
+              ],
+              [
+                292,
+                748
+              ],
+              [
+                88,
+                748
+              ]
+            ]
           }
         ]
       },
