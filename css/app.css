@@ -942,3 +942,8 @@ body[data-mode="practice"] .panel__inner::before{
 /* handing in unfinished Mastery work: allowed, and visibly not the same as finishing */
 .hbtn--part{background:#F4EAD2;border-color:#C9A227;color:#6B5210}
 .hbtn--part:hover{background:#EFE0BC}
+
+/* choosing a class, asked only when a test is actually running */
+.modal__box--slim{max-width:420px}
+.clsgrid{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.clsgrid .btn{min-width:64px;justify-content:center}
