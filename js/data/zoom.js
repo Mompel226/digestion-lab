@@ -832,7 +832,7 @@ window.ZOOM_DETAIL = {
           {
             "img": "zoom/pancreas-render2.jpg",
             "at": [
-              215,
+              185,
               424,
               118
             ],
