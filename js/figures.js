@@ -404,10 +404,17 @@
     var lens =
       '<g class="fig-lens" role="button" tabindex="0" aria-expanded="false">' +
         '<title>Zoom in on one cell of the wall (an enterocyte)</title>' +
+        /* The words sit to the RIGHT of the glass, clear of the drawing, and in a pill with a
+           border so it reads as something to press rather than another label. It is hidden
+           once the cell is open, because that is where the enlarged cell appears. */
+        '<g class="lens__chip">' +
+          '<rect x="221" y="119" width="122" height="28" rx="14"/>' +
+          '<text class="fb" x="233" y="131" style="font-size:11.5px">one cell</text>' +
+          '<text class="fs" x="233" y="143" style="fill:#2E6B45">press to magnify</text>' +
+        '</g>' +
         '<circle class="lens__glass" cx="206" cy="132" r="12.5" fill="#FFFDF9" stroke="#14572B" stroke-width="2"/>' +
         '<circle cx="206" cy="132" r="6.4" fill="none" stroke="#14572B" stroke-width="1.6"/>' +
         '<line x1="210.6" y1="136.6" x2="216" y2="142" stroke="#14572B" stroke-width="2.8" stroke-linecap="round"/>' +
-        '<text class="fs" x="206" y="156" text-anchor="middle" style="fill:#14572B;font-weight:700">one cell</text>' +
       '</g>';
     function mito(x, y, a) {
       return '<g transform="translate(' + x + ',' + y + ') rotate(' + a + ')"><ellipse rx="10" ry="5.2" fill="#F3C98A" stroke="#B57A2A" stroke-width="1.1"/>' +

@@ -839,6 +839,9 @@ body[data-mode="practice"] .panel__inner::before{
 .figbox__stage .fig-lens{cursor:pointer}
 .figbox__stage .fig-lens:focus{outline:none}
 .figbox__stage .fig-lens:focus-visible .lens__glass,.figbox__stage .fig-lens:hover .lens__glass{stroke-width:3;fill:#FFF3D6}
+.figbox__stage .lens__chip rect{fill:#FFFDF9;stroke:#14572B;stroke-width:1.5}
+.figbox__stage .fig-lens:focus-visible .lens__chip rect,.figbox__stage .fig-lens:hover .lens__chip rect{fill:#FFF3D6;stroke-width:2.4}
+.figbox__stage.is-cell .lens__chip{display:none}      /* the enlarged cell opens here */
 .figbox__stage .fig-cell{display:none}
 .figbox__stage.is-cell .fig-cell{display:block}
 .figbox__stage.is-cell .fig-lens .lens__glass{fill:#FFE7A8}
