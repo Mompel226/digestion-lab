@@ -26,7 +26,7 @@
      scene lasts about a word every third of a second, and the notes inside it are spaced the same
      way. Anyone who reads faster can press Next. */
   var SCENES = [
-    { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
+    { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:143, cy:172, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Mastication — chewing and mixing with saliva — starts physical digestion at once, and saliva adds the first enzyme, amylase. The food is now a bolus.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
@@ -34,9 +34,9 @@
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
          and then the bolus appears, already in the stomach. Each leg is [when, camera, how long]. */
       cams:[[0,     { cx:150, cy:196, w:250 }, 900],
-            [6900,  { cx:186, cy:470, w:330 }, 7700],
-            [15200, { cx:196, cy:498, w:300 }, 1300],
-            [22600, { cx:182, cy:520, w:330 }, 1300]],
+            [6900,  { cx:186, cy:470, w:330 }, 11300],
+            [18200, { cx:196, cy:498, w:300 }, 1300],
+            [27600, { cx:182, cy:520, w:330 }, 1300]],
       def:'Digestion is the breakdown of food. Physical digestion breaks it into smaller pieces without chemical change; chemical digestion uses enzymes to break large, insoluble molecules into small, soluble ones.',
       /* Read these out loud before changing them. The first three used to land 3.4s and 4s
          apart, which is under two words a second for a sentence of seventeen — the reader
@@ -440,7 +440,7 @@
       A.placeBolus(M.mouth);
       later(function () { A.travel(M.mouth, swallowed, 3200, function () {
         later(function () {
-          A.travel(swallowed, st, 7400, function () {              /* down the oesophagus, unhurried */
+          A.travel(swallowed, st, 11000, function () {             /* down the oesophagus, at the pace of the sentence about it */
             /* churning: the bolus is held in the stomach and wobbles */
             later(function () { A.travel(st, st - w, 700, function () { A.travel(st - w, st + w, 800); }); }, 300);
             later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 2200);
@@ -452,7 +452,7 @@
                 drops(PANC, '#E8C95A', 2.2, 4.5, 6);
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
-            }, 9000);
+            }, 8600);
           });
         }, 4000);                                                   /* the beat at the epiglottis */
       }); }, LEAD);

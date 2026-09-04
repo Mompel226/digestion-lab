@@ -25,17 +25,21 @@
   var ASPECT = VIEW.h / VIEW.w;
   var NS = 'http://www.w3.org/2000/svg', XL = 'http://www.w3.org/1999/xlink';
   /* camera frame per organ, in plate coordinates: centre and the width shown */
+  /* Centred on the organ they frame. These used to sit tens of units off it — the stomach
+     46 to its right, the gall bladder 52 to its left — which a tall desktop panel hides but
+     a phone's short wide one does not: the body reads as pushed to one side, or as floating
+     high with empty plate below it. Measured against each organ's own painted extent. */
   var CAM = {
     'mouth':           { cx:150, cy:146, w:190 },   /* room to the right of the pharynx for its label */
     'salivary-glands': { cx:146, cy:146, w:160 },
     'epiglottis':      { cx:152, cy:190, w:190 },
     'oesophagus':      { cx:178, cy:318, w:250 },
-    'stomach':         { cx:238, cy:474, w:200 },
-    'liver':           { cx:130, cy:466, w:220 },
-    'gall-bladder':    { cx:116, cy:487, w:200 },
+    'stomach':         { cx:206, cy:508, w:215 },
+    'liver':           { cx:152, cy:478, w:230 },
+    'gall-bladder':    { cx:148, cy:494, w:215 },
     'pancreas':        { cx:205, cy:535, w:210 },
-    'duodenum':        { cx:165, cy:560, w:190 },
-    'ileum-villi':     { cx:192, cy:660, w:300 },
+    'duodenum':        { cx:165, cy:548, w:190 },
+    'ileum-villi':     { cx:190, cy:646, w:300 },
     'colon':           { cx:182, cy:662, w:280 },
     'rectum-anus':     { cx:177, cy:784, w:95 }    /* close in: the drawn canal is only ~30 units across */
   };
