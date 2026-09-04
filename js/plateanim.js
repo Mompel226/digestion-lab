@@ -19,14 +19,15 @@
 
   function gauss(x, s) { return Math.exp(-(x * x) / (2 * s * s)); }
   function tubeFrame(o, bolusY) {
-    var n = 46, left = [], right = [], i, y, w;
+    var n = 46, left = [], right = [], i, y, w, cx;
     for (i = 0; i <= n; i++) {
       y = o.y0 + (o.y1 - o.y0) * (i / n);
+      cx = o.cxAt ? o.cxAt(y) : o.cx;                      /* the tube may lean: see spineOf */
       w = o.w + o.bulge * gauss(y - bolusY, o.sBulge)
               - o.squeeze * gauss(y - (bolusY - o.behind), o.sSq)
               + o.open * gauss(y - (bolusY + o.ahead), o.sOpen);
       w = Math.max(o.w * 0.28, w);
-      left.push(f1(o.cx - w) + ',' + f1(y)); right.push(f1(o.cx + w) + ',' + f1(y));
+      left.push(f1(cx - w) + ',' + f1(y)); right.push(f1(cx + w) + ',' + f1(y));
     }
     right.reverse();
     return 'M' + left.join(' L') + ' L' + right.join(' L') + ' Z';
@@ -82,53 +83,99 @@
   /* A whole label — text, leader and dot — that rides with the feature it names.
      The contraction and the relaxation travel down the tube, so a leader pinned to
      one height points at them for a single instant and lies for the rest of the cycle. */
-  function travel(inner, dys, K, dur, op, opK) {
+  function travel(inner, dxs, dys, K, dur, op, opK) {
     return '<g opacity="0">' +
-      '<animateTransform attributeName="transform" type="translate" values="' + dys.map(function (v) { return '0 ' + f1(v); }).join(';') +
+      '<animateTransform attributeName="transform" type="translate" values="' + dys.map(function (v, i) { return f1(dxs[i]) + ' ' + f1(v); }).join(';') +
       '" keyTimes="' + K + '" dur="' + dur + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(dys.length - 1) + '"/>' +
       A + '"opacity" values="' + op + '" keyTimes="' + opK + '" dur="' + dur + 's" repeatCount="indefinite"/>' +
       inner + '</g>';
   }
 
   /* ---------------- peristalsis, on the plate's own oesophagus ---------------- */
+  /* The centre line is read off the plate's own drawing, not taken as the middle of
+     the box. The drawn oesophagus drifts left through the chest and then leans right
+     into the cardia, at the top of the stomach's lesser curvature. A straight tube
+     down the box misses that: it runs on past the stomach and meets the artwork at
+     the pylorus, so the food looks as if it skips the stomach and enters the gut. */
+  function cardiaOf(ctx) {
+    var s = ctx.outline && ctx.outline('stomach', 2), best = null;
+    if (!s || !s.length) return null;
+    /* the upper-left shoulder of the stomach: the leftmost point along the top edge,
+       above the antrum (y < 480) and below the fundus dome (y > 440) */
+    s.forEach(function (q) { if (q[1] < 480 && q[1] > 440 && (!best || q[0] < best[0])) best = q; });
+    if (!best) return null;
+    return { x: Math.min(214, Math.max(188, best[0] + 9)), y: Math.min(482, Math.max(452, best[1] + 8)) };
+  }
+  function spineOf(ctx) {
+    var pts = ctx.outline && ctx.outline('oesophagus', 2);
+    if (!pts || pts.length < 20) return null;
+    var band = {}, S = [];
+    pts.forEach(function (q) {
+      var k = Math.round(q[1] / 8) * 8;
+      if (!band[k]) band[k] = [q[0], q[0]];
+      band[k][0] = Math.min(band[k][0], q[0]); band[k][1] = Math.max(band[k][1], q[0]);
+    });
+    Object.keys(band).map(Number).sort(function (a, b) { return a - b; }).forEach(function (y) {
+      if (band[y][1] - band[y][0] > 6) S.push([y, (band[y][0] + band[y][1]) / 2]);   /* skip the tapered ends */
+    });
+    if (S.length < 3) return null;
+    var c = cardiaOf(ctx), last = S[S.length - 1];          /* spine entries are [y, centre x] */
+    if (c && c.y > last[0] + 8) {                           /* the stretch hidden behind the liver */
+      S.push([last[0] + (c.y - last[0]) * 0.55, last[1] + (c.x - last[1]) * 0.3]);
+      S.push([c.y, c.x]);
+    }
+    return S;
+  }
   function peristalsis(ctx) {
     var b = ctx.box, fs = ctx.fs, u = ctx.u;
-    var cx = b.x + b.w / 2, y0 = b.y + 6, y1 = b.y + b.h;
+    var S = spineOf(ctx);
+    var cx0 = b.x + b.w / 2, y0 = b.y + 6, y1 = S ? S[S.length - 1][0] : b.y + b.h;
+    function cxAt(y) {
+      if (!S) return cx0;
+      if (y <= S[0][0]) return S[0][1];
+      for (var i = 1; i < S.length; i++) {
+        if (y <= S[i][0]) return S[i - 1][1] + (S[i][1] - S[i - 1][1]) * (y - S[i - 1][0]) / (S[i][0] - S[i - 1][0]);
+      }
+      return S[S.length - 1][1];
+    }
     var hw = b.w * 0.34;                                   /* half-width of the tube at rest */
-    var TUBE = { cx:cx, y0:y0, y1:y1, w:hw, bulge:hw * 0.55, sBulge:hw * 1.1,
+    var TUBE = { cx:cx0, cxAt:cxAt, y0:y0, y1:y1, w:hw, bulge:hw * 0.55, sBulge:hw * 1.1,
                  squeeze:hw * 0.62, behind:hw * 2.6, sSq:hw * 0.9, open:hw * 0.22, ahead:hw * 3.4, sOpen:hw * 1.3 };
     var STEPS = 24, DUR = 7.6, from = y0 - hw * 1.2, to = y1 + hw * 1.6;
     var wall = tubeFrames(TUBE, from, to, STEPS), by = seq(from, to, STEPS);
+    var ys = by.split(';').map(Number);
     var marks = '', k, n = 12;
     for (k = 0; k < n; k++) {
-      var y = y0 + (y1 - y0) * (k + 0.5) / n, ph = ((y - from) / (to - from) - 0.5) * DUR;
-      [[cx - hw * 2.3, cx - hw * 1.55], [cx + hw * 1.55, cx + hw * 2.3]].forEach(function (s) {
+      var y = y0 + (y1 - y0) * (k + 0.5) / n, cxm = cxAt(y), ph = ((y - from) / (to - from) - 0.5) * DUR;
+      [[cxm - hw * 2.3, cxm - hw * 1.55], [cxm + hw * 1.55, cxm + hw * 2.3]].forEach(function (s) {
         marks += '<line x1="' + f1(s[0]) + '" y1="' + f1(y) + '" x2="' + f1(s[1]) + '" y2="' + f1(y) +
           '" stroke="#B4614A" stroke-width="' + f1(0.9 * u) + '" stroke-linecap="round" opacity=".28">' +
           A + '"opacity" values=".25;1;.25" dur="' + DUR + 's" begin="' + f1(ph) + 's" repeatCount="indefinite"/>' +
           A + '"stroke-width" values="' + f1(0.9 * u) + ';' + f1(2.2 * u) + ';' + f1(0.9 * u) + '" dur="' + DUR + 's" begin="' + f1(ph) + 's" repeatCount="indefinite"/></line>';
       });
     }
-    var rx = cx + hw * 2.9;
+    var cxTop = cxAt(from), cxEnd = cxAt(y1), rx = cxTop + hw * 2.9;
     /* base positions are read at the first frame (bolus at `from`); the group is then
-       translated by however far the bolus has moved, so each dot stays on its own feature */
+       translated along the tube, so each dot stays on its own feature */
     var yBehind = from - TUBE.behind, yAhead = from + TUBE.ahead;
-    var dys = by.split(';').map(function (v) { return +v - from; });
+    var dys = ys.map(function (v) { return v - from; });
+    var dxs = ys.map(function (v) { return cxAt(v) - cxTop; });
     var KT = Array.apply(null, Array(STEPS + 1)).map(function (_, i) { return (i / STEPS).toFixed(3); }).join(';');
     var ENV = '0;1;1;0;0', ENVK = '0;0.14;0.72;0.82;1';
     return marks +
       '<path fill="#F6E3DD" stroke="#C4776A" stroke-width="' + f1(1.5 * u) + '" stroke-linejoin="round" d="' + tubeFrame(TUBE, from) + '">' +
         A + '"d" values="' + wall + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(STEPS) + '"/></path>' +
-      '<ellipse cx="' + f1(cx) + '" cy="' + f1(from) + '" rx="' + f1(hw * 0.95) + '" ry="' + f1(hw * 0.78) + '" fill="#E8A33D" stroke="#A96B18" stroke-width="' + f1(0.9 * u) + '">' +
+      '<ellipse cx="' + f1(cxTop) + '" cy="' + f1(from) + '" rx="' + f1(hw * 0.95) + '" ry="' + f1(hw * 0.78) + '" fill="#E8A33D" stroke="#A96B18" stroke-width="' + f1(0.9 * u) + '">' +
+        A + '"cx" values="' + ys.map(function (v) { return f1(cxAt(v)); }).join(';') + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(STEPS) + '"/>' +
         A + '"cy" values="' + by + '" dur="' + DUR + 's" repeatCount="indefinite" calcMode="spline" keySplines="' + ease(STEPS) + '"/>' +
         A + '"ry" values="' + f1(hw * .78) + ';' + f1(hw * .9) + ';' + f1(hw * .72) + ';' + f1(hw * .9) + ';' + f1(hw * .78) + '" dur="' + DUR + 's" repeatCount="indefinite"/></ellipse>' +
-      label('from the mouth', cx, y0 - hw * 2.2, null, null, fs * 0.85, 'middle') +
-      label('to the stomach', cx - hw * 2.6, y1 - hw * 0.9, cx - hw * 0.9, y1 - hw * 0.4, fs * 0.85, 'end') +
+      label('from the mouth', cxTop, y0 - hw * 2.2, null, null, fs * 0.85, 'middle') +
+      label('to the stomach', cxEnd - hw * 2.8, y1 - hw * 1.1, cxEnd - hw * 0.9, y1 - hw * 0.5, fs * 0.85, 'end') +
       travel(label(ctx.compact ? 'muscle contracts\nbehind the bolus' : 'circular muscle contracts\nbehind the bolus and\nsqueezes it along',
-                   rx, yBehind - fs * 1.15, cx + hw * 0.55, yBehind, fs), dys, KT, DUR, ENV, ENVK) +
+                   rx, yBehind - fs * 1.15, cxTop + hw * 0.55, yBehind, fs), dxs, dys, KT, DUR, ENV, ENVK) +
       travel(label(ctx.compact ? 'relaxes ahead' : 'the wall ahead relaxes\nto receive it',
-                   rx, yAhead - fs * 0.3, cx + hw * 1.35, yAhead, fs), dys, KT, DUR, ENV, ENVK) +
-      moving('the bolus', by.split(';').map(function () { return cx - hw * 1.5; }), by.split(';').map(function (v) { return +v + fs * 0.35; }),
+                   rx, yAhead - fs * 0.3, cxTop + hw * 1.35, yAhead, fs), dxs, dys, KT, DUR, ENV, ENVK) +
+      moving('the bolus', ys.map(function (v) { return cxAt(v) - hw * 1.5; }), ys.map(function (v) { return v + fs * 0.35; }),
              KT, DUR, fs, 'end', '0;1;1;0;0', '0;0.06;0.72;0.80;1');   /* clear of the label at the cardia */
   }
 
