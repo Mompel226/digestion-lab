@@ -266,6 +266,28 @@
   }
   function f1(v) { return (+v).toFixed(1); }
 
+  /* A band that follows the canal itself, from one fraction of its length to another. The
+     small intestine is drawn as one coiled shape, so this is how a part of it can be given
+     its own colour: not by slicing the picture in half, which cuts across the coils, but by
+     following the tube and stopping where that part of the gut stops. */
+  function canalRibbon(from, to, width) {
+    var p = document.getElementById('canalPath');
+    if (!p) return null;
+    var L = p.getTotalLength(), half = (width || 20) / 2, N = 90;
+    var left = [], right = [];
+    for (var i = 0; i <= N; i++) {
+      var d = (from + (to - from) * (i / N)) * L;
+      var q = p.getPointAtLength(d);
+      var a = p.getPointAtLength(Math.max(0, d - 1.5));
+      var b = p.getPointAtLength(Math.min(L, d + 1.5));
+      var dx = b.x - a.x, dy = b.y - a.y, m = Math.hypot(dx, dy) || 1;
+      var nx = -dy / m * half, ny = dx / m * half;
+      left.push([q.x + nx, q.y + ny]);
+      right.push([q.x - nx, q.y - ny]);
+    }
+    return left.concat(right.reverse());
+  }
+
   /* a label: text with a halo, a leader line and a dot on the feature.
      `at` is the feature in fractions of the picture (or plate units with
      plate:true); `tx` the text position in the same terms; else dx/dy in
@@ -485,10 +507,11 @@
            small intestine is a single coiled path, but the jejunum and the ileum are halves of
            it. The clip goes on a wrapper with no transform, so its points stay in plate space. */
         var host = gImgs;
-        if (pp.clip) {
+        var poly = pp.clip && pp.clip.canal ? canalRibbon(pp.clip.canal[0], pp.clip.canal[1], pp.clip.width) : pp.clip;
+        if (poly && poly.length) {
           var id = 'clip' + (clipN++);
           var cp = el('clipPath', { id:id, clipPathUnits:'userSpaceOnUse' }, defs);
-          el('polygon', { points:pp.clip.map(function (q) { return q[0] + ',' + q[1]; }).join(' ') }, cp);
+          el('polygon', { points:poly.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' ') }, cp);
           host = el('g', { 'clip-path':'url(#' + id + ')' }, gImgs);
         }
         var g = el('g', { transform:'matrix(' + [m.a, m.b, m.c, m.d, m.e, m.f].map(function (v) { return v.toFixed(4); }).join(',') + ')' }, host);
