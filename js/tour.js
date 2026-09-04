@@ -31,6 +31,7 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       seek:['mouth'],
+      fx:['saliva'],
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
@@ -49,6 +50,8 @@
       /* Where the food is when each sentence shows, so stepping moves the picture with the
          words instead of leaving the bolus wherever the clock had got to. */
       seek:['mouth', 'swallowed', 'oesoph', 'stomach', 'stomach', 'duodenum'],
+      /* what the plate should be doing while that sentence is up */
+      fx:[null, null, null, 'churn', null, 'ducts'],
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
              [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
@@ -60,16 +63,19 @@
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       seek:['duodenum', 'jejunum'],
+      fx:[null, 'vein'],
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
              [9000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
     { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       seek:['ileum', 'ileum'],
+      fx:['vein', null],
       notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
              [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
       seek:['ileum', 'colon'],
+      fx:[null, 'water'],
       notes:[[0, 'In the colon the remaining water is reabsorbed into the blood, and what is left becomes faeces.'],
              [9500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
   ];
@@ -265,6 +271,38 @@
      cannot simply resume it. Instead the remaining sentences are re-armed with their original
      spacing, and the food travels from each one's landmark to the next — the picture keeps up
      with the words rather than replaying a schedule that no longer matches them. */
+  /* The effects a scene shows, callable by name. They also live inside the scene's own chain
+     of animations, which is fine while that chain is running — but stepping cancels it, and
+     the reader still needs the plate to do what the sentence says. This is what Play uses
+     after a step, and what stepping itself uses to arrive with the right picture. */
+  function runFx(name) {
+    var A = global.Anatomy;
+    if (!name) return;
+    if (name === 'saliva') {
+      drops(SAL_PAROTID, '#8FC7E8', 1.9, 3.4, 4);
+      drops(SAL_SUBMAND, '#8FC7E8', 1.9, 3.4, 4);
+      lightSecretors(['salivary-glands'], 8000);
+    } else if (name === 'ducts') {
+      drops(BILE, '#8DB43A', 2.2, 4.5, 6);
+      drops(PANC, '#E8C95A', 2.2, 4.5, 6);
+      lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
+    } else if (name === 'vein') {
+      vein();
+    } else if (name === 'water') {
+      var M = (A && A.marks()) || {};
+      var mix = function (a, b, t) { return a + (b - a) * t; };
+      [0.15, 0.35, 0.55, 0.75, 0.9].forEach(function (t, i) {
+        later(function () { water(mix(M.caecum || 0.68, M.sigmoid || 0.92, t)); }, i * 1200);
+      });
+    } else if (name === 'churn' && A) {
+      var st = markAt('stomach'), w = 0.006;
+      if (st == null) return;
+      [0, 1700, 3400].forEach(function (d, i) {
+        later(function () { A.travel(st + (i % 2 ? w : -w), st + (i % 2 ? -w : w), 800); }, d);
+      });
+    }
+  }
+
   function rearmFrom(k) {
     var sc = SCENES[idx];
     if (!sc || !sc.notes || !sc.notes.length) return;
@@ -279,6 +317,7 @@
           noteAt = n;
           if (card) say(card, 'note', sc.notes[n][1]);
           seekPicture(sc, n, 700);
+          runFx((sc.fx || [])[n]);
           paintStep();
         }, gap));
         if (A && from != null && to != null && Math.abs(to - from) > 0.001) {
@@ -609,6 +648,7 @@
        who pressed a button wants the sentence now anyway. */
     if (card) say(card, k < 0 ? 'def' : 'note', k < 0 ? sc.def : sc.notes[k][1], true);
     seekPicture(sc, k, 420);          /* the picture goes where the sentence is */
+    runFx((sc.fx || [])[Math.max(0, k)]);   /* ...and does what that sentence says */
     setPaused(true);
     paintStep();
   }
