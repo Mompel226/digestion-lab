@@ -432,7 +432,7 @@
       g += drops(PANC, JUICE, r, 4, 4, 0);
       if (ctx.compact) return g + label('pancreas', 252, 498, 242, 512, fs, 'middle') + label('pancreatic duct', 150, 566, 200, 528, fs, 'start') + label('duodenum', 74, 598, 128, 584, fs, 'start');
       return g +
-        label('pancreas — makes\npancreatic juice', 236, 488, 240, 511, fs, 'middle') +
+        label('pancreas — makes\npancreatic juice', 254, 488, 242, 511, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 164, 580, 200, 528, fs, 'start') +
         label('the bile duct\njoins it here', 104, 560, 146, 553, fs, 'start') +
         label('duodenum', 74, 600, 128, 588, fs, 'start');
