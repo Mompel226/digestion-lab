@@ -587,7 +587,12 @@
     /* insets: small crisp photographs in a frame, on top of the illustration, never faded */
     (s.insets || []).forEach(function (ins) {
       if (!ins.w) { probe(ins, s); pending = true; return; }
-      var x = ins.at[0], y = ins.at[1], w = ins.at[2], h = w * ins.h / ins.w;
+      /* On a phone the frame is a third of its desktop width, so an inset drawn at its
+         desktop size lands small and its caption spills past both edges and under the
+         key cards. There the picture is enlarged instead and the caption left to the
+         lightbox — the ⤢ badge already says it opens. */
+      var tight = ppu(frame) < 1.6 && !ins.link;
+      var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? 1.4 : 1), h = w * ins.h / ins.w;
       var g = el('g', { 'class':'inset' }, gInsets);
       el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
@@ -596,7 +601,7 @@
       var keep = gLabels; gLabels = g;
       (ins.labels || []).forEach(function (L) { drawLabel(L, ipl, fs * (ins.fs || 0.92), null); });
       gLabels = keep;
-      if (ins.cap) {
+      if (ins.cap && !tight) {
         var capLines = String(ins.cap).split('\n').length;
         var cy0 = ins.capTop ? y - fs * 0.55 - (capLines - 1) * fs * 0.88 * 1.15 : y + h + fs * 1.15;   /* above the picture when asked */
         var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(cy0), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
@@ -609,6 +614,16 @@
       var bt = el('text', { 'class':'dl__t', 'font-size':f1(fs * 0.78), 'text-anchor':'middle', y:f1(fs * 0.28) }, badge); bt.textContent = '⤢';
       g.addEventListener('click', function (ev) { ev.stopPropagation(); if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + ins.img, capText, 'Photograph'); });
       g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); g.dispatchEvent(new MouseEvent('click')); } });
+      /* An inset carries no arrow to a feature unless it is linked, so one that would sit
+         off the frame or under the key cards is simply slid back in. A linked one stays
+         put: its cone is drawn to the big picture and moving it would point at nothing. */
+      if (!ins.link) {
+        var ib = g.getBBox(), im = frame.w * 0.025;
+        var iL = frame.x + im, iR = frame.x + frame.w - im, iT = frame.y + im, iB = frame.y + frame.h - fs * 3.9;
+        var idx = ib.x < iL ? iL - ib.x : (ib.x + ib.width > iR ? Math.max(iL - ib.x, iR - ib.x - ib.width) : 0);
+        var idy = ib.y < iT ? iT - ib.y : (ib.y + ib.height > iB ? Math.max(iT - ib.y, iB - ib.y - ib.height) : 0);
+        if (idx || idy) g.setAttribute('transform', 'translate(' + f1(idx) + ',' + f1(idy) + ')');
+      }
       if (ins.link) {
         var tgt = placed[0] ? placed[0].pl : (s.animBox ? { x:s.animBox[0], y:s.animBox[1], W:s.animBox[2], H:s.animBox[3] } : null);
         if (tgt) {
