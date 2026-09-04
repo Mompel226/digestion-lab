@@ -51,11 +51,13 @@ function doPost(e) {
     var flags = [];
     if (!genuine) flags.push('CODE MISMATCH');
     if (total !== EXPECTED_TOTAL) flags.push('NOT ALL QUESTIONS');
-    if (mode === 'mastery' && score !== total) flags.push('MASTERY NOT COMPLETE');
+    if (d.complete === false) flags.push('PROGRESS — not finished');
 
     _sheet().appendRow([
       new Date(), name, form, mode,
       score, total, total ? Math.round(score / total * 100) : 0,
+      d.complete === false ? 'progress' : 'complete',
+      Number(d.checks) || '', Number(d.firstTime) || '', _since(d.from),
       d.code || '', genuine ? 'ok' : 'CHECK', flags.join('; '),
       JSON.stringify(d.stations || {})
     ]);
@@ -112,11 +114,12 @@ function _sheet() {
   var ss = SpreadsheetApp.openById(SHEET_ID);
   var sh = ss.getSheetByName(TAB_SUBMISSIONS) || ss.insertSheet(TAB_SUBMISSIONS);
   if (sh.getLastRow() === 0) {
-    sh.appendRow(['When', 'Name', 'Class', 'Mode', 'Score', 'Out of', '%',
+    sh.appendRow(['When', 'Name', 'Class', 'Mode', 'Score', 'Out of', '%', 'Finished?',
+                  'Checks', 'Right first time', 'Working since',
                   'Code', 'Code check', 'Flags', 'Per station']);
     sh.setFrozenRows(1);
-    sh.getRange('A1:K1').setFontWeight('bold');
-    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 190); sh.setColumnWidth(11, 320);
+    sh.getRange('A1:O1').setFontWeight('bold');
+    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 190); sh.setColumnWidth(15, 340);
   }
   return sh;
 }
@@ -136,6 +139,17 @@ function _code(name, form, score) {
     return o;
   }
   return 'DL-' + chunk(s1) + '-' + chunk(s2);
+}
+
+/** "3 days" / "40 minutes" — how long ago the first question was checked. */
+function _since(iso) {
+  if (!iso) return '';
+  var then = new Date(iso);
+  if (isNaN(then)) return '';
+  var mins = Math.round((new Date() - then) / 60000);
+  if (mins < 90) return mins + ' min';
+  if (mins < 60 * 36) return Math.round(mins / 60) + ' h';
+  return Math.round(mins / 1440) + ' days';
 }
 
 function _text(m) { return ContentService.createTextOutput(m).setMimeType(ContentService.MimeType.TEXT); }
@@ -200,7 +214,7 @@ function pushGrades() {
   var rows = _sheet().getDataRange().getValues(), best = {};
   for (var i = 1; i < rows.length; i++) {
     var name = _tidy(rows[i][1]), score = Number(rows[i][4]) || 0;
-    if (!name) continue;
+    if (!name) continue;                       /* the best score anyone handed in, finished or not */
     if (!(name in best) || score > best[name]) best[name] = score;
   }
 

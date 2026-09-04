@@ -52,7 +52,7 @@ Progress is saved in the browser. **Reset** clears it.
 
 | Mode | Attempts | Shows the answer? | For |
 |---|---|---|---|
-| **Mastery** (default) | unlimited | **no** — only which parts are wrong | homework; every question must be right before it can be handed in |
+| **Mastery** (default) | unlimited | **no** — only which parts are wrong | homework; hand in when every question is right, or hand in progress on the way |
 | **Test** | one per question | **no** | a check under exam conditions; hand in whatever you scored |
 
 The answers are never shown, in either mode, and are not in the site at all (see below).
@@ -125,9 +125,25 @@ serves the Mastery switch above. Set-up is about five minutes.
 Whenever you edit the script afterwards: **Deploy ▸ Manage deployments ▸ pencil ▸ Version:
 New version ▸ Deploy.** Editing alone changes nothing — the old version keeps serving.
 
-You get two tabs. **Submissions**: when, name, class, mode, score, out of, %, the completion
-code, whether that code checks out, any flags, and the per-station breakdown. **Settings**:
-the *Mastery open* checkbox and the message shown when it is closed.
+You get two tabs. **Settings** holds the *Mastery open* checkbox and the message shown when it
+is closed. **Submissions** holds a row per hand-in:
+
+| Column | What it tells you |
+|---|---|
+| When · Name · Class · Mode | who, and whether this was a Mastery run or a Test |
+| Score · Out of · % | what they got |
+| **Finished?** | `complete`, or `progress` — Mastery can be handed in unfinished |
+| **Checks** | how many times they pressed *Check answer* in all |
+| **Right first time** | how many they got right at the first attempt |
+| **Working since** | how long ago they first checked anything — `40 min`, `6 h`, `3 days` |
+| Code · Code check · Flags | the completion code, whether it recomputes, and anything odd |
+| Per station | `9/9 in 14` — the score at each station and the checks it took |
+
+The last four are the point of Mastery. A finished Mastery run says 113/113 whoever you are;
+**113/113 · 214 checks · 71 right first time · working since 3 days** is the evidence that
+somebody ground it out, and *71 right first time* separates the student who already knew it
+from the one who did the work. A student can hand in **progress** at any point in Mastery and
+hand in again when it is all right — both rows stay, so you can see the improvement.
 
 Every submission carries a **completion code** derived from the name, class and score. The
 script recomputes it and writes `CHECK` if the two disagree, so an edited payload is visible
@@ -211,11 +227,13 @@ function doPost(e) {
     var flags = [];
     if (!genuine) flags.push('CODE MISMATCH');
     if (total !== EXPECTED_TOTAL) flags.push('NOT ALL QUESTIONS');
-    if (mode === 'mastery' && score !== total) flags.push('MASTERY NOT COMPLETE');
+    if (d.complete === false) flags.push('PROGRESS — not finished');
 
     _sheet().appendRow([
       new Date(), name, form, mode,
       score, total, total ? Math.round(score / total * 100) : 0,
+      d.complete === false ? 'progress' : 'complete',
+      Number(d.checks) || '', Number(d.firstTime) || '', _since(d.from),
       d.code || '', genuine ? 'ok' : 'CHECK', flags.join('; '),
       JSON.stringify(d.stations || {})
     ]);
@@ -272,11 +290,12 @@ function _sheet() {
   var ss = SpreadsheetApp.openById(SHEET_ID);
   var sh = ss.getSheetByName(TAB_SUBMISSIONS) || ss.insertSheet(TAB_SUBMISSIONS);
   if (sh.getLastRow() === 0) {
-    sh.appendRow(['When', 'Name', 'Class', 'Mode', 'Score', 'Out of', '%',
+    sh.appendRow(['When', 'Name', 'Class', 'Mode', 'Score', 'Out of', '%', 'Finished?',
+                  'Checks', 'Right first time', 'Working since',
                   'Code', 'Code check', 'Flags', 'Per station']);
     sh.setFrozenRows(1);
-    sh.getRange('A1:K1').setFontWeight('bold');
-    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 190); sh.setColumnWidth(11, 320);
+    sh.getRange('A1:O1').setFontWeight('bold');
+    sh.setColumnWidth(1, 150); sh.setColumnWidth(2, 190); sh.setColumnWidth(15, 340);
   }
   return sh;
 }
@@ -296,6 +315,17 @@ function _code(name, form, score) {
     return o;
   }
   return 'DL-' + chunk(s1) + '-' + chunk(s2);
+}
+
+/** "3 days" / "40 minutes" — how long ago the first question was checked. */
+function _since(iso) {
+  if (!iso) return '';
+  var then = new Date(iso);
+  if (isNaN(then)) return '';
+  var mins = Math.round((new Date() - then) / 60000);
+  if (mins < 90) return mins + ' min';
+  if (mins < 60 * 36) return Math.round(mins / 60) + ' h';
+  return Math.round(mins / 1440) + ' days';
 }
 
 function _text(m) { return ContentService.createTextOutput(m).setMimeType(ContentService.MimeType.TEXT); }
@@ -360,7 +390,7 @@ function pushGrades() {
   var rows = _sheet().getDataRange().getValues(), best = {};
   for (var i = 1; i < rows.length; i++) {
     var name = _tidy(rows[i][1]), score = Number(rows[i][4]) || 0;
-    if (!name) continue;
+    if (!name) continue;                       /* the best score anyone handed in, finished or not */
     if (!(name in best) || score > best[name]) best[name] = score;
   }
 
