@@ -3,14 +3,12 @@
 
    Types: blank · drag · mcq · order · match · sort · ph
 
-   Two modes, set per session:
-     mastery   check as often as you like. Right or wrong only —
-               you have to think, not read the answer off the screen.
-     test      one attempt, then the card locks. Right or wrong only.
+   Check as often as you like. Right or wrong only — you have to think,
+   not read the answer off the screen.
 
-   Marking goes through Marking.check(), which compares hashes. The
-   correct answer is never in the page, in either mode: there is no way
-   to be shown it, only to be told which parts are wrong.
+   Marking goes through Marking.check(), which compares hashes. The correct
+   answer is never in the page: there is no way to be shown it, only to be
+   told which parts are wrong.
    ============================================================ */
 (function (global) {
   'use strict';
@@ -18,9 +16,6 @@
   var KIND_NAME = { blank:'Fill the gaps', drag:'Drag & drop', mcq:'Multiple choice',
                     order:'Put in order', match:'Match up', sort:'Sort into groups', ph:'Set the pH' };
 
-  var MODE = 'mastery';
-  function mode() { return MODE; }
-  function oneShot() { return MODE === 'test'; }
 
   /* ---------- utilities ---------- */
   function h(tag, cls, txt) {
@@ -29,7 +24,6 @@
     if (txt != null) n.textContent = txt;
     return n;
   }
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
   function shuffle(a) {
     var r = a.slice(), i, j, t;
     for (i = r.length - 1; i > 0; i--) { j = Math.floor(Math.random() * (i + 1)); t = r[i]; r[i] = r[j]; r[j] = t; }
@@ -243,14 +237,10 @@
         verdict.textContent = res.correct ? '✓ Correct'
           : (res.total > 1 ? '✗ ' + res.score + ' of ' + res.total + ' right' : '✗ Not yet');
         check.style.display = 'none';
-        /* test mode: one attempt only. mastery: keep trying. */
-        again.style.display = (!res.correct && !oneShot()) ? '' : 'none';
-        if (oneShot()) card.dataset.locked = '1';
+        again.style.display = res.correct ? 'none' : '';
         if (!res.correct) {
           fb.className = 'feedback no'; fb.style.display = '';
-          fb.innerHTML = oneShot()
-            ? 'Not right. In test mode you get one attempt per question.'
-            : 'Not right yet — look again at the ones marked in red, and try once more.';
+          fb.innerHTML = 'Not right yet — look again at the ones marked in red, and try once more.';
         }
         card.dispatchEvent(new CustomEvent('result', { bubbles:true, detail:res }));
       });
@@ -304,8 +294,7 @@
         Object.keys(inputs).forEach(function (k) {
           inputs[k].classList.toggle('ok', !!res.gaps[k]);
           inputs[k].classList.toggle('no', !res.gaps[k]);
-          if (oneShot()) inputs[k].disabled = true;
-        });
+          });
         return res;
       });
     }, function () {
@@ -344,7 +333,6 @@
       return window.Marking.check(a, id, sel).then(function (res) {
         /* only what THEY chose is marked — the right answer stays hidden */
         btns.forEach(function (b, i) {
-          if (oneShot()) b.dataset.locked = '1';
           if (sel.indexOf(i) >= 0) b.classList.add(res.correct ? 'ok' : 'no');
         });
         return res;
@@ -397,7 +385,6 @@
       var got = Array.prototype.map.call(list.children, function (r) { return r.dataset.txt; });
       return window.Marking.check(a, id, got).then(function (res) {
         Array.prototype.forEach.call(list.children, function (r) {
-          if (oneShot()) r.dataset.locked = '1';
           r.classList.toggle('ok', res.correct);
           r.classList.toggle('no', !res.correct);
         });
@@ -480,8 +467,7 @@
       var pairs = Object.keys(links).map(function (k) { return [Number(k), links[k]]; });
       if (pairs.length < (a.left || []).length) return null;
       return window.Marking.check(a, id, pairs).then(function (res) {
-        lbtn.forEach(function (b) { if (oneShot()) b.dataset.locked = '1'; b.classList.add(res.correct ? 'ok' : 'no'); });
-        rbtn.forEach(function (b) { if (oneShot()) b.dataset.locked = '1'; });
+        lbtn.forEach(function (b) { b.classList.add(res.correct ? 'ok' : 'no'); });
         return res;
       });
     }, function () {
@@ -539,7 +525,6 @@
       if (left) return null;
       return window.Marking.check(a, id, placed).then(function (res) {
         Array.prototype.forEach.call(card.querySelectorAll('.tok'), function (t) {
-          if (oneShot()) t.dataset.locked = '1';
           t.classList.add(res.correct ? 'ok' : 'no');
         });
         return res;
@@ -610,7 +595,6 @@
         wells.forEach(function (w) {
           w.parentElement.classList.toggle('ok', res.correct);
           w.parentElement.classList.toggle('no', !res.correct);
-          var t = w.querySelector('.tok'); if (t && oneShot()) t.dataset.locked = '1';
         });
         return res;
       });
@@ -652,31 +636,12 @@
     var body = wrap.querySelector('.enzBody'), sub = wrap.querySelector('.sub'), msg = wrap.querySelector('.phMsg');
     var FIT = 'M20,66 L20,34 C20,26 26,20 34,20 L82,20 C90,20 96,26 96,34 L96,40 L112,40 L112,26 L140,26 L140,40 L156,40 L156,34 C156,26 162,20 170,20 L218,20 C226,20 232,26 232,34 L232,66 Z';
 
-    /* Live feedback would give the answer away by sliding: the enzyme only reacts
-       once the student has committed to a value and asked to be marked. */
-    function show(fits, near, d) {
-      stateChip.className = 'ph__state ' + (fits ? 'on' : 'off');
-      stateChip.textContent = fits ? (a.enzyme || 'Enzyme') + ' is working'
-        : near ? (a.enzyme || 'Enzyme') + ' is slow' : (a.enzyme || 'Enzyme') + ' is denatured';
-      var w = Math.min(1, d / 5);
-      body.setAttribute('d', fits ? FIT :
-        'M20,66 L20,' + (34 + w * 6) + ' C20,26 26,20 34,20 L82,20 C90,20 ' + (96 - w * 14) + ',26 ' + (96 - w * 12) +
-        ',34 L' + (96 - w * 10) + ',' + (40 + w * 10) + ' L' + (112 + w * 16) + ',' + (40 + w * 14) + ' L' + (112 + w * 20) +
-        ',26 L' + (140 + w * 8) + ',' + (26 - w * 8) + ' L' + (140 + w * 4) + ',' + (40 - w * 12) + ' L' + (156 + w * 12) +
-        ',40 L156,' + (34 - w * 5) + ' C156,26 162,20 170,20 L218,20 C226,20 232,26 232,34 L232,66 Z');
-      body.setAttribute('fill', fits ? '#DDEDE2' : near ? '#F6EEDC' : '#F7E2DD');
-      body.setAttribute('stroke', fits ? '#14572B' : near ? '#A16207' : '#B03A2E');
-      sub.setAttribute('y', fits ? 8 : 4);
-      msg.textContent = fits ? 'substrate fits' : near ? 'a poor fit' : 'active site changed shape';
-      msg.setAttribute('fill', fits ? '#1E7A3E' : near ? '#A16207' : '#B03A2E');
-    }
     slider.addEventListener('input', function () {
       val.textContent = parseFloat(slider.value).toFixed(1);
     });
 
     foot(card, function () {
       return window.Marking.check(a, id, parseFloat(slider.value)).then(function (res) {
-        if (oneShot()) slider.disabled = true;
         stateChip.className = 'ph__state ' + (res.correct ? 'on' : 'off');
         stateChip.textContent = res.correct ? (a.enzyme || 'Enzyme') + ' is working'
                                             : (a.enzyme || 'Enzyme') + ' is not at its best here';
@@ -702,8 +667,6 @@
       if (!maker) { var e = h('div', 'act'); e.textContent = 'Unknown activity type: ' + a.type; return e; }
       return maker(a, idx, id);
     },
-    setMode: function (m) { MODE = m; },
-    getMode: mode,
     KIND_NAME: KIND_NAME
   };
 })(window);

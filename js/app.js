@@ -51,9 +51,7 @@
                     egestVsExcrete:0, waterColon:.3, chewing:.2, starchPath:.2, sameBalance:.4 };
 
   var S = {};                       /* stations by id */
-  var MODES = { mastery:'Mastery', test:'Test' };
-  var mode = localStorage.getItem('digestion-lab.mode') || 'mastery';
-  if (!MODES[mode]) mode = 'mastery';
+
   var progress = load();
   var current = null;
   var tab = 'learn';
@@ -62,16 +60,17 @@
   function load() {
     var d;
     try { d = JSON.parse(localStorage.getItem('digestion-lab.v2') || '{}'); } catch (e) { d = {}; }
-    Object.keys(MODES).forEach(function (m) { if (!d[m]) d[m] = {}; });
+    /* One record. Earlier versions kept one per mode; if that is what is in the browser,
+       keep the Mastery one — it is the only mode there is now. */
+    if (d.mastery && !d.stations) d = d.mastery;
     return d;
   }
   function save() {
     try { localStorage.setItem('digestion-lab.v2', JSON.stringify(progress)); } catch (e) {}
   }
-  function p(id, m) {
-    var bag = progress[m || mode];
-    if (!bag[id]) bag[id] = { done:{}, tried:{}, sig:(S[id] ? stationSig(S[id]) : '') };
-    return bag[id];
+  function p(id) {
+    if (!progress[id]) progress[id] = { done:{}, tried:{}, sig:(S[id] ? stationSig(S[id]) : '') };
+    return progress[id];
   }
   /* A saved answer is filed under the question's position in the station, and
      positions are not stable: if a question is removed, everything after it
@@ -87,24 +86,21 @@
   }
   function reconcile() {
     var dropped = 0;
-    Object.keys(MODES).forEach(function (m) {
-      var bag = progress[m] || {};
-      Object.keys(bag).forEach(function (id) {
-        var st = S[id];
-        if (!st) { delete bag[id]; dropped++; return; }      /* station itself is gone */
-        var sig = stationSig(st);
-        if (bag[id].sig && bag[id].sig !== sig) { bag[id] = { done:{}, tried:{}, sig:sig }; dropped++; }
-        else bag[id].sig = sig;
-      });
+    Object.keys(progress).forEach(function (id) {
+      var st = S[id];
+      if (!st) { delete progress[id]; dropped++; return; }   /* station itself is gone */
+      var sig = stationSig(st);
+      if (progress[id].sig && progress[id].sig !== sig) { progress[id] = { done:{}, tried:{}, sig:sig }; dropped++; }
+      else progress[id].sig = sig;
     });
     if (dropped) save();
     return dropped;
   }
 
-  function stationScore(id, m) {
+  function stationScore(id) {
     var st = S[id];
     if (!st) return { done:0, total:0, tried:0 };
-    var rec = p(id, m), total = (st.activities || []).length, n = 0, t = 0;
+    var rec = p(id), total = (st.activities || []).length, n = 0, t = 0;
     /* only positions that still exist may count, so a stale record can never
        push the score above the number of questions actually asked */
     Object.keys(rec.done).forEach(function (k) { if (rec.done[k] && +k < total) n++; });
@@ -126,25 +122,19 @@
   /* ---------- header ---------- */
   function paintHeader() {
     var t = totals(), pct = t.total ? t.done / t.total : 0, C = 2 * Math.PI * 11;
-    var sel = document.getElementById('modeSel');
-    if (sel && sel.value !== mode) sel.value = mode;
-    document.body.setAttribute('data-mode', mode);
     var sub = document.getElementById('btnSubmit');
     if (sub) {
-      /* A Test is handed in once every question has been attempted — one attempt is all
-         there is, so the score stands. Mastery is finished at every question right, but it
-         can be handed in before that: the record of the grinding is worth having, and the
-         row says plainly whether it was complete. */
-      var done = mode === 'test' ? t.tried === t.total : t.done === t.total;
-      var ready = t.total > 0 && (done || (mode === 'mastery' && t.tried > 0));
+      /* Finished means every question right. It can be handed in before that, though —
+         the record of the work so far is worth having, and the row says it is progress. */
+      var done = t.done === t.total;
+      var ready = t.total > 0 && (done || t.tried > 0);
       sub.hidden = false;
       sub.disabled = !ready;
       sub.classList.toggle('hbtn--part', ready && !done);
       sub.textContent = done || !ready ? 'Hand in' : 'Hand in progress';
       sub.title = done ? 'Hand in your finished work'
         : ready ? 'Hand in what you have so far — ' + t.done + ' of ' + t.total + ' right'
-        : mode === 'test' ? 'Answer all ' + t.total + ' questions to hand in your test'
-                          : 'Answer a question first';
+                : 'Answer a question first';
     }
     document.getElementById('ringFg').setAttribute('stroke-dasharray',
       (C * pct).toFixed(1) + ' ' + C.toFixed(1));
@@ -821,127 +811,55 @@
   }
 
 
-  /* ---------- modes ---------- */
-  function setMode(m, opts) {
-    if (!MODES[m]) m = 'mastery';
-    if (m === 'mastery' && !gate.masteryOpen) {          /* closed while a test is running */
-      document.getElementById('modeSel').value = mode;
-      toast(gate.note || 'Mastery is closed at the moment — Test only.');
-      return;
-    }
-    mode = m;
-    localStorage.setItem('digestion-lab.mode', m);
-    window.Engine.setMode(m);
-    paintHeader(); paintRail(); paintPanel();
-    if (!opts || !opts.quiet) toast(MODES[m] + ' mode');
-  }
 
-  /* ---------- the teacher's gate ----------
-     Mastery lets a reader check as often as they like, so if it is open during a test they can
-     grind the answers out there and then walk through the test knowing them. The gate lets Dr
-     Mompel close Mastery for everyone while a test is running, from a checkbox in the Sheet the
-     submissions go to. It is read over JSONP, because the page is served from a different origin
-     to the Apps Script.
+  /* ---------- who is handing in ----------
+     The lab is public and stays public: anyone may work through it and hand in. Signing in
+     is what lets a hand-in be attributed, so Dr Mompel's spreadsheet holds his own students
+     and nobody else's. Everyone gets a completion code either way. */
+  var SIGNIN_KEY = 'digestion-lab.signin';
+  var signIn = null;
+  try {
+    var sv = JSON.parse(localStorage.getItem(SIGNIN_KEY) || 'null');
+    if (sv && sv.exp * 1000 > Date.now() + 60000) signIn = sv;
+  } catch (e) {}
 
-     This is a classroom control, not security: it is a static site, and a determined reader can
-     work round anything the browser is told. It stops the ordinary case and makes the rule
-     visible, which is what it is for. */
-  /* Which class the reader is in. Mastery is switched per class, so the page has to be
-     able to say. It is remembered once and comes from whichever of these happens first:
-     a ?class=9A link the teacher hands out, the class they choose when handing in, or
-     the small picker that appears only if a test is actually running for some class. */
-  var CLASS_KEY = 'digestion-lab.class';
-  function myClass() { try { return localStorage.getItem(CLASS_KEY) || ''; } catch (e) { return ''; } }
-  function setMyClass(c) {
-    c = String(c || '').trim().toUpperCase();
-    if (!c) return;
-    try { localStorage.setItem(CLASS_KEY, c); } catch (e) {}
-  }
-  (function () {
-    var m = /[?&]class=([^&#]+)/i.exec(location.search);
-    if (m) setMyClass(decodeURIComponent(m[1]));
-  })();
-
-  var GATE_KEY = 'digestion-lab.gate';
-  var CFG = window.LAB_CONFIG || {};
-  /* Where the switch comes from:
-       no submitUrl  — config.js is the whole truth. masteryOpen:false closes Mastery
-                       for everyone with a commit and a push, no spreadsheet needed.
-       submitUrl set — the Sheet decides, live; config.js is only the starting position
-                       until the first answer arrives, and the last answer is remembered
-                       so a dropped connection does not change anything. */
-  var gate = { masteryOpen: CFG.masteryOpen !== false, note: CFG.masteryNote || '' };
-  if (CFG.submitUrl) {
+  /* The token is Google's to vouch for; we read it only to show a name. */
+  function readToken(jwt) {
     try {
-      var g = JSON.parse(localStorage.getItem(GATE_KEY) || 'null');
-      if (g && typeof g.masteryOpen === 'boolean') gate = g;
-    } catch (e) {}
+      var b = jwt.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+      var j = JSON.parse(decodeURIComponent(escape(atob(b))));
+      return { token:jwt, name:j.name || j.email || '', email:j.email || '', exp:j.exp || 0 };
+    } catch (e) { return null; }
   }
-
-  function askGate(cb) {
-    var url = (window.LAB_CONFIG || {}).submitUrl;
-    if (!url) { cb(null); return; }
-    var name = '__labGate' + Math.random().toString(36).slice(2), s = document.createElement('script'), done = false;
-    function cleanup() { try { delete window[name]; } catch (e) { window[name] = undefined; } if (s.parentNode) s.parentNode.removeChild(s); }
-    window[name] = function (data) { done = true; cleanup(); cb(data); };
-    s.onerror = function () { if (!done) { done = true; cleanup(); cb(null); } };
-    s.src = url + (url.indexOf('?') >= 0 ? '&' : '?') + 'q=gate&callback=' + name +
-            '&cls=' + encodeURIComponent(myClass()) + '&t=' + Date.now();
-    setTimeout(function () { if (!done) { done = true; cleanup(); cb(null); } }, 6000);
-    document.head.appendChild(s);
+  function onCredential(res) {
+    var who = res && res.credential ? readToken(res.credential) : null;
+    if (!who) return;
+    signIn = who;
+    try { localStorage.setItem(SIGNIN_KEY, JSON.stringify(who)); } catch (e) {}
+    var box = document.getElementById('subWho');
+    if (box) fillSubmit();
   }
-  function applyGate(quiet) {
-    var sel = document.getElementById('modeSel');
-    var opt = sel && sel.querySelector('option[value="mastery"]');
-    if (opt) {
-      opt.disabled = !gate.masteryOpen;
-      opt.textContent = gate.masteryOpen ? 'Mastery' : 'Mastery — closed';
-    }
-    var wrap = document.getElementById('modeWrap');
-    if (wrap) wrap.title = gate.masteryOpen
-      ? 'Mastery: check as often as you like, never told the answer. Test: one attempt each, then hand in.'
-      : (gate.note || 'Mastery is closed while a test is running. Test: one attempt each question.');
-    if (!gate.masteryOpen && mode === 'mastery') {
-      mode = 'test';
-      localStorage.setItem('digestion-lab.mode', 'test');
-      window.Engine.setMode('test');
-      paintHeader(); paintRail(); paintPanel();
-      if (!quiet) toast(gate.note || 'Mastery is closed — this is a test.');
-    } else if (sel) { sel.value = mode; }
+  function signInReady() {
+    return !!((window.LAB_CONFIG || {}).googleClientId) &&
+           window.google && google.accounts && google.accounts.id;
   }
-  function refreshGate(quiet) {
-    askGate(function (data) {
-      if (!data || typeof data.masteryOpen !== 'boolean') return;    /* unreachable: keep what we had */
-      var changed = data.masteryOpen !== gate.masteryOpen;
-      gate = { masteryOpen:data.masteryOpen, note:String(data.note || '') };
-      try { localStorage.setItem(GATE_KEY, JSON.stringify(gate)); } catch (e) {}
-      applyGate(quiet && !changed);
-      /* a test is running somewhere and we do not know whose class this is */
-      if (data.needClass && !myClass()) askClass();
-    });
+  function mountSignIn(el) {
+    if (!signInReady()) return false;
+    try {
+      google.accounts.id.initialize({
+        client_id: (window.LAB_CONFIG || {}).googleClientId,
+        callback: onCredential,
+        auto_select: true
+      });
+      google.accounts.id.renderButton(el, { theme:'outline', size:'large', text:'signin_with', width: 260 });
+      return true;
+    } catch (e) { return false; }
   }
-
-  /* Only ever shown when it matters: some class is sitting a test in this lab. */
-  function askClass() {
-    if (document.getElementById('clsDlg')) return;
-    var list = (window.LAB_CONFIG || {}).classes || [];
-    var dlg = document.createElement('div');
-    dlg.className = 'modal'; dlg.id = 'clsDlg';
-    dlg.innerHTML = '<div class="modal__box modal__box--slim">' +
-      '<h2>Which class are you in?</h2>' +
-      '<p class="st-sub">A test is running in one of the classes, so the lab needs to know which ' +
-      'one you are in before Mastery can open. You only have to answer this once.</p>' +
-      '<div class="clsgrid">' + list.map(function (c) {
-        return '<button type="button" class="btn" data-cls="' + c + '">' + c + '</button>';
-      }).join('') + '</div></div>';
-    document.body.appendChild(dlg);
-    dlg.addEventListener('click', function (e) {
-      var b = e.target.closest('button[data-cls]');
-      if (!b) return;
-      setMyClass(b.getAttribute('data-cls'));
-      dlg.remove();
-      refreshGate(false);
-    });
+  function signOut() {
+    signIn = null;
+    try { localStorage.removeItem(SIGNIN_KEY); } catch (e) {}
+    try { if (signInReady()) google.accounts.id.disableAutoSelect(); } catch (e) {}
+    fillSubmit();
   }
 
   /* ---------- handing in ---------- */
@@ -955,41 +873,74 @@
   }
 
   function openSubmit() {
-    var t = totals();
     var dlg = document.getElementById('subDlg');
-    var body = document.getElementById('subBody');
-    var cfg = window.LAB_CONFIG || {};
-    var complete = mode === 'test' ? t.tried === t.total : t.done === t.total;
-    var head = complete
-      ? (mode === 'test'
-          ? 'You have answered all <b>' + t.total + '</b> questions in Test mode, and scored <b>' + t.done + '</b>.'
-          : 'You have answered all <b>' + t.total + '</b> questions correctly in Mastery mode.')
-      : 'This is not finished yet: <b>' + t.done + '</b> of <b>' + t.total + '</b> right so far. ' +
-        'You can hand this in to show how far you have got — keep going afterwards and hand in again when it is all right.';
-    body.innerHTML =
-      '<p class="st-sub">' + head + ' Fill this in to hand your work to Dr Mompel.</p>' +
-      '<p class="fineprint">It will also show the work behind it: <b>' + t.checks + '</b> check' + (t.checks === 1 ? '' : 's') +
-      ', <b>' + t.first1 + '</b> right first time.</p>' +
-      '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
-      '<label class="fld"><span>Your class</span><select id="subForm">' +
-      (cfg.classes || ['Other']).map(function (c) {
-        return '<option' + (c === myClass() ? ' selected' : '') + '>' + c + '</option>';
-      }).join('') +
-      '</select></label><div id="subMsg" class="submsg"></div>';
+    fillSubmit();
     dlg.hidden = false;
-    document.getElementById('subGo').onclick = doSubmit;
     document.getElementById('subClose').onclick = function () { dlg.hidden = true; };
     dlg.onclick = function (e) { if (e.target === dlg) dlg.hidden = true; };
-    setTimeout(function () { document.getElementById('subName').focus(); }, 30);
+    setTimeout(function () {
+      var n = document.getElementById('subName');
+      if (n) n.focus();
+    }, 30);
+  }
+
+  /* The dialog has two faces: signed in, where the name is settled and the button sends;
+     and not, where it offers to sign in and explains what that is for. */
+  function fillSubmit() {
+    var t = totals();
+    var cfg = window.LAB_CONFIG || {};
+    var body = document.getElementById('subBody');
+    var go = document.getElementById('subGo');
+    var complete = t.done === t.total;
+    var head = complete
+      ? 'You have answered all <b>' + t.total + '</b> questions correctly.'
+      : 'Not finished yet: <b>' + t.done + '</b> of <b>' + t.total + '</b> right so far. You can ' +
+        'hand this in to show how far you have got, and hand in again when it is all right.';
+    var work = '<p class="fineprint">It carries the work behind it too: <b>' + t.checks + '</b> check' +
+               (t.checks === 1 ? '' : 's') + ', <b>' + t.first1 + '</b> right first time.</p>';
+
+    if (!cfg.googleClientId) {                       /* nothing is being collected anywhere */
+      body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
+        '<label class="fld"><span>Your full name</span><input id="subName" type="text" autocomplete="name"></label>' +
+        '<label class="fld"><span>Your class</span><select id="subForm">' +
+        (cfg.classes || ['Other']).map(function (c) { return '<option>' + c + '</option>'; }).join('') +
+        '</select></label><div id="subMsg" class="submsg"></div>';
+      go.style.display = ''; go.textContent = 'Get my code'; go.onclick = doSubmit;
+      return;
+    }
+
+    if (signIn) {
+      body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
+        '<div class="who">Handing in as <b>' + esc(signIn.name) + '</b>' +
+        '<button type="button" class="tourcard__link" id="subOut">not you?</button></div>' +
+        '<p class="fineprint">If you are on Dr&nbsp;Mompel\'s class list this goes into his records. ' +
+        'If you are not — anyone in the world is welcome here — nothing is saved anywhere, and you still get your code.</p>' +
+        '<div id="subMsg" class="submsg"></div>';
+      go.style.display = ''; go.textContent = 'Hand in'; go.onclick = doSubmit;
+      document.getElementById('subOut').onclick = signOut;
+      return;
+    }
+
+    body.innerHTML = '<p class="st-sub">' + head + '</p>' + work +
+      '<p class="fineprint">Sign in with your school Google account so Dr&nbsp;Mompel knows whose work this is. ' +
+      'The lab is open to everyone; signing in is only how a result reaches his records.</p>' +
+      '<div id="subWho" class="signinbox"></div>' +
+      '<div id="subMsg" class="submsg"></div>';
+    go.style.display = 'none';
+    if (!mountSignIn(document.getElementById('subWho'))) {
+      document.getElementById('subWho').innerHTML =
+        '<p class="fineprint">Google sign-in could not load. You can still get your completion code.</p>';
+      go.style.display = ''; go.textContent = 'Get my code'; go.onclick = doSubmit;
+    }
   }
 
   function doSubmit() {
-    var name = (document.getElementById('subName') || {}).value || '';
+    var name = signIn ? signIn.name : ((document.getElementById('subName') || {}).value || '');
     var form = (document.getElementById('subForm') || {}).value || '';
     var msg = document.getElementById('subMsg');
     var go = document.getElementById('subGo');
     if (name.trim().length < 3) { msg.className = 'submsg no'; msg.textContent = 'Please type your full name.'; return; }
-    setMyClass(form);                       /* now the gate knows which class this reader is in */
+
     var t = totals();
     var code = completionCode(name, form, t.done + '/' + t.total);
     var perStation = {};
@@ -998,10 +949,10 @@
       Object.keys(rec.per || {}).forEach(function (k) { if (+k < s.total) c += rec.per[k]; });
       perStation[id] = s.done + '/' + s.total + (c ? ' in ' + c : '');
     });
-    var payload = { app:'digestion-lab', token:(window.LAB_CONFIG || {}).submitToken || '',
-                    name:name.trim(), form:form, mode:mode,
+    var payload = { app:'digestion-lab', token: signIn ? signIn.token : '',
+                    name:name.trim(), form:form,
                     score:t.done, total:t.total, code:code,
-                    complete: mode === 'test' ? t.tried === t.total : t.done === t.total,
+                    complete: t.done === t.total,
                     checks:t.checks, firstTime:t.first1, tried:t.tried,
                     from: t.from ? new Date(t.from).toISOString() : '',
                     stations:perStation, at:new Date().toISOString() };
@@ -1013,9 +964,12 @@
       go.disabled = false;
       go.style.display = 'none';
       msg.className = 'submsg ok';
-      msg.innerHTML = (sent ? '<b>Sent to Dr Mompel.</b> ' : '<b>Could not reach the server.</b> ') +
+      msg.innerHTML = (sent ? '<b>Sent.</b> ' : '<b>Could not reach the server.</b> ') +
         'Your completion code is<div class="code">' + code + '</div>' +
-        (sent ? 'Keep it as your receipt.' : 'Paste this into the Google Classroom assignment to hand in.');
+        (sent
+          ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it is now in his records. Keep the code either way.'
+                    : 'Keep it as your receipt.')
+          : 'Paste this into the Google Classroom assignment to hand in.');
       var rec = { name:name.trim(), form:form, code:code, at:payload.at, sent:sent };
       try { localStorage.setItem('digestion-lab.submitted', JSON.stringify(rec)); } catch (e) {}
     }
@@ -1207,16 +1161,8 @@
       if (this.dataset.running === '1') stopTourUI(true); else startTour();
     });
 
-    window.Engine.setMode(mode);
-    document.getElementById('modeSel').addEventListener('change', function () { setMode(this.value); });
     document.getElementById('btnSubmit').addEventListener('click', openSubmit);
 
-    /* Ask whether Mastery is open, now and whenever the reader comes back to the tab, so
-       closing it in the middle of a lesson takes effect without anyone reloading. */
-    applyGate(true);
-    refreshGate(true);
-    document.addEventListener('visibilitychange', function () { if (!document.hidden) refreshGate(false); });
-    setInterval(function () { if (!document.hidden) refreshGate(false); }, 180000);
 
     wireTermClicks(document.getElementById('panel'));
     window.addEventListener('resize', closePeek);
@@ -1242,7 +1188,7 @@
     });
     document.getElementById('btnReset').addEventListener('click', function () {
       if (!confirm('Clear all your answers and start again? This cannot be undone.')) return;
-      progress = { mastery:{}, test:{} };
+      progress = {};
       try { localStorage.removeItem('digestion-lab.v2'); } catch (e) {}
       window.Anatomy.state.done = {};
       window.Anatomy.render(svg);
