@@ -31,7 +31,7 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:140, cy:150, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'The meal goes in. Chewing starts physical digestion at once, and saliva adds the first enzyme, amylase.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [15600, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:35000,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
          and then the bolus appears, already in the stomach. Each leg is [when, camera, how long]. */
@@ -47,9 +47,12 @@
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
-             [10600, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
-             [16800, 'In the stomach: churned (physical digestion), acid kills microbes, and pepsin starts on protein.'],
-             [23600, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
+             [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
+             /* The card moves to the top at 16800 too, so this sentence is already there when it
+                arrives rather than replacing the oesophagus one a moment afterwards. */
+             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria.'],
+             [23800, 'Pepsin, a protease, digests protein into polypeptides — the acid gives it the low pH it needs.'],
+             [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:18000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Along the small intestine the small, soluble molecules cross the villi into the blood — and most of the water goes the same way. The meal shrinks as it is absorbed.'],
@@ -472,13 +475,14 @@
             later(function () { A.travel(st, st - w, 700, function () { A.travel(st - w, st + w, 800); }); }, 300);
             later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 2200);
             later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 4000);
+            later(function () { A.travel(st + w, st - w, 800, function () { A.travel(st - w, st + w, 800); }); }, 5800);
             later(function () {
               A.travel(st + w, M.duodenum, 3600, function () {
                 drops(BILE, '#8DB43A', 2.2, 4.5, 6);
                 drops(PANC, '#E8C95A', 2.2, 4.5, 6);
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
-            }, 6000);
+            }, 9000);
           });
         }, 4000);                                                   /* the beat at the epiglottis */
       }); }, LEAD);
@@ -523,10 +527,10 @@
     noteTimers = [];
 
     noteAt = k;
-    if (card) {
-      if (k < 0) say(card, 'def', sc.def, true);
-      else say(card, 'note', sc.notes[k][1]);
-    }
+    /* Instant, not faded. say() otherwise schedules the swap 240ms later, and the setPaused
+       below holds that timer — so the card faded out and the words never arrived. A reader
+       who pressed a button wants the sentence now anyway. */
+    if (card) say(card, k < 0 ? 'def' : 'note', k < 0 ? sc.def : sc.notes[k][1], true);
     setPaused(true);
     paintStep();
   }
