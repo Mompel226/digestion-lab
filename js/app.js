@@ -119,22 +119,23 @@
     return { done:done, total:total, tried:tried, checks:checks, first1:first1, from:from };
   }
 
-  /* On a phone the "Whole body" button floats on the plate rather than sitting in the row
-     of toggles above it. That row wraps, so its height is not a number CSS can know —
-     measure it and hand it over. */
-  function sizeTools() {
-    var tools = document.querySelector('.bodycol__tools'), col = document.querySelector('.bodycol');
-    if (!tools || !col) return;
-    var h = tools.getBoundingClientRect().height;
-    if (h) col.style.setProperty('--toolsH', Math.round(h) + 'px');
+  /* On a phone the "Whole body" button floats on the plate instead of sitting in the row of
+     toggles above it. It cannot do that from inside the toggle row: the plate's <svg> paints
+     above that row, so the button is drawn but every touch goes straight through it to the
+     plate. So it moves house — into .bodywrap, after the svg — and back again on a wide
+     screen, where it belongs in the row with the other toggles. */
+  var mqPlate = window.matchMedia('(max-width:1000px)');
+  function placeWholeBody() {
+    var btn = document.getElementById('tBody');
+    var wrap = document.querySelector('.bodywrap');
+    var tools = document.querySelector('.bodycol__tools');
+    if (!btn || !wrap || !tools) return;
+    var home = mqPlate.matches ? wrap : tools;
+    if (btn.parentElement !== home) home.appendChild(btn);
   }
-  window.addEventListener('resize', sizeTools);
-  if (window.ResizeObserver) {
-    var ro = new ResizeObserver(sizeTools);
-    var tools0 = document.querySelector('.bodycol__tools');
-    if (tools0) ro.observe(tools0);
-  }
-  sizeTools();
+  if (mqPlate.addEventListener) mqPlate.addEventListener('change', placeWholeBody);
+  else if (mqPlate.addListener) mqPlate.addListener(placeWholeBody);
+  placeWholeBody();
 
   /* ---------- header ---------- */
   function paintHeader() {
