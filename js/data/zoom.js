@@ -335,17 +335,76 @@ window.ZOOM_DETAIL = {
   },
   "salivary-glands": {
     "organ": "salivary-glands",
-    "img": "zoom/salivary-glands-illus.jpg",
-    "window": [
-      66,
-      24,
-      160,
-      240
+    "focus": "salivary-glands",
+    "spotlight": [
+      "salivary-glands"
     ],
-    "fit": true,
-    "full": true,
+    "keep": true,
+    "noback": true,
+    "paint": [
+      {
+        "organ": "salivary-glands",
+        "fill": "none",
+        "stroke": "#B07A12",
+        "sw": 0.7,
+        "opacity": 0.65
+      }
+    ],
     "label": "The three pairs of salivary glands, and the ducts that carry saliva into the mouth",
-    "credit": "OpenStax College, CC BY 3.0",
+    "labels": [
+      {
+        "t": "parotid gland",
+        "plate": true,
+        "at": [
+          172,
+          133
+        ],
+        "tx": [
+          190,
+          116
+        ],
+        "anchor": "start"
+      },
+      {
+        "t": "parotid duct",
+        "plate": true,
+        "at": [
+          142,
+          130
+        ],
+        "tx": [
+          95,
+          112
+        ],
+        "anchor": "start"
+      },
+      {
+        "t": "submandibular gland",
+        "plate": true,
+        "at": [
+          149,
+          177
+        ],
+        "tx": [
+          164,
+          195
+        ],
+        "anchor": "start"
+      },
+      {
+        "t": "sublingual gland",
+        "plate": true,
+        "at": [
+          124,
+          164
+        ],
+        "tx": [
+          69,
+          183
+        ],
+        "anchor": "start"
+      }
+    ],
     "keys": [
       {
         "t": "food",
