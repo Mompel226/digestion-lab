@@ -493,96 +493,245 @@
 
   /* ---------------- egestion vs excretion ---------------- */
   function egestVsExcrete() {
+    var f1 = function (v) { return (+v).toFixed(1); };
     /* Two panels. The gut follows the orientation of the body plate beside it —
        descending colon down the viewer's RIGHT, sigmoid bending left, rectum and
        anus at the bottom — because drawing it the other way round teaches a
        second, contradictory picture of the same organ.
 
-       The cell is a cell: membrane, cytoplasm, nucleus with a nucleolus,
-       mitochondria with cristae, rough ER studded with ribosomes, a Golgi
-       stack, free ribosomes. The point of the panel is that excretion removes
-       what these organelles made, so they have to be visible. */
-    var LX = 12, LW = 268, RX = 302, RW = 306, PT = 28, PH = 268;
+       The cell is drawn as a proper cell, not a decoration: a partially permeable
+       membrane, cytoplasm, a nucleus with its double envelope, pores, chromatin and
+       nucleolus, mitochondria with cristae, rough ER studded with ribosomes, free
+       ribosomes, a Golgi stack and a vesicle leaving it for the membrane. The point
+       of the panel is that excretion removes what these organelles made, so they
+       have to be recognisable — and clicking any label opens what that part does,
+       because this is Year 7 work being used again two years later. */
+    var LX = 12, LW = 216, RX = 244, RW = 364, PT = 26, PB = 382;
+    /* the cell sits a little left of the panel's centre: the labels on its right
+       ("Golgi apparatus", "mitochondrion") are the long ones and must stay inside */
+    var DX = -12;
 
     /* --- the last of the gut, oriented like the plate --- */
-    var gutPath = 'M232,96 L232,150 Q232,178 206,190 L176,196 Q152,202 152,224';
+    var gutPath = 'M168,192 L168,244 Q168,272 144,284 L118,290 Q96,296 96,320';
     var gut =
-      '<path d="' + gutPath + '" fill="none" stroke="#B07E4A" stroke-width="30" stroke-linecap="round"/>' +
-      '<path d="' + gutPath + '" fill="none" stroke="#EFDFCB" stroke-width="23" stroke-linecap="round"/>' +
-      [[232,112],[232,146],[210,186],[176,196]].map(function (p) {
-        return '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="7.5" ry="5.6" fill="#A9713C" opacity=".85"/>';
+      '<path d="' + gutPath + '" fill="none" stroke="#B07E4A" stroke-width="26" stroke-linecap="round"/>' +
+      '<path d="' + gutPath + '" fill="none" stroke="#EFDFCB" stroke-width="19" stroke-linecap="round"/>' +
+      [[168,206],[168,240],[146,282],[118,290]].map(function (p) {
+        return '<ellipse cx="' + p[0] + '" cy="' + p[1] + '" rx="6.6" ry="5" fill="#A9713C" opacity=".85"/>';
       }).join('') +
-      '<ellipse cx="152" cy="230" rx="13" ry="5.5" fill="#C08B57" stroke="#8A5A2B" stroke-width="2"/>' +
-      '<ellipse cx="152" cy="230" rx="5" ry="2.2" fill="#6E4423"/>' +
-      '<path class="ld" d="M138,230 L118,230"/>' +
-      '<text class="fs" x="114" y="233" text-anchor="end">anus</text>' +
-      '<path class="ld" d="M216,124 L206,124"/>' +
-      '<text class="fs" x="202" y="127" text-anchor="end">colon</text>' +
-      '<path class="ld" d="M196,208 L212,214"/>' +
-      '<text class="fs" x="216" y="217">rectum</text>';
+      '<ellipse cx="96" cy="326" rx="12" ry="5.2" fill="#C08B57" stroke="#8A5A2B" stroke-width="2"/>' +
+      '<ellipse cx="96" cy="326" rx="4.6" ry="2.1" fill="#6E4423"/>' +
+      '<path class="ld" d="M154,210 L146,210"/>' +
+      '<text class="fs" x="142" y="213" text-anchor="end">colon</text>' +
+      '<path class="ld" d="M126,298 L136,306"/>' +
+      '<text class="fs" x="140" y="309">rectum</text>' +
+      '<path class="ld" d="M83,326 L72,326"/>' +
+      '<text class="fs" x="68" y="329" text-anchor="end">anus</text>';
 
-    /* --- a body cell --- */
-    var CX = 414, CY = 158;
+    /* --- a body cell, drawn to be read --- */
+    var CELL = 'M436,116 C468,113 494,125 506,147 C518,169 516,197 508,217 ' +
+               'C498,241 476,258 450,264 C424,270 396,264 378,248 C360,232 352,208 354,186 ' +
+               'C356,160 372,138 396,126 C408,120 420,117 436,116 Z';
     function mito(x, y, rot) {
       return '<g transform="translate(' + x + ',' + y + ') rotate(' + rot + ')">' +
-        '<rect x="-17" y="-8" width="34" height="16" rx="8" fill="#F2C9A6" stroke="#B5713A" stroke-width="1.6"/>' +
-        '<path d="M-11,-6 q5,6 0,12 M-3,-6 q5,6 0,12 M5,-6 q5,6 0,12" fill="none" stroke="#B5713A" stroke-width="1.3"/>' +
-        '</g>';
+        '<rect x="-23" y="-11" width="46" height="22" rx="11" fill="#F7D6B4" stroke="#B5713A" stroke-width="1.9"/>' +
+        '<rect x="-19.5" y="-7.5" width="39" height="15" rx="7.5" fill="none" stroke="#D89A63" stroke-width="1"/>' +
+        '<path d="M-14,-7.5 q7,7.5 0,15 M-6,-7.5 q7,7.5 0,15 M2,-7.5 q7,7.5 0,15 M10,-7.5 q7,7.5 0,15" ' +
+        'fill="none" stroke="#B5713A" stroke-width="1.4" stroke-linecap="round"/></g>';
     }
-    var cell =
-      /* cytoplasm and membrane */
-      '<path d="M414,92 C462,90 486,120 484,158 C482,196 456,224 414,224 ' +
-      'C372,224 344,198 344,158 C344,120 368,94 414,92 Z" ' +
-      'fill="#E4F1F7" stroke="#0F6E8C" stroke-width="3"/>' +
-      '<path d="M414,98 C458,96 479,124 477,158 C475,192 452,218 414,218 ' +
-      'C376,218 351,194 351,158 C351,124 372,100 414,98 Z" ' +
-      'fill="none" stroke="#8FBDD4" stroke-width="1.4"/>' +
-      /* nucleus */
-      '<ellipse cx="404" cy="146" rx="30" ry="25" fill="#BBD9E8" stroke="#0F6E8C" stroke-width="2"/>' +
-      '<ellipse cx="404" cy="146" rx="25" ry="20" fill="none" stroke="#7FB2CE" stroke-width="1.2"/>' +
-      '<ellipse cx="410" cy="144" rx="9" ry="7.5" fill="#5B8FB5"/>' +
-      /* rough ER, studded with ribosomes */
-      '<path d="M368,178 q18,-9 36,-2 M366,188 q20,-9 40,-2" fill="none" stroke="#0F6E8C" stroke-width="1.6"/>' +
-      [[371,176],[381,173],[391,173],[401,176],[369,186],[380,183],[391,183],[402,186]].map(function (p) {
-        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.7" fill="#0B5670"/>';
-      }).join('') +
-      /* Golgi stack with a vesicle */
-      '<g transform="translate(452,182)">' +
-      '<path d="M-16,-6 q16,-6 30,-1 M-16,0 q16,-6 30,-1 M-16,6 q16,-6 30,-1" fill="none" stroke="#7A4FA0" stroke-width="1.9" stroke-linecap="round"/>' +
-      '<circle cx="18" cy="8" r="3.2" fill="#7A4FA0"/></g>' +
-      /* mitochondria */
-      mito(372, 128, -24) + mito(452, 132, 16) +
-      /* free ribosomes */
-      [[430,196],[420,204],[440,168],[386,204],[398,196]].map(function (p) {
-        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="1.9" fill="#0B5670"/>';
+    /* a flattened sac: a thick line for the membrane, a pale one for the lumen */
+    function sac(d, w) {
+      return '<path d="' + d + '" fill="none" stroke="#0F6E8C" stroke-width="' + (w || 4.6) + '" stroke-linecap="round"/>' +
+             '<path d="' + d + '" fill="none" stroke="#DCEBF3" stroke-width="' + ((w || 4.6) - 2.6) + '" stroke-linecap="round"/>';
+    }
+    function dots(list, r, attrs) {
+      return list.map(function (p) {
+        return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="' + (r || 2) + '" ' + (attrs || 'fill="#14415A"') + '/>';
       }).join('');
+    }
+    var HALO = 'fill="none" stroke="#E8A33D" stroke-width="1.8"';
+    var ERD = ['M370,198 q26,-12 52,-4', 'M368,209 q26,-12 52,-4', 'M370,220 q26,-12 52,-4'];
+    var ERDOTS = [[372,194],[382,190],[392,189],[402,190],[412,192],[422,195],
+                  [370,205],[380,201],[390,200],[400,201],[410,203],[420,206],
+                  [372,216],[382,212],[392,211],[402,212],[412,214],[422,217]];
+    var FREE = [[396,238],[412,250],[430,234],[378,182],[444,128]];
+    var NX = 455, NY = 162;
+    var cell =
+      /* cytoplasm and membrane: an outer line and a thin inner one — the bilayer */
+      '<path d="' + CELL + '" fill="#FBFDFE" stroke="#0F6E8C" stroke-width="3.2"/>' +
+      '<path d="M436,121 C466,118 490,130 501,150 C512,170 511,196 503,215 ' +
+      'C494,237 474,253 450,259 C426,264 399,259 382,244 C365,229 357,207 359,187 ' +
+      'C361,163 376,142 398,131 C409,125 421,122 436,121 Z" ' +
+      'fill="none" stroke="#9CC6DA" stroke-width="1.3"/>' +
+      /* rough ER, studded with ribosomes */
+      ERD.map(function (d) { return sac(d); }).join('') + dots(ERDOTS, 1.9) +
+      /* Golgi stack, with a vesicle budding off the end */
+      '<g transform="translate(478,206)">' +
+      sac('M-22,-13 q22,-12 42,-2', 4.4) + sac('M-21,-5 q21,-11 40,-2', 4.4) +
+      sac('M-20,3 q20,-10 38,-2', 4.4) + sac('M-18,11 q19,-9 36,-2', 4.4) +
+      '<circle cx="24" cy="-14" r="4.2" fill="#DCEBF3" stroke="#0F6E8C" stroke-width="1.4"/>' +
+      '<circle cx="-25" cy="11" r="3.6" fill="#DCEBF3" stroke="#0F6E8C" stroke-width="1.3"/>' +
+      '<circle cx="21" cy="17" r="3.2" fill="#DCEBF3" stroke="#0F6E8C" stroke-width="1.3"/></g>' +
+      /* a vesicle on its way to the membrane */
+      '<circle cx="498" cy="176" r="8.8" fill="#DCEBF3" stroke="#0F6E8C" stroke-width="1.7"/>' +
+      dots([[498,176]], 2.4, 'fill="#9CC6DA"') +
+      '<path d="M489,190 q5,-7 6,-9" fill="none" stroke="#0F6E8C" stroke-width="1.2" stroke-dasharray="2.5 2.5"/>' +
+      '<path d="M505,168 q4,-4 6,-6" fill="none" stroke="#0F6E8C" stroke-width="1.2" stroke-dasharray="2.5 2.5"/>' +
+      /* mitochondria */
+      mito(390, 162, -20) + mito(462, 244, 10) +
+      /* nucleus: double envelope with pores, chromatin, nucleolus */
+      '<ellipse cx="' + NX + '" cy="' + NY + '" rx="33" ry="28" fill="#BAD6E7" stroke="#0F6E8C" stroke-width="2.1"/>' +
+      '<ellipse cx="' + NX + '" cy="' + NY + '" rx="29" ry="24" fill="none" stroke="#7FB2CE" stroke-width="1.2"/>' +
+      [200, 250, 330, 20, 80, 140].map(function (a) {
+        var r = a * Math.PI / 180, x1 = NX + 33 * Math.cos(r), y1 = NY + 28 * Math.sin(r);
+        var x2 = NX + 28.4 * Math.cos(r), y2 = NY + 24.1 * Math.sin(r);
+        return '<line x1="' + f1(x1) + '" y1="' + f1(y1) + '" x2="' + f1(x2) + '" y2="' + f1(y2) +
+               '" stroke="#EAF4F9" stroke-width="3" stroke-linecap="round"/>';
+      }).join('') +
+      '<path d="M431,150 q9,-7 18,-1 q9,6 18,-3 M429,163 q11,7 22,1 q9,-5 17,2 ' +
+      'M434,175 q10,5 20,0 q8,-4 15,1 M441,141 q9,-4 17,0" ' +
+      'fill="none" stroke="#79A5BF" stroke-width="1.5" stroke-linecap="round"/>' +
+      '<ellipse cx="466" cy="167" rx="9.5" ry="7.6" fill="#3F6F94"/>' +
+      /* free ribosomes */
+      dots(FREE, 2) +
+      /* what the cell made, leaving it */
+      arrowDefs('exc', '#0F6E8C') +
+      arrow('exc', '#0F6E8C', 'M470,254 L505,270', 1.6) +
+      '<text class="fs" x="508" y="274" style="fill:#0F6E8C">carbon dioxide</text>' +
+      arrow('exc', '#0F6E8C', 'M416,258 L378,272', 1.6) +
+      '<text class="fs" x="374" y="276" text-anchor="end" style="fill:#0F6E8C">urea</text>';
 
-    var cellLabels =
-      '<path class="ld" d="M498,130 L430,140"/><text class="fs" x="502" y="133">nucleus</text>' +
-      '<path class="ld" d="M498,156 L466,136"/><text class="fs" x="502" y="159">mitochondrion</text>' +
-      '<path class="ld" d="M498,182 L470,182"/><text class="fs" x="502" y="185">Golgi apparatus</text>' +
-      '<path class="ld" d="M498,208 L404,190"/><text class="fs" x="502" y="211">ribosomes</text>' +
-      '<path class="ld" d="M498,232 L474,204"/><text class="fs" x="502" y="235">cell membrane</text>';
+    /* --- the labels, and what each part does --- */
+    var ORG = [
+      { k:'cytoplasm', t:'cytoplasm', side:'L', ly:142, ax:388, ay:132, core:1,
+        ring:'<path d="' + CELL + ' M422,162 a33,28 0 1,0 66,0 a33,28 0 1,0 -66,0" ' +
+             'fill-rule="evenodd" fill="#E8A33D" opacity=".16"/>',
+        body:'The jelly-like fluid that fills the cell. Most of the cell’s chemical ' +
+             'reactions happen in it, and the organelles sit in it. Urea is made by reactions like these in a liver cell.' },
+      { k:'membrane', t:'cell membrane', side:'L', ly:176, ax:346, ay:168, core:1,
+        ring:'<path d="' + CELL + '" fill="none" stroke="#E8A33D" stroke-width="4.6"/>',
+        body:'A thin, partially permeable skin around the whole cell. It holds the cell ' +
+             'together and controls what enters and leaves — the waste made inside passes out through it.' },
+      { k:'er', t:'rough\nendoplasmic\nreticulum', side:'L', ly:198, ax:366, ay:206, core:0,
+        ring:ERD.map(function (d) { return '<path d="' + d + '" fill="none" stroke="#E8A33D" stroke-width="7.6" opacity=".55" stroke-linecap="round"/>'; }).join(''),
+        body:'Folded sheets of membrane covered in ribosomes. Proteins made on them are ' +
+             'folded here and passed on to the Golgi apparatus.' },
+      { k:'ribosomes', t:'ribosomes', side:'L', ly:258, ax:384, ay:238, core:1,
+        ring:dots(FREE, 4.6, HALO) + dots(ERDOTS, 3.8, 'fill="none" stroke="#E8A33D" stroke-width="1.3"'),
+        body:'Tiny grains where proteins are made — enzymes among them. Some float free in ' +
+             'the cytoplasm; others are attached to the rough endoplasmic reticulum.' },
+      { k:'nucleus', t:'nucleus', side:'R', ly:146, ax:464, ay:150, core:1,
+        ring:'<ellipse cx="' + NX + '" cy="' + NY + '" rx="36" ry="31" fill="none" stroke="#E8A33D" stroke-width="3.2"/>',
+        body:'The control centre. It holds the chromosomes — the DNA carrying the instructions ' +
+             'for every protein the cell makes. The dark spot inside it is the nucleolus.' },
+      { k:'vesicle', t:'vesicle', side:'R', ly:180, ax:486, ay:176, core:0,
+        ring:'<circle cx="498" cy="176" r="12.5" fill="none" stroke="#E8A33D" stroke-width="2.6"/>',
+        body:'A small bag of membrane. It carries a finished substance to the cell membrane ' +
+             'and releases it outside the cell.' },
+      { k:'golgi', t:'Golgi apparatus', side:'R', ly:212, ax:484, ay:206, core:0,
+        ring:'<ellipse cx="478" cy="206" rx="30" ry="21" fill="none" stroke="#E8A33D" stroke-width="2.6"/>',
+        body:'The packing department. It finishes proteins, packs them into vesicles and ' +
+             'sends them to the cell membrane.' },
+      { k:'mito', t:'mitochondrion', side:'R', ly:252, ax:466, ay:248, core:1,
+        ring:'<ellipse cx="390" cy="162" rx="28" ry="18" fill="none" stroke="#E8A33D" stroke-width="2.6" transform="rotate(-20 390 162)"/>' +
+             '<ellipse cx="462" cy="244" rx="28" ry="18" fill="none" stroke="#E8A33D" stroke-width="2.6" transform="rotate(10 462 244)"/>',
+        body:'Where aerobic respiration happens: it releases energy from glucose. The carbon ' +
+             'dioxide that has to be excreted is made here. (Plural: mitochondria.)' }
+    ];
+
+    /* wrap a sentence to the width of the card */
+    function wrap(t, max) {
+      var out = [], line = '';
+      t.split(' ').forEach(function (w) {
+        if (line && (line + ' ' + w).length > max) { out.push(line); line = w; }
+        else line = line ? line + ' ' + w : w;
+      });
+      if (line) out.push(line);
+      return out;
+    }
+    var LTX = 334, RTX = 514, CARD = { x:256, y:286, w:340, h:92 };
+    var labels = ORG.map(function (o) {
+      var lines = o.t.split('\n'), left = o.side === 'L';
+      var tx = left ? LTX : RTX, sx = left ? LTX + 4 : RTX - 4;
+      var wmax = 0; lines.forEach(function (l) { wmax = Math.max(wmax, l.length); });
+      var w = wmax * 6 + 8, hx = left ? tx - w : tx - 8;
+      return '<g class="fig-lens orglab orglab--' + o.k + '" data-view="' + o.k + '" role="button" tabindex="0" ' +
+             'aria-expanded="false"><title>What does it do?</title>' +
+             '<rect class="hit" x="' + f1(hx) + '" y="' + (o.ly - 12) + '" width="' + f1(w) + '" height="' + Math.max(20, lines.length * 13 + 8) + '" rx="4"/>' +
+             '<path class="ld" d="M' + sx + ',' + (o.ly - 4) + ' L' + o.ax + ',' + o.ay + '"/>' +
+             '<circle class="dot" cx="' + o.ax + '" cy="' + o.ay + '" r="2.1"/>' +
+             '<text x="' + tx + '" y="' + o.ly + '" text-anchor="' + (left ? 'end' : 'start') + '">' +
+             lines.map(function (l, i) { return '<tspan x="' + tx + '" dy="' + (i ? '13' : '0') + '">' + l + '</tspan>'; }).join('') +
+             '</text></g>';
+    }).join('');
+    var rings = ORG.map(function (o) { return '<g class="orgring orgring--' + o.k + '">' + o.ring + '</g>'; }).join('');
+    var cards = ORG.map(function (o) {
+      var body = wrap(o.body, 57);
+      return '<g class="orgcard orgcard--' + o.k + '">' +
+        '<rect x="' + CARD.x + '" y="' + CARD.y + '" width="' + CARD.w + '" height="' + CARD.h + '" rx="10" ' +
+        'fill="#FFFFFF" stroke="#0F6E8C" stroke-width="1.6"/>' +
+        '<text class="cardt" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 20) + '">' + o.t.replace('\n', ' ') + '</text>' +
+        '<rect x="' + (CARD.x + CARD.w - (o.core ? 96 : 118)) + '" y="' + (CARD.y + 8) + '" width="' + (o.core ? 62 : 84) + '" height="15" rx="7.5" ' +
+        'fill="' + (o.core ? '#E4F1E8' : '#F3EEE2') + '" stroke="' + (o.core ? '#2E7D46' : '#B9A87E') + '" stroke-width="1"/>' +
+        '<text class="cardtag" x="' + (CARD.x + CARD.w - (o.core ? 65 : 76)) + '" y="' + (CARD.y + 19) + '" text-anchor="middle" ' +
+        'style="fill:' + (o.core ? '#2E7D46' : '#8A7647') + '">' + (o.core ? 'in 0610' : 'beyond 0610') + '</text>' +
+        '<text class="cardb" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 38) + '">' +
+        body.map(function (l, i) { return '<tspan x="' + (CARD.x + 14) + '" dy="' + (i ? '15' : '0') + '">' + l + '</tspan>'; }).join('') +
+        '</text>' +
+        '<g class="fig-lens orgclose" data-view="' + o.k + '" role="button" tabindex="0"><title>Close</title>' +
+        '<circle cx="' + (CARD.x + CARD.w - 16) + '" cy="' + (CARD.y + 16) + '" r="9" fill="#F1EDE3" stroke="#B9AE9B" stroke-width="1"/>' +
+        '<path d="M' + (CARD.x + CARD.w - 20) + ',' + (CARD.y + 12) + ' l8,8 M' + (CARD.x + CARD.w - 12) + ',' + (CARD.y + 12) +
+        ' l-8,8" stroke="#6B6B6B" stroke-width="1.6" stroke-linecap="round"/></g></g>';
+    }).join('');
+    var css = '<style>' +
+      '.fig-cellmap .orgcard,.fig-cellmap .orgring{display:none}' +
+      ORG.map(function (o) {
+        return '.fig-cellmap[data-view="' + o.k + '"] .orgcard--' + o.k + ',' +
+               '.fig-cellmap[data-view="' + o.k + '"] .orgring--' + o.k + '{display:block}' +
+               '.fig-cellmap[data-view="' + o.k + '"] .orglab--' + o.k + ' text{fill:#0B4F66;font-weight:700}';
+      }).join('') +
+      '.fig-cellmap[data-view] .excnote{display:none}' +
+      '.fig-cellmap .orglab{cursor:pointer}' +
+      '.fig-cellmap .orglab .hit{fill:#FFFFFF;fill-opacity:0}' +
+      '.fig-cellmap .orglab text{font:600 11px Calibri,Carlito,sans-serif;fill:#0F6E8C;' +
+      'text-decoration:underline;text-decoration-style:dotted;text-underline-offset:2px}' +
+      '.fig-cellmap .orglab .dot{fill:#0F6E8C}' +
+      '.fig-cellmap .orglab .ld{stroke:#7FA9BB;stroke-width:1.1}' +
+      '.fig-cellmap .orglab:hover text,.fig-cellmap .orglab:focus-visible text{fill:#0B4F66}' +
+      '.fig-cellmap .orglab:hover .hit,.fig-cellmap .orglab:focus-visible .hit{fill-opacity:.55}' +
+      '.fig-cellmap .orglab:focus{outline:none}' +
+      '.fig-cellmap .orgclose{cursor:pointer}' +
+      '.fig-cellmap .cardt{font:700 12.5px Calibri,Carlito,sans-serif;fill:#0F6E8C}' +
+      '.fig-cellmap .cardtag{font:700 9px Calibri,Carlito,sans-serif;letter-spacing:.04em}' +
+      '.fig-cellmap .cardb{font:500 11px Calibri,Carlito,sans-serif;fill:#26414B}' +
+      '</style>';
 
     return {
-      svg: svg('0 0 620 348',
-        '<rect x="' + LX + '" y="' + PT + '" width="' + LW + '" height="' + PH + '" rx="14" fill="#FCF4E7" stroke="#B07E4A" stroke-width="2.4"/>' +
-        '<rect x="' + RX + '" y="' + PT + '" width="' + RW + '" height="' + PH + '" rx="14" fill="#E8F3F8" stroke="#0F6E8C" stroke-width="2.4"/>' +
-        '<text class="fb" x="146" y="56" text-anchor="middle" style="fill:#8A5A2B">EGESTION</text>' +
-        '<text class="fs" x="146" y="74" text-anchor="middle">never entered a cell</text>' +
-        '<text class="fb" x="455" y="56" text-anchor="middle" style="fill:#0F6E8C">EXCRETION</text>' +
-        '<text class="fs" x="455" y="74" text-anchor="middle">made inside cells</text>' +
-        gut + cell + cellLabels +
-        '<text class="fb" x="30" y="112" style="fill:#8A5A2B">Fibre / roughage</text>' +
-        '<text class="fb" x="30" y="140" style="fill:#8A5A2B">Undigested food</text>' +
-        '<text class="fb" x="30" y="168" style="fill:#8A5A2B">Dead gut cells</text>' +
-        '<text class="fs" x="146" y="274" text-anchor="middle">passed out as faeces</text>' +
-        '<text class="fs" x="455" y="256" text-anchor="middle">Urea from the liver leaves in urine.</text>' +
-        '<text class="fs" x="455" y="272" text-anchor="middle">Carbon dioxide from respiration leaves in the breath.</text>' +
-        '<text class="fl" x="310" y="320" text-anchor="middle">Food in the gut is still ' +
+      svg: svg('0 0 620 430',
+        css +
+        '<rect x="' + LX + '" y="' + PT + '" width="' + LW + '" height="' + (PB - PT) + '" rx="14" fill="#FCF4E7" stroke="#B07E4A" stroke-width="2.4"/>' +
+        '<rect x="' + RX + '" y="' + PT + '" width="' + RW + '" height="' + (PB - PT) + '" rx="14" fill="#E8F3F8" stroke="#0F6E8C" stroke-width="2.4"/>' +
+        '<text class="fb" x="120" y="52" text-anchor="middle" style="fill:#8A5A2B;font-size:15px">EGESTION</text>' +
+        '<text class="fs" x="120" y="70" text-anchor="middle">never entered a cell</text>' +
+        '<text class="fb" x="426" y="52" text-anchor="middle" style="fill:#0F6E8C;font-size:15px">EXCRETION</text>' +
+        '<text class="fs" x="426" y="70" text-anchor="middle">made inside cells</text>' +
+        '<text class="fb" x="26" y="102" style="fill:#8A5A2B">Fibre / roughage</text>' +
+        '<text class="fb" x="26" y="126" style="fill:#8A5A2B">Undigested food</text>' +
+        '<text class="fb" x="26" y="150" style="fill:#8A5A2B">Dead gut cells</text>' +
+        gut +
+        '<text class="fs" x="120" y="360" text-anchor="middle">passed out as faeces</text>' +
+        '<g transform="translate(' + DX + ',0)">' + cell + rings + '</g>' + labels + cards +
+        '<g class="excnote">' +
+        '<text class="fs" x="426" y="302" text-anchor="middle">Urea from the liver leaves in urine.</text>' +
+        '<text class="fs" x="426" y="318" text-anchor="middle">Carbon dioxide from respiration leaves in the breath.</text>' +
+        '<text class="fs" x="426" y="340" text-anchor="middle" style="fill:#26414B">The five 0610 asks for: cell membrane, cytoplasm, nucleus,</text>' +
+        '<text class="fs" x="426" y="354" text-anchor="middle" style="fill:#26414B">mitochondria and ribosomes. The other three are Year 7 background.</text>' +
+        '<text class="fs" x="426" y="374" text-anchor="middle" style="fill:#0F6E8C;font-weight:700">Click any label to see what that part does.</text>' +
+        '</g>' +
+        '<text class="fl" x="310" y="404" text-anchor="middle">Food in the gut is still ' +
         '<tspan style="fill:#14572B" font-weight="700">outside</tspan> your cells, so getting rid of it is egestion.</text>' +
-        '<text class="fl" x="310" y="338" text-anchor="middle">Excretion removes what the cells themselves made.</text>'),
-      cap:'The alimentary canal is a tube running <i>through</i> the body, and what is in the tube has never been inside a cell. <b>Egestion</b> passes that out. <b>Excretion</b> removes waste the cells made &#8212; urea from the liver, carbon dioxide from respiration in the mitochondria. Different processes, and 0610 asks you to tell them apart.'
+        '<text class="fl" x="310" y="422" text-anchor="middle">Excretion removes waste the cells themselves made.</text>', 'fig-cellmap'),
+      cap:'The alimentary canal is a tube running <i>through</i> the body, and what is in the tube has never been inside a cell. <b>Egestion</b> passes that out. <b>Excretion</b> removes waste the cells made &#8212; urea from the liver, carbon dioxide from respiration in the mitochondria. Different processes, and 0610 asks you to tell them apart. <b>Click any label on the cell</b> to remind yourself what that part does.'
     };
   }
 
