@@ -66,6 +66,7 @@
     if (!svg) return null;
     var r = svg.getBoundingClientRect();
     if (!(r.width > 0 && r.height > 0)) return null;
+    seenW = r.width; watchPane(svg);
     var paneA = r.height / r.width, vw, vh;
     if (paneA < frame.h / frame.w) { vh = frame.h; vw = frame.h / paneA; }   /* fitted by height */
     else { vw = frame.w; vh = frame.w * paneA; }                             /* fitted by width  */
@@ -82,6 +83,23 @@
       if (ch > 8) box.bottom = Math.min(box.y + box.h - ch / scale - 8, box.y + box.h * 0.90);
     }
     return box;
+  }
+
+  /* The bench is drawn once, from measurements taken while the page is still settling: the
+     first draw here was laid out for a 408px pane that turned out to be 499px, leaving the
+     bench two thirds of the room it had. Watch the plate and ask for one redraw when its size
+     actually changes — Zoom.refresh() re-applies the step, and the bench keeps its own state,
+     so redrawing costs the reader nothing. */
+  var seenW = 0, watching = false;
+  function watchPane(svg) {
+    if (watching || typeof ResizeObserver === 'undefined' || !svg) return;
+    watching = true;
+    new ResizeObserver(function () {
+      var w = svg.getBoundingClientRect().width;
+      if (!w || Math.abs(w - seenW) < 2) return;
+      seenW = w;
+      if (global.Zoom && global.Zoom.refresh) global.Zoom.refresh();
+    }).observe(svg);
   }
 
   function layout(frame) {
@@ -235,7 +253,16 @@
     }
     return g;
   }
-  /* ---------- the bench ---------- */
+  /* ---------- the bench ----------
+     Button text is 11px semi-bold Calibri, which measures about 5.9 units a character. Pick the
+     longest wording that actually fits the column rather than trusting a guessed threshold —
+     "Run 30 minutes" wants 94 units and was being put in a 75-unit pill. */
+  function fits(label, w) { return label.length * 5.9 + 12 <= w; }
+  function pick(list, w) {
+    for (var i = 0; i < list.length; i++) if (fits(list[i], w)) return list[i];
+    return list[list.length - 1];
+  }
+
   function btn(id, x, y, w, h, label, on, sub, off) {
     return '<g class="bn' + (on ? ' is-on' : '') + '" data-bench="' + esc(id) + '" role="button" tabindex="0"' +
            (off ? ' opacity=".38"' : '') + '>' +
@@ -307,15 +334,16 @@
     var pw = (colW - GAP * 2) / 3;
     var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
 
-    g += btn('run', col[0], R.btn, pw, 26,
-             S.ran ? 'clock has run' : (pw < 70 ? 'Run 30 min' : 'Run 30 minutes'), S.ran);
+    g += btn('run', col[0], R.btn, pw, 26, S.ran
+             ? pick(['the clock has run', 'clock has run', 'clock run', 'done'], pw)
+             : pick(['Run 30 minutes', 'Run 30 min', 'Run 30'], pw), S.ran);
     /* the two tests keep their places whether or not there is anything to test, so the grid
        does not rearrange itself under the reader between one tap and the next */
-    g += btn('test:iodine', col[1], R.btn, pw, 26, 'iodine',
+    g += btn('test:iodine', col[1], R.btn, pw, 26, pick(['iodine solution', 'iodine'], pw),
              !!(S.result && S.result.kind === 'iodine'), null, !S.sample);
-    g += btn('test:benedict', col[2], R.btn, pw, 26, 'Benedict\u2019s',
+    g += btn('test:benedict', col[2], R.btn, pw, 26, pick(['Benedict\u2019s solution', 'Benedict\u2019s'], pw),
              !!(S.result && S.result.kind === 'benedict'), null, !S.sample);
-    g += btn('reset', col[0], R.reset, pw, 22, 'Start again', false);
+    g += btn('reset', col[0], R.reset, pw, 22, pick(['Start again', 'Reset'], pw), false);
 
     /* The sample stands in its own column, spanning both rows, and shows the colour that test
        would actually produce — with a flame under it when it has been heated. */
