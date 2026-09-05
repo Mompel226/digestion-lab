@@ -107,18 +107,23 @@
   }
 
   function layout(frame) {
-    if (frame && frame.w) F = { x:frame.x, y:frame.y, w:frame.w, h:frame.h };
+    function setF(b) { F.x = b.x; F.y = b.y; F.w = b.w; F.h = b.h; }   /* in place: Bench.F is exported */
+    if (frame && frame.w) setF(frame);
     var vis = frame && frame.w ? visibleBox(frame) : null, bottom = null;
-    if (vis) { bottom = typeof vis.bottom === 'number' ? vis.bottom : null; F = { x:vis.x, y:vis.y, w:vis.w, h:vis.h }; }
+    if (vis) { bottom = typeof vis.bottom === 'number' ? vis.bottom : null; setF(vis); }
     var strip = bottom !== null ? bottom : F.y + F.h * 0.82;   /* nothing may go below it */
-    R.say = F.y + F.h * 0.030;
-    R.key = F.y + F.h * 0.076;
-    R.clock = strip - 79; R.btn = strip - 71; R.reset = strip - 37;
-    R.swatch = strip - 38; R.res = strip - 27; R.sub = strip - 16;
+    /* A phone gives the plate a landscape strip, so there is no vertical room to spend on
+       margins: the writing closes up and everything saved goes into the height of the tubes. */
+    var short = F.h < F.w;
+    R.say = F.y + F.h * (short ? 0.026 : 0.030);
+    R.key = F.y + F.h * (short ? 0.066 : 0.076);
+    var band = short ? 72 : 79;
+    R.clock = strip - band; R.btn = strip - (band - 8); R.reset = strip - (band - 38);
+    R.swatch = strip - (band - 37); R.res = strip - (band - 48); R.sub = strip - (band - 58);
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
-    RACK.y = F.y + F.h * 0.150;
-    RACK.h = Math.max(120, R.clock - 66 - RACK.y);   /* the captions sit in here, with air below them */
+    RACK.y = F.y + F.h * (short ? 0.120 : 0.150);
+    RACK.h = Math.max(120, R.clock - (short ? 58 : 66) - RACK.y);   /* the captions sit in here, with air below them */
     RACK.w = Math.min(F.w * 0.25, RACK.h * (F.h < F.w ? 0.55 : 0.44));
     /* the second figure keeps it a boiling tube; on a short, wide pane — a phone in portrait,
        where the plate gets a landscape strip — a slightly squatter tube is the only way the
