@@ -70,14 +70,14 @@
     var cap = frame.w * 1.55;
     if (vw > cap) vw = cap;                    /* or the bench sprawls on a very wide pane */
     var box = { x:frame.x + frame.w / 2 - vw / 2, y:frame.y + frame.h / 2 - vh / 2, w:vw, h:vh };
-    /* the caption strip is a real element: ask it where it starts rather than guessing */
-    var el = document.querySelector('.detailstrip');
-    if (el) {
-      var cr = el.getBoundingClientRect(), scale = r.height / vh;
-      if (cr.height > 2 && scale > 0) {
-        var b = box.y + (cr.top - r.top) / scale - 6;
-        if (b > box.y + box.h * 0.5) box.bottom = Math.min(b, box.y + box.h);
-      }
+    /* Reserve the caption strip. Ask it how TALL it is, never where its top is: the strip
+       slides in after the bench is drawn, so its top at draw time is a number that will not
+       be true a moment later — that is how Start again ended up underneath it. */
+    var el = document.querySelector('.detailstrip'), scale = r.height / vh;
+    box.bottom = box.y + box.h * 0.82;
+    if (el && scale > 0) {
+      var ch = el.getBoundingClientRect().height;
+      if (ch > 8) box.bottom = Math.min(box.y + box.h - ch / scale - 8, box.y + box.h * 0.90);
     }
     return box;
   }
@@ -85,7 +85,7 @@
   function layout(frame) {
     if (frame && frame.w) F = { x:frame.x, y:frame.y, w:frame.w, h:frame.h };
     var vis = frame && frame.w ? visibleBox(frame) : null, bottom = null;
-    if (vis) { bottom = vis.bottom || null; F = { x:vis.x, y:vis.y, w:vis.w, h:vis.h }; }
+    if (vis) { bottom = typeof vis.bottom === 'number' ? vis.bottom : null; F = { x:vis.x, y:vis.y, w:vis.w, h:vis.h }; }
     var strip = bottom !== null ? bottom : F.y + F.h * 0.82;   /* nothing may go below it */
     R.say = F.y + F.h * 0.032;
     R.key = F.y + F.h * 0.062;
@@ -100,6 +100,7 @@
     R.left = F.x + Math.max(6, (F.w - pip - tot) / 2);
     for (var c = 0; c < 3; c++) CX[c] = R.left + RACK.w / 2 + c * sp;
     R.right = R.left + tot;
+    R.mid = R.left + tot / 2;   /* the writing belongs over the bench, not over the pipette's margin */
     /* Molecules scale with the tube, but never past the point where the fullest tube — three
        starch and an amylase — would not fit inside the tubing. */
     R.mol = Math.min(RACK.w / 56, (RACK.h - 50) / 120);
@@ -231,13 +232,13 @@
     var say = !S.sample ? 'Tap a dotted spot to draw a sample \u2014 inside the tubing, or the water outside it.'
             : !S.result ? 'Now test what is in the pipette: iodine, or Benedict\u2019s.'
             : 'Test somewhere else, or run the clock and test again.';
-    g += '<text class="bn__say" x="' + f1(F.x + F.w / 2) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
+    g += '<text class="bn__say" x="' + f1(R.mid) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
     /* the key, read before the bench rather than after the buttons. Starch sits next to
        maltose on purpose: both are made of the same glucose, and one is far bigger. */
     var KEY = [['starch', 38, 6], ['maltose', 14, 7], ['amylase', 16, 7], ['tap to sample', 10, 13]];
     var kw = KEY.reduce(function (a2, k) { return a2 + k[1] + 6 + k[2] * 3.1 + 9; }, 0) - 9;
-    var ky = R.key, kx = F.x + Math.max(4, (F.w - kw) / 2);
+    var ky = R.key, kx = Math.max(F.x + 4, R.mid - kw / 2);
     function keyItem(icon, word, w) {
       var t = icon + '<text class="bn__key" x="' + f1(kx + w + 3) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
       kx += w + 6 + word.length * 3.1 + 9;
