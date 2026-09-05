@@ -44,7 +44,7 @@
 
   /* ---------- geometry ---------- */
   var F = { x:30, y:116, w:280, h:448 };
-  var RACK = { y:196, h:132, w:44 };
+  var RACK = { y:182, h:118, w:44 };
   var CX = [78, 170, 262];
 
   function tubeArt(i) {
@@ -79,6 +79,20 @@
       ' ' + f1(cx - 6 * s + 4 * s * (i + 1)) + ',' + f1(cy);
     return '<path d="' + d + '" fill="none" stroke="#5B7FA6" stroke-width="' + f1(2.2 * s) + '" stroke-linecap="round"/>';
   }
+  /* A teat pipette: bulb, barrel, drawn point. It rests on the bench until a sample is
+     taken, then stands beside the tube it was taken from, holding what it drew. */
+  function pipette(x, y, fill) {
+    var g = '<g transform="translate(' + f1(x) + ',' + f1(y) + ')">';
+    g += '<ellipse cx="0" cy="-20" rx="7" ry="9" fill="#F2EDE1" stroke="#9C8E77" stroke-width="1.2"/>';
+    g += '<rect x="-3.2" y="-12" width="6.4" height="20" fill="#FFFDF9" stroke="#9C8E77" stroke-width="1.2"/>';
+    g += '<path d="M-3.2,8 L0,21 L3.2,8 Z" fill="#FFFDF9" stroke="#9C8E77" stroke-width="1.2" stroke-linejoin="round"/>';
+    if (fill) {
+      g += '<rect x="-2" y="-2" width="4" height="9" fill="' + fill + '" opacity=".85"/>';
+      g += '<path d="M-1.7,7 L0,15 L1.7,7 Z" fill="' + fill + '" opacity=".85"/>';
+    }
+    return g + '</g>';
+  }
+
   function pair(cx, cy) {
     return '<circle cx="' + f1(cx - 2.6) + '" cy="' + f1(cy) + '" r="2.4" fill="#D98F2E"/>' +
            '<circle cx="' + f1(cx + 2.6) + '" cy="' + f1(cy) + '" r="2.4" fill="#D98F2E"/>';
@@ -95,10 +109,17 @@
   function draw(ctx) {
     var g = '', fs = 11;
     /* what to do, in one line that changes with what has been done */
-    var say = !S.sample ? 'Take the pipette to a tube — inside the tubing, or the water outside it.'
-            : !S.result ? 'Now test that sample: iodine for starch, Benedict\u2019s for reducing sugar.'
-            : 'Test another place, or run the clock and see what has changed.';
-    g += '<text class="bn__say" x="' + f1(F.x + F.w / 2) + '" y="142" text-anchor="middle">' + esc(say) + '</text>';
+    var say = !S.sample ? 'Tap a dotted spot to draw a sample \u2014 inside the tubing, or the water outside it.'
+            : !S.result ? 'Now test what is in the pipette: iodine, or Benedict\u2019s.'
+            : 'Test somewhere else, or run the clock and test again.';
+    g += '<text class="bn__say" x="' + f1(F.x + F.w / 2) + '" y="134" text-anchor="middle">' + esc(say) + '</text>';
+
+    /* the key, read before the bench rather than after the buttons */
+    var ky = 158;
+    g += coil(F.x + 16, ky, 0.62) + '<text class="bn__key" x="' + f1(F.x + 28) + '" y="' + f1(ky + 3) + '">starch</text>';
+    g += pair(F.x + 76, ky) + '<text class="bn__key" x="' + f1(F.x + 86) + '" y="' + f1(ky + 3) + '">maltose</text>';
+    g += '<circle class="bn__spot" cx="' + f1(F.x + 144) + '" cy="' + f1(ky) + '" r="5"/>' +
+         '<text class="bn__key" x="' + f1(F.x + 154) + '" y="' + f1(ky + 3) + '">tap here to sample</text>';
 
     /* the three tubes, each with two places you can sample */
     TUBES.forEach(function (t, i) {
@@ -110,39 +131,42 @@
         g += '<circle class="bn__spot' + (sel ? ' is-sel' : '') + '" data-bench="take:' + t.id + ':' + side +
              '" role="button" tabindex="0" cx="' + f1(x) + '" cy="' + f1(y) + '" r="7"/>';
       });
-      g += '<text class="bn__id" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 18) + '" text-anchor="middle">' + t.id + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 31) + '" text-anchor="middle">' + esc(t.name) + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 42) + '" text-anchor="middle">' + esc(t.has) + '</text>';
+      g += '<text class="bn__id" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 20) + '" text-anchor="middle">' + t.id + '</text>';
+      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 33) + '" text-anchor="middle">' + esc(t.name) + '</text>';
+      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 44) + '" text-anchor="middle">' + esc(t.has) + '</text>';
     });
-    /* the bench top */
+    /* the bench top, and the pipette standing on it until it is used */
     g += '<path d="M' + f1(F.x + 6) + ',' + f1(RACK.y + RACK.h + 2) + ' H' + f1(F.x + F.w - 6) +
          '" stroke="#C3B69C" stroke-width="2" stroke-linecap="round"/>';
+    if (S.sample) {
+      var pi = S.sample.tube.charCodeAt(0) - 65;
+      var px = CX[pi] + (S.sample.side === 'inside' ? -30 : 30);
+      g += pipette(px, RACK.y + 44, S.result ? S.result.col : '#CFE4EE');
+    } else {
+      g += pipette(F.x + F.w - 26, RACK.y + 44, null);
+      g += '<text class="bn__key" x="' + f1(F.x + F.w - 26) + '" y="' + f1(RACK.y + 74) + '" text-anchor="middle">pipette</text>';
+    }
 
     /* the controls, one row to a job, each button sized to the words it holds */
     var clock = S.ran ? 'at 30 minutes' : 'at the start';
-    g += '<text class="bn__samp" x="' + f1(F.x + 10) + '" y="382">The clock: ' + clock +
+    g += '<text class="bn__samp" x="' + f1(F.x + 10) + '" y="372">The clock: ' + clock +
          (S.sample ? '  \u00b7  in the pipette: ' +
             esc(S.sample.side === 'inside' ? 'inside tube ' + S.sample.tube : 'water outside tube ' + S.sample.tube) : '') +
          '</text>';
-    g += btn('run', F.x + 10, 390, 104, 24, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
+    g += btn('run', F.x + 10, 382, 104, 24, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
     if (S.sample) {
-      g += btn('test:iodine', F.x + 122, 390, 64, 24, 'iodine', S.result && S.result.kind === 'iodine');
-      g += btn('test:benedict', F.x + 194, 390, 76, 24, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
+      g += btn('test:iodine', F.x + 122, 382, 64, 24, 'iodine', S.result && S.result.kind === 'iodine');
+      g += btn('test:benedict', F.x + 194, 382, 76, 24, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
     }
-    g += btn('reset', F.x + 10, 422, 62, 20, 'Start again', false);
+    g += btn('reset', F.x + 10, 416, 62, 20, 'Start again', false);
 
     /* the result: the colour that test would actually give, and what it means */
     if (S.result) {
       var r = S.result;
-      g += '<rect x="' + f1(F.x + 82) + '" y="421" width="24" height="22" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
-      g += '<text class="bn__res" x="' + f1(F.x + 112) + '" y="432">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(F.x + 112) + '" y="443">' + esc(r.sub) + '</text>';
+      g += '<rect x="' + f1(F.x + 82) + '" y="415" width="24" height="22" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
+      g += '<text class="bn__res" x="' + f1(F.x + 112) + '" y="426">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2" x="' + f1(F.x + 112) + '" y="437">' + esc(r.sub) + '</text>';
     }
-    /* the key */
-    g += coil(F.x + 14, 466, 0.62) + '<text class="bn__key" x="' + f1(F.x + 26) + '" y="469">starch</text>';
-    g += pair(F.x + 74, 466) + '<text class="bn__key" x="' + f1(F.x + 84) + '" y="469">maltose</text>';
-    g += '<circle class="bn__spot" cx="' + f1(F.x + 140) + '" cy="466" r="5"/>' +
-         '<text class="bn__key" x="' + f1(F.x + 150) + '" y="469">a place you can sample</text>';
     return g;
   }
 
