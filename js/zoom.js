@@ -610,6 +610,8 @@
       var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? (ins.big == null ? 1.4 : ins.big) : 1), h = w * ins.h / ins.w;
       /* `bare` puts a cut-out over the drawing itself: no card, and under the animation */
       var g = el('g', { 'class':'inset' }, ins.bare ? gOver : gInsets);
+      if (ins.bare) el('rect', { x:f1(x - 2), y:f1(y - 2), width:f1(w + 4), height:f1(h + 4), rx:'1.5',
+                                 fill:'none', stroke:'#8C8271', 'stroke-width':'.7' }, g);
       if (!ins.bare) el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
       im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
@@ -617,10 +619,12 @@
       var keep = gLabels; gLabels = g;
       (ins.labels || []).forEach(function (L) { drawLabel(L, ipl, fs * (ins.fs || 0.92), null); });
       gLabels = keep;
-      if (ins.cap && !tight) {
+      if (ins.cap && (ins.bare || !tight)) {
         var capLines = String(ins.cap).split('\n').length;
-        var cy0 = ins.capTop ? y - fs * 0.55 - (capLines - 1) * fs * 0.88 * 1.15 : y + h + fs * 1.15;   /* above the picture when asked */
-        var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(cy0), 'font-size':f1(fs * 0.88), 'text-anchor':'middle' }, g);
+        var cfs = fs * (ins.bare ? 0.7 : 0.88);
+        var capTop = ins.capTop || ins.bare;
+        var cy0 = capTop ? y - cfs * 0.7 - (capLines - 1) * cfs * 1.15 : y + h + fs * 1.15;   /* above the picture when asked */
+        var t = el('text', { 'class':'dl__t', x:f1(x + w / 2), y:f1(cy0), 'font-size':f1(cfs), 'text-anchor':'middle' }, g);
         String(ins.cap).split('\n').forEach(function (l, i) { var ts = el('tspan', { x:f1(x + w / 2), dy:i ? '1.15em' : '0' }, t); ts.textContent = l; });
       }
       var capText = String(ins.cap || s.label || '').replace(/\n/g, ' ');
@@ -804,6 +808,7 @@
   /* ---------- station ---------- */
   function setStation(id, opts) {
     var was = !!detail;
+    arriving = false;
     station = id;
     var quiet = opts && opts.tour;
     detail = (!quiet && (global.ZOOM_DETAIL || {})[id]) || null;
@@ -838,7 +843,7 @@
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800, arriving ? function () { arriving = false; goStep(0, true); } : null);
   }
-  function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
+  function reset() { arriving = false; if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
     svg = svgEl; build(); setBox(frameFor(null));
     global.addEventListener('resize', function () { if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); });
