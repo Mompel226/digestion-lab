@@ -760,7 +760,7 @@ window.STATIONS = [
     "Ingestion is the taking of food or drink into the body through the mouth.",
     "Physical digestion is the breakdown of food from larger into smaller pieces without chemical change to the food molecules.",
     "Mastication, the cutting and mixing of food with saliva by the teeth and tongue, forms a ball of food called a bolus and increases the surface area of the food for enzymes to act on.",
-    "Incisors cut and bite off pieces of food, canines hold and tear at food, premolars crush and grind soft food, and molars chew and grind hard food.",
+    "Incisors _cut_ and bite off pieces of food, canines _hold and tear_ at food, premolars _crush and grind_ soft food, and molars _chew and grind_ hard food.",
     "A tooth has enamel on the outside (the hardest substance in the body, made of calcium salts), dentine beneath it, and a pulp (the pulp cavity) holding blood vessels and nerves; cement and periodontal fibres anchor the root, and the tooth is embedded in the jaw bone and sealed by the gums.",
     {
      "text": "In tooth decay, bacteria in plaque respire sugar and release acid that dissolves the enamel, then the dentine, and finally reaches the pulp cavity; using fluoride toothpaste and eating less sugar slows this, and vitamin C keeps the gums healthy.",

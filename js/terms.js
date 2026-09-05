@@ -228,8 +228,16 @@
   function setStation(id) { here = id; seen = Object.create(null); quiet = false; }
   function setQuiet(v) { quiet = !!v; }
 
+  /* _like this_ underlines a phrase. Some words carry a mark because the syllabus asks a
+     candidate to produce them — what each kind of tooth does — but they are not glossary
+     terms and bolding them would put four more heavy words in a sentence that already has
+     several. An underline says "learn this wording" without shouting. */
+  function underline(html) {
+    return html.replace(/_([^_<>]{1,48})_/g, '<u class="kw">$1</u>');
+  }
+
   function mark(text) {
-    return esc(text).replace(RE, function (m) {
+    return underline(esc(text).replace(RE, function (m) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
       var cat = e[1], act = '', cls = '';
@@ -249,7 +257,7 @@
         return '<b class="tc tc--' + cat + cls + '"' + act + '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
       }
       return '<b class="t t--' + cat + cls + '"' + act + '>' + m + '</b>';
-    });
+    }));
   }
 
   function legend() {
