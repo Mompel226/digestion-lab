@@ -115,15 +115,19 @@
     /* A phone gives the plate a landscape strip, so there is no vertical room to spend on
        margins: the writing closes up and everything saved goes into the height of the tubes. */
     var short = F.h < F.w;
-    R.say = F.y + F.h * (short ? 0.026 : 0.030);
-    R.key = F.y + F.h * (short ? 0.066 : 0.076);
+    /* A phone renders the plate at about half the pixels per unit that a laptop does, so text
+       set in user units comes out half the size. Scale the type there — but not the pills,
+       which are 26 units tall and have the room already, so the tubes keep their height. */
+    R.fs = short ? 1.3 : 1;
+    R.say = F.y + F.h * (short ? 0.024 : 0.030);
+    R.key = F.y + F.h * (short ? 0.062 : 0.076);
     var band = short ? 72 : 79;
     R.clock = strip - band; R.btn = strip - (band - 8); R.reset = strip - (band - 38);
     R.swatch = strip - (band - 37); R.res = strip - (band - 48); R.sub = strip - (band - 58);
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
-    RACK.y = F.y + F.h * (short ? 0.120 : 0.150);
-    RACK.h = Math.max(120, R.clock - (short ? 58 : 66) - RACK.y);   /* the captions sit in here, with air below them */
+    RACK.y = F.y + F.h * (short ? 0.138 : 0.150);
+    RACK.h = Math.max(120, R.clock - (short ? 63 : 66) - RACK.y);   /* the captions sit in here, with air below them */
     RACK.w = Math.min(F.w * 0.25, RACK.h * (F.h < F.w ? 0.55 : 0.44));
     /* the second figure keeps it a boiling tube; on a short, wide pane — a phone in portrait,
        where the plate gets a landscape strip — a slightly squatter tube is the only way the
@@ -145,7 +149,7 @@
       });
     });
     R.mol = Math.min(RACK.w / 56, (RACK.h - 50) / (worst + TOPGAP));
-    R.id = RACK.y + RACK.h + 15; R.nm = RACK.y + RACK.h + 26; R.has = RACK.y + RACK.h + 36;
+    R.id = RACK.y + RACK.h + 15; R.nm = RACK.y + RACK.h + (short ? 28 : 26); R.has = RACK.y + RACK.h + (short ? 41 : 36);
   }
 
   /* ---------- what the molecules actually are ----------
@@ -261,7 +265,7 @@
     }
     g += '<ellipse cx="' + f1(x + r) + '" cy="' + f1(yTop) + '" rx="' + f1(r) + '" ry="2.2" fill="none" stroke="#8FA3AD" stroke-width="1.4"/>';
     if (note) {
-      g += '<text class="bn__note" x="' + f1(x + r) + '" y="' + f1(bot + 12) + '" text-anchor="middle">' + esc(note) + '</text>';
+      g += '<text class="bn__note"' + sz(8.6) + ' x="' + f1(x + r) + '" y="' + f1(bot + 12) + '" text-anchor="middle">' + esc(note) + '</text>';
     }
     return g;
   }
@@ -289,10 +293,12 @@
     return '<g class="bn' + (on ? ' is-on' : '') + '" data-bench="' + esc(id) + '" role="button" tabindex="0"' +
            (off ? ' opacity=".38"' : '') + '>' +
            '<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) + '" rx="' + f1(h / 2) + '"/>' +
-           '<text x="' + f1(x + w / 2) + '" y="' + f1(y + h / 2 + (sub ? -1 : 3.4)) + '" text-anchor="middle">' + esc(label) + '</text>' +
+           '<text' + sz(11) + ' x="' + f1(x + w / 2) + '" y="' + f1(y + h / 2 + (sub ? -1 : 3.4)) + '" text-anchor="middle">' + esc(label) + '</text>' +
            (sub ? '<text class="bn__sub" x="' + f1(x + w / 2) + '" y="' + f1(y + h / 2 + 9) + '" text-anchor="middle">' + esc(sub) + '</text>' : '') +
            '</g>';
   }
+
+  function sz(base) { return ' style="font-size:' + f1(base * (R.fs || 1)) + 'px"'; }
 
   function draw(ctx) {
     layout(ctx && ctx.frame);
@@ -306,22 +312,23 @@
        rather than being allowed to run underneath and lose its last few words. */
     var sw = say.length * 3.6;
     var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, F.x + F.w * 0.75 - sw / 2));
-    g += '<text class="bn__say" x="' + f1(sx) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
+    g += '<text class="bn__say"' + sz(10.5) + ' x="' + f1(sx) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
     /* the key, read before the bench rather than after the buttons. Starch sits next to
        maltose on purpose: both are made of the same glucose, and one is far bigger. */
     var KEY = [['starch', 34, 6], ['maltose', 12, 7], ['amylase', 14, 7], ['tap to sample', 10, 13]];
-    var kw = KEY.reduce(function (a2, k) { return a2 + k[1] + 4 + k[2] * 3.7 + 18; }, 0) - 18;
+    var kf = R.fs || 1;
+    var kw = KEY.reduce(function (a2, k) { return a2 + (k[1] + 4 + k[2] * 3.7) * kf + 18; }, 0) - 18;
     var ky = R.key, kx = Math.max(F.x + 4, Math.min(R.mid - kw / 2, F.x + F.w * 0.75 - kw));
     function keyItem(icon, word, w) {
-      var t = icon + '<text class="bn__key" x="' + f1(kx + w + 4) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
+      var t = icon + '<text class="bn__key"' + sz(9) + ' x="' + f1(kx + w + 4) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
       kx += w + 4 + word.length * 3.7 + 18;
       return t;
     }
-    g += keyItem(starchFlat(kx + 17, ky, 0.85), 'starch', 34);
-    g += keyItem(pair(kx + 6, ky, 0.85), 'maltose', 12);
-    g += keyItem(amylase(kx + 7, ky, 0.7), 'amylase', 14);
-    g += keyItem('<circle class="bn__spot" cx="' + f1(kx + 5) + '" cy="' + f1(ky) + '" r="5"/>', 'tap to sample', 10);
+    g += keyItem(starchFlat(kx + 17 * kf, ky, 0.85 * kf), 'starch', 34);
+    g += keyItem(pair(kx + 6 * kf, ky, 0.85 * kf), 'maltose', 12);
+    g += keyItem(amylase(kx + 7 * kf, ky, 0.7 * kf), 'amylase', 14);
+    g += keyItem('<circle class="bn__spot" cx="' + f1(kx + 5 * kf) + '" cy="' + f1(ky) + '" r="' + f1(5 * kf) + '"/>', 'tap to sample', 10);
 
     /* the three tubes, each with two places you can sample */
     TUBES.forEach(function (t, i) {
@@ -334,9 +341,9 @@
         g += '<circle class="bn__spot' + (sel ? ' is-sel' : '') + '" data-bench="take:' + t.id + ':' + side +
              '" role="button" tabindex="0" cx="' + f1(x) + '" cy="' + f1(y) + '" r="9"/>';
       });
-      g += '<text class="bn__id" x="' + f1(CX[i]) + '" y="' + f1(R.id) + '" text-anchor="middle">' + t.id + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(R.nm) + '" text-anchor="middle">' + esc(t.name) + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(R.has) + '" text-anchor="middle">' + esc(t.has) + '</text>';
+      g += '<text class="bn__id"' + sz(12) + ' x="' + f1(CX[i]) + '" y="' + f1(R.id) + '" text-anchor="middle">' + t.id + '</text>';
+      g += '<text class="bn__nm"' + sz(8.6) + ' x="' + f1(CX[i]) + '" y="' + f1(R.nm) + '" text-anchor="middle">' + esc(t.name) + '</text>';
+      g += '<text class="bn__nm"' + sz(8.6) + ' x="' + f1(CX[i]) + '" y="' + f1(R.has) + '" text-anchor="middle">' + esc(t.has) + '</text>';
     });
     /* the bench top */
     g += '<path d="M' + f1(F.x + 6) + ',' + f1(RACK.y + RACK.h + 2) + ' H' + f1(F.x + F.w - 6) +
@@ -357,10 +364,10 @@
        and the sample over the two tests that will be run on it. One line for both would have to
        be centred somewhere that is over neither, and grows off the frame once a tube is named. */
     var clock = S.ran ? 'at 30 minutes' : 'at the start';
-    g += '<text class="bn__samp" x="' + f1(col[0] + pw / 2) + '" y="' + f1(R.clock) +
+    g += '<text class="bn__samp"' + sz(10) + ' x="' + f1(col[0] + pw / 2) + '" y="' + f1(R.clock) +
          '" text-anchor="middle">Clock: ' + clock + '</text>';
     if (S.sample) {
-      g += '<text class="bn__samp" x="' + f1(col[1] + pw + GAP / 2) + '" y="' + f1(R.clock) +
+      g += '<text class="bn__samp"' + sz(10) + ' x="' + f1(col[1] + pw + GAP / 2) + '" y="' + f1(R.clock) +
            '" text-anchor="middle">sample: ' +
            esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) +
            '</text>';
@@ -395,8 +402,8 @@
       var want = (r.kind === 'iodine' ? col[1] : col[2]) + pw / 2;
       var cx = Math.min(want, tubeX - 8 - wide / 2);
       cx = Math.max(cx, R.left + wide / 2);
-      g += '<text class="bn__res" x="' + f1(cx) + '" y="' + f1(R.res) + '" text-anchor="middle">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(cx) + '" y="' + f1(R.sub) + '" text-anchor="middle">' + esc(r.sub) + '</text>';
+      g += '<text class="bn__res"' + sz(12) + ' x="' + f1(cx) + '" y="' + f1(R.res) + '" text-anchor="middle">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2"' + sz(9.5) + ' x="' + f1(cx) + '" y="' + f1(R.sub) + '" text-anchor="middle">' + esc(r.sub) + '</text>';
     }
     return g;
   }
