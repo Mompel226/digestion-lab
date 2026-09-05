@@ -233,7 +233,7 @@
      terms and bolding them would put four more heavy words in a sentence that already has
      several. An underline says "learn this wording" without shouting. */
   function underline(html) {
-    return html.replace(/_([^_<>]{1,48})_/g, '<u class="kw">$1</u>');
+    return html.replace(/_([\s\S]{1,80}?)_/g, '<u class="kw">$1</u>');   /* a glossary term may sit inside */
   }
 
   function mark(text) {
