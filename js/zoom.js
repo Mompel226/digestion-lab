@@ -56,7 +56,7 @@
 
   var svg = null, layer = null, maskRect = null, strip = null, backRect = null;
   var keyImg = null, keyImgFront = null, keyWrap = null, keyCache = {};
-  var gImgs = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, gKeys = null, softBlur = null;
+  var gImgs = null, gOver = null, dimRect = null, spotImg = null, spotClip = null, spotLine = null, gAnim = null, gLabels = null, gInsets = null, gKeys = null, softBlur = null;
   var defs = null, clipN = 0;                 /* for clipped paint copies, see applyStep */
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
@@ -157,6 +157,9 @@
     keyWrap = el('g', { filter:'url(#spotGlow)' }, layer);
     keyImgFront = el('image', { mask:'url(#detailKey)', preserveAspectRatio:'none', width:'0', height:'0' }, keyWrap);
     spotLine = el('g', { 'class':'detail__spot', fill:'none', stroke:'#D9962B', 'stroke-linejoin':'round', opacity:'.9' }, layer);
+    /* a cut-out photograph laid over the drawing sits here, under the animation, so the duct
+       and the juice moving down it still read on top of it */
+    gOver = el('g', { 'class':'detail__over' }, layer);
     gAnim = el('g', { 'class':'detail__anim' }, layer);
     /* a photograph drawn inside an animation can still be opened full size */
     gAnim.addEventListener('click', function (ev) {
@@ -595,8 +598,9 @@
       String(ins.cap || '').split('\n').forEach(function (l) { capw = Math.max(capw, l.length * fs * 0.88 * 0.52); });
       var tight = !ins.link && (ppu(frame) < 1.6 || capw > frame.w * 0.95 || ins.nocap);
       var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? (ins.big == null ? 1.4 : ins.big) : 1), h = w * ins.h / ins.w;
-      var g = el('g', { 'class':'inset' }, gInsets);
-      el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
+      /* `bare` puts a cut-out over the drawing itself: no card, and under the animation */
+      var g = el('g', { 'class':'inset' }, ins.bare ? gOver : gInsets);
+      if (!ins.bare) el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
       im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
       var ipl = { x:x, y:y, W:w, H:h };
@@ -620,7 +624,7 @@
          off the frame or under the key cards is simply slid back in. A linked one stays
          put: its cone is drawn to the big picture and moving it would point at nothing. */
       var idx = 0, idy = 0;
-      if (!ins.link) {
+      if (!ins.link && !ins.bare) {
         var ib = g.getBBox(), im = frame.w * 0.025;
         var iL = frame.x + im, iR = frame.x + frame.w - im, iT = frame.y + im, iB = frame.y + frame.h * 0.80;
         idx = ib.x < iL ? iL - ib.x : (ib.x + ib.width > iR ? Math.max(iL - ib.x, iR - ib.x - ib.width) : 0);

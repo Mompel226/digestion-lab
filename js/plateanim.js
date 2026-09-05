@@ -494,7 +494,7 @@
               '<g opacity="0">' + phase(false) + REL + '</g>';
     if (ctx.compact) return g +
       label('liver', 60, 400, 122, 436, fs, 'start') +
-      label('gall\nbladder', 56, 534, 118, 492, fs, 'start') +
+      label('gall\nbladder', 56, 516, 132, 486, fs, 'start') +
       label('common\nbile duct', 186, 542, 152, 530, fs, 'start') +
       label('duodenum', 58, 578, 134, 576, fs, 'start');
     return g +
@@ -503,7 +503,7 @@
       label('left hepatic duct', 186, 436, 176, 450, fs, 'start') +
       label('common hepatic duct', 158, 470, 149, 479, fs, 'start') +
       label('cystic duct', 126, 470, 148, 488, fs, 'end') +
-      label('gall bladder —\nstores bile', 56, 494, 116, 490, fs, 'start') +
+      label('gall bladder —\nstores bile', 56, 486, 118, 486, fs, 'start') +
       label('common bile duct —\nbile to the duodenum', 180, 540, 149, 538, fs, 'start') +
       label('duodenum', 58, 578, 134, 576, fs, 'start');
   }
