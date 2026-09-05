@@ -668,7 +668,161 @@
                  '#8FC7E8', r, 3.2, 4, -1.6);
   }
 
-  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva };
+
+  /* ---------------- the visking tubing experiment ----------------
+     Drawn rather than photographed, because the point of the practical is a
+     comparison — what leaves the bag and what stays in it — and a photograph of a
+     boiling tube shows neither. The apparatus is drawn to the plate's own grid so the
+     camera frames it like any other station.
+
+     phases, from ctx.focus:
+       set-up  — the apparatus, labelled, nothing moving yet
+       run     — maltose diffusing out through the pores while starch stays in
+       tests   — the two test tubes of the surrounding water, before and after       */
+  var VK = {
+    tube: { x:118, y:150, w:104, h:330, r:52 },        /* the boiling tube */
+    water: 196,                                        /* the water line inside it */
+    bag:  { x:146, y:214, w:48, h:222 }                /* the visking tubing */
+  };
+
+  function beaker(o, waterY) {
+    var g = '';
+    /* the water, then the glass over it, so the meniscus reads as glass not paint */
+    g += '<path fill="#CFE4EE" opacity=".55" d="M' + f1(o.x + 3) + ',' + f1(waterY) +
+         ' H' + f1(o.x + o.w - 3) + ' V' + f1(o.y + o.h - o.r * 0.55) +
+         ' a' + f1(o.w / 2 - 3) + ',' + f1(o.r * 0.55) + ' 0 0 1 ' + f1(-(o.w - 6)) + ',0 Z"/>';
+    g += '<ellipse cx="' + f1(o.x + o.w / 2) + '" cy="' + f1(waterY) + '" rx="' + f1(o.w / 2 - 3) +
+         '" ry="4.4" fill="#BBD8E6" opacity=".75"/>';
+    g += '<path fill="none" stroke="#9FB3BD" stroke-width="2.1" stroke-linejoin="round" d="M' + f1(o.x) + ',' + f1(o.y) +
+         ' V' + f1(o.y + o.h - o.r * 0.55) + ' a' + f1(o.w / 2) + ',' + f1(o.r * 0.55) + ' 0 0 0 ' + f1(o.w) + ',0 V' + f1(o.y) + '"/>';
+    g += '<ellipse cx="' + f1(o.x + o.w / 2) + '" cy="' + f1(o.y) + '" rx="' + f1(o.w / 2) +
+         '" ry="5" fill="none" stroke="#9FB3BD" stroke-width="2.1"/>';
+    return g;
+  }
+
+  /* the bag: a knot, a body that bulges a little, a knot */
+  function viskingBag(b) {
+    var cx = b.x + b.w / 2, top = b.y, bot = b.y + b.h, bw = b.w / 2;
+    var d = 'M' + f1(cx - bw * 0.34) + ',' + f1(top) +
+            ' C' + f1(cx - bw * 1.12) + ',' + f1(top + b.h * 0.16) + ' ' + f1(cx - bw * 1.12) + ',' + f1(bot - b.h * 0.16) + ' ' + f1(cx - bw * 0.34) + ',' + f1(bot) +
+            ' L' + f1(cx + bw * 0.34) + ',' + f1(bot) +
+            ' C' + f1(cx + bw * 1.12) + ',' + f1(bot - b.h * 0.16) + ' ' + f1(cx + bw * 1.12) + ',' + f1(top + b.h * 0.16) + ' ' + f1(cx + bw * 0.34) + ',' + f1(top) + ' Z';
+    var g = '<path d="' + d + '" fill="#F3E6C8" opacity=".92" stroke="#C9AE72" stroke-width="1.8"/>';
+    /* the knots */
+    [top, bot].forEach(function (y) {
+      g += '<ellipse cx="' + f1(cx) + '" cy="' + f1(y) + '" rx="' + f1(bw * 0.42) + '" ry="4.6" fill="#E4D2A4" stroke="#B99C5E" stroke-width="1.5"/>';
+    });
+    return { d:d, g:g, cx:cx, bw:bw };
+  }
+
+  /* a starch molecule: a short coil, drawn big enough to read as "too large for the pores" */
+  function starchBlob(x, y, s, seed) {
+    var d = 'M' + f1(x - 7 * s) + ',' + f1(y);
+    for (var i = 0; i < 4; i++) {
+      var sx = x - 7 * s + (14 * s / 4) * (i + 0.5), dy = (i % 2 ? 1 : -1) * 3.4 * s;
+      d += ' Q' + f1(sx) + ',' + f1(y + dy) + ' ' + f1(x - 7 * s + (14 * s / 4) * (i + 1)) + ',' + f1(y);
+    }
+    return '<path d="' + d + '" fill="none" stroke="#5B7FA6" stroke-width="' + f1(2.6 * s) + '" stroke-linecap="round" opacity=".9"/>' +
+           '<circle cx="' + f1(x - 7 * s) + '" cy="' + f1(y) + '" r="' + f1(1.9 * s) + '" fill="#5B7FA6"/>' +
+           '<circle cx="' + f1(x + 7 * s) + '" cy="' + f1(y) + '" r="' + f1(1.9 * s) + '" fill="#5B7FA6"/>';
+  }
+
+  function visking(ctx) {
+    var fs = ctx.fs, focus = ctx.focus || 'set-up', g = '';
+    var T = VK.tube, B = VK.bag, bag = viskingBag(B);
+    var running = focus !== 'set-up';
+
+    g += beaker(T, VK.water);
+    g += bag.g;
+
+    /* the pores: a dotted seam down each wall, so the wall reads as perforated */
+    for (var k = 0; k < 11; k++) {
+      var py = B.y + 16 + k * ((B.h - 32) / 10);
+      var spread = bag.bw * (1.02 + 0.10 * Math.sin(Math.PI * (py - B.y) / B.h));
+      [-1, 1].forEach(function (s) {
+        g += '<circle cx="' + f1(bag.cx + s * spread) + '" cy="' + f1(py) + '" r="1.5" fill="#FFFDF9" stroke="#B99C5E" stroke-width=".7"/>';
+      });
+    }
+
+    /* starch stays in: four coils drifting inside the bag and never leaving it */
+    [[0.22, 0.30], [0.62, 0.24], [0.36, 0.58], [0.70, 0.74]].forEach(function (p, i) {
+      var x = B.x + 6 + p[0] * (B.w - 12), y = B.y + 20 + p[1] * (B.h - 40);
+      g += '<g>' + starchBlob(x, y, 1, i) +
+           (running ? '<animateTransform attributeName="transform" type="translate" values="0 0;' +
+             (i % 2 ? '3 -4' : '-3 4') + ';0 0" dur="' + (5.5 + i * 0.7) + 's" repeatCount="indefinite"/>' : '') +
+           '</g>';
+    });
+
+    /* maltose leaves: small pairs that cross the wall and spread into the water */
+    if (running) {
+      var OUT = [[0.10, 0.22, 0], [0.90, 0.34, 1], [0.08, 0.52, 2], [0.92, 0.62, 3], [0.10, 0.78, 4], [0.90, 0.16, 5]];
+      OUT.forEach(function (o) {
+        var side = o[0] < 0.5 ? -1 : 1;
+        var y0 = B.y + 18 + o[1] * (B.h - 36);
+        var x0 = bag.cx + side * bag.bw * 0.45, x1 = bag.cx + side * bag.bw * 1.05, x2 = bag.cx + side * (bag.bw + 26 + o[2] * 3);
+        g += '<g opacity="0">' +
+             '<circle cx="-2.4" cy="0" r="2.5" fill="#D98F2E"/><circle cx="2.4" cy="0" r="2.5" fill="#D98F2E"/>' +
+             '<animateMotion dur="6s" begin="' + f1(o[2] * 0.85) + 's" repeatCount="indefinite" path="M' +
+               f1(x0) + ',' + f1(y0) + ' L' + f1(x1) + ',' + f1(y0 + 3) + ' L' + f1(x2) + ',' + f1(y0 + 14 + o[2] * 2) + '"/>' +
+             A + '"opacity" values="0;1;1;0" keyTimes="0;0.12;0.72;1" dur="6s" begin="' + f1(o[2] * 0.85) + 's" repeatCount="indefinite"/>' +
+             '</g>';
+      });
+    }
+    return g + viskingLabels(ctx, T, B, bag, focus);
+  }
+
+  /* The words. On a phone the frame is narrow, so each label is shorter and the two that
+     name what is in the bag are stacked rather than set either side of it. */
+  function viskingLabels(ctx, T, B, bag, focus) {
+    var fs = ctx.fs, c = ctx.compact, g = '';
+    var right = T.x + T.w, left = T.x;
+    g += label(c ? 'visking tubing' : 'visking tubing —\npartially permeable',
+               right + 10, B.y + B.h * 0.30, bag.cx + bag.bw * 0.9, B.y + B.h * 0.30, fs, 'start');
+    g += label(c ? 'starch +\namylase' : 'inside: starch\nand amylase',
+               left - 10, B.y + B.h * 0.16, bag.cx - bag.bw * 0.8, B.y + B.h * 0.20, fs, 'end');
+    g += label(c ? 'water' : 'distilled water',
+               left - 10, VK.water + 26, T.x + 12, VK.water + 14, fs, 'end');
+    g += label('37 °C', right + 10, VK.water - 6, right - 8, VK.water + 6, fs, 'start');
+    if (focus !== 'set-up') {
+      g += label(c ? 'maltose\ngets out' : 'maltose diffuses out\nthrough the pores',
+                 right + 10, B.y + B.h * 0.78, bag.cx + bag.bw + 16, B.y + B.h * 0.72, fs, 'start');
+      g += label(c ? 'starch\nstays in' : 'starch is too large\nto get through',
+                 left - 10, B.y + B.h * 0.70, bag.cx - bag.bw * 0.5, B.y + B.h * 0.62, fs, 'end');
+    }
+    return g;
+  }
+
+  /* The two tests, drawn as the tubes a student actually ends up holding. Only the water
+     from outside the tubing is tested: that is the whole result. */
+  function viskingTests(ctx) {
+    var fs = ctx.fs, g = '', c = ctx.compact;
+    var TUBES = [
+      { x:112, cap:'iodine solution', res:c ? 'stays\norange-brown' : 'stays orange-brown —\nno starch got out', col:'#C77B34', top:'#C77B34' },
+      { x:212, cap:"Benedict's, heated", res:c ? 'turns\nbrick-red' : 'turns brick-red —\nreducing sugar got out', col:'#B6412A', top:'#3E6FA8' }
+    ];
+    TUBES.forEach(function (t) {
+      var x = t.x, y = 210, w = 46, h = 168, r = 23;
+      g += '<path fill="' + t.col + '" opacity=".72" d="M' + f1(x + 3) + ',' + f1(y + 46) +
+           ' H' + f1(x + w - 3) + ' V' + f1(y + h - r * 0.6) +
+           ' a' + f1(w / 2 - 3) + ',' + f1(r * 0.6) + ' 0 0 1 ' + f1(-(w - 6)) + ',0 Z"/>';
+      if (t.top !== t.col) {
+        g += '<path fill="' + t.top + '" opacity=".55" d="M' + f1(x + 3) + ',' + f1(y + 46) +
+             ' H' + f1(x + w - 3) + ' V' + f1(y + 84) + ' H' + f1(x + 3) + ' Z">' +
+             A + '"opacity" values=".55;0" dur="4s" repeatCount="indefinite"/></path>';
+      }
+      g += '<path fill="none" stroke="#9FB3BD" stroke-width="2.1" stroke-linejoin="round" d="M' + f1(x) + ',' + f1(y) +
+           ' V' + f1(y + h - r * 0.6) + ' a' + f1(w / 2) + ',' + f1(r * 0.6) + ' 0 0 0 ' + f1(w) + ',0 V' + f1(y) + '"/>';
+      g += '<ellipse cx="' + f1(x + w / 2) + '" cy="' + f1(y) + '" rx="' + f1(w / 2) + '" ry="4.4" fill="none" stroke="#9FB3BD" stroke-width="2.1"/>';
+      g += label(t.cap, x + w / 2, y - 14, null, null, fs * 0.92, 'middle');
+      g += label(t.res, x + w / 2, y + h + 22, null, null, fs * 0.86, 'middle');
+    });
+    g += label(ctx.compact ? 'both tubes hold the water\nfrom outside the tubing'
+                           : 'both tubes hold a sample of the water from outside the tubing',
+               162, 186, null, null, fs * 0.86, 'middle');
+    return g;
+  }
+
+  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests };
   /* every animation goes through here so the frame is known before any label is written */
   global.PlateAnim = {};
   Object.keys(ANIMS).forEach(function (k) {
