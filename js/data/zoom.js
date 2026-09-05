@@ -39,8 +39,8 @@ window.ZOOM_DETAIL = {
               0.569
             ],
             "tx": [
-              0.55,
-              0.44
+              0.6,
+              0.5
             ],
             "anchor": "start"
           },
@@ -110,14 +110,7 @@ window.ZOOM_DETAIL = {
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
         "hide": [
-          {
-            "within": [
-              50,
-              0,
-              252,
-              282
-            ]
-          }
+          {}
         ]
       },
       {
@@ -271,14 +264,7 @@ window.ZOOM_DETAIL = {
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
         "hide": [
-          {
-            "within": [
-              50,
-              0,
-              252,
-              282
-            ]
-          }
+          {}
         ]
       },
       {
@@ -312,14 +298,7 @@ window.ZOOM_DETAIL = {
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
         "hide": [
-          {
-            "within": [
-              50,
-              0,
-              252,
-              282
-            ]
-          }
+          {}
         ]
       },
       {
@@ -353,14 +332,7 @@ window.ZOOM_DETAIL = {
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
         "hide": [
-          {
-            "within": [
-              50,
-              0,
-              252,
-              282
-            ]
-          }
+          {}
         ]
       }
     ],
@@ -491,14 +463,7 @@ window.ZOOM_DETAIL = {
     ],
     "noback": true,
     "hide": [
-      {
-        "within": [
-          50,
-          40,
-          252,
-          362
-        ]
-      }
+      {}
     ]
   },
   "oesophagus": {
