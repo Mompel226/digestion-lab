@@ -66,11 +66,11 @@
     if (!svg) return null;
     var r = svg.getBoundingClientRect();
     if (!(r.width > 0 && r.height > 0)) return null;
-    seenW = r.width; watchPane(svg);
+    seenW = r.width; seenH = r.height; watchPane(svg);
     var paneA = r.height / r.width, vw, vh;
     if (paneA < frame.h / frame.w) { vh = frame.h; vw = frame.h / paneA; }   /* fitted by height */
     else { vw = frame.w; vh = frame.w * paneA; }                             /* fitted by width  */
-    var cap = frame.w * 1.55;
+    var cap = frame.w * 2.1;
     if (vw > cap) vw = cap;                    /* or the bench sprawls on a very wide pane */
     var box = { x:frame.x + frame.w / 2 - vw / 2, y:frame.y + frame.h / 2 - vh / 2, w:vw, h:vh };
     /* Reserve the caption strip. Ask it how TALL it is, never where its top is: the strip
@@ -90,14 +90,18 @@
      bench two thirds of the room it had. Watch the plate and ask for one redraw when its size
      actually changes — Zoom.refresh() re-applies the step, and the bench keeps its own state,
      so redrawing costs the reader nothing. */
-  var seenW = 0, watching = false;
+  var seenW = 0, seenH = 0, watching = false;
   function watchPane(svg) {
     if (watching || typeof ResizeObserver === 'undefined' || !svg) return;
     watching = true;
     new ResizeObserver(function () {
-      var w = svg.getBoundingClientRect().width;
-      if (!w || Math.abs(w - seenW) < 2) return;
-      seenW = w;
+      var r = svg.getBoundingClientRect();
+      /* Height, not just width: opening the detail panel leaves the plate the same width and
+         takes its height away. Watching width alone meant the bench kept a layout worked out
+         for a tall pane and used 280 units of the 580 a phone actually gives it. */
+      if (!r.width || !r.height) return;
+      if (Math.abs(r.width - seenW) < 2 && Math.abs(r.height - seenH) < 2) return;
+      seenW = r.width; seenH = r.height;
       if (global.Zoom && global.Zoom.refresh) global.Zoom.refresh();
     }).observe(svg);
   }
@@ -115,7 +119,10 @@
        so a boiling tube always looks like a boiling tube and never like a beaker */
     RACK.y = F.y + F.h * 0.150;
     RACK.h = Math.max(120, R.clock - 66 - RACK.y);   /* the captions sit in here, with air below them */
-    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.44);    /* a boiling tube, never a beaker */
+    RACK.w = Math.min(F.w * 0.25, RACK.h * (F.h < F.w ? 0.55 : 0.44));
+    /* the second figure keeps it a boiling tube; on a short, wide pane — a phone in portrait,
+       where the plate gets a landscape strip — a slightly squatter tube is the only way the
+       drawing is big enough to read at all */
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w;
     R.left = F.x + Math.max(6, (F.w - tot) / 2);
     for (var c = 0; c < 3; c++) CX[c] = R.left + RACK.w / 2 + c * sp;
