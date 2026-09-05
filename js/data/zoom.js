@@ -1422,7 +1422,19 @@ window.ZOOM_DETAIL = {
           }
         ],
         "noback": true,
-        "lab": true
+        "lab": true,
+        "insets": [
+          {
+            "img": "photos/visking-real.jpg",
+            "at": [
+              34,
+              424,
+              76
+            ],
+            "cap": "the real thing",
+            "capTop": true
+          }
+        ]
       },
       {
         "at": 4,
