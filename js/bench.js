@@ -77,6 +77,15 @@
        slides in after the bench is drawn, so its top at draw time is a number that will not
        be true a moment later — that is how Start again ended up underneath it. */
     var el = document.querySelector('.detailstrip'), scale = r.height / vh;
+    /* The Whole body button floats over the plate's top-right corner. Ask it where it is,
+       rather than guessing at a fraction of the frame — the frame's width changes with the
+       pane, the button's position does not. */
+    var wb = document.getElementById('tBody');
+    if (wb && scale > 0) {
+      var wr = wb.getBoundingClientRect();
+      if (wr.width > 2 && wr.bottom > r.top && wr.top < r.top + r.height * 0.4)
+        box.right = box.x + (wr.left - r.left) / scale - 6;
+    }
     box.bottom = box.y + box.h * 0.82;
     if (el && scale > 0) {
       var ch = el.getBoundingClientRect().height;
@@ -110,7 +119,10 @@
     function setF(b) { F.x = b.x; F.y = b.y; F.w = b.w; F.h = b.h; }   /* in place: Bench.F is exported */
     if (frame && frame.w) setF(frame);
     var vis = frame && frame.w ? visibleBox(frame) : null, bottom = null;
-    if (vis) { bottom = typeof vis.bottom === 'number' ? vis.bottom : null; setF(vis); }
+    var topRight = null;
+    if (vis) { bottom = typeof vis.bottom === 'number' ? vis.bottom : null;
+               topRight = typeof vis.right === 'number' ? vis.right : null; setF(vis); }
+    R.topRight = topRight !== null ? topRight : F.x + F.w * 0.75;
     var strip = bottom !== null ? bottom : F.y + F.h * 0.82;   /* nothing may go below it */
     /* A phone gives the plate a landscape strip, so there is no vertical room to spend on
        margins: the writing closes up and everything saved goes into the height of the tubes. */
@@ -311,15 +323,15 @@
     /* The Whole body button floats over the top-right corner, so the line is held off it
        rather than being allowed to run underneath and lose its last few words. */
     var sw = say.length * 3.6;
-    var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, F.x + F.w * 0.75 - sw / 2));
+    var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, R.topRight - sw / 2));
     g += '<text class="bn__say"' + sz(10.5) + ' x="' + f1(sx) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
     /* the key, read before the bench rather than after the buttons. Starch sits next to
        maltose on purpose: both are made of the same glucose, and one is far bigger. */
     var KEY = [['starch', 34, 6], ['maltose', 12, 7], ['amylase', 14, 7], ['tap to sample', 10, 13]];
     var kf = R.fs || 1;
-    var kw = KEY.reduce(function (a2, k) { return a2 + (k[1] + 4 + k[2] * 3.7) * kf + 18; }, 0) - 18;
-    var ky = R.key, kx = Math.max(F.x + 4, Math.min(R.mid - kw / 2, F.x + F.w * 0.75 - kw));
+    var kw = KEY.reduce(function (a2, k) { return a2 + (k[1] + 5 + k[2] * 3.7) * kf + 16 * kf; }, 0) - 16 * kf;
+    var ky = R.key, kx = Math.max(F.x + 4, Math.min(R.mid - kw / 2, R.topRight - kw));
     function keyItem(icon, word, w) {
       var t = icon + '<text class="bn__key"' + sz(9) + ' x="' + f1(kx + w + 4) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
       kx += w + 4 + word.length * 3.7 + 18;
