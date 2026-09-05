@@ -777,7 +777,7 @@ window.ZOOM_DETAIL = {
         "plate": true,
         "tx": [
           52,
-          560
+          576
         ],
         "anchor": "start",
         "fs": 0.72
@@ -808,7 +808,7 @@ window.ZOOM_DETAIL = {
             "plate": true,
             "tx": [
               42,
-              486
+              730
             ],
             "anchor": "start",
             "fs": 0.72
