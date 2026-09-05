@@ -485,10 +485,18 @@
     im.src = src;
   }
 
+  /* Empty every drawn layer. On its own this is how a station is left before the camera flies
+     to the next one: the old drawing must not still be on screen over the new frame — the
+     liver's green bile ducts sitting on the pancreas, for instance. */
+  function wipe() {
+    if (!layer) return;
+    gImgs.innerHTML = ''; gOver.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
+  }
+
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
-    gImgs.innerHTML = ''; gOver.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
+    wipe();
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
     /* organs the step covers with its own picture are hidden, so nothing shows twice */
@@ -810,7 +818,14 @@
        still flying, which reads as a cut. It is dissolved instead: the old detail fades out, the
        new one is put in behind it, and it fades up as the camera arrives. Arriving from the whole
        body there is nothing to dissolve from, so that stays immediate. */
-    if (detail) { if (!layer || !layer.isConnected) build(); goStep(0, !was); }
+    if (detail) {
+      if (!layer || !layer.isConnected) build();
+      /* leaving a station: take its drawing down before the camera moves, then let the new
+         one fade up as the camera arrives. Arriving from the whole body there is nothing to
+         take down, so that stays immediate. */
+      if (was) { wipe(); hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; }
+      goStep(0, !was);
+    }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
   }
