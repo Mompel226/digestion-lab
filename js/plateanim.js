@@ -854,14 +854,14 @@
      result in the middle tube can only mean one thing. */
   function viskingThree(ctx) {
     var fs = ctx.fs * 0.78, c = ctx.compact, g = '';
-    var W = 62, H = 208, TOP = 214, GAP = 26;
+    var W = 62, H = 196, TOP = 232, GAP = 26;
     var xs = [40, 40 + W + GAP, 40 + 2 * (W + GAP)];
     var SET = [
-      { head:c ? 'negative\ncontrol' : 'negative control', inside:c ? 'starch\nonly' : 'starch, no amylase',
+      { head:c ? 'negative' : 'negative control', inside:c ? 'starch,\nno amylase' : 'starch, no amylase',
         starch:true, malt:false, out:false, note:c ? 'nothing\ngets out' : 'nothing crosses' },
-      { head:c ? 'the\nexperiment' : 'the experiment', inside:c ? 'starch +\namylase' : 'starch and amylase',
+      { head:c ? 'experiment' : 'the experiment', inside:c ? 'starch +\namylase' : 'starch and amylase',
         starch:true, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' },
-      { head:c ? 'positive\ncontrol' : 'positive control', inside:c ? 'maltose\nonly' : 'maltose only',
+      { head:c ? 'positive' : 'positive control', inside:c ? 'maltose\nonly' : 'maltose only',
         starch:false, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' }
     ];
     SET.forEach(function (t, i) {
@@ -891,8 +891,8 @@
              '<animateMotion dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite" path="M' +
                f1(cx + side * 12) + ',' + f1(yy) + ' L' + f1(cx + side * 26) + ',' + f1(yy + 10) + '"/>' +
              A + '"opacity" values="0;1;1;0" keyTimes="0;0.15;0.7;1" dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite"/></g>'; });
-      g += label(t.head, cx, TOP - 44, null, null, fs, 'middle');
-      g += label(t.inside, cx, TOP - 26, null, null, fs * 0.88, 'middle');
+      g += label(t.head, cx, TOP - 72, null, null, fs, 'middle');
+      g += label(t.inside, cx, TOP - 36, null, null, fs * 0.88, 'middle');
       g += label(t.note, cx, TOP + H + 22, null, null, fs * 0.88, 'middle');
     });
     return g;
