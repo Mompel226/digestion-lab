@@ -597,8 +597,11 @@
       var tight = !ins.link && (ppu(frame) < 1.6 || capw > frame.w * 0.95 || ins.nocap);
       var x = ins.at[0], y = ins.at[1], w = ins.at[2] * (tight ? (ins.big == null ? 1.4 : ins.big) : 1), h = w * ins.h / ins.w;
       var g = el('g', { 'class':'inset' }, gInsets);
-      el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
+      /* `bare`: no card, and the paper the photograph was scanned on taken out, so the
+         structures sit straight on the plate instead of inside a white rectangle */
+      if (!ins.bare) el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
+      if (ins.bare) im.setAttribute('filter', 'url(#dropWhite)');
       im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
       var ipl = { x:x, y:y, W:w, H:h };
       var keep = gLabels; gLabels = g;
