@@ -83,7 +83,7 @@ window.ZOOM_DETAIL = {
           {
             "t": "throat (pharynx)",
             "at": [
-              0.545,
+              0.52,
               0.7
             ],
             "tx": [
