@@ -11,7 +11,7 @@
 <!-- The tab icon: the alimentary canal itself — oesophagus, stomach, a loop of intestine —
      drawn as one continuous tube on the app's own green. It was a pair of lungs. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2314572B'/><g fill='none' stroke='%23FFFFFF' stroke-linecap='round'><path d='M16.5 4.5 V9.5' stroke-width='3'/><path d='M16.5 9.5 C10 9.5 6.5 14 8.8 18.2 C11 22 17.6 21.8 18.6 17' stroke-width='3.2'/><path d='M18.6 17 C23 18.4 24 23 20.4 25.4 C16.4 28 10.6 26 10.6 22.4' stroke-width='3'/></g></svg>">
-<link rel="stylesheet" href="css/app.css?v=1788579796">
+<link rel="stylesheet" href="css/app.css?v=1788579987">
 </head>
 <body>
 <div class="app">
@@ -40,6 +40,7 @@
       <button class="hbtn hbtn--go" id="btnSubmit" hidden disabled>Hand in</button>
       <a class="hbtn" href="https://mompel226.github.io/IGCSE-revision-app/"
          title="All of the Biology Labs">← All labs</a>
+      <button class="hbtn" id="btnGloss" title="Every key word in one place, with its definition"><span class="hbtn__long">Key words</span><span class="hbtn__short" aria-hidden="true">A–Z</span></button>
       <button class="hbtn" id="btnHelp"><span class="hbtn__long">How to use</span><span class="hbtn__short" aria-hidden="true">?</span></button>
       <button class="hbtn" id="btnReset" title="Clear every answer and start again">Reset</button>
     </div>
@@ -87,6 +88,18 @@
     <h2>Hand in your work</h2>
     <div id="subBody"></div>
     <div class="dlgrow"><button class="btn" id="subGo">Hand in</button></div>
+  </div>
+</div>
+
+<div class="modal" id="glossDlg" hidden role="dialog" aria-modal="true" aria-label="Key words">
+  <div class="modal__box">
+    <button class="modal__close" id="glossClose" aria-label="Close">×</button>
+    <h2>Key words</h2>
+    <p class="st-sub">Every term the lab uses, with the definition it is examined on.</p>
+    <input class="gloss__find" id="glossFind" type="search" autocomplete="off"
+           placeholder="Type a word — or part of one" aria-label="Search the key words">
+    <p class="gloss__count" id="glossCount"></p>
+    <div id="glossList"></div>
   </div>
 </div>
 
@@ -149,20 +162,20 @@
 </div>
 
 <script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="js/config.js?v=1788579796"></script>
-<script src="js/data/stations.js?v=1788579796"></script>
-<script src="js/data/photos.js?v=1788579796"></script>
-<script src="js/data/figure-art.js?v=1788579796"></script>
-<script src="js/data/anatomy-art.js?v=1788579796"></script>
-<script src="js/data/zoom.js?v=1788579796"></script>
-<script src="js/plateanim.js?v=1788579796"></script>
-  <script src="js/zoom.js?v=1788579796"></script>
-<script src="js/anatomy.js?v=1788579796"></script>
-<script src="js/tour.js?v=1788579796"></script>
-<script src="js/terms.js?v=1788579796"></script>
-<script src="js/figures.js?v=1788579796"></script>
-<script src="js/marking.js?v=1788579796"></script>
-<script src="js/engine.js?v=1788579796"></script>
-<script src="js/app.js?v=1788579796"></script>
+<script src="js/config.js?v=1788579987"></script>
+<script src="js/data/stations.js?v=1788579987"></script>
+<script src="js/data/photos.js?v=1788579987"></script>
+<script src="js/data/figure-art.js?v=1788579987"></script>
+<script src="js/data/anatomy-art.js?v=1788579987"></script>
+<script src="js/data/zoom.js?v=1788579987"></script>
+<script src="js/plateanim.js?v=1788579987"></script>
+  <script src="js/zoom.js?v=1788579987"></script>
+<script src="js/anatomy.js?v=1788579987"></script>
+<script src="js/tour.js?v=1788579987"></script>
+<script src="js/terms.js?v=1788579987"></script>
+<script src="js/figures.js?v=1788579987"></script>
+<script src="js/marking.js?v=1788579987"></script>
+<script src="js/engine.js?v=1788579987"></script>
+<script src="js/app.js?v=1788579987"></script>
 </body>
 </html>

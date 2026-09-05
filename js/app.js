@@ -1209,6 +1209,57 @@
 
     var lb = document.getElementById('lightbox');
     lb.addEventListener('click', function () { lb.hidden = true; });
+    /* ---------- Key words, in one place ----------
+       Every definition on the site already lives on the station that introduces the term.
+       The glossary reads those, so there is one wording to keep right, not two — and it
+       groups by station, which is the order a reader met the words in. */
+    (function () {
+      var dlg = document.getElementById('glossDlg'), list = document.getElementById('glossList');
+      var find = document.getElementById('glossFind'), count = document.getElementById('glossCount');
+      var built = false;
+
+      function build() {
+        if (built) return; built = true;
+        var html = '';
+        ORDER.forEach(function (id) {
+          var st = S[id]; if (!st || !(st.keywords || []).length) return;
+          html += '<section class="gloss__grp" data-station="' + id + '">' +
+                  '<h3 class="gloss__h">' + esc(st.name) + '</h3><dl class="gloss__dl">' +
+                  st.keywords.map(function (w) {
+                    return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
+                           '<dt>' + esc(w.term) + '</dt><dd>' + esc(w.def) + '</dd></div>';
+                  }).join('') + '</dl></section>';
+        });
+        list.innerHTML = html;
+      }
+
+      function filter() {
+        var q = (find.value || '').trim().toLowerCase();
+        var rows = list.querySelectorAll('.gloss__row'), shown = 0;
+        Array.prototype.forEach.call(rows, function (r) {
+          var hit = !q || r.getAttribute('data-term').indexOf(q) >= 0;
+          r.hidden = !hit; if (hit) shown++;
+        });
+        Array.prototype.forEach.call(list.querySelectorAll('.gloss__grp'), function (g) {
+          g.hidden = !g.querySelector('.gloss__row:not([hidden])');
+        });
+        count.textContent = q ? (shown ? shown + (shown === 1 ? ' word' : ' words') + ' match “' + find.value.trim() + '”'
+                                       : 'Nothing matches “' + find.value.trim() + '”')
+                              : rows.length + ' key words across ' + list.querySelectorAll('.gloss__grp').length + ' stations';
+      }
+
+      function open(term) {
+        build(); find.value = term || ''; filter(); dlg.hidden = false;
+        setTimeout(function () { find.focus(); }, 30);
+      }
+      window.LabGlossary = open;
+
+      document.getElementById('btnGloss').addEventListener('click', function () { open(''); });
+      document.getElementById('glossClose').addEventListener('click', function () { dlg.hidden = true; });
+      dlg.addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+      find.addEventListener('input', filter);
+    })();
+
     document.getElementById('btnHelp').addEventListener('click', function () {
       document.getElementById('modal').hidden = false;
     });
@@ -1222,6 +1273,7 @@
       if (e.key !== 'Escape') return;
       closePeek();
       document.getElementById('modal').hidden = true;
+      document.getElementById('glossDlg').hidden = true;
       document.getElementById('pwDlg').hidden = true;
       document.getElementById('subDlg').hidden = true;
       lb.hidden = true;
