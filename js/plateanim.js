@@ -204,9 +204,9 @@
       label('from the mouth', cxTop, y0 - hw * 2.2, null, null, fs * 0.85, 'middle') +
       label('to the stomach', cxEnd - hw * 2.8, y1 - hw * 1.1, cxEnd - hw * 0.9, y1 - hw * 0.5, fs * 0.85, 'end') +
       travel(mlabel(ctx.compact ? 'muscle\ncontracts\nbehind' : 'circular muscle contracts\nbehind the bolus and\nsqueezes it along',
-                    rx, yBehind - fs * 1.15, cxTop + hw * 0.55, yBehind, fs), dxs, dys, KT, DUR, ENV, ENVK) +
+                    rx, yBehind - fs * 1.15, cxTop + hw * 0.55, yBehind, fs * 0.92), dxs, dys, KT, DUR, ENV, ENVK) +
       travel(mlabel(ctx.compact ? 'wall\nrelaxes\nahead' : 'the wall ahead relaxes\nto receive it',
-                    rx, yAhead - fs * 0.3, cxTop + hw * 1.35, yAhead, fs), dxs, dys, KT, DUR, ENV, ENVK) +
+                    rx, yAhead - fs * 0.3, cxTop + hw * 1.35, yAhead, fs * 0.92), dxs, dys, KT, DUR, ENV, ENVK) +
       moving('the bolus', ys.map(function (v) { return cxAt(v) - hw * 1.5; }), ys.map(function (v) { return v + fs * 0.35; }),
              KT, DUR, fs, 'end', '0;1;1;0;0', '0;0.06;0.72;0.80;1');   /* clear of the label at the cardia */
   }
@@ -380,10 +380,10 @@
       '<path fill="none" stroke="#9E5D3A" stroke-width="' + f1(1.6 * u) + '" stroke-linejoin="round" d="' + fo[0] + '">' + animD() + '</path>' +
       food + squirt +
       (ctx.compact
-        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', 178, 380, 272, 470, fs, 'start') +
+        ? label('peristaltic waves\nsqueeze towards\nthe pylorus', 178, 380, null, null, fs, 'start') +
           label('gastric juice:\nHCl + pepsin', mid.x, mid.y + fs * .4, null, null, fs, 'middle') +
           label('chyme through the\npyloric sphincter', 146, 574, 168, 519, fs, 'start')
-        : label('peristaltic waves\nsqueeze towards the\npylorus — this is\nphysical digestion', 236, 396, 271, 468, fs, 'start') +
+        : label('peristaltic waves\nsqueeze towards the\npylorus — this is\nphysical digestion', 236, 396, null, null, fs, 'start') +
           label('gastric juice\n(hydrochloric acid\n+ pepsin)', mid.x, mid.y - fs * .2, null, null, fs, 'middle') +
           label('with each wave a little chyme is\nsquirted through the pyloric\nsphincter into the duodenum', 142, 576, 168, 519, fs, 'start'));
   }
