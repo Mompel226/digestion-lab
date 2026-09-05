@@ -815,6 +815,13 @@
      of the station they left is not coming back — the sentence they were reading is gone.
      The exact place is noted before the jump and restored with it. */
   var whereWeWere = null;
+  /* Put a scroller exactly where it was, with no animation: coming back is not a journey. */
+  function jumpTo(el, top) {
+    var prev = el.style.scrollBehavior;
+    el.style.scrollBehavior = 'auto';
+    el.scrollTop = top;
+    el.style.scrollBehavior = prev || '';
+  }
   function markWhereWeAre() {
     var panel = document.getElementById('panel');
     whereWeWere = { id: current, top: panel ? panel.scrollTop : 0, tab: tab };
@@ -827,7 +834,7 @@
     if (!panel) return;
     /* after paintPanel has laid the station out again */
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { panel.scrollTop = w.top; });
+      requestAnimationFrame(function () { jumpTo(panel, w.top); });
     });
   }
 
@@ -1288,7 +1295,7 @@
       function close() {
         dlg.hidden = true;
         var panel = document.getElementById('panel');
-        if (panel && atOpen != null) panel.scrollTop = atOpen;
+        if (panel && atOpen != null) jumpTo(panel, atOpen);
       }
       document.getElementById('glossClose').addEventListener('click', close);
       dlg.addEventListener('click', function (e) { if (e.target === this) close(); });
