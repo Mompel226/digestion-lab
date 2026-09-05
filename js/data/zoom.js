@@ -93,7 +93,7 @@ window.ZOOM_DETAIL = {
             "anchor": "start"
           }
         ],
-        "img": "zoom/head-section.jpg",
+        "img": "zoom/head-section.png",
         "roi": [
           0.06,
           0.52,
@@ -243,7 +243,7 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "img": "zoom/head-section.jpg",
+        "img": "zoom/head-section.png",
         "roi": [
           0.06,
           0.52,
@@ -273,7 +273,7 @@ window.ZOOM_DETAIL = {
             "cap": "a real molar, cut in half — click to enlarge"
           }
         ],
-        "img": "zoom/head-section.jpg",
+        "img": "zoom/head-section.png",
         "roi": [
           0.06,
           0.52,
@@ -303,7 +303,7 @@ window.ZOOM_DETAIL = {
             "cap": "healthy · caries · cavity — click to enlarge"
           }
         ],
-        "img": "zoom/head-section.jpg",
+        "img": "zoom/head-section.png",
         "roi": [
           0.06,
           0.52,
@@ -416,7 +416,7 @@ window.ZOOM_DETAIL = {
   },
   "epiglottis": {
     "organ": "epiglottis",
-    "img": "zoom/head-section.jpg",
+    "img": "zoom/head-section.png",
     "w": 1200,
     "h": 1319,
     "fixed": [
