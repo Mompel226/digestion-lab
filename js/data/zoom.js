@@ -743,19 +743,18 @@ window.ZOOM_DETAIL = {
     ],
     "insets": [
       {
-        "img": "zoom/pancreas-acinar.jpg",
+        "img": "zoom/pancreas-acinar.png",
         "at": [
-          58,
-          468,
-          78
+          118,
+          470,
+          96
         ],
-        "cap": "inside: acinar cells make the juice —\ntrypsin, amylase, lipase (and, as extension,\nchymotrypsin, elastase, hydrogencarbonate)",
+        "cap": "the duodenum and the head of the pancreas, and the ducts that enter it",
         "to": [
           0.65,
           0.55
         ],
-        "big": 1,
-        "nocap": true
+        "bare": true
       }
     ],
     "label": "The pancreas makes pancreatic juice in its acinar cells; its duct carries the juice to the duodenum, where the bile duct joins it",
@@ -769,18 +768,6 @@ window.ZOOM_DETAIL = {
           147,
           498
         ]
-      }
-    ],
-    "labels": [
-      {
-        "t": "photograph:\nthe duodenum\nand pancreas",
-        "plate": true,
-        "tx": [
-          52,
-          576
-        ],
-        "anchor": "start",
-        "fs": 0.72
       }
     ]
   },

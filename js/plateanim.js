@@ -51,9 +51,9 @@
      text actually ended up, so it still points at its dot. */
   var FRAME = null, MOVING = false, TIGHT = false;
 
-  /* A label that travel() will translate afterwards must not be clamped: the clamp
-     only sees where it starts, so sliding it inside the frame just moves the whole
-     journey and lands it in a pile at the far end. */
+  /* Labels the clamp must leave alone: one that travel() will translate afterwards (the
+     clamp only sees where it starts, so sliding it moves the whole journey), and one whose
+     place was chosen against the measured organ, where a nudge would break the leader. */
   function mlabel() { MOVING = true; try { return label.apply(null, arguments); } finally { MOVING = false; } }
 
   /* `a2` is a second target: one word, two leaders — the structure on the drawing and the
@@ -494,7 +494,7 @@
               '<g opacity="0">' + phase(false) + REL + '</g>';
     if (ctx.compact) return g +
       label('liver', 60, 400, 122, 436, fs, 'start') +
-      label('gall\nbladder', 56, 516, 132, 486, fs, 'start') +
+      mlabel('gall\nbladder', 45, 517, 121, 487, fs, 'start') +
       label('common\nbile duct', 186, 542, 152, 530, fs, 'start') +
       label('duodenum', 58, 578, 134, 576, fs, 'start');
     return g +
