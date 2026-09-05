@@ -36,7 +36,7 @@
      width sets the scale, and the scale decides whether an animation draws its full labels
      or its compact ones. */
   var CAM = {
-    'mouth':          { cx:150, cy:146, w:190 },   /* room to the right of the pharynx for its label */
+    'mouth':          { cx:150, cy:150, w:172 },   /* room to the right of the pharynx for its label; closed in until the empty space below the jaw is gone */
     'salivary-glands': { cx:146, cy:146, w:160 },
     'epiglottis':     { cx:152, cy:190, w:190 },
     'oesophagus':     { cx:178, cy:318, w:250 },
