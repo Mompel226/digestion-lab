@@ -19,13 +19,16 @@
     { id:'B', name:'the experiment',   has:'starch and amylase',  starch:true,  amylase:true,  malt:false },
     { id:'C', name:'positive control', has:'maltose only',        starch:false, amylase:false, malt:true  }
   ];
+  /* sn = how many starch molecules are drawn; starch = what iodine would report.
+     In B some starch is still there at 30 minutes, which is why iodine inside B is still
+     blue-black: an enzyme does not finish the job in half an hour. */
   var TRUTH = {
-    A: { inside:{ before:{ starch:true,  malt:0 }, after:{ starch:true,  malt:0 } },
-         outside:{ before:{ starch:false, malt:0 }, after:{ starch:false, malt:0 } } },
-    B: { inside:{ before:{ starch:true,  malt:0 }, after:{ starch:true,  malt:4 } },
-         outside:{ before:{ starch:false, malt:0 }, after:{ starch:false, malt:3 } } },
-    C: { inside:{ before:{ starch:false, malt:4 }, after:{ starch:false, malt:2 } },
-         outside:{ before:{ starch:false, malt:0 }, after:{ starch:false, malt:3 } } }
+    A: { inside:{ before:{ starch:true,  sn:3, malt:0 }, after:{ starch:true,  sn:3, malt:0 } },
+         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:0 } } },
+    B: { inside:{ before:{ starch:true,  sn:3, malt:0 }, after:{ starch:true,  sn:1, malt:4 } },
+         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:3 } } },
+    C: { inside:{ before:{ starch:false, sn:0, malt:4 }, after:{ starch:false, sn:0, malt:2 } },
+         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:3 } } }
   };
 
   /* Benedict's is semi-quantitative: the colour says how much, not merely whether. */
@@ -42,42 +45,155 @@
   var S = { ran:false, sample:null, result:null, log:{} };
   global.BenchState = S;
 
-  /* ---------- geometry ---------- */
+  /* ---------- geometry ----------
+     The bench is laid out against the frame the camera actually gives us, not against fixed
+     numbers: a phone and a laptop hand us different shapes, and the bench should fill either.
+     R holds the baselines of the rows under the rack, worked upwards from the caption strip. */
   var F = { x:30, y:116, w:280, h:448 };
-  var RACK = { y:182, h:118, w:44 };
-  var CX = [68, 146, 224];      /* the rack sits left, leaving the right of the bench for the pipette */
+  var RACK = { y:182, h:170, w:56 };
+  var CX = [74, 158, 242];      /* the rack sits left, leaving the right of the bench for the pipette */
+  var R = {};
+
+  /* The viewBox is not what you can see. The plate is drawn with xMidYMid meet, so on a pane
+     that is not exactly the viewBox's shape the browser letterboxes and shows MORE than the
+     viewBox on one axis. Measuring that back through the CTM is the difference between a bench
+     that uses 280 units of a 412-unit-wide panel and one that fills it. */
+  function visibleBox(frame) {
+    var svg = document.getElementById('bodySvg');
+    if (!svg || !svg.getScreenCTM || !svg.createSVGPoint) return null;
+    var m = svg.getScreenCTM(); if (!m) return null;
+    var inv = m.inverse(), r = svg.getBoundingClientRect();
+    if (!r.width || !r.height) return null;
+    function toUser(px, py) { var p = svg.createSVGPoint(); p.x = px; p.y = py; return p.matrixTransform(inv); }
+    var tl = toUser(r.left, r.top), br = toUser(r.right, r.bottom);
+    var box = { x:tl.x, y:tl.y, w:br.x - tl.x, h:br.y - tl.y };
+    if (!(box.w > 0 && box.h > 0)) return null;
+    /* never wider than half again the frame, or the bench sprawls on a very wide pane */
+    var cap = frame.w * 1.55;
+    if (box.w > cap) { box.x = frame.x + frame.w / 2 - cap / 2; box.w = cap; }
+    /* the caption strip is a real element: ask it where it starts rather than guessing */
+    var el = document.querySelector('.detailstrip');
+    if (el) { var cr = el.getBoundingClientRect();
+      if (cr.height > 2 && cr.top > r.top) box.bottom = toUser(cr.left, cr.top).y - 6; }
+    return box;
+  }
+
+  function layout(frame) {
+    if (frame && frame.w) F = { x:frame.x, y:frame.y, w:frame.w, h:frame.h };
+    var vis = frame && frame.w ? visibleBox(frame) : null, bottom = null;
+    if (vis) { bottom = vis.bottom || null; F = { x:vis.x, y:vis.y, w:vis.w, h:vis.h }; }
+    var strip = bottom !== null ? bottom : F.y + F.h * 0.82;   /* nothing may go below it */
+    R.say = F.y + F.h * 0.032;
+    R.key = F.y + F.h * 0.068;
+    R.clock = strip - 79; R.btn = strip - 71; R.reset = strip - 37;
+    R.swatch = strip - 38; R.res = strip - 27; R.sub = strip - 16;
+    /* height first: the tubes take what vertical room is left, then the width follows from it,
+       so a boiling tube always looks like a boiling tube and never like a beaker */
+    RACK.y = F.y + F.h * 0.150;
+    RACK.h = Math.max(120, R.clock - 46 - RACK.y);
+    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.36);
+    var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w, pip = Math.min(56, F.w * 0.13);
+    R.left = F.x + Math.max(6, (F.w - pip - tot) / 2);
+    CX = [0, 1, 2].map(function (i) { return R.left + RACK.w / 2 + i * sp; });
+    R.right = R.left + tot;
+    R.mol = RACK.w / 56;          /* molecules are a fixed fraction of the tube, at any size */
+    R.id = RACK.y + RACK.h + 18; R.nm = RACK.y + RACK.h + 30; R.has = RACK.y + RACK.h + 41;
+  }
+
+  /* ---------- what the molecules actually are ----------
+     One glucose is one circle, and it is the SAME circle everywhere. Maltose is two of them
+     joined; starch is a long branched chain of many. That is the whole experiment: the pores
+     let maltose through and cannot let starch through, and a student can see why by counting.
+     Amylase is not a carbohydrate at all, so it is drawn as a protein with an active site —
+     and it stays inside the tubing, because a protein is far too large to cross as well. */
+  var GLU = '#D98F2E', GLUE = '#A9651C', ENZ = '#7A5AA8';
+
+  function glucose(cx, cy, r) {
+    return '<circle cx="' + f1(cx) + '" cy="' + f1(cy) + '" r="' + f1(r) +
+           '" fill="' + GLU + '" stroke="' + GLUE + '" stroke-width=".7"/>';
+  }
+  /* maltose: two glucose, joined — small enough to pass through a pore */
+  function pair(cx, cy, s) {
+    s = s || 1;
+    return '<line x1="' + f1(cx - 3.4 * s) + '" y1="' + f1(cy) + '" x2="' + f1(cx + 3.4 * s) + '" y2="' + f1(cy) +
+           '" stroke="' + GLUE + '" stroke-width="' + f1(1.6 * s) + '"/>' +
+           glucose(cx - 3.4 * s, cy, 3.2 * s) + glucose(cx + 3.4 * s, cy, 3.2 * s);
+  }
+  /* starch: a chain of seven glucose, folded so it fits down a tube — many times the bulk of
+     maltose, which is the whole reason one crosses the wall and the other cannot */
+  function starch(cx, cy, s) {
+    s = s || 1;
+    var dx = 10 * s, dy = 8 * s, r = 3.2 * s, pts = [], g = '';
+    [0, 1, 2].forEach(function (row) {
+      [0, 1].forEach(function (col) {
+        var c = row % 2 ? 1 - col : col;                       /* serpentine, so the chain is unbroken */
+        pts.push([cx + (c - 0.5) * dx, cy + (row - 1) * dy]);
+      });
+    });
+    g += '<polyline points="' + pts.map(function (q) { return f1(q[0]) + ',' + f1(q[1]); }).join(' ') +
+         '" fill="none" stroke="' + GLUE + '" stroke-width="' + f1(1.6 * s) + '" stroke-linejoin="round" stroke-linecap="round"/>';
+    var bx = cx + dx * 0.5, by = cy - dy;
+    g += '<line x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(bx - dx * 0.7) + '" y2="' + f1(by - dy * 0.8) +
+         '" stroke="' + GLUE + '" stroke-width="' + f1(1.6 * s) + '" stroke-linecap="round"/>';   /* a branch */
+    pts.push([bx - dx * 0.7, by - dy * 0.8]);
+    pts.forEach(function (q) { g += glucose(q[0], q[1], r); });
+    return g;
+  }
+  /* amylase: a protein with a cleft — the active site the starch fits into */
+  function amylase(cx, cy, s) {
+    s = s || 1;
+    return '<path d="M' + f1(cx - 9 * s) + ',' + f1(cy - 6 * s) +
+           ' a' + f1(9 * s) + ',' + f1(8 * s) + ' 0 1 0 ' + f1(18 * s) + ',0' +
+           ' l' + f1(-5 * s) + ',0 l' + f1(-4 * s) + ',' + f1(5 * s) + ' l' + f1(-4 * s) + ',' + f1(-5 * s) + ' Z"' +
+           ' fill="' + ENZ + '" fill-opacity=".85" stroke="#5A3F84" stroke-width="1" stroke-linejoin="round"/>';
+  }
+
+  function starchFlat(cx, cy, s) {
+    var d = 8 * s, g = '<line x1="' + f1(cx - 2 * d) + '" y1="' + f1(cy) + '" x2="' + f1(cx + 2 * d) + '" y2="' + f1(cy) +
+            '" stroke="' + GLUE + '" stroke-width="' + f1(1.5 * s) + '"/>';
+    for (var i = -2; i <= 2; i++) g += glucose(cx + i * d, cy, 3 * s);
+    return g;
+  }
 
   function tubeArt(i) {
     var t = TUBES[i], x = CX[i] - RACK.w / 2, y = RACK.y, w = RACK.w, h = RACK.h, g = '';
-    var bagW = 20, bx = CX[i] - bagW / 2, by = y - 16, bh = h - 26;
+    var bagW = w * 0.52, bx = CX[i] - bagW / 2, by = y - 20, bh = h - 30;
     g += '<path fill="#CFE4EE" opacity=".5" d="M' + f1(x + 2) + ',' + f1(y + 16) +
          ' H' + f1(x + w - 2) + ' V' + f1(y + h - 11) + ' a' + f1(w / 2 - 2) + ',11 0 0 1 ' + f1(-(w - 4)) + ',0 Z"/>';
     g += '<path fill="none" stroke="#9FB3BD" stroke-width="1.6" stroke-linejoin="round" d="M' + f1(x) + ',' + f1(y) +
          ' V' + f1(y + h - 11) + ' a' + f1(w / 2) + ',11 0 0 0 ' + f1(w) + ',0 V' + f1(y) + '"/>';
     g += '<ellipse cx="' + f1(CX[i]) + '" cy="' + f1(y) + '" rx="' + f1(w / 2) + '" ry="3.4" fill="none" stroke="#9FB3BD" stroke-width="1.6"/>';
-    /* the tubing, knotted above the rim */
+    /* the tubing, knotted above the rim and again at the bottom */
     g += '<rect x="' + f1(bx) + '" y="' + f1(by + 6) + '" width="' + f1(bagW) + '" height="' + f1(bh - 12) +
          '" rx="' + f1(bagW / 2) + '" fill="#F3E6C8" opacity=".95" stroke="#C9AE72" stroke-width="1.4"/>';
     g += '<path d="M' + f1(bx) + ',' + f1(by + 6) + ' v' + f1(bh - 12) + ' M' + f1(bx + bagW) + ',' + f1(by + 6) + ' v' + f1(bh - 12) +
          '" stroke="#FFFDF9" stroke-width="1.8" stroke-dasharray="1.3 5" stroke-linecap="round"/>';
     [by + 6, by + bh - 6].forEach(function (ky) {
-      g += '<ellipse cx="' + f1(CX[i]) + '" cy="' + f1(ky) + '" rx="7" ry="3.2" fill="#E4D2A4" stroke="#B99C5E" stroke-width="1.2"/>'; });
-    /* contents */
+      g += '<ellipse cx="' + f1(CX[i]) + '" cy="' + f1(ky) + '" rx="' + f1(bagW / 4 + 0.5) + '" ry="3.2" fill="#E4D2A4" stroke="#B99C5E" stroke-width="1.2"/>'; });
+
+    /* Contents, stacked so nothing can ever land on top of anything else, and sized as a
+       fraction of the tube so the picture means the same on a phone and on a laptop. */
+    var mol = R.mol || 1;
     var inside = TRUTH[t.id].inside[S.ran ? 'after' : 'before'];
-    if (inside.starch) [0.3, 0.62].forEach(function (k) { g += coil(CX[i], by + 18 + k * (bh - 40), 0.5); });
-    var n = Math.min(3, inside.malt);
-    for (var m = 0; m < n; m++) g += pair(CX[i] - 5 + (m % 2) * 10, by + 30 + m * 22);
-    /* what has crossed into the water */
+    var items = [];
+    for (var q = 0; q < (inside.sn || 0); q++) items.push({ t:'s', h:26 * mol });
+    if (t.amylase) items.push({ t:'e', h:16 * mol });
+    for (var m = 0; m < Math.min(3, inside.malt); m++) items.push({ t:'m', h:11 * mol });
+    var top = by + 6 + 26 * mol, bot = by + bh - 14, span = bot - top;
+    var tot = items.reduce(function (a2, it) { return a2 + it.h; }, 0);
+    var cy = top + Math.max(0, (span - tot) / 2), k = 0;
+    items.forEach(function (it) {
+      var mid = cy + it.h / 2;
+      if (it.t === 's') g += starch(CX[i], mid, mol);
+      else if (it.t === 'e') g += amylase(CX[i], mid, 0.9 * mol);
+      else { g += pair(CX[i] + (k % 2 ? 1 : -1) * 6 * mol, mid, mol); k++; }
+      cy += it.h;
+    });
+    /* what has crossed into the water: maltose only — starch and amylase are far too large */
     var out = TRUTH[t.id].outside[S.ran ? 'after' : 'before'];
     for (var o = 0; o < Math.min(3, out.malt); o++)
-      g += pair(CX[i] + (o % 2 ? 14 : -14), y + 34 + o * 26);
+      g += pair(CX[i] + (o % 2 ? 1 : -1) * (bagW / 2 + 6 * mol), y + h * (0.22 + o * 0.20), mol);
     return g;
-  }
-  function coil(cx, cy, s) {
-    var d = 'M' + f1(cx - 6 * s) + ',' + f1(cy);
-    for (var i = 0; i < 3; i++) d += ' Q' + f1(cx - 6 * s + 4 * s * i + 2 * s) + ',' + f1(cy + (i % 2 ? 3 : -3) * s) +
-      ' ' + f1(cx - 6 * s + 4 * s * (i + 1)) + ',' + f1(cy);
-    return '<path d="' + d + '" fill="none" stroke="#5B7FA6" stroke-width="' + f1(2.2 * s) + '" stroke-linecap="round"/>';
   }
   /* A teat pipette: bulb, barrel, drawn point. It rests on the bench until a sample is
      taken, then stands beside the tube it was taken from, holding what it drew. */
@@ -93,10 +209,6 @@
     return g + '</g>';
   }
 
-  function pair(cx, cy) {
-    return '<circle cx="' + f1(cx - 2.6) + '" cy="' + f1(cy) + '" r="2.4" fill="#D98F2E"/>' +
-           '<circle cx="' + f1(cx + 2.6) + '" cy="' + f1(cy) + '" r="2.4" fill="#D98F2E"/>';
-  }
   /* ---------- the bench ---------- */
   function btn(id, x, y, w, h, label, on, sub) {
     return '<g class="bn' + (on ? ' is-on' : '') + '" data-bench="' + esc(id) + '" role="button" tabindex="0">' +
@@ -107,19 +219,28 @@
   }
 
   function draw(ctx) {
-    var g = '', fs = 11;
+    layout(ctx && ctx.frame);
+    var g = '';
     /* what to do, in one line that changes with what has been done */
     var say = !S.sample ? 'Tap a dotted spot to draw a sample \u2014 inside the tubing, or the water outside it.'
             : !S.result ? 'Now test what is in the pipette: iodine, or Benedict\u2019s.'
             : 'Test somewhere else, or run the clock and test again.';
-    g += '<text class="bn__say" x="' + f1(F.x + F.w / 2) + '" y="134" text-anchor="middle">' + esc(say) + '</text>';
+    g += '<text class="bn__say" x="' + f1(F.x + F.w / 2) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
-    /* the key, read before the bench rather than after the buttons */
-    var ky = 158;
-    g += coil(F.x + 16, ky, 0.62) + '<text class="bn__key" x="' + f1(F.x + 28) + '" y="' + f1(ky + 3) + '">starch</text>';
-    g += pair(F.x + 76, ky) + '<text class="bn__key" x="' + f1(F.x + 86) + '" y="' + f1(ky + 3) + '">maltose</text>';
-    g += '<circle class="bn__spot" cx="' + f1(F.x + 144) + '" cy="' + f1(ky) + '" r="5"/>' +
-         '<text class="bn__key" x="' + f1(F.x + 154) + '" y="' + f1(ky + 3) + '">tap here to sample</text>';
+    /* the key, read before the bench rather than after the buttons. Starch sits next to
+       maltose on purpose: both are made of the same glucose, and one is far bigger. */
+    var KEY = [['starch', 38, 6], ['maltose', 14, 7], ['amylase', 16, 7], ['tap to sample', 10, 13]];
+    var kw = KEY.reduce(function (a2, k) { return a2 + k[1] + 6 + k[2] * 3.1 + 9; }, 0) - 9;
+    var ky = R.key, kx = F.x + Math.max(4, (F.w - kw) / 2);
+    function keyItem(icon, word, w) {
+      var t = icon + '<text class="bn__key" x="' + f1(kx + w + 3) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
+      kx += w + 6 + word.length * 3.1 + 9;
+      return t;
+    }
+    g += keyItem(starchFlat(kx + 19, ky, 0.8), 'starch', 38);
+    g += keyItem(pair(kx + 7, ky, 0.8), 'maltose', 14);
+    g += keyItem(amylase(kx + 8, ky, 0.55), 'amylase', 16);
+    g += keyItem('<circle class="bn__spot" cx="' + f1(kx + 5) + '" cy="' + f1(ky) + '" r="5"/>', 'tap to sample', 10);
 
     /* the three tubes, each with two places you can sample */
     TUBES.forEach(function (t, i) {
@@ -127,45 +248,46 @@
       var picked = S.sample && S.sample.tube === t.id;
       ['outside', 'inside'].forEach(function (side) {
         var sel = picked && S.sample.side === side;
-        var x = CX[i] + (side === 'inside' ? -13 : 13), y = RACK.y + (side === 'inside' ? 40 : 96);
+        var bagBot = RACK.y - 20 + (RACK.h - 30) - 6, tubeBot = RACK.y + RACK.h - 11;
+        var x = CX[i], y = side === 'inside' ? RACK.y - 20 + 6 + 13 * (R.mol || 1) : (bagBot + tubeBot) / 2;
         g += '<circle class="bn__spot' + (sel ? ' is-sel' : '') + '" data-bench="take:' + t.id + ':' + side +
-             '" role="button" tabindex="0" cx="' + f1(x) + '" cy="' + f1(y) + '" r="7"/>';
+             '" role="button" tabindex="0" cx="' + f1(x) + '" cy="' + f1(y) + '" r="9"/>';
       });
-      g += '<text class="bn__id" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 20) + '" text-anchor="middle">' + t.id + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 33) + '" text-anchor="middle">' + esc(t.name) + '</text>';
-      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(RACK.y + RACK.h + 44) + '" text-anchor="middle">' + esc(t.has) + '</text>';
+      g += '<text class="bn__id" x="' + f1(CX[i]) + '" y="' + f1(R.id) + '" text-anchor="middle">' + t.id + '</text>';
+      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(R.nm) + '" text-anchor="middle">' + esc(t.name) + '</text>';
+      g += '<text class="bn__nm" x="' + f1(CX[i]) + '" y="' + f1(R.has) + '" text-anchor="middle">' + esc(t.has) + '</text>';
     });
     /* the bench top, and the pipette standing on it until it is used */
     g += '<path d="M' + f1(F.x + 6) + ',' + f1(RACK.y + RACK.h + 2) + ' H' + f1(F.x + F.w - 6) +
          '" stroke="#C3B69C" stroke-width="2" stroke-linecap="round"/>';
     if (S.sample) {
       var pi = S.sample.tube.charCodeAt(0) - 65;
-      var px = CX[pi] + (S.sample.side === 'inside' ? -30 : 30);
-      g += pipette(px, RACK.y + 44, S.result ? S.result.col : '#CFE4EE');
+      var px = Math.max(F.x + 14, Math.min(R.right + 10, CX[pi] + (S.sample.side === 'inside' ? -38 : 38)));
+      g += pipette(px, RACK.y + 66, S.result ? S.result.col : '#CFE4EE');
     } else {
-      g += pipette(F.x + F.w - 22, RACK.y + 48, null);
-      g += '<text class="bn__key" x="' + f1(F.x + F.w - 22) + '" y="' + f1(RACK.y + 82) + '" text-anchor="middle">pipette</text>';
+      g += pipette(R.right + 26, RACK.y + 72, null);
+      g += '<text class="bn__key" x="' + f1(R.right + 26) + '" y="' + f1(RACK.y + 108) + '" text-anchor="middle">pipette</text>';
     }
 
     /* the controls, one row to a job, each button sized to the words it holds */
     var clock = S.ran ? 'at 30 minutes' : 'at the start';
-    g += '<text class="bn__samp" x="' + f1(F.x + 10) + '" y="372">The clock: ' + clock +
-         (S.sample ? '  \u00b7  in the pipette: ' +
-            esc(S.sample.side === 'inside' ? 'inside tube ' + S.sample.tube : 'water outside tube ' + S.sample.tube) : '') +
+    g += '<text class="bn__samp" x="' + f1(R.left) + '" y="' + f1(R.clock) + '">Clock: ' + clock +
+         (S.sample ? '  \u00b7  pipette holds: ' +
+            esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) : '') +
          '</text>';
-    g += btn('run', F.x + 10, 382, 104, 24, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
+    g += btn('run', R.left, R.btn, 106, 26, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
     if (S.sample) {
-      g += btn('test:iodine', F.x + 122, 382, 64, 24, 'iodine', S.result && S.result.kind === 'iodine');
-      g += btn('test:benedict', F.x + 194, 382, 76, 24, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
+      g += btn('test:iodine', R.left + 114, R.btn, 66, 26, 'iodine', S.result && S.result.kind === 'iodine');
+      g += btn('test:benedict', R.left + 188, R.btn, 78, 26, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
     }
-    g += btn('reset', F.x + 10, 416, 62, 20, 'Start again', false);
+    g += btn('reset', R.left, R.reset, 66, 22, 'Start again', false);
 
     /* the result: the colour that test would actually give, and what it means */
     if (S.result) {
       var r = S.result;
-      g += '<rect x="' + f1(F.x + 82) + '" y="415" width="24" height="22" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
-      g += '<text class="bn__res" x="' + f1(F.x + 112) + '" y="426">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(F.x + 112) + '" y="437">' + esc(r.sub) + '</text>';
+      g += '<rect x="' + f1(R.left + 76) + '" y="' + f1(R.swatch) + '" width="26" height="24" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
+      g += '<text class="bn__res" x="' + f1(R.left + 108) + '" y="' + f1(R.res) + '">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2" x="' + f1(R.left + 108) + '" y="' + f1(R.sub) + '">' + esc(r.sub) + '</text>';
     }
     return g;
   }
@@ -189,6 +311,6 @@
     return false;
   }
 
-  global.Bench = { TUBES:TUBES, TRUTH:TRUTH, BEN:BEN, IOD:IOD, S:S, F:F, RACK:RACK, CX:CX,
-                   tubeArt:tubeArt, coil:coil, pair:pair, f1:f1, esc:esc, draw:draw, hit:hit };
+  global.Bench = { TUBES:TUBES, starch:starch, amylase:amylase, glucose:glucose, TRUTH:TRUTH, BEN:BEN, IOD:IOD, S:S, F:F, RACK:RACK, CX:CX,
+                   layout:layout, tubeArt:tubeArt, starchFlat:starchFlat, pair:pair, f1:f1, esc:esc, draw:draw, hit:hit };
 })(window);
