@@ -29,7 +29,7 @@
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:143, cy:172, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
       notes:[[0, 'Ingestion: the meal is taken in. Mastication — chewing and mixing with saliva — is physical digestion, and salivary amylase starts chemical digestion, breaking starch down to maltose. The food is now a bolus.']] },
-    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
+    { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:44900,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
          and then the bolus appears, already in the stomach. Each leg is [when, camera, how long]. */
@@ -45,11 +45,11 @@
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
       notes:[[0, 'Swallowing: the tongue pushes the bolus back into the pharynx.'],
              [5200, 'The epiglottis folds over the trachea, so the bolus goes down the oesophagus and not into the airway.'],
-             [12000, 'Down the oesophagus by peristalsis, which is circular muscle contracting behind the bolus and relaxing in front of it.'],
+             [12000, 'Down the oesophagus by peristalsis, which is circular muscle contracting behind the bolus and relaxing in front.'],
              /* One sentence, not two. Splitting pepsin off gave the scene an extra step that the
                 animation has no counterpart for, and everything after it read late. */
              [18200, 'Churning is physical digestion. The stomach secretes hydrochloric acid and pepsin, a protease: the acid kills bacteria and gives pepsin the low pH it needs to digest protein into polypeptides — chemical digestion. The bolus is now chyme.'],
-             [30400, 'In the duodenum, bile from the gall bladder and alkaline pancreatic juice arrive through ducts — bile emulsifies fats. Food never enters these organs; they only secrete into the tube.']] },
+             [32900, 'In the duodenum, bile from the gall bladder and alkaline pancreatic juice arrive through ducts — bile emulsifies fats. Food never enters these organs; they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:24000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
       notes:[[0, 'Absorption: glucose and amino acids pass through the villus wall into the blood capillaries, and fatty acids and glycerol into the lacteal. Most of the water is absorbed here too.'],
@@ -452,7 +452,7 @@
                 drops(PANC, '#A0561F', 2.2, 4.5, 6);   /* the same chestnut as the duct drawn on the plate */
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
-            }, 8600);
+            }, 11100);
           });
         }, 4000);                                                   /* the beat at the epiglottis */
       }); }, LEAD);
