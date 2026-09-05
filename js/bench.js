@@ -229,7 +229,7 @@
     layout(ctx && ctx.frame);
     var g = '';
     /* what to do, in one line that changes with what has been done */
-    var say = !S.sample ? 'Tap a dotted spot to draw a sample \u2014 inside the tubing, or the water outside it.'
+    var say = !S.sample ? 'Tap a dotted spot: inside the tubing, or the water outside.'
             : !S.result ? 'Now test what is in the pipette: iodine, or Benedict\u2019s.'
             : 'Test somewhere else, or run the clock and test again.';
     g += '<text class="bn__say" x="' + f1(R.mid) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
