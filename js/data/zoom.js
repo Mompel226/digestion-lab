@@ -774,7 +774,13 @@ window.ZOOM_DETAIL = {
           0.65,
           0.55
         ],
-        "bare": true
+        "bare": true,
+        "link": [
+          0,
+          0,
+          1,
+          1
+        ]
       }
     ],
     "label": "The pancreas makes pancreatic juice in its acinar cells; its duct carries the juice to the duodenum, where the bile duct joins it",
@@ -789,6 +795,12 @@ window.ZOOM_DETAIL = {
           498
         ]
       }
+    ],
+    "animBox": [
+      126,
+      498,
+      74,
+      100
     ]
   },
   "ileum-villi": {
