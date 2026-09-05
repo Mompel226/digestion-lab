@@ -745,9 +745,9 @@ window.ZOOM_DETAIL = {
       {
         "img": "zoom/pancreas-acinar.png",
         "at": [
-          118,
-          470,
-          96
+          54,
+          466,
+          90
         ],
         "cap": "the duodenum and the head of the pancreas, and the ducts that enter it",
         "to": [
