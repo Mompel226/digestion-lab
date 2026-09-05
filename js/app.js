@@ -415,10 +415,32 @@
       if (window.Terms) window.Terms.setQuiet(true);
       var k = document.createElement('div');
       k.className = 'card';
-      k.innerHTML = '<div class="card__h">Key words</div><dl class="kw-grid">' +
+      /* Reading a definition you have just read again teaches almost nothing. The card shows
+         the word and asks for the definition first; the answer is one tap away, and stays
+         open once turned. Recall, then check — not check, then assume. */
+      k.innerHTML = '<div class="card__h">Key words</div>' +
+        '<p class="kw-hint">Say the definition to yourself first, then turn the card.</p>' +
+        '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
-          return '<div class="kw"><dt>' + M(w.term) + '</dt><dd>' + M(w.def) + '</dd></div>';
+          return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
+                 '<dt>' + M(w.term) + '</dt>' +
+                 '<p class="kw__ask">Do you know it? Tap to check</p>' +
+                 '<dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
+      Array.prototype.forEach.call(k.querySelectorAll('.kw--flip'), function (c) {
+        var turn = function () {
+          var open = c.classList.toggle('is-open');
+          c.setAttribute('aria-expanded', open ? 'true' : 'false');
+        };
+        c.addEventListener('click', function (e) {
+          /* a glossary marker inside the word keeps its own job */
+          if (e.target.closest('[data-peek],[data-jump]')) return;
+          turn();
+        });
+        c.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); turn(); }
+        });
+      });
       pane.appendChild(k);
       if (window.Terms) window.Terms.setQuiet(false);
     }
