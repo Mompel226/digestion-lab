@@ -721,6 +721,21 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
               width:32px;height:32px;font-size:17px;cursor:pointer;color:var(--grey);line-height:1}
 .modal__close:hover{background:var(--red-tint);color:var(--red);border-color:var(--red)}
 
+/* ---------- Key words, gathered ---------- */
+.gloss__find{width:100%;margin:14px 0 6px;padding:10px 13px;font-size:15px;font-family:inherit;
+             border:1px solid var(--edge);border-radius:var(--r);background:var(--card-2);color:inherit}
+.gloss__find:focus{outline:2px solid var(--green);outline-offset:1px;background:var(--card)}
+.gloss__count{margin:0 0 4px;font-size:13px;color:#6B6B6B}
+.gloss__grp{margin-top:18px}
+.gloss__h{color:var(--green);font-size:13px;letter-spacing:.06em;text-transform:uppercase;
+          margin:0 0 8px;padding-bottom:5px;border-bottom:1px solid var(--edge)}
+.gloss__dl{margin:0}
+.gloss__row{padding:8px 0;border-bottom:1px solid rgba(0,0,0,.05)}
+.gloss__row:last-child{border-bottom:none}
+.gloss__row dt{font-weight:700;color:var(--green);font-size:14.5px}
+.gloss__row dd{margin:2px 0 0;font-size:14px;line-height:1.5;color:#3C3C3C}
+.gloss__row[hidden],.gloss__grp[hidden]{display:none}
+
 /* ---------- Toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:calc(var(--rail-h) + 14px);transform:translateX(-50%) translateY(14px);
