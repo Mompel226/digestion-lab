@@ -1400,5 +1400,73 @@ window.ZOOM_DETAIL = {
         "corner": "tl"
       }
     ]
+  },
+  "practicals": {
+    "organ": "visking",
+    "noback": true,
+    "hide": [
+      {}
+    ],
+    "steps": [
+      {
+        "at": 0,
+        "anim": "visking",
+        "focus": "set-up",
+        "label": "The apparatus: visking tubing of starch and amylase, in distilled water at 37 °C",
+        "keys": [
+          {
+            "t": "the model",
+            "kind": "act",
+            "cap": "what this stands for",
+            "sub": "the wall of the small intestine",
+            "corner": "tl"
+          }
+        ]
+      },
+      {
+        "at": 4,
+        "anim": "visking",
+        "focus": "run",
+        "label": "Amylase digests starch to maltose; maltose is small enough to diffuse out, starch is not",
+        "keys": [
+          {
+            "t": "diffusion",
+            "kind": "act",
+            "cap": "what happens here",
+            "sub": "down a concentration gradient",
+            "corner": "tl"
+          }
+        ]
+      },
+      {
+        "at": 5,
+        "anim": "viskingTests",
+        "focus": "tests",
+        "label": "The water from outside the tubing, tested: no starch, but reducing sugar",
+        "keys": [
+          {
+            "t": "the result",
+            "kind": "act",
+            "cap": "what the tests show",
+            "corner": "tl"
+          }
+        ]
+      },
+      {
+        "at": 7,
+        "anim": "visking",
+        "focus": "run",
+        "label": "The tubing is the wall of the small intestine, and the water outside is the blood",
+        "keys": [
+          {
+            "t": "absorption",
+            "kind": "act",
+            "cap": "what this models",
+            "sub": "small soluble molecules cross the wall",
+            "corner": "tl"
+          }
+        ]
+      }
+    ]
   }
 };

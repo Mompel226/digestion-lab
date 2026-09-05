@@ -6,7 +6,7 @@
 
   var ORDER = ['diet','overview','mouth','salivary-glands','epiglottis','oesophagus','stomach',
                'liver','pancreas','ileum-villi','colon',
-               'rectum-anus','molecules-lab'];
+               'rectum-anus','molecules-lab','practicals'];
 
   /* which drawn/animated figures each station shows in "See it" */
   var FIGS = {
