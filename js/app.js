@@ -1341,10 +1341,15 @@
         build2(); find.value = term || ''; filter(); countKnown(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box');
         if (box) box.scrollTop = 0;
-        /* focus without scrolling: focusing the box's own field scrolled the list past
-           the search box it was meant to put the cursor in */
-        setTimeout(function () { try { find.focus({ preventScroll: true }); } catch (e) { find.focus(); }
-                                 if (box) box.scrollTop = 0; }, 30);
+        /* Focus the box only when the reader came here to search. Arriving from a word they
+           tapped, the answer is already on screen — and focusing an input on a phone raises
+           the keyboard over half of it, hiding the definition they asked for. */
+        var touch = false;
+        try { touch = matchMedia('(pointer: coarse)').matches; } catch (e) {}
+        if (!term && !touch) {
+          setTimeout(function () { try { find.focus({ preventScroll: true }); } catch (e) { find.focus(); }
+                                   if (box) box.scrollTop = 0; }, 30);
+        }
       }
       window.LabGlossary = open;
 
@@ -1372,8 +1377,7 @@
         }
         var b = e.target.closest('.gloss__see'); if (!b) return;
         find.value = b.getAttribute('data-see'); filter();
-        var box = dlg.querySelector('.modal__box'); if (box) box.scrollTop = 0;
-        find.focus({ preventScroll: true });
+        var box2 = dlg.querySelector('.modal__box'); if (box2) box2.scrollTop = 0;
       });
     })();
 
