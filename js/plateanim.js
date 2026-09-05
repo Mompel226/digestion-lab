@@ -684,13 +684,30 @@
        tests   — the two test tubes of the surrounding water, before and after       */
   /* Laid out against the frame the camera gives this station — x 30..310, y 116..564 — with
      the apparatus down the middle and a clear column each side for the labels. */
+  /* The tubing is longer than the tube it hangs in: it is knotted at both ends and the top
+     knot sits above the rim, which is how it is actually held. Drawn entirely inside, as it
+     was, it looked like something sealed in rather than something lowered in. */
   var VK = {
-    tube:  { x:132, y:150, w:96, h:352, r:48 },        /* the boiling tube */
-    water: 198,                                        /* the water line inside it */
-    bag:   { x:158, y:222, w:44, h:248 },              /* the visking tubing */
+    tube:  { x:132, y:186, w:96, h:322, r:48 },        /* the boiling tube */
+    water: 228,                                        /* the water line inside it */
+    bag:   { x:158, y:152, w:44, h:316 },              /* the tubing, from above the rim down */
     left:  124,                                        /* labels anchored end here */
     right: 236                                         /* labels anchored start here */
   };
+
+  /* what each drawn thing is, said once: the animation is unreadable without it */
+  function viskingKey(ctx) {
+    var fs = ctx.fs * 0.8, x = 36, y = 496, g = '', row = 0;
+    function line(art, word) {
+      var yy = y + row * (fs * 1.5);
+      g += '<g transform="translate(' + f1(x) + ',' + f1(yy) + ')">' + art + '</g>' +
+           '<text class="dl__t" x="' + f1(x + 26) + '" y="' + f1(yy + fs * 0.34) + '" font-size="' + f1(fs) + '">' + word + '</text>';
+      row++;
+    }
+    line(starchBlob(9, 0, 0.62, 0), 'starch');
+    line('<circle cx="4" cy="0" r="3.4" fill="#D98F2E"/><circle cx="13" cy="0" r="3.4" fill="#D98F2E"/>', 'maltose');
+    return g;
+  }
 
   function beaker(o, waterY) {
     var g = '';
@@ -772,7 +789,7 @@
              '</g>';
       });
     }
-    return g + viskingLabels(ctx, T, B, bag, focus);
+    return g + viskingKey(ctx) + viskingLabels(ctx, T, B, bag, focus);
   }
 
   /* The words. On a phone the frame is narrow, so each label is shorter and the two that
@@ -780,13 +797,13 @@
   function viskingLabels(ctx, T, B, bag, focus) {
     var fs = ctx.fs, c = ctx.compact, g = '', L = VK.left, R = VK.right;
     /* one label to a line down each side, so nothing has to share a row with anything else */
-    g += label('37 °C', R, 206, T.x + T.w - 6, VK.water + 10, fs, 'start');
+    g += label('37 °C', R, 236, T.x + T.w - 6, VK.water + 10, fs, 'start');
     g += label(c ? 'distilled\nwater' : 'distilled water',
-               L, 250, T.x + 10, 238, fs, 'end');
+               L, 286, T.x + 10, 268, fs, 'end');
     g += label(c ? 'visking\ntubing' : 'visking tubing —\npartially permeable',
-               R, 300, bag.cx + bag.bw * 0.95, 292, fs, 'start');
+               R, 172, bag.cx + bag.bw * 0.7, 162, fs, 'start');
     g += label(c ? 'starch and\namylase' : 'inside: starch\nand amylase',
-               L, 362, bag.cx - bag.bw * 0.55, 350, fs, 'end');
+               L, 348, bag.cx - bag.bw * 0.55, 336, fs, 'end');
     if (focus !== 'set-up') {
       g += label(c ? 'maltose diffuses\nout through\nthe pores' : 'maltose diffuses out\nthrough the pores',
                  R, 396, bag.cx + bag.bw + 14, 404, fs, 'start');
