@@ -76,7 +76,10 @@
          paints above the plate, so nothing legible may be left underneath it */
       if (TIGHT) {
         var bx = FRAME.x + FRAME.w * 0.60, by = FRAME.y + FRAME.h * 0.13;
-        if (nx + tw > bx && ny < by && by + th <= B) ny = by;
+        /* only a label that actually sits in the corner: the test was true for any label
+           whose right edge merely reached the button's column, which caught a wide centred
+           caption starting far to the left and dropped it onto the labels below. */
+        if (nx + tw / 2 > bx && ny < by && by + th <= B) ny = by;
       }
       tx += nx - x0; ty += ny - yTop;
       x0 = nx; yTop = ny; yBot = ny + th;
