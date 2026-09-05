@@ -854,15 +854,15 @@
      result in the middle tube can only mean one thing. */
   function viskingThree(ctx) {
     var fs = ctx.fs * 0.78, c = ctx.compact, g = '';
-    var W = 62, H = 190, TOP = 186, GAP = 26;
-    var xs = [40, 40 + W + GAP, 40 + 2 * (W + GAP)];
+    var W = 62, H = 190, TOP = 186, GAP = 32;
+    var xs = [34, 34 + W + GAP, 34 + 2 * (W + GAP)];
     var SET = [
-      { head:c ? 'negative' : 'negative control', inside:c ? 'starch only' : 'starch, no amylase',
-        starch:true, malt:false, out:false, note:c ? 'nothing\ngets out' : 'nothing crosses' },
-      { head:c ? 'experiment' : 'the experiment', inside:c ? 'starch + amylase' : 'starch and amylase',
-        starch:true, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' },
-      { head:c ? 'positive' : 'positive control', inside:c ? 'maltose\nonly' : 'maltose only',
-        starch:false, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' }
+      { head:c ? 'negative' : 'negative control', inside:c ? 'starch' : 'starch, no amylase',
+        starch:true, malt:false, out:false, note:c ? 'none\nout' : 'nothing crosses' },
+      { head:c ? 'test' : 'the experiment', inside:c ? 'starch\n+ amylase' : 'starch and amylase',
+        starch:true, malt:true, out:true, note:c ? 'maltose\nout' : 'maltose crosses' },
+      { head:c ? 'positive' : 'positive control', inside:c ? 'maltose' : 'maltose only',
+        starch:false, malt:true, out:true, note:c ? 'maltose\nout' : 'maltose crosses' }
     ];
     SET.forEach(function (t, i) {
       var x = xs[i], cx = x + W / 2, bagW = 30, bx = cx - bagW / 2, by = TOP - 24, bh = H - 34;
@@ -891,8 +891,9 @@
              '<animateMotion dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite" path="M' +
                f1(cx + side * 12) + ',' + f1(yy) + ' L' + f1(cx + side * 26) + ',' + f1(yy + 10) + '"/>' +
              A + '"opacity" values="0;1;1;0" keyTimes="0;0.15;0.7;1" dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite"/></g>'; });
-      g += label(t.head + '\n' + t.inside, cx, TOP + H + 26, null, null, fs, 'middle');
-      g += label(t.note, cx, TOP + H + 74, null, null, fs * 0.86, 'middle');
+      g += label(t.head, cx, TOP + H + 24, null, null, fs * 0.94, 'middle');
+      g += label(t.inside, cx, TOP + H + 46, null, null, fs * 0.8, 'middle');
+      g += label(t.note, cx, TOP + H + 92, null, null, fs * 0.8, 'middle');
     });
     return g;
   }
