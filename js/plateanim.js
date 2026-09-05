@@ -823,7 +823,7 @@
     });
     g += label(ctx.compact ? 'both tubes hold water\nfrom outside the tubing'
                            : 'both tubes hold a sample of the water from outside the tubing',
-               170, 150, null, null, fs * 0.86, 'middle');
+               170, 100, null, null, fs * 0.86, 'middle');
     return g;
   }
 
