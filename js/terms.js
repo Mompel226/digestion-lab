@@ -211,6 +211,13 @@
   });
   ENTRIES.sort(function (a, b) { return b[0].length - a[0].length; });
 
+  /* which words the shared glossary defines, so a plain term can offer its definition */
+  var DEFINED = {};
+  (function () {
+    var g = (typeof window !== 'undefined' && window.GLOSSARY) || [];
+    g.forEach(function (e) { DEFINED[e.term.toLowerCase()] = e.term; });
+  })();
+
   var INFO = {};
   ENTRIES.forEach(function (e) { if (!INFO[e[0].toLowerCase()]) INFO[e[0].toLowerCase()] = e; });
 
@@ -278,6 +285,12 @@
       } else if (JUMP[low] && JUMP[low] !== here) {
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
+      } else if (DEFINED[low]) {
+        /* A word with nothing to show and nowhere to go still has a definition. It gets the
+           quietest mark of the three — a fine dotted rule, no icon — because it is the most
+           common case and must not turn the page into a field of markers. */
+        act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
+        cls = ' is-gloss';
       }
       if (e[2]) {
         return '<b class="tc tc--' + cat + cls + '"' + act + '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';

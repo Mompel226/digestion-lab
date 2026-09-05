@@ -1133,20 +1133,22 @@
 
   function wireTermClicks(root) {
     root.addEventListener('click', function (e) {
-      var t = e.target.closest('[data-peek],[data-jump]');
+      var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
       if (t) markWhereWeAre();
       if (!t) { closePeek(); return; }
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
+      else if (t.hasAttribute('data-gloss')) { closePeek(); window.LabGlossary(t.getAttribute('data-gloss')); }
       else { closePeek(); open(t.getAttribute('data-jump'), false, t.textContent.trim(), current); }
     });
     root.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
-      var t = e.target.closest('[data-peek],[data-jump]');
+      var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
       if (t) markWhereWeAre();
       if (!t) return;
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
+      else if (t.hasAttribute('data-gloss')) window.LabGlossary(t.getAttribute('data-gloss'));
       else open(t.getAttribute('data-jump'), false, t.textContent.trim(), current);
     });
   }

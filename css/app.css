@@ -395,6 +395,11 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
    lines apart, so a word is easier to tap without changing the layout. */
 .t.is-peek,.tc.is-peek,.t.is-jump,.tc.is-jump{padding-top:4px;padding-bottom:4px}
 .t.is-peek,.tc.is-peek{border-bottom:2px dotted currentColor}
+/* the quietest of the three marks: a definition is available, nothing more. No icon —
+   this is the commonest case and a marker on every one of them would be a field of them. */
+.t.is-gloss,.tc.is-gloss{cursor:pointer;border-bottom:1px dotted rgba(0,0,0,.28);padding-bottom:1px}
+.t.is-gloss:hover,.tc.is-gloss:hover,.t.is-gloss:focus-visible,.tc.is-gloss:focus-visible{
+  border-bottom-color:currentColor;border-bottom-style:solid}
 .t.is-jump,.tc.is-jump{border-bottom:1.5px solid currentColor}
 .t.is-jump::after,.tc.is-jump::after{content:"\2197";font-size:.72em;vertical-align:.35em;margin-left:1px;opacity:.75}
 .t.is-peek::after,.tc.is-peek::after{content:"\1F50D";font-size:.62em;vertical-align:.2em;margin-left:3px;opacity:.65}
