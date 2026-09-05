@@ -58,10 +58,10 @@
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
       notes:[[0, 'Assimilation: what reaches the liver in the hepatic portal vein is nutrients dissolved in the blood — never food.'],
              [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids are built into new proteins in the cells.']] },
-    { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
+    { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:26000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
       notes:[[0, 'In the colon, water and mineral salts are reabsorbed into the blood, and what is left becomes faeces, stored in the rectum.'],
-             [9500, 'Egestion, not excretion: faeces were never absorbed into the body’s cells. Excretion is waste made by the cells — urea from the kidneys, carbon dioxide from the lungs.']] }
+             [14200, 'Egestion, not excretion: faeces were never absorbed into the body’s cells. Excretion is waste made by the cells — urea from the kidneys, carbon dioxide from the lungs.']] }
   ];
 
 
