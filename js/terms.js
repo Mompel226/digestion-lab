@@ -72,6 +72,7 @@
                'sucrase','protease','proteases','pepsin','trypsin','lipase','carbohydrase','carbohydrases',
                'hydrochloric acid','gastric juice','pancreatic juice','saliva','bile','mucus','denature','denatures',
                'denatured','denaturation','optimum ph','alkaline','acidic','neutralises','neutralise',
+               'hydrolysis','hydrolyses','hydrolysed','hydrolase','hydrolases','catabolic',
                'neutralisation','catalyst','catalysts','active site','substrate','chemically'],
 
     absorption:['villus','villi','microvilli','microvillus','circular folds','lacteal','lacteals',
@@ -81,7 +82,8 @@
                 'blood','bloodstream','plasma','lymph node','lymph nodes','lymph vessel','lymph vessels','lymphatic system','lymph',
                 'enterocyte','enterocytes','mesentery'],
 
-    assimilation:['assimilated','glycogen','respiration','hepatic portal vein','protein synthesis'],
+    assimilation:['assimilated','glycogen','respiration','hepatic portal vein','protein synthesis',
+                  'condensation','synthetase','synthetases','ligase','ligases','anabolic'],
 
     /* 'excretion' is deliberately NOT here. Egestion is not excretion, and
        giving them the same colour would teach exactly the wrong thing —
