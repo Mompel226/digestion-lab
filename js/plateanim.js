@@ -847,7 +847,58 @@
     return g;
   }
 
-  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests };
+
+  /* ---------------- the three tubes, side by side ----------------
+     One tube proves nothing. Drawn together, the two controls stop being a paragraph and
+     become the thing they are: the same apparatus with one ingredient changed, so that a
+     result in the middle tube can only mean one thing. */
+  function viskingThree(ctx) {
+    var fs = ctx.fs * 0.78, c = ctx.compact, g = '';
+    var W = 62, H = 208, TOP = 214, GAP = 26;
+    var xs = [40, 40 + W + GAP, 40 + 2 * (W + GAP)];
+    var SET = [
+      { head:c ? 'negative\ncontrol' : 'negative control', inside:c ? 'starch\nonly' : 'starch, no amylase',
+        starch:true, malt:false, out:false, note:c ? 'nothing\ngets out' : 'nothing crosses' },
+      { head:c ? 'the\nexperiment' : 'the experiment', inside:c ? 'starch +\namylase' : 'starch and amylase',
+        starch:true, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' },
+      { head:c ? 'positive\ncontrol' : 'positive control', inside:c ? 'maltose\nonly' : 'maltose only',
+        starch:false, malt:true, out:true, note:c ? 'maltose\ngets out' : 'maltose crosses' }
+    ];
+    SET.forEach(function (t, i) {
+      var x = xs[i], cx = x + W / 2, bagW = 30, bx = cx - bagW / 2, by = TOP - 24, bh = H - 34;
+      /* tube */
+      g += '<path fill="#CFE4EE" opacity=".5" d="M' + f1(x + 2) + ',' + f1(TOP + 22) +
+           ' H' + f1(x + W - 2) + ' V' + f1(TOP + H - 16) +
+           ' a' + f1(W / 2 - 2) + ',16 0 0 1 ' + f1(-(W - 4)) + ',0 Z"/>';
+      g += '<path fill="none" stroke="#9FB3BD" stroke-width="1.8" stroke-linejoin="round" d="M' + f1(x) + ',' + f1(TOP) +
+           ' V' + f1(TOP + H - 16) + ' a' + f1(W / 2) + ',16 0 0 0 ' + f1(W) + ',0 V' + f1(TOP) + '"/>';
+      g += '<ellipse cx="' + f1(cx) + '" cy="' + f1(TOP) + '" rx="' + f1(W / 2) + '" ry="4" fill="none" stroke="#9FB3BD" stroke-width="1.8"/>';
+      /* the tubing, knotted above the rim */
+      var bag = viskingBag({ x:bx, y:by, w:bagW, h:bh });
+      g += bag.g;
+      g += '<path d="' + bag.d + '" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-dasharray="1.4 6" stroke-linecap="round"/>';
+      /* what is in it */
+      if (t.starch) [0.30, 0.58, 0.80].forEach(function (k) {
+        g += starchBlob(cx, by + 22 + k * (bh - 44), 0.62, 0); });
+      if (t.malt) [[0.42, -7], [0.66, 6], [0.88, -4]].forEach(function (m) {
+        var yy = by + 22 + m[0] * (bh - 44);
+        g += '<circle cx="' + f1(cx + m[1] - 3) + '" cy="' + f1(yy) + '" r="2.6" fill="#D98F2E"/>' +
+             '<circle cx="' + f1(cx + m[1] + 3) + '" cy="' + f1(yy) + '" r="2.6" fill="#D98F2E"/>'; });
+      /* what leaves */
+      if (t.out) [0.40, 0.70].forEach(function (k, n) {
+        var yy = by + 30 + k * (bh - 60), side = n ? 1 : -1;
+        g += '<g opacity="0"><circle cx="-2.4" cy="0" r="2.4" fill="#D98F2E"/><circle cx="2.4" cy="0" r="2.4" fill="#D98F2E"/>' +
+             '<animateMotion dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite" path="M' +
+               f1(cx + side * 12) + ',' + f1(yy) + ' L' + f1(cx + side * 26) + ',' + f1(yy + 10) + '"/>' +
+             A + '"opacity" values="0;1;1;0" keyTimes="0;0.15;0.7;1" dur="5s" begin="' + f1(n * 1.2) + 's" repeatCount="indefinite"/></g>'; });
+      g += label(t.head, cx, TOP - 44, null, null, fs, 'middle');
+      g += label(t.inside, cx, TOP - 26, null, null, fs * 0.88, 'middle');
+      g += label(t.note, cx, TOP + H + 22, null, null, fs * 0.88, 'middle');
+    });
+    return g;
+  }
+
+  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests, viskingThree:viskingThree };
   /* every animation goes through here so the frame is known before any label is written */
   global.PlateAnim = {};
   Object.keys(ANIMS).forEach(function (k) {

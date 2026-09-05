@@ -395,6 +395,14 @@ window.GLOSSARY = [
   "def": "A slimy layer secreted onto the stomach lining that stops the acid and pepsin digesting the stomach wall."
  },
  {
+  "term": "negative control",
+  "def": "A tube set up with the thing being tested left out, so it should give a negative result. If it does not, something is wrong with the apparatus and the experiment cannot be trusted. In the visking tubing practical it holds starch with no amylase: with no enzyme, no maltose is made, so nothing should cross the wall.",
+  "also": [
+   "positive control",
+   "control"
+  ]
+ },
+ {
   "term": "net movement",
   "def": "The overall movement once movement in both directions is counted. Particles move about at random in every direction; when more go one way than the other, the net movement is that way. It is what diffusion describes, and it stops when the concentrations are equal — the particles keep moving, but there is no longer a net movement."
  },
@@ -465,6 +473,14 @@ window.GLOSSARY = [
    "monomer",
    "starch",
    "protein"
+  ]
+ },
+ {
+  "term": "positive control",
+  "def": "A tube set up so that it must give a positive result, which shows the apparatus and the test are working. In the visking tubing practical it holds maltose alone: the maltose should cross the wall and answer Benedict's, proving that small molecules can get through and that the test would detect them.",
+  "also": [
+   "negative control",
+   "control"
   ]
  },
  {
