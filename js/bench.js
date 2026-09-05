@@ -255,14 +255,14 @@
     /* The Whole body button floats over the top-right corner, so the line is held off it
        rather than being allowed to run underneath and lose its last few words. */
     var sw = say.length * 3.6;
-    var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, F.x + F.w * 0.78 - sw / 2));
+    var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, F.x + F.w * 0.75 - sw / 2));
     g += '<text class="bn__say" x="' + f1(sx) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
     /* the key, read before the bench rather than after the buttons. Starch sits next to
        maltose on purpose: both are made of the same glucose, and one is far bigger. */
     var KEY = [['starch', 34, 6], ['maltose', 12, 7], ['amylase', 14, 7], ['tap to sample', 10, 13]];
     var kw = KEY.reduce(function (a2, k) { return a2 + k[1] + 4 + k[2] * 3.7 + 18; }, 0) - 18;
-    var ky = R.key, kx = Math.max(F.x + 4, R.mid - kw / 2);
+    var ky = R.key, kx = Math.max(F.x + 4, Math.min(R.mid - kw / 2, F.x + F.w * 0.75 - kw));
     function keyItem(icon, word, w) {
       var t = icon + '<text class="bn__key" x="' + f1(kx + w + 4) + '" y="' + f1(ky + 3) + '">' + word + '</text>';
       kx += w + 4 + word.length * 3.7 + 18;
