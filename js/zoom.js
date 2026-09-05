@@ -61,7 +61,7 @@
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
   var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
-  var SPOT = null, spotLoading = false, hidden = [], spotted = [];
+  var SPOT = null, spotLoading = false, hidden = [], spotted = [], arriving = false;
 
   function frameFor(cam) {
     if (!cam) return { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
@@ -91,12 +91,14 @@
   }
   /* Tween the viewBox. A timer finishes the leg if requestAnimationFrame is
      starved (background tab), so the camera can never be left half way. */
-  function flyTo(target, ms) {
+  /* `then` runs when the camera has actually arrived — including when the flight is skipped
+     for reduced motion — so callers never have to guess at a duration. */
+  function flyTo(target, ms, then) {
     if (anim) { cancelAnimationFrame(anim.raf); clearTimeout(anim.timer); anim = null; }
-    if (ms === 0 || prefersStill()) { setBox(target); return; }
+    if (ms === 0 || prefersStill()) { setBox(target); if (then) then(); return; }
     var from = cur, t0 = null, done = false;
     anim = {};
-    function finish() { if (done) return; done = true; if (anim) { cancelAnimationFrame(anim.raf); clearTimeout(anim.timer); } anim = null; setBox(target); }
+    function finish() { if (done) return; done = true; if (anim) { cancelAnimationFrame(anim.raf); clearTimeout(anim.timer); } anim = null; setBox(target); if (then) then(); }
     function step(now) {
       if (done) return;
       if (t0 === null) t0 = now;
@@ -829,12 +831,12 @@
            the liver's green bile ducts sitting on the pancreas for a third of a second. */
         wipe(); hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
         fade = 0; setBox(cur);
-        if (fadeTimer) clearTimeout(fadeTimer);
-        fadeTimer = setTimeout(function () { fadeTimer = null; goStep(0, true); }, 780);
+        if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
+        arriving = true;
       } else goStep(0, true);
     }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
-    flyTo(frameFor(detailCam || cam), 800);
+    flyTo(frameFor(detailCam || cam), 800, arriving ? function () { arriving = false; goStep(0, true); } : null);
   }
   function reset() { if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
