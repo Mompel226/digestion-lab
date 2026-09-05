@@ -690,14 +690,14 @@
   var VK = {
     tube:  { x:132, y:186, w:96, h:322, r:48 },        /* the boiling tube */
     water: 228,                                        /* the water line inside it */
-    bag:   { x:158, y:152, w:44, h:316 },              /* the tubing, from above the rim down */
+    bag:   { x:154, y:152, w:52, h:292 },              /* the tubing, from above the rim down */
     left:  124,                                        /* labels anchored end here */
     right: 236                                         /* labels anchored start here */
   };
 
   /* what each drawn thing is, said once: the animation is unreadable without it */
   function viskingKey(ctx) {
-    var fs = ctx.fs * 0.8, x = 36, y = 496, g = '', row = 0;
+    var fs = ctx.fs * 0.8, x = 36, y = 420, g = '', row = 0;
     function line(art, word) {
       var yy = y + row * (fs * 1.5);
       g += '<g transform="translate(' + f1(x) + ',' + f1(yy) + ')">' + art + '</g>' +
@@ -797,13 +797,13 @@
   function viskingLabels(ctx, T, B, bag, focus) {
     var fs = ctx.fs, c = ctx.compact, g = '', L = VK.left, R = VK.right;
     /* one label to a line down each side, so nothing has to share a row with anything else */
-    g += label('37 °C', R, 236, T.x + T.w - 6, VK.water + 10, fs, 'start');
+    g += label('37 °C', R, 240, T.x + T.w - 6, VK.water + 12, fs, 'start');
     g += label(c ? 'distilled\nwater' : 'distilled water',
-               L, 286, T.x + 10, 268, fs, 'end');
+               L, 292, T.x + 10, 274, fs, 'end');
     g += label(c ? 'visking\ntubing' : 'visking tubing —\npartially permeable',
-               R, 172, bag.cx + bag.bw * 0.7, 162, fs, 'start');
+               R, 306, bag.cx + bag.bw * 0.95, 300, fs, 'start');
     g += label(c ? 'starch and\namylase' : 'inside: starch\nand amylase',
-               L, 348, bag.cx - bag.bw * 0.55, 336, fs, 'end');
+               L, 360, bag.cx - bag.bw * 0.55, 348, fs, 'end');
     if (focus !== 'set-up') {
       g += label(c ? 'maltose diffuses\nout through\nthe pores' : 'maltose diffuses out\nthrough the pores',
                  R, 396, bag.cx + bag.bw + 14, 404, fs, 'start');
