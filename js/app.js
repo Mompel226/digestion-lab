@@ -1280,12 +1280,16 @@
                  g.rows.map(function (w) {
                    /* the neighbours: a word is easier to hold on to next to the ones it belongs
                       with, and each is a way into its own entry */
+                   var known = window.Terms && window.Terms.isKnown(w.term);
+                   var got = '<button type="button" class="gloss__got' + (known ? ' is-known' : '') +
+                             '" data-got="' + esc(w.term) + '">' +
+                             (known ? '\u2713 you know this — show it again' : 'I know this one — stop marking it') + '</button>';
                    var also = (w.also || []).length
                      ? '<p class="gloss__also">See also: ' + w.also.map(function (t) {
                          return '<button type="button" class="gloss__see" data-see="' + esc(t) + '">' + esc(t) + '</button>';
                        }).join(' ') + '</p>' : '';
                    return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
-                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + '</dd></div>';
+                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + got + '</dd></div>';
                  }).join('') + '</dl></section>';
         }).join('');
       }
@@ -1315,10 +1319,26 @@
       }
 
       var atOpen = null;
+      /* the page is redrawn so a word that has just been accepted goes quiet at once */
+      function repaintText() { if (typeof paintPanel === 'function') paintPanel(); }
+      function countKnown() {
+        var n = window.Terms ? window.Terms.knownCount() : 0;
+        var el = document.getElementById('glossKnown');
+        if (!el) return;
+        el.hidden = !n;
+        el.innerHTML = n + (n === 1 ? ' word is' : ' words are') + ' marked as known. ' +
+                       '<button type="button" id="glossForget">Mark them all as new again</button>';
+        var f = document.getElementById('glossForget');
+        if (f) f.addEventListener('click', function () {
+          window.Terms.forgetAll(); build2(); filter(); countKnown(); repaintText();
+        });
+      }
+      function build2() { built = false; build(); }
+
       function open(term) {
         var panel = document.getElementById('panel');
         atOpen = panel ? panel.scrollTop : null;      /* put the reader back where they were */
-        build(); find.value = term || ''; filter(); dlg.hidden = false;
+        build2(); find.value = term || ''; filter(); countKnown(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box');
         if (box) box.scrollTop = 0;
         /* focus without scrolling: focusing the box's own field scrolled the list past
@@ -1339,6 +1359,17 @@
       find.addEventListener('input', filter);
       /* following a see-also is a search, so the reader can always get back with the box */
       list.addEventListener('click', function (e) {
+        var got = e.target.closest('.gloss__got');
+        if (got) {
+          var term = got.getAttribute('data-got');
+          var now = !(window.Terms && window.Terms.isKnown(term));
+          window.Terms.setKnown(term, now);
+          got.classList.toggle('is-known', now);
+          got.textContent = now ? '\u2713 you know this — show it again' : 'I know this one — stop marking it';
+          countKnown();
+          repaintText();
+          return;
+        }
         var b = e.target.closest('.gloss__see'); if (!b) return;
         find.value = b.getAttribute('data-see'); filter();
         var box = dlg.querySelector('.modal__box'); if (box) box.scrollTop = 0;

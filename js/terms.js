@@ -44,7 +44,10 @@
     /* A disease is not a stage and not a nutrient — it is what happens when one
        is missing. It gets a neutral ink rather than an eighth hue, which says
        "different kind of word" without adding to the colour load. */
-    condition:    { n:'',  label:'Conditions and diseases', chip:false }
+    condition:    { n:'',  label:'Conditions and diseases', chip:false },
+    /* No colour: a word the reader may simply not know is not a stage of anything.
+       It carries the quiet dotted rule and nothing else. */
+    plain:        { n:'',  label:'Words used across the labs', chip:false }
   };
 
   /* Words that NAME a stage get a chip. Everything else is plain bold
@@ -60,6 +63,9 @@
   };
 
   var PLAIN_WORDS = {
+    /* every remaining word the shared glossary defines, so none is a dead end */
+    plain: ['alimentary canal','anaemia','anus','associated organ','bile duct','colon','complementary','concentration','constipation','consumed','control','deficiency disease','duodenum','epiglottis','equilibrium','gum','hepatocyte','ileum','jawbone','malnutrition','model','net movement','oesophagus','optimum','partially permeable','periodontal fibres','pharynx','plaque','reabsorbed','reabsorption','rectum','rickets','root canal','salivary glands','scurvy','secrete','trachea','urea','visking tubing'],
+
     ingestion: ['ingested','ingest','swallowing','swallowed','swallow','taken into the body'],
 
     physical: ['mastication','chewing','chews','chew','churning','churns','churn','peristalsis',
@@ -218,6 +224,25 @@
     g.forEach(function (e) { DEFINED[e.term.toLowerCase()] = e.term; });
   })();
 
+  /* Words the reader has said they know. A mark on a word is an offer of help, and an offer
+     that cannot be declined becomes clutter — so once a definition has been read and
+     accepted, that word goes quiet everywhere and stays quiet. It is still in the glossary;
+     it simply stops asking. */
+  var KNOWN = {};
+  var KNOWN_KEY = 'labs.knownWords.v1';
+  try { (JSON.parse(localStorage.getItem(KNOWN_KEY) || '[]') || []).forEach(function (w) { KNOWN[w] = 1; }); } catch (e) {}
+  function saveKnown() {
+    try { localStorage.setItem(KNOWN_KEY, JSON.stringify(Object.keys(KNOWN))); } catch (e) {}
+  }
+  function setKnown(term, yes) {
+    var low = String(term).toLowerCase();
+    if (yes) KNOWN[low] = 1; else delete KNOWN[low];
+    saveKnown();
+  }
+  function isKnown(term) { return !!KNOWN[String(term).toLowerCase()]; }
+  function forgetAll() { KNOWN = {}; saveKnown(); }
+  function knownCount() { return Object.keys(KNOWN).length; }
+
   var INFO = {};
   ENTRIES.forEach(function (e) { if (!INFO[e[0].toLowerCase()]) INFO[e[0].toLowerCase()] = e; });
 
@@ -227,8 +252,11 @@
   function escRe(s) { return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
   /* Lookarounds rather than \b, because a term may end in a bracket —
      "fibre (roughage)" must match as one unit, not as two words. */
+  /* longest first, so 'concentration gradient' is matched whole rather than as
+     'concentration' followed by a stray word */
   var RE = new RegExp('(?<![A-Za-z0-9-])(' +
-    ENTRIES.map(function (e) { return escRe(e[0]); }).join('|') + ')(?![A-Za-z0-9-])', 'gi');
+    ENTRIES.slice().sort(function (a, b) { return b[0].length - a[0].length; })
+           .map(function (e) { return escRe(e[0]); }).join('|') + ')(?![A-Za-z0-9-])', 'gi');
 
   /* Escape first, then mark, so a term can never be injected as markup. */
   var here = null;                       /* the station being read, so we never link to itself */
@@ -285,7 +313,7 @@
       } else if (JUMP[low] && JUMP[low] !== here) {
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
-      } else if (DEFINED[low]) {
+      } else if (DEFINED[low] && !KNOWN[low]) {
         /* A word with nothing to show and nowhere to go still has a definition. It gets the
            quietest mark of the three — a fine dotted rule, no icon — because it is the most
            common case and must not turn the page into a field of markers. */
@@ -313,6 +341,7 @@
     return out;
   }
 
-  global.Terms = { mark:mark, legend:legend, CATS:CATS, setStation:setStation,
+  global.Terms = {
+    setKnown:setKnown, isKnown:isKnown, forgetAll:forgetAll, knownCount:knownCount, mark:mark, legend:legend, CATS:CATS, setStation:setStation,
                    setQuiet:setQuiet, PEEK:PEEK, JUMP:JUMP };
 })(window);
