@@ -287,8 +287,7 @@ window.GLOSSARY = [
  },
  {
   "term": "lumen",
-  "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix.",
-  "ext": true
+  "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix."
  },
  {
   "term": "malnutrition",
@@ -321,8 +320,7 @@ window.GLOSSARY = [
  },
  {
   "term": "monomer",
-  "def": "A small molecule that joins with others to build a polymer, for example glucose or an amino acid.",
-  "ext": true
+  "def": "A small molecule that joins with others to build a polymer, for example glucose or an amino acid."
  },
  {
   "term": "mucus",
@@ -390,8 +388,7 @@ window.GLOSSARY = [
  },
  {
   "term": "polymer",
-  "def": "A large molecule made of many small sub-units joined together in a chain.",
-  "ext": true
+  "def": "A large molecule made of many small sub-units joined together in a chain."
  },
  {
   "term": "premolar",
@@ -476,8 +473,7 @@ window.GLOSSARY = [
  },
  {
   "term": "triglyceride",
-  "def": "A lipid made of one molecule of glycerol joined to three fatty acids.",
-  "ext": true
+  "def": "A lipid made of one molecule of glycerol joined to three fatty acids."
  },
  {
   "term": "trypsin",
