@@ -134,6 +134,13 @@
      Third element = the credit line, shown under the note. Every borrowed
      image has one; SOURCES.md carries the full record. */
   var PEEK = {
+    /* Two questions students ask that a sentence cannot answer, so each opens a drawing:
+       why one sugar answers Benedict's when another does not, and what "a large molecule"
+       actually looks like when it is made of the sugar it will be digested back into. */
+    'reducing sugar':  ['fig:reducingSugar', 'What makes a sugar <b>reducing</b> — and why sucrose never answers Benedict\u2019s.'],
+    'reducing sugars': ['fig:reducingSugar', 'What makes a sugar <b>reducing</b> — and why sucrose never answers Benedict\u2019s.'],
+    'starch':          ['fig:starchStructure', 'Starch, drawn as what it is made of: amylose and amylopectin, both built from glucose.'],
+
     /* the food tests — his own photographs from the Topic 4 lesson, before and after */
     'iodine solution':       ['tests/iodine.jpg', '<b>Iodine solution test — for starch.</b> Left, the control: no starch, so the iodine solution keeps its own <b>orange-yellow</b> colour. Right: starch present — <b>blue-black</b>. Say “iodine solution”, never just “iodine”.', 'From the Topic 4 Food Tests lesson'],
     'benedict’s solution':   ['tests/benedict.jpg', '<b>Benedict’s solution test — for reducing sugars</b> (glucose, maltose), heated in a water bath. Four tubes, left to right: <b>blue</b> — no reducing sugar; <b>green/yellow</b> precipitate — traces; <b>orange-red</b> — a moderate amount; <b>brick-red</b> precipitate — a large amount. The colour goes further the more sugar there is. Write the colour you see, never “positive”.', 'From the Topic 4 Food Tests lesson'],

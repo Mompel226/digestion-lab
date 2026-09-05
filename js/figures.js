@@ -1183,10 +1183,113 @@
     };
   }
 
+
+  /* ---------------- reducing sugars: what the free group is for ----------------
+     The question a student cannot get past is why one sugar answers Benedict's and
+     another does not, when both taste sweet. The answer is one group on one carbon,
+     so that is what the figure draws: a ring with the group free, a ring with the
+     group used up in the bond, and what each does in the tube. */
+  function reducingSugar() {
+    /* a pyranose ring drawn as a flat hexagon, Haworth style */
+    function ring(cx, cy, r, fill, stroke) {
+      var p = [];
+      for (var i = 0; i < 6; i++) {
+        var a = Math.PI / 180 * (30 + i * 60);
+        p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a) * 0.62).toFixed(1));
+      }
+      return '<polygon points="' + p.join(' ') + '" fill="' + fill + '" stroke="' + stroke + '" stroke-width="2"/>';
+    }
+    var G = '#C98E2E', B = '#4E7FA8', RED = '#B6412A';
+    return {
+      svg: svg('0 0 460 286',
+        /* ---- glucose: the group is free ---- */
+        '<text class="fb" x="112" y="26" text-anchor="middle">Glucose — a reducing sugar</text>' +
+        ring(112, 74, 42, '#FBF1DC', G) +
+        '<circle cx="150" cy="86" r="10" fill="' + RED + '"/>' +
+        '<text class="fs" x="150" y="90" text-anchor="middle" style="fill:#FFFDF9">C</text>' +
+        '<path class="ld" d="M162,86 L206,86"/>' +
+        '<text class="fl" x="212" y="82">carbon 1 is free</text>' +
+        '<text class="fs" x="212" y="98">it can open up and give electrons away</text>' +
+        /* ---- sucrose: the group is locked in the bond ---- */
+        '<text class="fb" x="112" y="164" text-anchor="middle">Sucrose — not a reducing sugar</text>' +
+        ring(74, 210, 34, '#FBF1DC', G) + ring(166, 210, 34, '#E8F0F6', B) +
+        '<path d="M104,210 L136,210" stroke="#6B6B6B" stroke-width="3"/>' +
+        '<circle cx="120" cy="210" r="9" fill="#9C8E77"/>' +
+        '<text class="fs" x="120" y="214" text-anchor="middle" style="fill:#FFFDF9">O</text>' +
+        '<path class="ld" d="M120,196 L120,178 L214,178"/>' +
+        '<text class="fl" x="218" y="176">both free carbons are used up</text>' +
+        '<text class="fs" x="218" y="192">joined to each other, so neither can open</text>' +
+        /* ---- the two tubes ---- */
+        '<g transform="translate(348,34)">' +
+        '<rect x="0" y="0" width="42" height="86" rx="6" fill="' + RED + '" opacity=".8" stroke="#9FB3BD" stroke-width="2"/>' +
+        '<text class="fs" x="21" y="104" text-anchor="middle">brick-red</text>' +
+        '<text class="fs" x="21" y="118" text-anchor="middle">positive</text></g>' +
+        '<g transform="translate(348,176)">' +
+        '<rect x="0" y="0" width="42" height="86" rx="6" fill="#3E6FA8" opacity=".75" stroke="#9FB3BD" stroke-width="2"/>' +
+        '<text class="fs" x="21" y="104" text-anchor="middle">stays blue</text>' +
+        '<text class="fs" x="21" y="118" text-anchor="middle">negative</text></g>' +
+        '<text class="fs" x="230" y="278" text-anchor="middle">Benedict’s works by being reduced: the sugar gives electrons to blue Cu²⁺, which becomes brick-red Cu₂O.</text>'),
+      cap: 'A <b>reducing sugar</b> has one carbon that is free to open its ring and <b>give electrons away</b> — it reduces something else. ' +
+           'That is all the word means. Glucose, fructose, maltose and lactose can all do it, so all four answer Benedict’s. ' +
+           '<b>Sucrose cannot</b>: the two rings are joined through exactly those carbons, so neither is free, and Benedict’s stays blue however long you heat it.'
+    };
+  }
+
+
+  /* ---------------- what starch is actually made of ----------------
+     Drawn because "starch is a large molecule" is not a size a student can picture,
+     and because the two forms explain the iodine test: the helix of amylose is what
+     iodine slips into. Every glucose is one hexagon, so the polymer reads as a chain
+     of the sugar it is built from. */
+  function starchStructure() {
+    var G = '#C98E2E', FILL = '#FBF1DC';
+    function hex(cx, cy, r, fill) {
+      var p = [];
+      for (var i = 0; i < 6; i++) {
+        var a = Math.PI / 180 * (30 + i * 60);
+        p.push((cx + r * Math.cos(a)).toFixed(1) + ',' + (cy + r * Math.sin(a) * 0.68).toFixed(1));
+      }
+      return '<polygon points="' + p.join(' ') + '" fill="' + (fill || FILL) + '" stroke="' + G + '" stroke-width="1.6"/>';
+    }
+    function chain(x0, y0, n, dx, dy, fill) {
+      var g = '';
+      for (var i = 0; i < n; i++) {
+        var x = x0 + i * dx, y = y0 + (dy ? Math.sin(i * 0.9) * dy : 0);
+        if (i) g += '<path d="M' + (x - dx + 9) + ',' + y.toFixed(1) + ' L' + (x - 9) + ',' + y.toFixed(1) + '" stroke="#9C8E77" stroke-width="1.8"/>';
+        g += hex(x, y, 11, fill);
+      }
+      return g;
+    }
+    return {
+      svg: svg('0 0 470 300',
+        '<text class="fb" x="235" y="22" text-anchor="middle">Starch is a polymer of glucose — every hexagon here is one glucose</text>' +
+        /* amylose: a straight chain that coils */
+        '<text class="fl" x="16" y="60">Amylose</text>' +
+        '<text class="fs" x="16" y="76">unbranched, and it coils into a helix</text>' +
+        '<g transform="translate(96,104)">' + chain(0, 0, 9, 26, 9) + '</g>' +
+        '<path d="M104,132 C130,150 156,116 182,134 C208,152 234,118 260,136 C286,154 312,120 330,138" fill="none" stroke="' + G + '" stroke-width="2.4" opacity=".55"/>' +
+        '<text class="fs" x="356" y="112">the coil</text>' +
+        '<text class="fs" x="356" y="126">is a helix</text>' +
+        /* amylopectin: branched */
+        '<text class="fl" x="16" y="186">Amylopectin</text>' +
+        '<text class="fs" x="16" y="202">branched, so it has many more free ends</text>' +
+        '<g transform="translate(96,230)">' + chain(0, 0, 8, 26, 0) +
+          '<g transform="translate(52,0)">' + chain(0, -34, 3, 24, 0) + '</g>' +
+          '<path d="M52,-11 L52,-24" stroke="#9C8E77" stroke-width="1.8"/>' +
+          '<g transform="translate(156,0)">' + chain(0, 34, 3, 24, 0) + '</g>' +
+          '<path d="M156,11 L156,24" stroke="#9C8E77" stroke-width="1.8"/>' +
+        '</g>' +
+        '<text class="fs" x="235" y="292" text-anchor="middle">Iodine solution goes blue-black because the triiodide ion slips inside the amylose helix — amylopectin alone gives only a dull red-brown.</text>'),
+      cap: 'Starch is not one molecule but two, both built only from <b>glucose</b>. <b>Amylose</b> is an unbranched chain that coils into a helix; ' +
+           '<b>amylopectin</b> is branched. Either way the molecule is far too large to cross a membrane, which is why it has to be digested first. ' +
+           'The colour in the iodine test comes from the <b>helix</b>: the triiodide ion sits inside the coil of amylose.'
+    };
+  }
+
   var FIGS = { sameBalance:sameBalance, toothCompact:toothCompact, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
                emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
                egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
-               swallow:swallow, waterColon:waterColon };
+               swallow:swallow, waterColon:waterColon, reducingSugar:reducingSugar, starchStructure:starchStructure };
 
   global.Figures = {
     pie:pie, pieKey:pieKey, dietColours:DIET_COL,
