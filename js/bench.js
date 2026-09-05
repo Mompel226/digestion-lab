@@ -26,9 +26,9 @@
     A: { inside:{ before:{ starch:true,  sn:3, malt:0 }, after:{ starch:true,  sn:3, malt:0 } },
          outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:0 } } },
     B: { inside:{ before:{ starch:true,  sn:3, malt:0 }, after:{ starch:true,  sn:1, malt:4 } },
-         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:3 } } },
-    C: { inside:{ before:{ starch:false, sn:0, malt:4 }, after:{ starch:false, sn:0, malt:2 } },
-         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:3 } } }
+         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:4 } } },
+    C: { inside:{ before:{ starch:false, sn:0, malt:4 }, after:{ starch:false, sn:0, malt:3 } },
+         outside:{ before:{ starch:false, sn:0, malt:0 }, after:{ starch:false, sn:0, malt:2 } } }
   };
 
   /* Benedict's is semi-quantitative: the colour says how much, not merely whether. */
@@ -88,12 +88,12 @@
     if (vis) { bottom = vis.bottom || null; F = { x:vis.x, y:vis.y, w:vis.w, h:vis.h }; }
     var strip = bottom !== null ? bottom : F.y + F.h * 0.82;   /* nothing may go below it */
     R.say = F.y + F.h * 0.032;
-    R.key = F.y + F.h * 0.068;
+    R.key = F.y + F.h * 0.062;
     R.clock = strip - 79; R.btn = strip - 71; R.reset = strip - 37;
     R.swatch = strip - 38; R.res = strip - 27; R.sub = strip - 16;
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
-    RACK.y = F.y + F.h * 0.110;
+    RACK.y = F.y + F.h * 0.118;
     RACK.h = Math.max(120, R.clock - 60 - RACK.y);   /* 60 leaves the three captions clear of the clock */
     RACK.w = Math.min(F.w * 0.25, RACK.h * 0.38);    /* a boiling tube, never a beaker */
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w, pip = Math.min(56, F.w * 0.13);
