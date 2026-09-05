@@ -1276,8 +1276,14 @@
         list.innerHTML = groups.filter(function (g) { return g.rows.length; }).map(function (g) {
           return '<section class="gloss__grp"><h3 class="gloss__h">' + esc(g.name) + '</h3><dl class="gloss__dl">' +
                  g.rows.map(function (w) {
+                   /* the neighbours: a word is easier to hold on to next to the ones it belongs
+                      with, and each is a way into its own entry */
+                   var also = (w.also || []).length
+                     ? '<p class="gloss__also">See also: ' + w.also.map(function (t) {
+                         return '<button type="button" class="gloss__see" data-see="' + esc(t) + '">' + esc(t) + '</button>';
+                       }).join(' ') + '</p>' : '';
                    return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
-                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + '</dd></div>';
+                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + '</dd></div>';
                  }).join('') + '</dl></section>';
         }).join('');
       }
@@ -1329,6 +1335,13 @@
       document.getElementById('glossClose').addEventListener('click', close);
       dlg.addEventListener('click', function (e) { if (e.target === this) close(); });
       find.addEventListener('input', filter);
+      /* following a see-also is a search, so the reader can always get back with the box */
+      list.addEventListener('click', function (e) {
+        var b = e.target.closest('.gloss__see'); if (!b) return;
+        find.value = b.getAttribute('data-see'); filter();
+        var box = dlg.querySelector('.modal__box'); if (box) box.scrollTop = 0;
+        find.focus({ preventScroll: true });
+      });
     })();
 
     document.getElementById('btnHelp').addEventListener('click', function () {

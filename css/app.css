@@ -741,6 +741,10 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .gloss__row dt{font-weight:700;color:var(--green);font-size:14.5px}
 .gloss__row dd{margin:2px 0 0;font-size:14px;line-height:1.5;color:#3C3C3C}
 .gloss__row[hidden],.gloss__grp[hidden]{display:none}
+.gloss__also{margin:6px 0 0;font-size:12.5px;color:#6B6B6B}
+.gloss__see{font:inherit;font-size:12.5px;color:var(--green);background:var(--card-2);
+            border:1px solid var(--edge);border-radius:var(--r-pill);padding:1px 9px;margin:0 2px 2px 0;cursor:pointer}
+.gloss__see:hover,.gloss__see:focus-visible{background:#FFFDF9;border-color:#B9AE9B}
 
 /* ---------- Toast ---------- */
 .toast{
