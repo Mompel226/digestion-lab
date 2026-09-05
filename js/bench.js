@@ -95,9 +95,9 @@
     R.swatch = strip - 38; R.res = strip - 27; R.sub = strip - 16;
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
-    RACK.y = F.y + F.h * 0.158;
-    RACK.h = Math.max(120, R.clock - 60 - RACK.y);   /* 60 leaves the three captions clear of the clock */
-    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.38);    /* a boiling tube, never a beaker */
+    RACK.y = F.y + F.h * 0.150;
+    RACK.h = Math.max(120, R.clock - 56 - RACK.y);   /* 56 leaves the three captions clear of the clock */
+    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.44);    /* a boiling tube, never a beaker */
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w;
     R.left = F.x + Math.max(6, (F.w - tot) / 2);
     for (var c = 0; c < 3; c++) CX[c] = R.left + RACK.w / 2 + c * sp;
@@ -230,7 +230,7 @@
     }
     g += '<ellipse cx="' + f1(x + r) + '" cy="' + f1(yTop) + '" rx="' + f1(r) + '" ry="2.2" fill="none" stroke="#8FA3AD" stroke-width="1.4"/>';
     if (heated) {
-      g += '<path d="M' + f1(x + r) + ',' + f1(bot + 11) + ' c-4,-3 -3.4,-6 0,-9 c.6,2.4 3.4,3 3.4,5.2 c0,2.2 -1.6,3.8 -3.4,3.8 Z"' +
+      g += '<path d="M' + f1(x + r) + ',' + f1(bot + 12) + ' c-5,-3.6 -4.2,-7.4 0,-11 c.8,3 4.2,3.6 4.2,6.4 c0,2.7 -2,4.6 -4.2,4.6 Z"' +
            ' fill="#E08A2B" stroke="#B5651A" stroke-width=".8" stroke-linejoin="round"/>';
     }
     return g;
