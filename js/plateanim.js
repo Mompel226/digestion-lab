@@ -831,9 +831,12 @@
            ' H' + f1(x + w - 3) + ' V' + f1(y + h - r * 0.6) +
            ' a' + f1(w / 2 - 3) + ',' + f1(r * 0.6) + ' 0 0 1 ' + f1(-(w - 6)) + ',0 Z"/>';
       if (t.top !== t.col) {
-        g += '<path fill="' + t.top + '" opacity=".55" d="M' + f1(x + 3) + ',' + f1(y + 46) +
-             ' H' + f1(x + w - 3) + ' V' + f1(y + 84) + ' H' + f1(x + 3) + ' Z">' +
-             A + '"opacity" values=".55;0" dur="4s" repeatCount="indefinite"/></path>';
+        /* the whole column changes colour, because that is what happens: a band of blue over
+           red reads as two liquids in one tube */
+        g += '<path fill="' + t.top + '" opacity=".8" d="M' + f1(x + 3) + ',' + f1(y + 46) +
+             ' H' + f1(x + w - 3) + ' V' + f1(y + h - r * 0.6) +
+             ' a' + f1(w / 2 - 3) + ',' + f1(r * 0.6) + ' 0 0 1 ' + f1(-(w - 6)) + ',0 Z">' +
+             A + '"opacity" values=".8;.8;0;0" keyTimes="0;0.25;0.6;1" dur="6s" repeatCount="indefinite"/></path>';
       }
       g += '<path fill="none" stroke="#9FB3BD" stroke-width="2.1" stroke-linejoin="round" d="M' + f1(x) + ',' + f1(y) +
            ' V' + f1(y + h - r * 0.6) + ' a' + f1(w / 2) + ',' + f1(r * 0.6) + ' 0 0 0 ' + f1(w) + ',0 V' + f1(y) + '"/>';
@@ -841,9 +844,7 @@
       g += label(t.cap, x + w / 2, y - 16, null, null, fs * 0.92, 'middle');
       g += label(t.res, x + w / 2, y + h + 22, null, null, fs * 0.86, 'middle');
     });
-    g += label(ctx.compact ? 'both tubes hold water\nfrom outside the tubing'
-                           : 'both tubes hold a sample of the water from outside the tubing',
-               170, 100, null, null, fs * 0.86, 'middle');
+    g += label('water from outside the tubing', 170, 122, null, null, fs * 0.8, 'middle');
     return g;
   }
 
