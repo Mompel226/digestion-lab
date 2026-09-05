@@ -93,14 +93,16 @@
     R.swatch = strip - 38; R.res = strip - 27; R.sub = strip - 16;
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
-    RACK.y = F.y + F.h * 0.150;
-    RACK.h = Math.max(120, R.clock - 46 - RACK.y);
-    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.36);
+    RACK.y = F.y + F.h * 0.110;
+    RACK.h = Math.max(120, R.clock - 60 - RACK.y);   /* 60 leaves the three captions clear of the clock */
+    RACK.w = Math.min(F.w * 0.25, RACK.h * 0.38);    /* a boiling tube, never a beaker */
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w, pip = Math.min(56, F.w * 0.13);
     R.left = F.x + Math.max(6, (F.w - pip - tot) / 2);
     for (var c = 0; c < 3; c++) CX[c] = R.left + RACK.w / 2 + c * sp;
     R.right = R.left + tot;
-    R.mol = RACK.w / 56;          /* molecules are a fixed fraction of the tube, at any size */
+    /* Molecules scale with the tube, but never past the point where the fullest tube — three
+       starch and an amylase — would not fit inside the tubing. */
+    R.mol = Math.min(RACK.w / 56, (RACK.h - 50) / 120);
     R.id = RACK.y + RACK.h + 18; R.nm = RACK.y + RACK.h + 30; R.has = RACK.y + RACK.h + 41;
   }
 
