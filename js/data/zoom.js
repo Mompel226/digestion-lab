@@ -745,11 +745,11 @@ window.ZOOM_DETAIL = {
       {
         "img": "zoom/pancreas-acinar.png",
         "at": [
-          54,
-          466,
-          90
+          60,
+          394,
+          84
         ],
-        "cap": "the duodenum and the head of the pancreas, and the ducts that enter it",
+        "cap": "where the pancreatic duct and the bile duct meet and empty into the duodenum",
         "to": [
           0.65,
           0.55
