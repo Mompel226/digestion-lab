@@ -118,23 +118,25 @@
     g += '<path d="M' + f1(F.x + 6) + ',' + f1(RACK.y + RACK.h + 2) + ' H' + f1(F.x + F.w - 6) +
          '" stroke="#C3B69C" stroke-width="2" stroke-linecap="round"/>';
 
-    /* the clock */
-    g += btn('run', F.x + 12, 392, 116, 26, S.ran ? '30 minutes have passed' : 'Run 30 minutes', S.ran);
-    g += btn('reset', F.x + 12, 424, 60, 22, 'Start again', false);
-
-    /* what is in the pipette, and the two tests */
+    /* the controls, one row to a job, each button sized to the words it holds */
+    var clock = S.ran ? 'at 30 minutes' : 'at the start';
+    g += '<text class="bn__samp" x="' + f1(F.x + 10) + '" y="382">The clock: ' + clock +
+         (S.sample ? '  \u00b7  in the pipette: ' +
+            esc(S.sample.side === 'inside' ? 'inside tube ' + S.sample.tube : 'water outside tube ' + S.sample.tube) : '') +
+         '</text>';
+    g += btn('run', F.x + 10, 390, 104, 24, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
     if (S.sample) {
-      var lbl = S.sample.side === 'inside' ? 'inside tube ' + S.sample.tube : 'water outside tube ' + S.sample.tube;
-      g += '<text class="bn__samp" x="' + f1(F.x + F.w - 12) + '" y="386" text-anchor="end">in the pipette: ' + esc(lbl) + '</text>';
-      g += btn('test:iodine', F.x + 140, 392, 74, 26, 'iodine', S.result && S.result.kind === 'iodine');
-      g += btn('test:benedict', F.x + 218, 392, 60, 26, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
+      g += btn('test:iodine', F.x + 122, 390, 64, 24, 'iodine', S.result && S.result.kind === 'iodine');
+      g += btn('test:benedict', F.x + 194, 390, 76, 24, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
     }
-    /* the result, as the colour that test would actually give */
+    g += btn('reset', F.x + 10, 422, 62, 20, 'Start again', false);
+
+    /* the result: the colour that test would actually give, and what it means */
     if (S.result) {
       var r = S.result;
-      g += '<rect x="' + f1(F.x + 84) + '" y="424" width="26" height="22" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
-      g += '<text class="bn__res" x="' + f1(F.x + 116) + '" y="435">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(F.x + 116) + '" y="446">' + esc(r.sub) + '</text>';
+      g += '<rect x="' + f1(F.x + 82) + '" y="421" width="24" height="22" rx="4" fill="' + r.col + '" stroke="#9FB3BD" stroke-width="1"/>';
+      g += '<text class="bn__res" x="' + f1(F.x + 112) + '" y="432">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2" x="' + f1(F.x + 112) + '" y="443">' + esc(r.sub) + '</text>';
     }
     /* the key */
     g += coil(F.x + 14, 466, 0.62) + '<text class="bn__key" x="' + f1(F.x + 26) + '" y="469">starch</text>';
