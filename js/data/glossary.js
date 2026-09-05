@@ -11,7 +11,8 @@ window.GLOSSARY = [
  },
  {
   "term": "active transport",
-  "def": "The movement of particles through a cell membrane from a region of lower concentration to a region of higher concentration (against the concentration gradient), using energy from respiration."
+  "def": "The movement of particles through a cell membrane from a region of lower concentration to a region of higher concentration (against the concentration gradient), using energy from respiration.",
+  "sup": true
  },
  {
   "term": "alimentary canal",
@@ -75,7 +76,8 @@ window.GLOSSARY = [
  },
  {
   "term": "catabolic",
-  "def": "Describes a reaction, or an enzyme, that breaks a larger molecule into smaller ones. Digestion is catabolic throughout. The opposite is anabolic: building a larger molecule from smaller ones."
+  "def": "Describes a reaction, or an enzyme, that breaks a larger molecule into smaller ones. Digestion is catabolic throughout. The opposite is anabolic: building a larger molecule from smaller ones.",
+  "ext": true
  },
  {
   "term": "catalyst",
@@ -87,7 +89,8 @@ window.GLOSSARY = [
  },
  {
   "term": "cement",
-  "def": "The thin, bone-like layer covering the root of a tooth that helps anchor it to the jawbone."
+  "def": "The thin, bone-like layer covering the root of a tooth that helps anchor it to the jawbone.",
+  "ext": true
  },
  {
   "term": "chemical digestion",
@@ -99,7 +102,8 @@ window.GLOSSARY = [
  },
  {
   "term": "circular folds",
-  "def": "Circular folds are ridges running round the inside of the small intestine that roughly triple the surface area compared with a flat tube."
+  "def": "Circular folds are ridges running round the inside of the small intestine that roughly triple the surface area compared with a flat tube.",
+  "ext": true
  },
  {
   "term": "circular muscle",
@@ -123,7 +127,8 @@ window.GLOSSARY = [
  },
  {
   "term": "condensation",
-  "def": "The reverse of hydrolysis: two molecules are joined and a molecule of water is released. It is how the body builds glycogen from glucose and proteins from amino acids — the reaction that digestion undoes."
+  "def": "The reverse of hydrolysis: two molecules are joined and a molecule of water is released. It is how the body builds glycogen from glucose and proteins from amino acids — the reaction that digestion undoes.",
+  "ext": true
  },
  {
   "term": "constipation",
@@ -175,7 +180,8 @@ window.GLOSSARY = [
  },
  {
   "term": "enterocyte",
-  "def": "An enterocyte is one of the epithelial cells lining a villus: a tall cell with microvilli on its top surface and many mitochondria, built for absorbing digested food."
+  "def": "An enterocyte is one of the epithelial cells lining a villus: a tall cell with microvilli on its top surface and many mitochondria, built for absorbing digested food.",
+  "ext": true
  },
  {
   "term": "enzyme",
@@ -219,15 +225,18 @@ window.GLOSSARY = [
  },
  {
   "term": "gum",
-  "def": "The soft tissue that covers the jawbone and seals around the neck of each tooth; it needs vitamin C to stay healthy."
+  "def": "The soft tissue that covers the jawbone and seals around the neck of each tooth; it needs vitamin C to stay healthy.",
+  "ext": true
  },
  {
   "term": "hepatic portal vein",
-  "def": "The blood vessel that carries absorbed nutrients from the small intestine to the liver."
+  "def": "The blood vessel that carries absorbed nutrients from the small intestine to the liver.",
+  "sup": true
  },
  {
   "term": "hepatocyte",
-  "def": "A hepatocyte is a liver cell — the cells that make bile, store glycogen and deal with the absorbed food arriving in the hepatic portal vein."
+  "def": "A hepatocyte is a liver cell — the cells that make bile, store glycogen and deal with the absorbed food arriving in the hepatic portal vein.",
+  "ext": true
  },
  {
   "term": "hydrochloric acid",
@@ -235,7 +244,8 @@ window.GLOSSARY = [
  },
  {
   "term": "hydrolysis",
-  "def": "A reaction in which a bond is broken by adding a molecule of water. Every digestive reaction is a hydrolysis: starch to maltose, protein to amino acids, fat to fatty acids and glycerol. The enzymes that catalyse it are called hydrolases."
+  "def": "A reaction in which a bond is broken by adding a molecule of water. Every digestive reaction is a hydrolysis: starch to maltose, protein to amino acids, fat to fatty acids and glycerol. The enzymes that catalyse it are called hydrolases.",
+  "ext": true
  },
  {
   "term": "ileum",
@@ -259,11 +269,13 @@ window.GLOSSARY = [
  },
  {
   "term": "jawbone",
-  "def": "The bone in which the roots of the teeth are set, holding each tooth in its socket."
+  "def": "The bone in which the roots of the teeth are set, holding each tooth in its socket.",
+  "ext": true
  },
  {
   "term": "lacteal",
-  "def": "A lacteal is the small lymph vessel in the centre of each villus. Fatty acids and glycerol are absorbed into it — the epithelial cells rebuild them into tiny fat droplets first — and the lymph carries them into the blood later."
+  "def": "A lacteal is the small lymph vessel in the centre of each villus. Fatty acids and glycerol are absorbed into it — the epithelial cells rebuild them into tiny fat droplets first — and the lymph carries them into the blood later.",
+  "sup": true
  },
  {
   "term": "lipase",
@@ -275,7 +287,8 @@ window.GLOSSARY = [
  },
  {
   "term": "lumen",
-  "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix."
+  "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix.",
+  "ext": true
  },
  {
   "term": "malnutrition",
@@ -295,7 +308,8 @@ window.GLOSSARY = [
  },
  {
   "term": "microvilli",
-  "def": "Microvilli are tiny folds of the cell membrane on each epithelial cell, which increase the surface area still further."
+  "def": "Microvilli are tiny folds of the cell membrane on each epithelial cell, which increase the surface area still further.",
+  "sup": true
  },
  {
   "term": "model",
@@ -307,7 +321,8 @@ window.GLOSSARY = [
  },
  {
   "term": "monomer",
-  "def": "A small molecule that joins with others to build a polymer, for example glucose or an amino acid."
+  "def": "A small molecule that joins with others to build a polymer, for example glucose or an amino acid.",
+  "ext": true
  },
  {
   "term": "mucus",
@@ -319,7 +334,8 @@ window.GLOSSARY = [
  },
  {
   "term": "neutralise",
-  "def": "To cancel out an acid using an alkali, raising the pH towards neutral or slightly alkaline."
+  "def": "To cancel out an acid using an alkali, raising the pH towards neutral or slightly alkaline.",
+  "sup": true
  },
  {
   "term": "oesophagus",
@@ -331,7 +347,8 @@ window.GLOSSARY = [
  },
  {
   "term": "optimum pH",
-  "def": "The pH at which an enzyme works fastest; away from it the rate falls, and at an extreme pH the enzyme is denatured."
+  "def": "The pH at which an enzyme works fastest; away from it the rate falls, and at an extreme pH the enzyme is denatured.",
+  "sup": true
  },
  {
   "term": "osmosis",
@@ -351,7 +368,8 @@ window.GLOSSARY = [
  },
  {
   "term": "periodontal fibres",
-  "def": "Tough fibres between the cement and the jawbone that hold the tooth firmly in its socket and act as shock absorbers. (Not required by 0610.)"
+  "def": "Tough fibres between the cement and the jawbone that hold the tooth firmly in its socket and act as shock absorbers. (Not required by 0610.)",
+  "ext": true
  },
  {
   "term": "peristalsis",
@@ -367,11 +385,13 @@ window.GLOSSARY = [
  },
  {
   "term": "plaque",
-  "def": "Plaque is a sticky film of bacteria that builds up on teeth. The bacteria respire the sugar left on the teeth and release acid, which dissolves the enamel and causes decay. (Not required by 0610.)"
+  "def": "Plaque is a sticky film of bacteria that builds up on teeth. The bacteria respire the sugar left on the teeth and release acid, which dissolves the enamel and causes decay. (Not required by 0610.)",
+  "ext": true
  },
  {
   "term": "polymer",
-  "def": "A large molecule made of many small sub-units joined together in a chain."
+  "def": "A large molecule made of many small sub-units joined together in a chain.",
+  "ext": true
  },
  {
   "term": "premolar",
@@ -411,7 +431,8 @@ window.GLOSSARY = [
  },
  {
   "term": "root canal",
-  "def": "The channel running down the root of a tooth along which the blood vessels and nerves reach the pulp cavity. (Not required by 0610.)"
+  "def": "The channel running down the root of a tooth along which the blood vessels and nerves reach the pulp cavity. (Not required by 0610.)",
+  "ext": true
  },
  {
   "term": "saliva",
@@ -455,7 +476,8 @@ window.GLOSSARY = [
  },
  {
   "term": "triglyceride",
-  "def": "A lipid made of one molecule of glycerol joined to three fatty acids."
+  "def": "A lipid made of one molecule of glycerol joined to three fatty acids.",
+  "ext": true
  },
  {
   "term": "trypsin",

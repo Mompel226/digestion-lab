@@ -800,9 +800,13 @@
      from outside the tubing is tested: that is the whole result. */
   function viskingTests(ctx) {
     var fs = ctx.fs, g = '', c = ctx.compact;
+    /* one line to a row, and the shared note well above the two captions: at the phone's
+       label size they were landing on each other */
     var TUBES = [
-      { x:112, cap:'iodine solution', res:c ? 'stays\norange-brown' : 'stays orange-brown —\nno starch got out', col:'#C77B34', top:'#C77B34' },
-      { x:212, cap:"Benedict's, heated", res:c ? 'turns\nbrick-red' : 'turns brick-red —\nreducing sugar got out', col:'#B6412A', top:'#3E6FA8' }
+      { x:112, cap:c ? 'iodine' : 'iodine solution',
+        res:c ? 'stays\norange-brown' : 'stays orange-brown —\nno starch got out', col:'#C77B34', top:'#C77B34' },
+      { x:212, cap:c ? "Benedict's" : "Benedict's, heated",
+        res:c ? 'turns\nbrick-red' : 'turns brick-red —\nreducing sugar got out', col:'#B6412A', top:'#3E6FA8' }
     ];
     TUBES.forEach(function (t) {
       var x = t.x, y = 210, w = 46, h = 168, r = 23;
@@ -817,12 +821,12 @@
       g += '<path fill="none" stroke="#9FB3BD" stroke-width="2.1" stroke-linejoin="round" d="M' + f1(x) + ',' + f1(y) +
            ' V' + f1(y + h - r * 0.6) + ' a' + f1(w / 2) + ',' + f1(r * 0.6) + ' 0 0 0 ' + f1(w) + ',0 V' + f1(y) + '"/>';
       g += '<ellipse cx="' + f1(x + w / 2) + '" cy="' + f1(y) + '" rx="' + f1(w / 2) + '" ry="4.4" fill="none" stroke="#9FB3BD" stroke-width="2.1"/>';
-      g += label(t.cap, x + w / 2, y - 14, null, null, fs * 0.92, 'middle');
+      g += label(t.cap, x + w / 2, y - 16, null, null, fs * 0.92, 'middle');
       g += label(t.res, x + w / 2, y + h + 22, null, null, fs * 0.86, 'middle');
     });
-    g += label(ctx.compact ? 'both tubes hold the water\nfrom outside the tubing'
+    g += label(ctx.compact ? 'both tubes hold water\nfrom outside the tubing'
                            : 'both tubes hold a sample of the water from outside the tubing',
-               162, 186, null, null, fs * 0.86, 'middle');
+               170, 150, null, null, fs * 0.86, 'middle');
     return g;
   }
 
