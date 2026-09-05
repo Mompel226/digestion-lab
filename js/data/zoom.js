@@ -792,6 +792,16 @@ window.ZOOM_DETAIL = {
         "credit": "OpenStax College, CC BY 3.0",
         "labels": [
           {
+            "t": "the pancreas and the duodenum:\nwhere the bile duct and the\npancreatic duct enter",
+            "plate": true,
+            "tx": [
+              46,
+              456
+            ],
+            "anchor": "start",
+            "fs": 0.72
+          },
+          {
             "t": "duodenum",
             "at": [
               0.5,
@@ -836,13 +846,9 @@ window.ZOOM_DETAIL = {
               424,
               118
             ],
-            "cap": "where bile and pancreatic juice enter",
-            "to": [
-              0.62,
-              0.2
-            ],
+            "cap": "the pancreas and the duodenum: where the bile duct and the pancreatic duct enter",
             "big": 1,
-            "capTop": true
+            "nocap": true
           }
         ],
         "dropWhite": true
