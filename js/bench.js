@@ -248,11 +248,15 @@
     layout(ctx && ctx.frame);
     var g = '';
     /* what to do, in one line that changes with what has been done */
-    var say = !S.sample ? 'Tap a dotted spot: inside the tubing, or the water outside.'
-            : !S.result ? 'Your sample is in the test tube. Test it: iodine, or Benedict\u2019s.'
+    var say = !S.sample ? 'Tap a dotted spot to take a sample.'
+            : !S.result ? 'Your sample is in the test tube. Test it.'
             : S.result.kind === 'iodine' ? 'A few drops of iodine solution added to the sample.'
             : 'Benedict\u2019s solution added to the sample and heated in a water bath.';
-    g += '<text class="bn__say" x="' + f1(R.mid) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
+    /* The Whole body button floats over the top-right corner, so the line is held off it
+       rather than being allowed to run underneath and lose its last few words. */
+    var sw = say.length * 3.6;
+    var sx = Math.max(F.x + 6 + sw / 2, Math.min(R.mid, F.x + F.w * 0.78 - sw / 2));
+    g += '<text class="bn__say" x="' + f1(sx) + '" y="' + f1(R.say) + '" text-anchor="middle">' + esc(say) + '</text>';
 
     /* the key, read before the bench rather than after the buttons. Starch sits next to
        maltose on purpose: both are made of the same glucose, and one is far bigger. */
