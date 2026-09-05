@@ -811,13 +811,33 @@
 
   /* a way back, so following a link is not a one-way trip */
   var backChip = null;
+  /* Following a word takes the reader somewhere else in a long page. Coming back to the top
+     of the station they left is not coming back — the sentence they were reading is gone.
+     The exact place is noted before the jump and restored with it. */
+  var whereWeWere = null;
+  function markWhereWeAre() {
+    var panel = document.getElementById('panel');
+    whereWeWere = { id: current, top: panel ? panel.scrollTop : 0, tab: tab };
+  }
+  function goBackToMark(id) {
+    var w = whereWeWere && whereWeWere.id === id ? whereWeWere : null;
+    open(id);
+    if (!w) return;
+    var panel = document.getElementById('panel');
+    if (!panel) return;
+    /* after paintPanel has laid the station out again */
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () { panel.scrollTop = w.top; });
+    });
+  }
+
   function showBackChip(id, term) {
     if (backChip) backChip.remove();
     var b = document.createElement('button');
     b.className = 'backchip';
     b.innerHTML = '← back to ' + esc(S[id].name);
     b.title = 'You followed "' + term + '" from here';
-    b.addEventListener('click', function () { b.remove(); backChip = null; open(id); });
+    b.addEventListener('click', function () { b.remove(); backChip = null; goBackToMark(id); });
     document.getElementById('panel').appendChild(b);
     backChip = b;
     setTimeout(function () { if (backChip === b) { b.classList.add('is-fading'); } }, 9000);
@@ -1104,6 +1124,7 @@
   function wireTermClicks(root) {
     root.addEventListener('click', function (e) {
       var t = e.target.closest('[data-peek],[data-jump]');
+      if (t) markWhereWeAre();
       if (!t) { closePeek(); return; }
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
@@ -1112,6 +1133,7 @@
     root.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
       var t = e.target.closest('[data-peek],[data-jump]');
+      if (t) markWhereWeAre();
       if (!t) return;
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
@@ -1248,7 +1270,10 @@
                               : rows.length + ' key words across ' + list.querySelectorAll('.gloss__grp').length + ' stations';
       }
 
+      var atOpen = null;
       function open(term) {
+        var panel = document.getElementById('panel');
+        atOpen = panel ? panel.scrollTop : null;      /* put the reader back where they were */
         build(); find.value = term || ''; filter(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box');
         if (box) box.scrollTop = 0;
@@ -1260,8 +1285,13 @@
       window.LabGlossary = open;
 
       document.getElementById('btnGloss').addEventListener('click', function () { open(''); });
-      document.getElementById('glossClose').addEventListener('click', function () { dlg.hidden = true; });
-      dlg.addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+      function close() {
+        dlg.hidden = true;
+        var panel = document.getElementById('panel');
+        if (panel && atOpen != null) panel.scrollTop = atOpen;
+      }
+      document.getElementById('glossClose').addEventListener('click', close);
+      dlg.addEventListener('click', function (e) { if (e.target === this) close(); });
       find.addEventListener('input', filter);
     })();
 
