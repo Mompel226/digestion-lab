@@ -172,6 +172,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 #bodySvg .detail__anim .bn__samp{font:600 10px Calibri,Carlito,sans-serif;fill:#4A4A4A}
 #bodySvg .detail__anim .bn__res{font:700 12px Calibri,Carlito,sans-serif;fill:#1A1A1A}
 #bodySvg .detail__anim .bn__sub2{font:500 9.5px Calibri,Carlito,sans-serif;fill:#6B6B6B}
+#bodySvg .detail__anim .bn__note{font:600 8.6px Calibri,Carlito,sans-serif;fill:#B5651A}
 #bodySvg .art path{pointer-events:none}
 #bodySvg .op{transition:opacity .24s ease,filter .24s ease}
 /* The plate's own paths carry inline opacities, so the spotlight has to use

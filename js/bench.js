@@ -216,8 +216,9 @@
   }
   /* The sample, in a test tube. Nothing is dragged and nothing is carried: tap a spot and the
      tube appears holding what you drew, colourless until it is tested. Benedict's is only a
-     Benedict's test if it has been mixed and heated, so when it is used the tube gets a flame. */
-  function sampleTube(x, yTop, w, h, fill, heated) {
+     Benedict's test if it has been mixed and heated, so when it is used the tube says so — in
+     words, because a small orange flame under a tube reads as a drip. */
+  function sampleTube(x, yTop, w, h, fill, note) {
     var r = w / 2, bot = yTop + h, lip = yTop + h * 0.26, g = '';
     var d = 'M' + f1(x) + ',' + f1(yTop) + ' V' + f1(bot - r) +
             ' a' + f1(r) + ',' + f1(r) + ' 0 0 0 ' + f1(w) + ',0 V' + f1(yTop);
@@ -229,9 +230,8 @@
            '" stroke="#6E828C" stroke-width=".8"/>';
     }
     g += '<ellipse cx="' + f1(x + r) + '" cy="' + f1(yTop) + '" rx="' + f1(r) + '" ry="2.2" fill="none" stroke="#8FA3AD" stroke-width="1.4"/>';
-    if (heated) {
-      g += '<path d="M' + f1(x + r) + ',' + f1(bot + 12) + ' c-5,-3.6 -4.2,-7.4 0,-11 c.8,3 4.2,3.6 4.2,6.4 c0,2.7 -2,4.6 -4.2,4.6 Z"' +
-           ' fill="#E08A2B" stroke="#B5651A" stroke-width=".8" stroke-linejoin="round"/>';
+    if (note) {
+      g += '<text class="bn__note" x="' + f1(x + r) + '" y="' + f1(bot + 12) + '" text-anchor="middle">' + esc(note) + '</text>';
     }
     return g;
   }
@@ -321,7 +321,8 @@
        would actually produce — with a flame under it when it has been heated. */
     if (S.sample) {
       g += sampleTube(R.right - TUBEW, R.btn, TUBEW, (R.reset + 16) - R.btn,
-                      S.result ? S.result.col : '#EAF2F6', !!(S.result && S.result.kind === 'benedict'));
+                      S.result ? S.result.col : '#EAF2F6',
+                      S.result && S.result.kind === 'benedict' ? 'heated' : '');
     }
     if (S.result) {
       var r = S.result;
