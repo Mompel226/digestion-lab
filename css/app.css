@@ -352,6 +352,19 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 /* keywords */
 .kw-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:9px}
 .kw{background:var(--card-2);border:1px solid var(--edge);border-radius:var(--r);padding:10px 13px}
+/* a key word is asked before it is answered: the definition is there but not shown until
+   the reader has had a go at it, and stays shown once turned */
+.kw-hint{margin:0 0 9px;font-size:13px;color:#6B6B6B}
+.kw--flip{cursor:pointer;transition:border-color .15s ease,background .15s ease}
+.kw--flip:hover,.kw--flip:focus-visible{border-color:#B9AE9B;background:#FFFDF9}
+.kw--flip:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.kw__ask{margin:4px 0 0;font-size:12.5px;color:#8A8A8A;font-style:italic}
+.kw__ask::before{content:'\21BB  ';font-style:normal}
+.kw--flip dd{display:none}
+.kw--flip.is-open dd{display:block;animation:kwIn .16s ease-out}
+.kw--flip.is-open .kw__ask{display:none}
+@keyframes kwIn{from{opacity:0;transform:translateY(-2px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.kw--flip.is-open dd{animation:none}}
 .kw dt{font-weight:700;color:var(--green);font-size:14.5px;margin-bottom:2px}
 .kw dd{margin:0;font-size:13.5px;color:#3C3C3C;line-height:1.45}
 
