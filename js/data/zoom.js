@@ -1421,7 +1421,11 @@ window.ZOOM_DETAIL = {
             "sub": "the wall of the small intestine",
             "corner": "tl"
           }
-        ]
+        ],
+        "hide": [
+          {}
+        ],
+        "noback": true
       },
       {
         "at": 4,
@@ -1436,7 +1440,11 @@ window.ZOOM_DETAIL = {
             "sub": "down a concentration gradient",
             "corner": "tl"
           }
-        ]
+        ],
+        "hide": [
+          {}
+        ],
+        "noback": true
       },
       {
         "at": 5,
@@ -1450,7 +1458,11 @@ window.ZOOM_DETAIL = {
             "cap": "what the tests show",
             "corner": "tl"
           }
-        ]
+        ],
+        "hide": [
+          {}
+        ],
+        "noback": true
       },
       {
         "at": 7,
@@ -1465,7 +1477,11 @@ window.ZOOM_DETAIL = {
             "sub": "small soluble molecules cross the wall",
             "corner": "tl"
           }
-        ]
+        ],
+        "hide": [
+          {}
+        ],
+        "noback": true
       }
     ]
   }
