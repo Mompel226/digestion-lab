@@ -1201,7 +1201,7 @@
     }
     var G = '#C98E2E', B = '#4E7FA8', RED = '#B6412A';
     return {
-      svg: svg('0 0 460 286',
+      svg: svg('0 0 460 300',
         /* ---- glucose: the group is free ---- */
         '<text class="fb" x="112" y="26" text-anchor="middle">Glucose — a reducing sugar</text>' +
         ring(112, 74, 42, '#FBF1DC', G) +
@@ -1209,7 +1209,7 @@
         '<text class="fs" x="150" y="90" text-anchor="middle" style="fill:#FFFDF9">C</text>' +
         '<path class="ld" d="M162,86 L206,86"/>' +
         '<text class="fl" x="212" y="82">carbon 1 is free</text>' +
-        '<text class="fs" x="212" y="98">it can open up and give electrons away</text>' +
+        '<text class="fs" x="212" y="98">it can open and give electrons away</text>' +
         /* ---- sucrose: the group is locked in the bond ---- */
         '<text class="fb" x="112" y="164" text-anchor="middle">Sucrose — not a reducing sugar</text>' +
         ring(74, 210, 34, '#FBF1DC', G) + ring(166, 210, 34, '#E8F0F6', B) +
@@ -1218,7 +1218,7 @@
         '<text class="fs" x="120" y="214" text-anchor="middle" style="fill:#FFFDF9">O</text>' +
         '<path class="ld" d="M120,196 L120,178 L214,178"/>' +
         '<text class="fl" x="218" y="176">both free carbons are used up</text>' +
-        '<text class="fs" x="218" y="192">joined to each other, so neither can open</text>' +
+        '<text class="fs" x="218" y="192">joined together, so neither can open</text>' +
         /* ---- the two tubes ---- */
         '<g transform="translate(348,34)">' +
         '<rect x="0" y="0" width="42" height="86" rx="6" fill="' + RED + '" opacity=".8" stroke="#9FB3BD" stroke-width="2"/>' +
@@ -1228,7 +1228,9 @@
         '<rect x="0" y="0" width="42" height="86" rx="6" fill="#3E6FA8" opacity=".75" stroke="#9FB3BD" stroke-width="2"/>' +
         '<text class="fs" x="21" y="104" text-anchor="middle">stays blue</text>' +
         '<text class="fs" x="21" y="118" text-anchor="middle">negative</text></g>' +
-        '<text class="fs" x="230" y="278" text-anchor="middle">Benedict’s works by being reduced: the sugar gives electrons to blue Cu²⁺, which becomes brick-red Cu₂O.</text>'),
+        '<text class="fs" x="230" y="266" text-anchor="middle">Benedict’s works by being reduced: the sugar</text>' +
+        '<text class="fs" x="230" y="280" text-anchor="middle">gives electrons to blue Cu²⁺, which becomes</text>' +
+        '<text class="fs" x="230" y="294" text-anchor="middle">brick-red Cu₂O.</text>'),
       cap: 'A <b>reducing sugar</b> has one carbon that is free to open its ring and <b>give electrons away</b> — it reduces something else. ' +
            'That is all the word means. Glucose, fructose, maltose and lactose can all do it, so all four answer Benedict’s. ' +
            '<b>Sucrose cannot</b>: the two rings are joined through exactly those carbons, so neither is free, and Benedict’s stays blue however long you heat it.'
@@ -1262,7 +1264,8 @@
     }
     return {
       svg: svg('0 0 470 300',
-        '<text class="fb" x="235" y="22" text-anchor="middle">Starch is a polymer of glucose — every hexagon here is one glucose</text>' +
+        '<text class="fb" x="235" y="22" text-anchor="middle">Starch is a polymer of glucose</text>' +
+        '<text class="fs" x="235" y="38" text-anchor="middle">every hexagon drawn here is one glucose</text>' +
         /* amylose: a straight chain that coils */
         '<text class="fl" x="16" y="60">Amylose</text>' +
         '<text class="fs" x="16" y="76">unbranched, and it coils into a helix</text>' +
@@ -1279,7 +1282,8 @@
           '<g transform="translate(156,0)">' + chain(0, 34, 3, 24, 0) + '</g>' +
           '<path d="M156,11 L156,24" stroke="#9C8E77" stroke-width="1.8"/>' +
         '</g>' +
-        '<text class="fs" x="235" y="292" text-anchor="middle">Iodine solution goes blue-black because the triiodide ion slips inside the amylose helix — amylopectin alone gives only a dull red-brown.</text>'),
+        '<text class="fs" x="235" y="280" text-anchor="middle">Iodine goes blue-black because the triiodide ion</text>' +
+        '<text class="fs" x="235" y="294" text-anchor="middle">slips inside the helix of amylose — not amylopectin.</text>'),
       cap: 'Starch is not one molecule but two, both built only from <b>glucose</b>. <b>Amylose</b> is an unbranched chain that coils into a helix; ' +
            '<b>amylopectin</b> is branched. Either way the molecule is far too large to cross a membrane, which is why it has to be digested first. ' +
            'The colour in the iodine test comes from the <b>helix</b>: the triiodide ion sits inside the coil of amylose.'
