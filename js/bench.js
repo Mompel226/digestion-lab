@@ -254,10 +254,20 @@
     return g;
   }
   /* ---------- the bench ----------
-     Button text is 11px semi-bold Calibri, which measures about 5.9 units a character. Pick the
-     longest wording that actually fits the column rather than trusting a guessed threshold —
-     "Run 30 minutes" wants 94 units and was being put in a 75-unit pill. */
-  function fits(label, w) { return label.length * 5.9 + 12 <= w; }
+     Pick the longest wording that actually fits the column. Measure it with the same font the
+     pill will use rather than estimating from the character count: two guesses in a row were
+     wrong in opposite directions, and a canvas measures what the SVG will really draw. */
+  var mctx = null;
+  function textW(label, px) {
+    try {
+      if (!mctx) mctx = document.createElement('canvas').getContext('2d');
+      mctx.font = '600 ' + px + 'px Calibri, Carlito, sans-serif';
+      var w = mctx.measureText(label).width;
+      if (w > 0) return w;
+    } catch (e) {}
+    return label.length * px * 0.54;              /* only if there is no canvas to ask */
+  }
+  function fits(label, w) { return textW(label, 11) + 10 <= w; }
   function pick(list, w) {
     for (var i = 0; i < list.length; i++) if (fits(list[i], w)) return list[i];
     return list[list.length - 1];
@@ -329,7 +339,7 @@
             esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) : '') +
          '</text>';
 
-    var GAP = 12, TUBEW = 22, TUBECOL = 36;
+    var GAP = 10, TUBEW = 22, TUBECOL = 34;
     var colW = (R.right - R.left) - TUBECOL;
     var pw = (colW - GAP * 2) / 3;
     var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
