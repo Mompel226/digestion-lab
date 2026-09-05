@@ -143,7 +143,7 @@ body[data-mode="practice"] .panel__inner::before{
    highlights exactly that organ and nothing else. */
 /* _underlined_ in a Learn sentence: wording the syllabus expects a candidate to produce,
    without adding to the weight of the bold terms already in the line */
-u.kw{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2.5px;
+u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2.5px;
      text-decoration-color:#9AA98C;font-style:normal}
 #bodySvg .art path{pointer-events:none}
 #bodySvg .op{transition:opacity .24s ease,filter .24s ease}
