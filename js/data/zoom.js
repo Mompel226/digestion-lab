@@ -1412,6 +1412,8 @@ window.ZOOM_DETAIL = {
         "at": 0,
         "anim": "visking",
         "focus": "set-up",
+        "lab": true,
+        "noback": true,
         "label": "The apparatus: visking tubing of starch and amylase, in distilled water at 37 °C",
         "keys": [
           {
@@ -1421,8 +1423,6 @@ window.ZOOM_DETAIL = {
             "corner": "tl"
           }
         ],
-        "noback": true,
-        "lab": true,
         "insets": [
           {
             "img": "photos/visking-real.jpg",
@@ -1437,9 +1437,27 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 4,
+        "at": 3,
+        "anim": "viskingThree",
+        "focus": "controls",
+        "lab": true,
+        "noback": true,
+        "label": "Three tubes: the experiment between its two controls",
+        "keys": [
+          {
+            "t": "controls",
+            "kind": "act",
+            "cap": "why three tubes",
+            "corner": "tl"
+          }
+        ]
+      },
+      {
+        "at": 6,
         "anim": "visking",
         "focus": "run",
+        "lab": true,
+        "noback": true,
         "label": "Amylase digests starch to maltose; maltose is small enough to diffuse out, starch is not",
         "keys": [
           {
@@ -1448,14 +1466,14 @@ window.ZOOM_DETAIL = {
             "cap": "what happens here",
             "corner": "tl"
           }
-        ],
-        "noback": true,
-        "lab": true
+        ]
       },
       {
-        "at": 5,
+        "at": 7,
         "anim": "viskingTests",
         "focus": "tests",
+        "lab": true,
+        "noback": true,
         "label": "The water from outside the tubing, tested: no starch, but reducing sugar",
         "keys": [
           {
@@ -1464,14 +1482,14 @@ window.ZOOM_DETAIL = {
             "cap": "what the tests show",
             "corner": "tl"
           }
-        ],
-        "noback": true,
-        "lab": true
+        ]
       },
       {
-        "at": 7,
+        "at": 9,
         "anim": "visking",
         "focus": "run",
+        "lab": true,
+        "noback": true,
         "label": "The tubing is the wall of the small intestine, and the water outside is the blood",
         "keys": [
           {
@@ -1480,9 +1498,7 @@ window.ZOOM_DETAIL = {
             "cap": "what this models",
             "corner": "tl"
           }
-        ],
-        "noback": true,
-        "lab": true
+        ]
       }
     ]
   }
