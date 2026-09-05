@@ -308,7 +308,7 @@
     var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
 
     g += btn('run', col[0], R.btn, pw, 26,
-             S.ran ? 'clock has run' : (pw < 76 ? 'Run 30 min' : 'Run 30 minutes'), S.ran);
+             S.ran ? 'clock has run' : (pw < 70 ? 'Run 30 min' : 'Run 30 minutes'), S.ran);
     /* the two tests keep their places whether or not there is anything to test, so the grid
        does not rearrange itself under the reader between one tap and the next */
     g += btn('test:iodine', col[1], R.btn, pw, 26, 'iodine',
