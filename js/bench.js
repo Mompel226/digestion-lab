@@ -333,9 +333,12 @@
        a row, Start again in the first column beneath, the reading in the second, and the
        sample tube as a narrow column of its own down the right. Everything shares an edge
        with something — that is all "organised" means here. */
-    var GAP = 10, TUBEW = 22, TUBECOL = 34;
-    var colW = (R.right - R.left) - TUBECOL;
-    var pw = (colW - GAP * 2) / 3;
+    /* The sample tube stands in the margin the centred rack leaves at the right, not in a
+       column carved out of the grid: that gives the three actions the rack's full width, and
+       gives the reading room to sit under the test that produced it. */
+    var GAP = 10, TUBEW = 22;
+    var tubeX = Math.max(R.right + 6, F.x + F.w - TUBEW - 6);
+    var pw = ((R.right - R.left) - GAP * 2) / 3;
     var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
 
     /* Each caption sits over the thing it describes: the clock over the button that moves it,
@@ -367,7 +370,7 @@
     /* The sample stands in its own column, spanning both rows, and shows the colour that test
        would actually produce — with a flame under it when it has been heated. */
     if (S.sample) {
-      g += sampleTube(R.right - TUBEW, R.btn, TUBEW, (R.reset + 16) - R.btn,
+      g += sampleTube(tubeX, R.btn, TUBEW, (R.reset + 16) - R.btn,
                       S.result ? S.result.col : '#EAF2F6',
                       S.result && S.result.kind === 'benedict' ? 'heated' : '');
     }
@@ -378,7 +381,7 @@
       var r = S.result;
       var wide = Math.max(textW(r.word, 12), textW(r.sub, 9.5));
       var want = (r.kind === 'iodine' ? col[1] : col[2]) + pw / 2;
-      var cx = Math.min(want, R.right - TUBEW - 8 - wide / 2);
+      var cx = Math.min(want, tubeX - 8 - wide / 2);
       cx = Math.max(cx, R.left + wide / 2);
       g += '<text class="bn__res" x="' + f1(cx) + '" y="' + f1(R.res) + '" text-anchor="middle">' + esc(r.word) + '</text>';
       g += '<text class="bn__sub2" x="' + f1(cx) + '" y="' + f1(R.sub) + '" text-anchor="middle">' + esc(r.sub) + '</text>';
