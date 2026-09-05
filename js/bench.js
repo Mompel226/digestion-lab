@@ -349,9 +349,11 @@
              : pick(['Run 30 minutes', 'Run 30 min', 'Run 30'], pw), S.ran);
     /* the two tests keep their places whether or not there is anything to test, so the grid
        does not rearrange itself under the reader between one tap and the next */
-    g += btn('test:iodine', col[1], R.btn, pw, 26, pick(['iodine solution', 'iodine'], pw),
+    /* the two tests are a pair, so they take the long wording only if both of them can */
+    var longT = fits('iodine solution', pw) && fits('Benedict\u2019s solution', pw);
+    g += btn('test:iodine', col[1], R.btn, pw, 26, longT ? 'iodine solution' : 'iodine',
              !!(S.result && S.result.kind === 'iodine'), null, !S.sample);
-    g += btn('test:benedict', col[2], R.btn, pw, 26, pick(['Benedict\u2019s solution', 'Benedict\u2019s'], pw),
+    g += btn('test:benedict', col[2], R.btn, pw, 26, longT ? 'Benedict\u2019s solution' : 'Benedict\u2019s',
              !!(S.result && S.result.kind === 'benedict'), null, !S.sample);
     g += btn('reset', col[0], R.reset, pw, 22, pick(['Start again', 'Reset'], pw), false);
 
