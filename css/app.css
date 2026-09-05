@@ -145,6 +145,10 @@ body[data-mode="practice"] .panel__inner::before{
    without adding to the weight of the bold terms already in the line */
 u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:2.5px;
      text-decoration-color:#9AA98C;font-style:normal}
+/* a lab station: the plate shows an experiment, so every layer that belongs to the body
+   comes out — organs, their labels, the canal and the hit regions */
+#bodySvg.is-lab .art,#bodySvg.is-lab .hits,#bodySvg.is-lab .lblg,
+#bodySvg.is-lab .labels,#bodySvg.is-lab #canalPath{display:none}
 #bodySvg .art path{pointer-events:none}
 #bodySvg .op{transition:opacity .24s ease,filter .24s ease}
 /* The plate's own paths carry inline opacities, so the spotlight has to use

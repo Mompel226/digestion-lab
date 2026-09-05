@@ -500,6 +500,9 @@
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
+    /* A lab step draws its own apparatus and nothing of the body belongs in the frame —
+       not the organs, not their labels, not the canal. `hide` only reaches art paths. */
+    svg.classList.toggle('is-lab', !!s.lab);
     wipe();
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);

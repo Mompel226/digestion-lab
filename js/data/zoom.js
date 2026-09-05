@@ -1422,10 +1422,8 @@ window.ZOOM_DETAIL = {
             "corner": "tl"
           }
         ],
-        "hide": [
-          {}
-        ],
-        "noback": true
+        "noback": true,
+        "lab": true
       },
       {
         "at": 4,
@@ -1441,10 +1439,8 @@ window.ZOOM_DETAIL = {
             "corner": "tl"
           }
         ],
-        "hide": [
-          {}
-        ],
-        "noback": true
+        "noback": true,
+        "lab": true
       },
       {
         "at": 5,
@@ -1459,10 +1455,8 @@ window.ZOOM_DETAIL = {
             "corner": "tl"
           }
         ],
-        "hide": [
-          {}
-        ],
-        "noback": true
+        "noback": true,
+        "lab": true
       },
       {
         "at": 7,
@@ -1478,10 +1472,8 @@ window.ZOOM_DETAIL = {
             "corner": "tl"
           }
         ],
-        "hide": [
-          {}
-        ],
-        "noback": true
+        "noback": true,
+        "lab": true
       }
     ]
   }
