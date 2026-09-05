@@ -448,14 +448,14 @@
       /* Each word points twice: at the drawing and at the same structure in the
          photograph on the left, so the two read as one picture. */
       if (ctx.compact) return g +
-        label('pancreas', 230, 452, 230, 492, fs, 'middle', [117, 500]) +
+        label('pancreas', 230, 452, 230, 492, fs, 'middle') +
         label('pancreatic duct', 196, 596, 177, 539, fs, 'start') +
-        label('duodenum', 52, 622, 142, 578, fs, 'start', [82, 526]);
+        label('duodenum', 52, 622, 142, 578, fs, 'start');
       return g +
-        label('pancreas — makes\npancreatic juice', 230, 444, 230, 492, fs, 'middle', [117, 500]) +
+        label('pancreas — makes\npancreatic juice', 230, 444, 230, 492, fs, 'middle') +
         label('pancreatic duct\ncarries the juice', 196, 590, 177, 539, fs, 'start') +
         label('the bile duct\njoins it here', 196, 628, 140, 566, fs, 'start') +
-        label('duodenum', 52, 622, 142, 578, fs, 'start', [82, 526]);
+        label('duodenum', 52, 622, 142, 578, fs, 'start');
     }
     /* the bile ducts, drawn cleanly: hepatic ducts -> common hepatic duct -> cystic duct -> gall
        bladder (storage), and gall bladder -> cystic duct -> common bile duct -> duodenum (release) */
@@ -494,7 +494,7 @@
               '<g opacity="0">' + phase(false) + REL + '</g>';
     if (ctx.compact) return g +
       label('liver', 60, 400, 122, 436, fs, 'start') +
-      label('gall\nbladder', 56, 478, 116, 490, fs, 'start') +
+      label('gall\nbladder', 56, 505, 125, 487, fs, 'start') +
       label('common\nbile duct', 186, 542, 152, 530, fs, 'start') +
       label('duodenum', 58, 578, 134, 576, fs, 'start');
     return g +
