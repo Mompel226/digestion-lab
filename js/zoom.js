@@ -823,8 +823,15 @@
       /* leaving a station: take its drawing down before the camera moves, then let the new
          one fade up as the camera arrives. Arriving from the whole body there is nothing to
          take down, so that stays immediate. */
-      if (was) { wipe(); hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; }
-      goStep(0, !was);
+      if (was) {
+        /* Leaving a station: take its drawing down at once, and do not put the next one up
+           until the camera has arrived. Drawn early it appears over the frame being left —
+           the liver's green bile ducts sitting on the pancreas for a third of a second. */
+        wipe(); hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
+        fade = 0; setBox(cur);
+        if (fadeTimer) clearTimeout(fadeTimer);
+        fadeTimer = setTimeout(function () { fadeTimer = null; goStep(0, true); }, 780);
+      } else goStep(0, true);
     }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
     flyTo(frameFor(detailCam || cam), 800);
