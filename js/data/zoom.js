@@ -108,7 +108,12 @@ window.ZOOM_DETAIL = {
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
-        "noback": true
+        "noback": true,
+        "fixed": [
+          57.2,
+          -37.1,
+          252.1
+        ]
       },
       {
         "at": 3,
@@ -259,7 +264,12 @@ window.ZOOM_DETAIL = {
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
-        "noback": true
+        "noback": true,
+        "fixed": [
+          57.2,
+          -37.1,
+          252.1
+        ]
       },
       {
         "at": 4,
@@ -290,7 +300,12 @@ window.ZOOM_DETAIL = {
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
-        "noback": true
+        "noback": true,
+        "fixed": [
+          57.2,
+          -37.1,
+          252.1
+        ]
       },
       {
         "at": 5,
@@ -321,7 +336,12 @@ window.ZOOM_DETAIL = {
         ],
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
-        "noback": true
+        "noback": true,
+        "fixed": [
+          57.2,
+          -37.1,
+          252.1
+        ]
       }
     ],
     "keys": [
