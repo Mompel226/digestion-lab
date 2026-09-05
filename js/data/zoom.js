@@ -107,7 +107,8 @@ window.ZOOM_DETAIL = {
           246
         ],
         "cover": true,
-        "credit": "Patrick J. Lynch, CC BY 2.5"
+        "credit": "Patrick J. Lynch, CC BY 2.5",
+        "noback": true
       },
       {
         "at": 3,
@@ -257,7 +258,8 @@ window.ZOOM_DETAIL = {
           160
         ],
         "cover": true,
-        "credit": "Patrick J. Lynch, CC BY 2.5"
+        "credit": "Patrick J. Lynch, CC BY 2.5",
+        "noback": true
       },
       {
         "at": 4,
@@ -287,7 +289,8 @@ window.ZOOM_DETAIL = {
           246
         ],
         "cover": true,
-        "credit": "Patrick J. Lynch, CC BY 2.5"
+        "credit": "Patrick J. Lynch, CC BY 2.5",
+        "noback": true
       },
       {
         "at": 5,
@@ -317,7 +320,8 @@ window.ZOOM_DETAIL = {
           142
         ],
         "cover": true,
-        "credit": "Patrick J. Lynch, CC BY 2.5"
+        "credit": "Patrick J. Lynch, CC BY 2.5",
+        "noback": true
       }
     ],
     "keys": [
@@ -444,7 +448,8 @@ window.ZOOM_DETAIL = {
         "kind": "food",
         "corner": "tl"
       }
-    ]
+    ],
+    "noback": true
   },
   "oesophagus": {
     "organ": "oesophagus",
