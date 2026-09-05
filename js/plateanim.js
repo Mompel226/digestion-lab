@@ -739,14 +739,11 @@
     g += beaker(T, VK.water);
     g += bag.g;
 
-    /* the pores: a dotted seam down each wall, so the wall reads as perforated */
-    for (var k = 0; k < 11; k++) {
-      var py = B.y + 16 + k * ((B.h - 32) / 10);
-      var spread = bag.bw * (1.02 + 0.10 * Math.sin(Math.PI * (py - B.y) / B.h));
-      [-1, 1].forEach(function (s) {
-        g += '<circle cx="' + f1(bag.cx + s * spread) + '" cy="' + f1(py) + '" r="1.5" fill="#FFFDF9" stroke="#B99C5E" stroke-width=".7"/>';
-      });
-    }
+    /* The pores. Drawn as gaps punched along the wall itself rather than as dots beside it:
+       dots placed at an approximation of the edge drift off the curve and read as loose
+       particles floating in the water, which is the opposite of what they are. */
+    g += '<path d="' + bag.d + '" fill="none" stroke="#FFFDF9" stroke-width="2.6" ' +
+         'stroke-dasharray="1.6 7" stroke-linecap="round"/>';
 
     /* starch stays in: four coils drifting inside the bag and never leaving it */
     [[0.22, 0.30], [0.62, 0.24], [0.36, 0.58], [0.70, 0.74]].forEach(function (p, i) {
@@ -788,9 +785,9 @@
     g += label(c ? 'starch and\namylase' : 'inside: starch\nand amylase',
                L, 362, bag.cx - bag.bw * 0.55, 350, fs, 'end');
     if (focus !== 'set-up') {
-      g += label(c ? 'maltose\ndiffuses out' : 'maltose diffuses out\nthrough the pores',
+      g += label(c ? 'maltose diffuses\nout through\nthe pores' : 'maltose diffuses out\nthrough the pores',
                  R, 396, bag.cx + bag.bw + 14, 404, fs, 'start');
-      g += label(c ? 'starch is\ntoo large' : 'starch is too large\nto get through',
+      g += label(c ? 'starch cannot\ndiffuse out —\ntoo large' : 'starch cannot diffuse out —\nits molecules are too large\nfor the pores',
                  L, 442, bag.cx - bag.bw * 0.55, 430, fs, 'end');
     }
     return g;
