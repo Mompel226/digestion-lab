@@ -109,10 +109,15 @@ window.ZOOM_DETAIL = {
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
-        "fixed": [
-          57.2,
-          -37.1,
-          252.1
+        "hide": [
+          {
+            "within": [
+              50,
+              0,
+              252,
+              282
+            ]
+          }
         ]
       },
       {
@@ -265,10 +270,15 @@ window.ZOOM_DETAIL = {
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
-        "fixed": [
-          57.2,
-          -37.1,
-          252.1
+        "hide": [
+          {
+            "within": [
+              50,
+              0,
+              252,
+              282
+            ]
+          }
         ]
       },
       {
@@ -301,10 +311,15 @@ window.ZOOM_DETAIL = {
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
-        "fixed": [
-          57.2,
-          -37.1,
-          252.1
+        "hide": [
+          {
+            "within": [
+              50,
+              0,
+              252,
+              282
+            ]
+          }
         ]
       },
       {
@@ -337,10 +352,15 @@ window.ZOOM_DETAIL = {
         "cover": true,
         "credit": "Patrick J. Lynch, CC BY 2.5",
         "noback": true,
-        "fixed": [
-          57.2,
-          -37.1,
-          252.1
+        "hide": [
+          {
+            "within": [
+              50,
+              0,
+              252,
+              282
+            ]
+          }
         ]
       }
     ],
@@ -469,7 +489,17 @@ window.ZOOM_DETAIL = {
         "corner": "tl"
       }
     ],
-    "noback": true
+    "noback": true,
+    "hide": [
+      {
+        "within": [
+          50,
+          40,
+          252,
+          362
+        ]
+      }
+    ]
   },
   "oesophagus": {
     "organ": "oesophagus",
