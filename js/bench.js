@@ -114,7 +114,7 @@
     /* height first: the tubes take what vertical room is left, then the width follows from it,
        so a boiling tube always looks like a boiling tube and never like a beaker */
     RACK.y = F.y + F.h * 0.150;
-    RACK.h = Math.max(120, R.clock - 56 - RACK.y);   /* 56 leaves the three captions clear of the clock */
+    RACK.h = Math.max(120, R.clock - 66 - RACK.y);   /* the captions sit in here, with air below them */
     RACK.w = Math.min(F.w * 0.25, RACK.h * 0.44);    /* a boiling tube, never a beaker */
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w;
     R.left = F.x + Math.max(6, (F.w - tot) / 2);
@@ -133,7 +133,7 @@
       });
     });
     R.mol = Math.min(RACK.w / 56, (RACK.h - 50) / (worst + TOPGAP));
-    R.id = RACK.y + RACK.h + 18; R.nm = RACK.y + RACK.h + 30; R.has = RACK.y + RACK.h + 41;
+    R.id = RACK.y + RACK.h + 15; R.nm = RACK.y + RACK.h + 26; R.has = RACK.y + RACK.h + 36;
   }
 
   /* ---------- what the molecules actually are ----------
