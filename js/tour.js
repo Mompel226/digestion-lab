@@ -28,7 +28,7 @@
   var SCENES = [
     { id:'ingestion', name:'Ingestion', organ:'mouth', station:'mouth', stationName:'Mouth and teeth', pos:'bottom', cam:{ cx:143, cy:172, w:210 }, ms:14000,
       def:'Ingestion is the taking of substances — food and drink — into the body through the mouth.',
-      notes:[[0, 'The meal goes in. Mastication — chewing and mixing with saliva — starts physical digestion at once, and saliva adds the first enzyme, amylase. The food is now a bolus.']] },
+      notes:[[0, 'Ingestion: the meal is taken in. Mastication — chewing and mixing with saliva — is physical digestion, and salivary amylase starts chemical digestion, breaking starch down to maltose. The food is now a bolus.']] },
     { id:'digestion', name:'Digestion', organ:'stomach', station:'stomach', stationName:'Stomach', pos:[[0, 'bottom'], [18200, 'top']], cam:{ cx:150, cy:196, w:250 }, ms:42400,
       /* The camera travels with the food. A single frame on the stomach leaves the swallow and the
          whole oesophagus off the top of the plate: for ten seconds the reader sees nothing happen
@@ -43,25 +43,25 @@
          sees the words move, not what they say. Each note now gets at least five seconds,
          and still arrives with the picture it belongs to: the camera starts travelling at
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
-      notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
-             [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
-             [12000, 'Down the oesophagus by peristalsis, which is muscle contracting behind the bolus and relaxing in front of it.'],
+      notes:[[0, 'Swallowing: the tongue pushes the bolus back into the pharynx.'],
+             [5200, 'The epiglottis folds over the trachea, so the bolus goes down the oesophagus and not into the airway.'],
+             [12000, 'Down the oesophagus by peristalsis, which is circular muscle contracting behind the bolus and relaxing in front of it.'],
              /* One sentence, not two. Splitting pepsin off gave the scene an extra step that the
                 animation has no counterpart for, and everything after it read late. */
              [18200, 'Churning is physical digestion. The stomach secretes hydrochloric acid and pepsin, a protease: the acid kills bacteria and gives pepsin the low pH it needs to digest protein into polypeptides — chemical digestion. The bolus is now chyme.'],
-             [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
+             [30400, 'In the duodenum, bile from the gall bladder and alkaline pancreatic juice arrive through ducts — bile emulsifies fats. Food never enters these organs; they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:24000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
-      notes:[[0, 'The small, soluble molecules — glucose, amino acids, fatty acids and glycerol — pass through the villus wall into the blood. Most of the water is absorbed here too.'],
-             [12000, 'The veins that collect them run inside the mesentery, the sheet that holds the intestine, and join into one vein to the liver.']] },
+      notes:[[0, 'Absorption: glucose and amino acids pass through the villus wall into the blood capillaries, and fatty acids and glycerol into the lacteal. Most of the water is absorbed here too.'],
+             [12000, 'The capillaries drain into veins in the mesentery, which join to form the hepatic portal vein — carrying the absorbed nutrients straight to the liver.']] },
     { id:'assimilation', name:'Assimilation', organ:'liver', station:'liver', stationName:'Liver', pos:'bottom', also:['ileum-villi'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:20000,
       def:'Assimilation is the movement of digested food molecules into the cells of the body, where they are used and become part of the cells.',
-      notes:[[0, 'What reaches the liver is the nutrients in the blood, in the hepatic portal vein — never the food.'],
-             [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids go on to build new proteins in every cell.']] },
+      notes:[[0, 'Assimilation: what reaches the liver in the hepatic portal vein is nutrients dissolved in the blood — never food.'],
+             [9000, 'Glucose that is not needed straight away is stored as glycogen; amino acids are built into new proteins in the cells.']] },
     { id:'egestion', name:'Egestion', organ:'colon', station:'colon', stationName:'Large intestine', pos:'top', cam:{ cx:182, cy:637, w:340 }, ms:20000,
       def:'Egestion is the passing out of food that has not been digested or absorbed, as faeces, through the anus.',
-      notes:[[0, 'In the colon the remaining water is reabsorbed into the blood, and what is left becomes faeces.'],
-             [9500, 'Not excretion: faeces were never inside the body’s cells. Excretion is urea from the kidneys and carbon dioxide from the lungs.']] }
+      notes:[[0, 'In the colon, water and mineral salts are reabsorbed into the blood, and what is left becomes faeces, stored in the rectum.'],
+             [9500, 'Egestion, not excretion: faeces were never absorbed into the body’s cells. Excretion is waste made by the cells — urea from the kidneys, carbon dioxide from the lungs.']] }
   ];
 
 
