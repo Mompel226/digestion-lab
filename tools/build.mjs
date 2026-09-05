@@ -213,9 +213,21 @@ if (wantVault) {
     }) + ';\n');
 }
 
+/* One stamp, set here, so a deploy cannot ship new JS behind an old ?v=. The stamp in
+   index.html IS the cache key: bumping version.txt alone changes nothing a browser fetches. */
+const STAMP = String(Math.floor(Date.now() / 1000));
+writeFileSync(resolve(REPO, 'version.txt'), STAMP + '\n');
+const idxPath = resolve(REPO, 'index.html');
+const idx = readFileSync(idxPath, 'utf8');
+const stamped = idx.replace(/(\.(?:js|css))\?v=\d+/g, `$1?v=${STAMP}`);
+const nStamp = (idx.match(/\.(?:js|css)\?v=\d+/g) || []).length;
+if (!nStamp) throw new Error('index.html has no ?v= stamps to bump — cache busting would be silent');
+writeFileSync(idxPath, stamped);
+
 console.log(`built ${pub.length} stations, ${nAct} activities`);
 console.log(`  js/data/stations.js   presentation + hashes (no answers)`);
 console.log(`  js/data/glossary.js   ${GLOSSARY.length} shared definitions`);
+console.log(`  index.html + version.txt  stamped ${STAMP} (${nStamp} assets)`);
 console.log(wantVault
   ? `  js/data/keys.enc.js   encrypted vault (NOT loaded by the site)`
   : `  the answers are not written anywhere in the repo`);
