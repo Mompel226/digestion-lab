@@ -149,6 +149,24 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
    comes out — organs, their labels, the canal and the hit regions */
 #bodySvg.is-lab .art,#bodySvg.is-lab .hits,#bodySvg.is-lab .lblg,
 #bodySvg.is-lab .labels,#bodySvg.is-lab #canalPath{display:none}
+/* ---------- the practical bench ---------- */
+#bodySvg .detail__anim .bn rect{fill:#FFFDF9;stroke:#B9AE9B;stroke-width:1}
+#bodySvg .detail__anim .bn text{font:600 11px Calibri,Carlito,sans-serif;fill:#14572B}
+#bodySvg .detail__anim .bn .bn__sub{font-weight:500;font-size:8.5px;fill:#6B6B6B}
+#bodySvg .detail__anim .bn{cursor:pointer}
+#bodySvg .detail__anim .bn:hover rect{fill:#F3F7EF;stroke:#14572B}
+#bodySvg .detail__anim .bn.is-on rect{fill:#14572B;stroke:#14572B}
+#bodySvg .detail__anim .bn.is-on text{fill:#FFFDF9}
+#bodySvg .detail__anim .bn__spot{fill:#FFFDF9;stroke:#14572B;stroke-width:1.4;stroke-dasharray:2 2.4;cursor:pointer}
+#bodySvg .detail__anim .bn__spot:hover{fill:#DCEBD2;stroke-dasharray:none}
+#bodySvg .detail__anim .bn__spot.is-sel{fill:#14572B;stroke:#14572B;stroke-dasharray:none}
+#bodySvg .detail__anim .bn__say{font:600 10.5px Calibri,Carlito,sans-serif;fill:#4A4A4A}
+#bodySvg .detail__anim .bn__id{font:700 12px Calibri,Carlito,sans-serif;fill:#14572B}
+#bodySvg .detail__anim .bn__nm{font:500 8.6px Calibri,Carlito,sans-serif;fill:#6B6B6B}
+#bodySvg .detail__anim .bn__key{font:500 9px Calibri,Carlito,sans-serif;fill:#6B6B6B}
+#bodySvg .detail__anim .bn__samp{font:600 10px Calibri,Carlito,sans-serif;fill:#4A4A4A}
+#bodySvg .detail__anim .bn__res{font:700 12px Calibri,Carlito,sans-serif;fill:#1A1A1A}
+#bodySvg .detail__anim .bn__sub2{font:500 9.5px Calibri,Carlito,sans-serif;fill:#6B6B6B}
 #bodySvg .art path{pointer-events:none}
 #bodySvg .op{transition:opacity .24s ease,filter .24s ease}
 /* The plate's own paths carry inline opacities, so the spotlight has to use
