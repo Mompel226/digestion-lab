@@ -45,7 +45,7 @@
   /* ---------- geometry ---------- */
   var F = { x:30, y:116, w:280, h:448 };
   var RACK = { y:182, h:118, w:44 };
-  var CX = [78, 170, 262];
+  var CX = [68, 146, 224];      /* the rack sits left, leaving the right of the bench for the pipette */
 
   function tubeArt(i) {
     var t = TUBES[i], x = CX[i] - RACK.w / 2, y = RACK.y, w = RACK.w, h = RACK.h, g = '';
@@ -143,8 +143,8 @@
       var px = CX[pi] + (S.sample.side === 'inside' ? -30 : 30);
       g += pipette(px, RACK.y + 44, S.result ? S.result.col : '#CFE4EE');
     } else {
-      g += pipette(F.x + F.w - 26, RACK.y + 44, null);
-      g += '<text class="bn__key" x="' + f1(F.x + F.w - 26) + '" y="' + f1(RACK.y + 74) + '" text-anchor="middle">pipette</text>';
+      g += pipette(F.x + F.w - 22, RACK.y + 48, null);
+      g += '<text class="bn__key" x="' + f1(F.x + F.w - 22) + '" y="' + f1(RACK.y + 82) + '" text-anchor="middle">pipette</text>';
     }
 
     /* the controls, one row to a job, each button sized to the words it holds */
