@@ -168,7 +168,7 @@ window.GLOSSARY = [
  },
  {
   "term": "control",
-  "def": "A part of an experiment that shows what happens when the thing being tested is absent, so that any change can be attributed to it. Here, testing the water before the tubing goes in shows that the starch and sugar found later must have come from inside the tubing."
+  "def": "A part of an experiment set up in the same way as the test but with the one factor being investigated left out or held fixed, so that any difference in the result can be put down to that factor and to nothing else."
  },
  {
   "term": "deficiency disease",
@@ -375,7 +375,7 @@ window.GLOSSARY = [
  },
  {
   "term": "model",
-  "def": "A simplified stand-in for the real thing, used because it can be set up and measured in a laboratory. A model is judged by what it explains, and every model has limits: visking tubing has no villi, no blood supply and no active transport."
+  "def": "A simplified stand-in for something that cannot easily be studied directly, used because it can be set up and measured in a laboratory. A model is judged by what it explains, and every model has limits — the places where it stops behaving like the real thing."
  },
  {
   "term": "molar",
@@ -396,7 +396,7 @@ window.GLOSSARY = [
  },
  {
   "term": "negative control",
-  "def": "A tube set up with the thing being tested left out, so it should give a negative result. If it does not, something is wrong with the apparatus and the experiment cannot be trusted. In the visking tubing practical it holds starch with no amylase: with no enzyme, no maltose is made, so nothing should cross the wall.",
+  "def": "A control set up so that it should give a negative result, because whatever is being tested for has been deliberately left out. If it gives a positive result instead, the apparatus, the reagents or the method is at fault, and the rest of the results cannot be trusted.",
   "also": [
    "positive control",
    "control"
@@ -438,7 +438,7 @@ window.GLOSSARY = [
  },
  {
   "term": "partially permeable",
-  "def": "Describes a membrane that lets some substances through but not others, usually according to the size of the molecule. The wall of the small intestine and the membrane of every cell are partially permeable; so is visking tubing."
+  "def": "Describes a membrane that lets some substances through but not others, usually according to the size of the molecule. The membrane of every cell is partially permeable, and so is the wall of the small intestine."
  },
  {
   "term": "pepsin",
@@ -477,7 +477,7 @@ window.GLOSSARY = [
  },
  {
   "term": "positive control",
-  "def": "A tube set up so that it must give a positive result, which shows the apparatus and the test are working. In the visking tubing practical it holds maltose alone: the maltose should cross the wall and answer Benedict's, proving that small molecules can get through and that the test would detect them.",
+  "def": "A control set up so that it must give a positive result, because whatever is being tested for is known to be present. If it comes out negative, the test or the apparatus is not working, so a negative result anywhere else in the experiment would prove nothing either.",
   "also": [
    "negative control",
    "control"
