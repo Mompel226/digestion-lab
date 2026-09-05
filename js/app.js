@@ -1252,6 +1252,7 @@
       var find = document.getElementById('glossFind'), count = document.getElementById('glossCount');
       var built = false;
 
+      var pinTerm = null;
       function build() {
         if (built) return; built = true;
         /* The glossary is the shared list, not this lab's stations: it holds words the labs
@@ -1270,11 +1271,17 @@
           byId[id] = { name: S[id].name, rows: [] }; groups.push(byId[id]);
         });
         var general = { name: 'Words used across the labs', rows: [] };
+        /* A tapped word goes to the top under its own heading. Without this it sinks below
+           every entry whose definition merely mentions it, which is the opposite of what the
+           reader asked for: they tapped a word, so that word is the answer. */
+        var pinned = null;
         all.forEach(function (e) {
+          if (pinTerm && e.term.toLowerCase() === pinTerm && !pinned) { pinned = e; return; }
           var g = byId[where[e.term.toLowerCase()]] || general;
           g.rows.push(e);
         });
         if (general.rows.length) groups.push(general);
+        if (pinned) groups.unshift({ name: 'The word you tapped', rows: [pinned] });
         list.innerHTML = groups.filter(function (g) { return g.rows.length; }).map(function (g) {
           return '<section class="gloss__grp"><h3 class="gloss__h">' + esc(g.name) + '</h3><dl class="gloss__dl">' +
                  g.rows.map(function (w) {
@@ -1338,6 +1345,7 @@
       function open(term) {
         var panel = document.getElementById('panel');
         atOpen = panel ? panel.scrollTop : null;      /* put the reader back where they were */
+        pinTerm = term ? String(term).trim().toLowerCase() : null;
         build2(); find.value = term || ''; filter(); countKnown(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box');
         if (box) box.scrollTop = 0;
