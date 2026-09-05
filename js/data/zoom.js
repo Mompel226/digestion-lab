@@ -797,10 +797,10 @@ window.ZOOM_DETAIL = {
       }
     ],
     "animBox": [
-      126,
-      498,
-      74,
-      100
+      110,
+      496,
+      90,
+      104
     ]
   },
   "ileum-villi": {
