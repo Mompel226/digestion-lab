@@ -679,10 +679,14 @@
        set-up  — the apparatus, labelled, nothing moving yet
        run     — maltose diffusing out through the pores while starch stays in
        tests   — the two test tubes of the surrounding water, before and after       */
+  /* Laid out against the frame the camera gives this station — x 30..310, y 116..564 — with
+     the apparatus down the middle and a clear column each side for the labels. */
   var VK = {
-    tube: { x:118, y:150, w:104, h:330, r:52 },        /* the boiling tube */
-    water: 196,                                        /* the water line inside it */
-    bag:  { x:146, y:214, w:48, h:222 }                /* the visking tubing */
+    tube:  { x:132, y:150, w:96, h:352, r:48 },        /* the boiling tube */
+    water: 198,                                        /* the water line inside it */
+    bag:   { x:158, y:222, w:44, h:248 },              /* the visking tubing */
+    left:  124,                                        /* labels anchored end here */
+    right: 236                                         /* labels anchored start here */
   };
 
   function beaker(o, waterY) {
@@ -774,20 +778,20 @@
   /* The words. On a phone the frame is narrow, so each label is shorter and the two that
      name what is in the bag are stacked rather than set either side of it. */
   function viskingLabels(ctx, T, B, bag, focus) {
-    var fs = ctx.fs, c = ctx.compact, g = '';
-    var right = T.x + T.w, left = T.x;
-    g += label(c ? 'visking tubing' : 'visking tubing —\npartially permeable',
-               right + 10, B.y + B.h * 0.30, bag.cx + bag.bw * 0.9, B.y + B.h * 0.30, fs, 'start');
-    g += label(c ? 'starch +\namylase' : 'inside: starch\nand amylase',
-               left - 10, B.y + B.h * 0.16, bag.cx - bag.bw * 0.8, B.y + B.h * 0.20, fs, 'end');
-    g += label(c ? 'water' : 'distilled water',
-               left - 10, VK.water + 26, T.x + 12, VK.water + 14, fs, 'end');
-    g += label('37 °C', right + 10, VK.water - 6, right - 8, VK.water + 6, fs, 'start');
+    var fs = ctx.fs, c = ctx.compact, g = '', L = VK.left, R = VK.right;
+    /* one label to a line down each side, so nothing has to share a row with anything else */
+    g += label('37 °C', R, 206, T.x + T.w - 6, VK.water + 10, fs, 'start');
+    g += label(c ? 'distilled\nwater' : 'distilled water',
+               L, 250, T.x + 10, 238, fs, 'end');
+    g += label(c ? 'visking\ntubing' : 'visking tubing —\npartially permeable',
+               R, 300, bag.cx + bag.bw * 0.95, 292, fs, 'start');
+    g += label(c ? 'starch and\namylase' : 'inside: starch\nand amylase',
+               L, 362, bag.cx - bag.bw * 0.55, 350, fs, 'end');
     if (focus !== 'set-up') {
-      g += label(c ? 'maltose\ngets out' : 'maltose diffuses out\nthrough the pores',
-                 right + 10, B.y + B.h * 0.78, bag.cx + bag.bw + 16, B.y + B.h * 0.72, fs, 'start');
-      g += label(c ? 'starch\nstays in' : 'starch is too large\nto get through',
-                 left - 10, B.y + B.h * 0.70, bag.cx - bag.bw * 0.5, B.y + B.h * 0.62, fs, 'end');
+      g += label(c ? 'maltose\ndiffuses out' : 'maltose diffuses out\nthrough the pores',
+                 R, 396, bag.cx + bag.bw + 14, 404, fs, 'start');
+      g += label(c ? 'starch is\ntoo large' : 'starch is too large\nto get through',
+                 L, 442, bag.cx - bag.bw * 0.55, 430, fs, 'end');
     }
     return g;
   }

@@ -1418,7 +1418,6 @@ window.ZOOM_DETAIL = {
             "t": "the model",
             "kind": "act",
             "cap": "what this stands for",
-            "sub": "the wall of the small intestine",
             "corner": "tl"
           }
         ],
@@ -1435,7 +1434,6 @@ window.ZOOM_DETAIL = {
             "t": "diffusion",
             "kind": "act",
             "cap": "what happens here",
-            "sub": "down a concentration gradient",
             "corner": "tl"
           }
         ],
@@ -1468,7 +1466,6 @@ window.ZOOM_DETAIL = {
             "t": "absorption",
             "kind": "act",
             "cap": "what this models",
-            "sub": "small soluble molecules cross the wall",
             "corner": "tl"
           }
         ],
