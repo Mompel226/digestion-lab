@@ -423,7 +423,7 @@
         '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
           var g = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
-          var tag = g.ext ? ' <span class="tier tier--ext" title="Not in the 2026\u201328 syllabus">not in 0610</span>'
+          var tag = g.ext ? ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>'
                   : g.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
                  '<dt>' + M(w.term) + tag + '</dt>' +
@@ -1301,7 +1301,7 @@
          which is not decoration: a Core candidate reading 'periodontal fibres' needs to know
          they are not expected to learn it, not to wonder why they have never seen it. */
       function tierTag(w) {
-        if (w.ext) return ' <span class="tier tier--ext" title="Not in the 2026\u201328 syllabus — here to make sense of what is">not in 0610</span>';
+        if (w.ext) return ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>';
         if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on Paper 4 (Extended) only">Supplement</span>';
         return '';
       }
