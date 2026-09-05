@@ -165,6 +165,12 @@
        and the juice moving down it still read on top of it */
     gOver = el('g', { 'class':'detail__over' }, layer);
     gAnim = el('g', { 'class':'detail__anim' }, layer);
+    /* A bench is worked, not watched: clicks inside the animation layer are handed to it,
+       and the layer is redrawn from the state the click produced. */
+    gAnim.addEventListener('click', onBench);
+    gAnim.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onBench(e); }
+    });
     /* a photograph drawn inside an animation can still be opened full size */
     gAnim.addEventListener('click', function (ev) {
       var t = ev.target.closest ? ev.target.closest('[data-lightbox]') : null;
@@ -492,6 +498,13 @@
   /* Empty every drawn layer. On its own this is how a station is left before the camera flies
      to the next one: the old drawing must not still be on screen over the new frame — the
      liver's green bile ducts sitting on the pancreas, for instance. */
+  function onBench(e) {
+    var t = e.target.closest ? e.target.closest('[data-bench]') : null;
+    if (!t || !global.Bench) return;
+    e.stopPropagation();
+    if (global.Bench.hit(t.getAttribute('data-bench')) && steps[stepIdx]) applyStep(steps[stepIdx]);
+  }
+
   function wipe() {
     if (!layer) return;
     gImgs.innerHTML = ''; gOver.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';

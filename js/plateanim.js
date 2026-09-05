@@ -899,7 +899,11 @@
     return g;
   }
 
-  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests, viskingThree:viskingThree };
+  /* the practical, as a bench the student works at rather than a picture that plays.
+     It keeps its own state, so a redraw does not undo what has been done (bench.js). */
+  function bench(ctx) { return global.Bench ? global.Bench.draw(ctx) : ''; }
+
+  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests, viskingThree:viskingThree, bench:bench };
   /* every animation goes through here so the frame is known before any label is written */
   global.PlateAnim = {};
   Object.keys(ANIMS).forEach(function (k) {
