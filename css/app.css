@@ -721,6 +721,12 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
               width:32px;height:32px;font-size:17px;cursor:pointer;color:var(--grey);line-height:1}
 .modal__close:hover{background:var(--red-tint);color:var(--red);border-color:var(--red)}
 
+/* which tier a word belongs to, said plainly rather than left to be guessed */
+.tier{display:inline-block;vertical-align:middle;margin-left:6px;padding:1px 7px;border-radius:var(--r-pill);
+      font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+.tier--ext{background:#F1EDE3;color:#7A6B52;border:1px dashed #C3B69C}
+.tier--sup{background:#EAF1F6;color:#3E6FA8;border:1px solid #C4D8E8}
+
 /* ---------- Key words, gathered ---------- */
 .gloss__find{width:100%;margin:14px 0 6px;padding:10px 13px;font-size:15px;font-family:inherit;
              border:1px solid var(--edge);border-radius:var(--r);background:var(--card-2);color:inherit}

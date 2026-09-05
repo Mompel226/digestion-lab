@@ -422,8 +422,11 @@
         '<p class="kw-hint">Say the definition to yourself first, then turn the card.</p>' +
         '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
+          var g = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
+          var tag = g.ext ? ' <span class="tier tier--ext" title="Not in the 2026\u201328 syllabus">not in 0610</span>'
+                  : g.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
-                 '<dt>' + M(w.term) + '</dt>' +
+                 '<dt>' + M(w.term) + tag + '</dt>' +
                  '<p class="kw__ask">Do you know it? Tap to check</p>' +
                  '<dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
@@ -1274,7 +1277,7 @@
           return '<section class="gloss__grp"><h3 class="gloss__h">' + esc(g.name) + '</h3><dl class="gloss__dl">' +
                  g.rows.map(function (w) {
                    return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
-                          '<dt>' + esc(w.term) + '</dt><dd>' + esc(w.def) + '</dd></div>';
+                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + '</dd></div>';
                  }).join('') + '</dl></section>';
         }).join('');
       }
@@ -1292,6 +1295,15 @@
         count.textContent = q ? (shown ? shown + (shown === 1 ? ' word' : ' words') + ' match “' + find.value.trim() + '”'
                                        : 'Nothing matches “' + find.value.trim() + '”')
                               : rows.length + ' key words across ' + list.querySelectorAll('.gloss__grp').length + ' stations';
+      }
+
+      /* A word can be on the syllabus, on the Extended tier of it, or not on it at all. Saying
+         which is not decoration: a Core candidate reading 'periodontal fibres' needs to know
+         they are not expected to learn it, not to wonder why they have never seen it. */
+      function tierTag(w) {
+        if (w.ext) return ' <span class="tier tier--ext" title="Not in the 2026\u201328 syllabus — here to make sense of what is">not in 0610</span>';
+        if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on Paper 4 (Extended) only">Supplement</span>';
+        return '';
       }
 
       var atOpen = null;
