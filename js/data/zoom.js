@@ -804,16 +804,6 @@ window.ZOOM_DETAIL = {
         "credit": "OpenStax College, CC BY 3.0",
         "labels": [
           {
-            "t": "photograph: the\npancreas and the\nduodenum",
-            "plate": true,
-            "tx": [
-              42,
-              730
-            ],
-            "anchor": "start",
-            "fs": 0.72
-          },
-          {
             "t": "duodenum",
             "at": [
               0.5,
