@@ -263,7 +263,7 @@
     return opening + bolus + flap +
       label('epiglottis', e[0] + im.W * .09, e[1] - fs * 1.1, e[0] + im.W * .004, e[1], fs) +
       label(ctx.compact ? 'windpipe' : 'trachea (windpipe)\nto the lungs', tr[0] - im.W * .06, tr[1], tr[0], tr[1] - fs * .3, fs, 'end') +
-      label(ctx.compact ? 'oesophagus' : 'oesophagus\nto the stomach', oe[0] + im.W * .06, oe[1] + fs * .3, oe[0], oe[1], fs) +
+      label(ctx.compact ? 'oesophagus' : 'oesophagus\nto the stomach', oe[0] + im.W * .14, oe[1] + fs * .3, oe[0], oe[1], fs) +
       label('pharynx', ph[0] + im.W * .07, ph[1], ph[0], ph[1], fs) +
       (ctx.compact ? '' : moving('the bolus', route.map(function (q) { return q[0] - im.W * 0.03; }).concat([route[route.length - 1][0] - im.W * 0.03]),
                                   route.map(function (q) { return q[1] + im.H * 0.012; }).concat([route[route.length - 1][1] + im.H * 0.012]),
