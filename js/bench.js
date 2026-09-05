@@ -55,26 +55,30 @@
   var R = {};
 
   /* The viewBox is not what you can see. The plate is drawn with xMidYMid meet, so on a pane
-     that is not exactly the viewBox's shape the browser letterboxes and shows MORE than the
-     viewBox on one axis. Measuring that back through the CTM is the difference between a bench
-     that uses 280 units of a 412-unit-wide panel and one that fills it. */
+     that is not the viewBox's shape the browser letterboxes and shows MORE than the viewBox on
+     one axis: 412 units of width where the viewBox claims 280. Work it out from the pane's
+     pixel shape and the frame we are heading for — NEVER from the live CTM, which during a
+     camera flight still holds the viewBox we are flying away from. */
   function visibleBox(frame) {
     var svg = document.getElementById('bodySvg');
-    if (!svg || !svg.getScreenCTM || !svg.createSVGPoint) return null;
-    var m = svg.getScreenCTM(); if (!m) return null;
-    var inv = m.inverse(), r = svg.getBoundingClientRect();
-    if (!r.width || !r.height) return null;
-    function toUser(px, py) { var p = svg.createSVGPoint(); p.x = px; p.y = py; return p.matrixTransform(inv); }
-    var tl = toUser(r.left, r.top), br = toUser(r.right, r.bottom);
-    var box = { x:tl.x, y:tl.y, w:br.x - tl.x, h:br.y - tl.y };
-    if (!(box.w > 0 && box.h > 0)) return null;
-    /* never wider than half again the frame, or the bench sprawls on a very wide pane */
+    if (!svg) return null;
+    var r = svg.getBoundingClientRect();
+    if (!(r.width > 0 && r.height > 0)) return null;
+    var paneA = r.height / r.width, vw, vh;
+    if (paneA < frame.h / frame.w) { vh = frame.h; vw = frame.h / paneA; }   /* fitted by height */
+    else { vw = frame.w; vh = frame.w * paneA; }                             /* fitted by width  */
     var cap = frame.w * 1.55;
-    if (box.w > cap) { box.x = frame.x + frame.w / 2 - cap / 2; box.w = cap; }
+    if (vw > cap) vw = cap;                    /* or the bench sprawls on a very wide pane */
+    var box = { x:frame.x + frame.w / 2 - vw / 2, y:frame.y + frame.h / 2 - vh / 2, w:vw, h:vh };
     /* the caption strip is a real element: ask it where it starts rather than guessing */
     var el = document.querySelector('.detailstrip');
-    if (el) { var cr = el.getBoundingClientRect();
-      if (cr.height > 2 && cr.top > r.top) box.bottom = toUser(cr.left, cr.top).y - 6; }
+    if (el) {
+      var cr = el.getBoundingClientRect(), scale = r.height / vh;
+      if (cr.height > 2 && scale > 0) {
+        var b = box.y + (cr.top - r.top) / scale - 6;
+        if (b > box.y + box.h * 0.5) box.bottom = Math.min(b, box.y + box.h);
+      }
+    }
     return box;
   }
 
@@ -94,7 +98,7 @@
     RACK.w = Math.min(F.w * 0.25, RACK.h * 0.36);
     var sp = Math.min(F.w * 0.30, RACK.w * 1.5), tot = sp * 2 + RACK.w, pip = Math.min(56, F.w * 0.13);
     R.left = F.x + Math.max(6, (F.w - pip - tot) / 2);
-    CX = [0, 1, 2].map(function (i) { return R.left + RACK.w / 2 + i * sp; });
+    for (var c = 0; c < 3; c++) CX[c] = R.left + RACK.w / 2 + c * sp;
     R.right = R.left + tot;
     R.mol = RACK.w / 56;          /* molecules are a fixed fraction of the tube, at any size */
     R.id = RACK.y + RACK.h + 18; R.nm = RACK.y + RACK.h + 30; R.has = RACK.y + RACK.h + 41;
