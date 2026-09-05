@@ -83,7 +83,7 @@ window.GLOSSARY = [
  },
  {
   "term": "capillary",
-  "def": "A capillary is the smallest type of blood vessel; the network in each villus absorbs glucose and amino acids and carries them away."
+  "def": "A capillary is the smallest type of blood vessel. Be careful which structure does what: it is the epithelium of the villus that absorbs the glucose and amino acids, and the dense network of capillaries inside the villus that carries them away — which is what keeps the concentration gradient steep."
  },
  {
   "term": "carbohydrase",
@@ -135,11 +135,11 @@ window.GLOSSARY = [
  },
  {
   "term": "circular muscle",
-  "def": "A ring of muscle in the wall of the alimentary canal; when it contracts the tube becomes narrower. (IB detail — not required by 0610.)"
+  "def": "A ring of muscle in the wall of the alimentary canal; when it contracts, the tube becomes narrower. It is the circular muscle that contracts behind the bolus in peristalsis, squeezing it forwards — so this is the muscle to name."
  },
  {
   "term": "colon",
-  "def": "The main part of the large intestine, which reabsorbs water and mineral salts from undigested material."
+  "def": "The main part of the large intestine, which reabsorbs water and mineral ions from undigested material."
  },
  {
   "term": "complementary",
@@ -176,7 +176,7 @@ window.GLOSSARY = [
  },
  {
   "term": "denatured",
-  "def": "Describes an enzyme whose active site has permanently changed shape, so the substrate no longer fits and the enzyme stops working; cooling it does not bring it back."
+  "def": "Describes an enzyme whose active site has changed shape, so the substrate no longer fits and the enzyme stops working. For 0610, treat the change as permanent: cooling a heat-denatured enzyme does not bring it back, and an enzyme is never 'killed', because it was never alive. (In reality some denaturation is reversible — a gently unfolded protein can refold — but that is not the answer 0610 asks for.)"
  },
  {
   "term": "dentine",
@@ -193,7 +193,7 @@ window.GLOSSARY = [
  },
  {
   "term": "digestion",
-  "def": "Digestion is the breakdown of food: large, insoluble food molecules are broken down into small, soluble molecules that can be absorbed — first by physical digestion (smaller pieces) and then by chemical digestion (enzymes)."
+  "def": "Digestion is the break-down of large, insoluble food molecules into small, water-soluble molecules, using mechanical and chemical processes. Only molecules that are that small and that soluble can be absorbed through the wall of the alimentary canal."
  },
  {
   "term": "duodenum",
@@ -341,7 +341,7 @@ window.GLOSSARY = [
  },
  {
   "term": "longitudinal muscle",
-  "def": "Muscle running along the length of the wall of the alimentary canal; when it contracts the tube becomes shorter and wider. (IB detail — not required by 0610.)"
+  "def": "Muscle running along the length of the wall of the alimentary canal; when it contracts, the tube becomes shorter and wider. It works in alternation with the circular muscle, but peristalsis answers are marked on the circular muscle."
  },
  {
   "term": "lumen",
@@ -353,7 +353,8 @@ window.GLOSSARY = [
  },
  {
   "term": "maltase",
-  "def": "The enzyme on the membranes of the epithelium lining the small intestine that breaks maltose down into glucose."
+  "def": "The enzyme on the membranes of the epithelium lining the small intestine that breaks maltose down into glucose.",
+  "sup": true
  },
  {
   "term": "maltose",
@@ -510,7 +511,7 @@ window.GLOSSARY = [
  },
  {
   "term": "reabsorption",
-  "def": "Reabsorption is the taking of a substance — here water and mineral salts — back into the blood through the wall of the alimentary canal, after it was secreted into the gut in the digestive juices."
+  "def": "Reabsorption is the taking of a substance — here water and mineral ions — back into the blood through the wall of the alimentary canal, after it was secreted into the gut in the digestive juices."
  },
  {
   "term": "rectum",
@@ -518,11 +519,11 @@ window.GLOSSARY = [
  },
  {
   "term": "reducing sugar",
-  "def": "A sugar such as glucose or maltose that gives a brick red colour when heated with Benedict's solution."
+  "def": "A sugar such as glucose or maltose that reacts when heated with Benedict's solution. The test is semi-quantitative — the colour tells you how much is there, not simply whether: blue if there is none, then green, yellow, orange and brick red as the concentration rises. So report the colour you saw, never just 'positive'."
  },
  {
   "term": "rickets",
-  "def": "The deficiency disease caused by a lack of vitamin D, in which the bones stay soft and bend under the child's own weight."
+  "def": "The deficiency disease in which the bones stay soft and bend under the child's own weight. For 0610 the cause is a lack of vitamin D, which is what lets the gut absorb calcium — so a child can drink plenty of milk and still develop rickets. (In reality a severe shortage of calcium in the diet can cause it as well, but vitamin D is the answer 0610 wants.)"
  },
  {
   "term": "root canal",
