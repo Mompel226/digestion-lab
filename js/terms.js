@@ -233,7 +233,13 @@
      terms and bolding them would put four more heavy words in a sentence that already has
      several. An underline says "learn this wording" without shouting. */
   function underline(html) {
-    return html.replace(/_([\s\S]{1,80}?)_/g, '<u class="syl-u">$1</u>');   /* a glossary term may sit inside */
+    /* A glossary term inside an underlined phrase would come out bold and coloured while the
+       words either side of it stayed plain — 'molars chew and grind' with only 'chew' in the
+       colour reserved for the teeth. The phrase is one answer, so it is levelled to plain
+       text and carries only the underline. */
+    return html.replace(/_([\s\S]{1,80}?)_/g, function (m, inner) {
+      return '<u class="syl-u">' + inner.replace(/<i class="tc__n">[^<]*<\/i>/g, '').replace(/<\/?b[^>]*>/g, '') + '</u>';
+    });
   }
 
   function mark(text) {
