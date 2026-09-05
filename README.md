@@ -96,6 +96,23 @@ which regenerates `js/data/stations.js` (presentation + hashes). Add `--vault` i
 the encrypted answer key written out for your own checking — the site never loads it, and
 `.gitignore` keeps it out of the repo.
 
+### Editing a definition
+
+Definitions are **not** written in this repo, and not per lab. They live once, in
+**`labs-shared/glossary.master.js`** — found by searching upwards from the repo — so that
+every Biology Lab prints the same wording for the same term. A station lists only the terms
+it *introduces*, by name; the build looks each one up.
+
+That makes agreement mechanical rather than a matter of care: the build **fails** if a
+station names a term the glossary does not define, or if an older station still carries a
+wording of its own that differs. Change a definition there, rebuild each lab, done.
+
+```bash
+node tools/build.mjs
+```
+
+writes `js/data/glossary.js` (the shared list) alongside `js/data/stations.js`.
+
 ## Collecting the results
 
 The marks do not live here. One Google Sheet collects **every** Biology Lab — a tab per lab,
