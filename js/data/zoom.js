@@ -755,8 +755,7 @@ window.ZOOM_DETAIL = {
           0.55
         ],
         "big": 1,
-        "nocap": true,
-        "bare": true
+        "nocap": true
       }
     ],
     "label": "The pancreas makes pancreatic juice in its acinar cells; its duct carries the juice to the duodenum, where the bile duct joins it",
@@ -774,11 +773,11 @@ window.ZOOM_DETAIL = {
     ],
     "labels": [
       {
-        "t": "the same two organs,\nphotographed: the ducts\nmeet before they enter",
+        "t": "photograph:\nthe duodenum\nand pancreas",
         "plate": true,
         "tx": [
-          58,
-          556
+          52,
+          560
         ],
         "anchor": "start",
         "fs": 0.72
