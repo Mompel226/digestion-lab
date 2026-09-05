@@ -232,18 +232,29 @@
      candidate to produce them — what each kind of tooth does — but they are not glossary
      terms and bolding them would put four more heavy words in a sentence that already has
      several. An underline says "learn this wording" without shouting. */
-  function underline(html) {
-    /* A glossary term inside an underlined phrase would come out bold and coloured while the
-       words either side of it stayed plain — 'molars chew and grind' with only 'chew' in the
-       colour reserved for the teeth. The phrase is one answer, so it is levelled to plain
-       text and carries only the underline. */
-    return html.replace(/_([\s\S]{1,80}?)_/g, function (m, inner) {
-      return '<u class="syl-u">' + inner.replace(/<i class="tc__n">[^<]*<\/i>/g, '').replace(/<\/?b[^>]*>/g, '') + '</u>';
+  /* _like this_ underlines a phrase: wording the syllabus asks a candidate to produce, marked
+     without adding to the weight of the bold terms already in the line.
+
+     The two underscores become sentinels BEFORE the glossary pass and tags after it. Running
+     the pattern over finished markup does not work: class names carry underscores of their
+     own — `tc__n` on a chip — so it matched inside an attribute and tore the tag in half. A
+     term landing inside the phrase is levelled to plain text, since the phrase is one answer
+     and should not come out half bold and half not. */
+  var U0 = '\u0001', U1 = '\u0002';
+
+  function underlineMarks(escaped) {
+    return escaped.replace(/_([^_]{1,90})_/g, U0 + '$1' + U1);
+  }
+  function underlineTags(html) {
+    return html.replace(new RegExp(U0 + '([\\s\\S]*?)' + U1, 'g'), function (m, inner) {
+      return '<u class="syl-u">' +
+             inner.replace(/<i class="tc__n">[^<]*<\/i>/g, '').replace(/<\/?[bi][^>]*>/g, '') +
+             '</u>';
     });
   }
 
   function mark(text) {
-    return underline(esc(text).replace(RE, function (m) {
+    return underlineTags(underlineMarks(esc(text)).replace(RE, function (m) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
       var cat = e[1], act = '', cls = '';
