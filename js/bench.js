@@ -333,16 +333,23 @@
        a row, Start again in the first column beneath, the reading in the second, and the
        sample tube as a narrow column of its own down the right. Everything shares an edge
        with something — that is all "organised" means here. */
-    var clock = S.ran ? 'at 30 minutes' : 'at the start';
-    g += '<text class="bn__samp" x="' + f1(R.left) + '" y="' + f1(R.clock) + '">Clock: ' + clock +
-         (S.sample ? '  \u00b7  sample: ' +
-            esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) : '') +
-         '</text>';
-
     var GAP = 10, TUBEW = 22, TUBECOL = 34;
     var colW = (R.right - R.left) - TUBECOL;
     var pw = (colW - GAP * 2) / 3;
     var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
+
+    /* Each caption sits over the thing it describes: the clock over the button that moves it,
+       and the sample over the two tests that will be run on it. One line for both would have to
+       be centred somewhere that is over neither, and grows off the frame once a tube is named. */
+    var clock = S.ran ? 'at 30 minutes' : 'at the start';
+    g += '<text class="bn__samp" x="' + f1(col[0] + pw / 2) + '" y="' + f1(R.clock) +
+         '" text-anchor="middle">Clock: ' + clock + '</text>';
+    if (S.sample) {
+      g += '<text class="bn__samp" x="' + f1(col[1] + pw + GAP / 2) + '" y="' + f1(R.clock) +
+           '" text-anchor="middle">sample: ' +
+           esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) +
+           '</text>';
+    }
 
     g += btn('run', col[0], R.btn, pw, 26, S.ran
              ? pick(['the clock has run', 'clock has run', 'clock run', 'done'], pw)
