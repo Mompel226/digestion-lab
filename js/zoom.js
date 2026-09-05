@@ -138,6 +138,16 @@
     el('feFuncA', { type:'table', tableValues:'1 1 0.98 0.75 0' }, ct);
     el('feComposite', { in:'SourceGraphic', in2:'mask', operator:'in' }, kw);
 
+    /* A gentler version of the same idea, for a photograph whose subject is itself pale.
+       dropWhite starts fading at about 60% luminance, which takes the pancreas with the
+       paper; this one holds full opacity until nearly white and only clears the ground. */
+    var kp = el('filter', { id:'dropPaper', x:'0%', y:'0%', width:'100%', height:'100%',
+                            'color-interpolation-filters':'sRGB' }, defs);
+    el('feColorMatrix', { type:'luminanceToAlpha', in:'SourceGraphic', result:'plum' }, kp);
+    var pt = el('feComponentTransfer', { in:'plum', result:'pmask' }, kp);
+    el('feFuncA', { type:'table', tableValues:'1 1 1 1 1 1 1 0.85 0' }, pt);
+    el('feComposite', { in:'SourceGraphic', in2:'pmask', operator:'in' }, kp);
+
     var sh = el('filter', { id:'insetShadow', x:'-20%', y:'-20%', width:'140%', height:'150%' }, defs);
     el('feDropShadow', { dx:'0', dy:'1.2', stdDeviation:'1.6', 'flood-color':'#3a2e1c', 'flood-opacity':'.35' }, sh);
     /* explicit region: the default is the current viewport +10%, which clips a zoomed camera at a hard edge */
@@ -601,7 +611,7 @@
          structures sit straight on the plate instead of inside a white rectangle */
       if (!ins.bare) el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
       var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
-      if (ins.bare) im.setAttribute('filter', 'url(#dropWhite)');
+      if (ins.bare) im.setAttribute('filter', 'url(#dropPaper)');
       im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
       var ipl = { x:x, y:y, W:w, H:h };
       var keep = gLabels; gLabels = g;
