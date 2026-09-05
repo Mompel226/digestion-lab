@@ -371,10 +371,17 @@
                       S.result ? S.result.col : '#EAF2F6',
                       S.result && S.result.kind === 'benedict' ? 'heated' : '');
     }
+    /* The reading sits under the test that produced it. Both of its lines share one centre —
+       the pill's — pulled left only as far as the longest of them needs to clear the tube,
+       so the two lines stay aligned with each other whatever the wording. */
     if (S.result) {
       var r = S.result;
-      g += '<text class="bn__res" x="' + f1(col[1]) + '" y="' + f1(R.res) + '">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(col[1]) + '" y="' + f1(R.sub) + '">' + esc(r.sub) + '</text>';
+      var wide = Math.max(textW(r.word, 12), textW(r.sub, 9.5));
+      var want = (r.kind === 'iodine' ? col[1] : col[2]) + pw / 2;
+      var cx = Math.min(want, R.right - TUBEW - 8 - wide / 2);
+      cx = Math.max(cx, R.left + wide / 2);
+      g += '<text class="bn__res" x="' + f1(cx) + '" y="' + f1(R.res) + '" text-anchor="middle">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2" x="' + f1(cx) + '" y="' + f1(R.sub) + '" text-anchor="middle">' + esc(r.sub) + '</text>';
     }
     return g;
   }
