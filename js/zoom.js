@@ -488,7 +488,7 @@
   /* ---------- one step: pictures, window, labels, spotlight, animation ---------- */
   function applyStep(s) {
     if (!s || !layer) return;
-    gImgs.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
+    gImgs.innerHTML = ''; gOver.innerHTML = ''; gAnim.innerHTML = ''; gLabels.innerHTML = ''; gInsets.innerHTML = ''; gKeys.innerHTML = ''; spotClip.innerHTML = ''; spotLine.innerHTML = '';
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
     /* organs the step covers with its own picture are hidden, so nothing shows twice */
