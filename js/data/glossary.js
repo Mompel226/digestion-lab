@@ -19,8 +19,22 @@ window.GLOSSARY = [
   "def": "The continuous tube running from the mouth to the anus, through which food passes. The liver, pancreas, gall bladder and salivary glands are digestive organs but are not part of it."
  },
  {
+  "term": "amino acid",
+  "def": "The monomer of protein. There are 20 different types, and the order they are joined in decides which protein is made. Amino acids are absorbed into the blood and built into new proteins in the cells.",
+  "also": [
+   "protein",
+   "polymer",
+   "assimilation"
+  ]
+ },
+ {
   "term": "amylase",
-  "def": "An enzyme that breaks starch down into maltose."
+  "def": "An enzyme (a carbohydrase) that breaks starch down into maltose. Made in the salivary glands and in the pancreas.",
+  "also": [
+   "starch",
+   "maltose",
+   "carbohydrase"
+  ]
  },
  {
   "term": "anaemia",
@@ -52,7 +66,12 @@ window.GLOSSARY = [
  },
  {
   "term": "bolus",
-  "def": "The ball of chewed food, mixed with saliva, produced by mastication and ready to be swallowed."
+  "def": "The ball of chewed food, mixed with saliva, produced by mastication and ready to be swallowed. It becomes chyme once the stomach has churned it.",
+  "also": [
+   "mastication",
+   "chyme",
+   "peristalsis"
+  ]
  },
  {
   "term": "calcium",
@@ -81,11 +100,15 @@ window.GLOSSARY = [
  },
  {
   "term": "catalyst",
-  "def": "A substance that speeds up a chemical reaction without being changed or used up itself."
+  "def": "A substance that speeds up a chemical reaction without being changed or used up (consumed) itself. An enzyme is a biological catalyst.",
+  "also": [
+   "enzyme",
+   "consumed"
+  ]
  },
  {
   "term": "cellulose",
-  "def": "The carbohydrate that makes up plant cell walls, which humans cannot digest because they have no enzyme for it."
+  "def": "A polymer of glucose that makes up plant cell walls. Humans have no enzyme for it, so it passes through undigested — this is fibre (roughage)."
  },
  {
   "term": "cement",
@@ -98,7 +121,12 @@ window.GLOSSARY = [
  },
  {
   "term": "chyme",
-  "def": "The acidic, soupy mixture of partly digested food and gastric juice that leaves the stomach and enters the duodenum."
+  "def": "The acidic, soupy mixture of partly digested food and gastric juice that leaves the stomach and enters the duodenum. It was a bolus before the stomach churned it.",
+  "also": [
+   "bolus",
+   "gastric juice",
+   "duodenum"
+  ]
  },
  {
   "term": "circular folds",
@@ -156,7 +184,12 @@ window.GLOSSARY = [
  },
  {
   "term": "diffusion",
-  "def": "Diffusion is the net movement of particles from a region of high concentration to a region of low concentration (down a concentration gradient), as a result of their random movement, until equilibrium is reached."
+  "def": "Diffusion is the net movement of particles from a region of high concentration to a region of low concentration (down a concentration gradient), as a result of their random movement, until equilibrium is reached.",
+  "also": [
+   "net movement",
+   "concentration gradient",
+   "equilibrium"
+  ]
  },
  {
   "term": "digestion",
@@ -172,7 +205,12 @@ window.GLOSSARY = [
  },
  {
   "term": "emulsification",
-  "def": "The breaking of large fat droplets (globules) into many smaller droplets, which increases the surface area for lipase."
+  "def": "The breaking of large fat droplets (globules) into many smaller ones by bile, which increases the surface area for lipase to work on. It is physical, not chemical: the fat is not digested by it.",
+  "also": [
+   "bile",
+   "lipase",
+   "surface area"
+  ]
  },
  {
   "term": "enamel",
@@ -185,7 +223,13 @@ window.GLOSSARY = [
  },
  {
   "term": "enzyme",
-  "def": "An enzyme is a protein that acts as a biological catalyst: it increases the rate of a chemical reaction in a living organism without being used up in it. Each enzyme has an active site whose shape is complementary to one substrate, which is why an enzyme is specific."
+  "def": "An enzyme is a protein that acts as a biological catalyst: it increases the rate of a chemical reaction in a living organism without being used up in it. Each enzyme has an active site whose shape is complementary to one substrate, which is why an enzyme is specific.",
+  "also": [
+   "catalyst",
+   "active site",
+   "substrate",
+   "denatured"
+  ]
  },
  {
   "term": "epiglottis",
@@ -220,8 +264,17 @@ window.GLOSSARY = [
   "def": "Gastric juice is the fluid secreted by the lining of the stomach: hydrochloric acid, the protease pepsin, and mucus that protects the lining itself."
  },
  {
+  "term": "glucose",
+  "def": "The simple sugar the body runs on: small, soluble, and the monomer of starch, glycogen and cellulose. It is absorbed into the blood and used in respiration to release energy.",
+  "also": [
+   "monomer",
+   "starch",
+   "reducing sugar"
+  ]
+ },
+ {
   "term": "glycogen",
-  "def": "The storage carbohydrate made from excess glucose and stored in the liver and muscles."
+  "def": "The storage carbohydrate of animals: a polymer of glucose (its monomer), made from excess glucose and stored in the liver and muscles."
  },
  {
   "term": "gum",
@@ -279,7 +332,12 @@ window.GLOSSARY = [
  },
  {
   "term": "lipase",
-  "def": "An enzyme that breaks fats and oils down into fatty acids and glycerol."
+  "def": "An enzyme that breaks fats and oils (lipids) down into fatty acids and glycerol. Made by the pancreas, and it works far faster after bile has emulsified the fat.",
+  "also": [
+   "bile",
+   "emulsification",
+   "fats and oils"
+  ]
  },
  {
   "term": "longitudinal muscle",
@@ -299,7 +357,12 @@ window.GLOSSARY = [
  },
  {
   "term": "maltose",
-  "def": "A simple reducing sugar made of two glucose molecules; it is the product of amylase acting on starch."
+  "def": "A reducing sugar made of two glucose molecules — the product of amylase acting on starch, and itself digested to glucose by maltase.",
+  "also": [
+   "amylase",
+   "maltase",
+   "reducing sugar"
+  ]
  },
  {
   "term": "mastication",
@@ -320,7 +383,12 @@ window.GLOSSARY = [
  },
  {
   "term": "monomer",
-  "def": "A small molecule that joins with others to build a polymer, for example glucose or an amino acid."
+  "def": "A small molecule (a sub-unit) that joins with others to build a polymer — glucose is the monomer of starch, glycogen and cellulose; an amino acid is the monomer of protein.",
+  "also": [
+   "polymer",
+   "glucose",
+   "amino acid"
+  ]
  },
  {
   "term": "mucus",
@@ -350,7 +418,11 @@ window.GLOSSARY = [
  },
  {
   "term": "osmosis",
-  "def": "Osmosis is a type of diffusion: the net movement of water molecules from a region of high water potential (a dilute solution) to a region of low water potential (a concentrated solution), down a water potential gradient, through a partially permeable membrane."
+  "def": "Osmosis is a type of diffusion: the net movement of water molecules from a region of high water potential (a dilute solution) to a region of low water potential (a concentrated solution), down a water potential gradient, through a partially permeable membrane.",
+  "also": [
+   "diffusion",
+   "partially permeable"
+  ]
  },
  {
   "term": "pancreatic juice",
@@ -388,7 +460,12 @@ window.GLOSSARY = [
  },
  {
   "term": "polymer",
-  "def": "A large molecule made of many small sub-units joined together in a chain."
+  "def": "A large molecule made of many small sub-units (monomers) joined into a chain. Starch, glycogen and cellulose are polymers of glucose; a protein is a polymer of amino acids.",
+  "also": [
+   "monomer",
+   "starch",
+   "protein"
+  ]
  },
  {
   "term": "premolar",
@@ -396,11 +473,16 @@ window.GLOSSARY = [
  },
  {
   "term": "protease",
-  "def": "An enzyme that breaks down protein."
+  "def": "An enzyme that breaks protein down into smaller peptides and then amino acids. Pepsin (in the stomach) and trypsin (from the pancreas) are proteases.",
+  "also": [
+   "pepsin",
+   "trypsin",
+   "protein"
+  ]
  },
  {
   "term": "protein",
-  "def": "A protein is a large molecule built from a chain of amino acids. Proteins are needed for growth and the repair of tissues, and every enzyme is a protein; meat, fish, eggs, beans and tofu are rich in them."
+  "def": "A protein is a large molecule: a polymer built from a chain of amino acids (its monomers), of which there are 20 different types. Proteins are needed for growth and the repair of tissues, and every enzyme is a protein; meat, fish, eggs, beans and tofu are rich in them."
  },
  {
   "term": "pulp",
@@ -457,11 +539,30 @@ window.GLOSSARY = [
  },
  {
   "term": "starch",
-  "def": "A large, insoluble carbohydrate made of many glucose molecules joined into a chain."
+  "def": "A large, insoluble carbohydrate: a polymer of many glucose molecules (its monomers) joined into a chain. Too large to be absorbed, so it must first be digested to maltose and then to glucose.",
+  "also": [
+   "amylase",
+   "maltose",
+   "polymer"
+  ]
  },
  {
   "term": "substrate",
-  "def": "The molecule that an enzyme acts on."
+  "def": "The molecule an enzyme acts on. It fits into the enzyme's active site, whose shape is complementary to it — which is why an enzyme is specific.",
+  "also": [
+   "active site",
+   "enzyme",
+   "complementary"
+  ]
+ },
+ {
+  "term": "surface area",
+  "def": "The total area of a surface across which something can happen. Digestion and absorption both depend on it: chewing raises the surface area of food for enzymes, bile raises the surface area of fat for lipase, and villi and microvilli raise the surface area of the intestine for absorption.",
+  "also": [
+   "villus",
+   "microvilli",
+   "emulsification"
+  ]
  },
  {
   "term": "swallowing",
@@ -473,7 +574,11 @@ window.GLOSSARY = [
  },
  {
   "term": "triglyceride",
-  "def": "A lipid made of one molecule of glycerol joined to three fatty acids."
+  "def": "A lipid (a fat or an oil) made of one molecule of glycerol joined to three fatty acids — which is what digestion by lipase breaks it back into.",
+  "also": [
+   "fats and oils",
+   "lipase"
+  ]
  },
  {
   "term": "trypsin",
@@ -485,7 +590,12 @@ window.GLOSSARY = [
  },
  {
   "term": "villus",
-  "def": "A villus is a finger-like projection of the lining of the small intestine that increases the surface area for absorption (plural: villi)."
+  "def": "A finger-like projection of the lining of the small intestine that increases the surface area for absorption (plural: villi). Each villus is covered in microvilli and holds blood capillaries and a lacteal.",
+  "also": [
+   "microvilli",
+   "lacteal",
+   "absorption"
+  ]
  },
  {
   "term": "visking tubing",
