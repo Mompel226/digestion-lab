@@ -1250,7 +1250,12 @@
 
       function open(term) {
         build(); find.value = term || ''; filter(); dlg.hidden = false;
-        setTimeout(function () { find.focus(); }, 30);
+        var box = dlg.querySelector('.modal__box');
+        if (box) box.scrollTop = 0;
+        /* focus without scrolling: focusing the box's own field scrolled the list past
+           the search box it was meant to put the cursor in */
+        setTimeout(function () { try { find.focus({ preventScroll: true }); } catch (e) { find.focus(); }
+                                 if (box) box.scrollTop = 0; }, 30);
       }
       window.LabGlossary = open;
 
