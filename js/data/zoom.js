@@ -804,11 +804,11 @@ window.ZOOM_DETAIL = {
         "credit": "OpenStax College, CC BY 3.0",
         "labels": [
           {
-            "t": "the pancreas and the duodenum:\nwhere the bile duct and the\npancreatic duct enter",
+            "t": "photograph: the\npancreas and the\nduodenum",
             "plate": true,
             "tx": [
-              46,
-              456
+              42,
+              486
             ],
             "anchor": "start",
             "fs": 0.72

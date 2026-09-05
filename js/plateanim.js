@@ -411,7 +411,7 @@
   }
   /* The bile duct is green because bile is; the pancreatic duct must NOT be, or a student
      reads green leaving the pancreas and concludes the pancreas makes bile. Brown. */
-  var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55', PDUCT = '#9A6A34';
+  var BILE = '#8DB43A', JUICE = '#E8C95A', DUCT = '#3F8A55', PDUCT = '#A0561F';   /* chestnut: #9A6A34 read olive beside the green bile duct */
   var RHD = [[108, 444], [122, 458], [140, 470]], LHD = [[180, 448], [162, 462], [140, 470]];
   var CHD = [[140, 470], [150, 480], [156, 490]], CYST = [[156, 490], [150, 489], [144, 488]];
   var CBD = [[156, 490], [156, 508], [153, 526], [148, 543], [142, 558], [137, 568], [134, 576]];
@@ -494,7 +494,7 @@
               '<g opacity="0">' + phase(false) + REL + '</g>';
     if (ctx.compact) return g +
       label('liver', 60, 400, 122, 436, fs, 'start') +
-      label('gall\nbladder', 56, 505, 125, 487, fs, 'start') +
+      label('gall\nbladder', 56, 534, 118, 492, fs, 'start') +
       label('common\nbile duct', 186, 542, 152, 530, fs, 'start') +
       label('duodenum', 58, 578, 134, 576, fs, 'start');
     return g +

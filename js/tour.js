@@ -45,10 +45,10 @@
          6.9s, reaches the stomach at 15.2s and the duodenum at 22.6s. */
       notes:[[0, 'Swallowing: the tongue pushes the bolus to the back of the mouth.'],
              [5200, 'The epiglottis folds over the windpipe, so the bolus goes down the oesophagus and not the airway.'],
-             [12000, 'Down the oesophagus by peristalsis — muscle contracting behind the bolus and relaxing in front of it.'],
+             [12000, 'Down the oesophagus by peristalsis, which is muscle contracting behind the bolus and relaxing in front of it.'],
              /* One sentence, not two. Splitting pepsin off gave the scene an extra step that the
                 animation has no counterpart for, and everything after it read late. */
-             [18200, 'In the stomach: churning is physical digestion; hydrochloric acid kills bacteria and gives pepsin, a protease, the acid pH it needs to digest protein into polypeptides. The bolus is now chyme.'],
+             [18200, 'Churning is physical digestion. The stomach secretes hydrochloric acid and pepsin, a protease: the acid kills bacteria and gives pepsin the low pH it needs to digest protein into polypeptides — chemical digestion. The bolus is now chyme.'],
              [30400, 'In the duodenum, bile and pancreatic juice arrive through ducts. The food never enters the liver, gall bladder or pancreas — they only secrete into the tube.']] },
     { id:'absorption', name:'Absorption', organ:'ileum-villi', station:'ileum-villi', stationName:'Small intestine', pos:'bottom', also:['liver'], spot:['liver'], hide:['gall-bladder'], cam:{ cx:202, cy:580, w:362 }, ms:24000,
       def:'Absorption is the movement of nutrients from the intestines into the blood.',
@@ -449,7 +449,7 @@
             later(function () {
               A.travel(st + w, M.duodenum, 3600, function () {
                 drops(BILE, '#8DB43A', 2.2, 4.5, 6);
-                drops(PANC, '#9A6A34', 2.2, 4.5, 6);   /* the same brown as the duct drawn on the plate */
+                drops(PANC, '#A0561F', 2.2, 4.5, 6);   /* the same chestnut as the duct drawn on the plate */
                 lightSecretors(['liver', 'gall-bladder', 'pancreas'], 7000);
               });
             }, 8600);
