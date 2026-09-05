@@ -236,8 +236,9 @@
     return g;
   }
   /* ---------- the bench ---------- */
-  function btn(id, x, y, w, h, label, on, sub) {
-    return '<g class="bn' + (on ? ' is-on' : '') + '" data-bench="' + esc(id) + '" role="button" tabindex="0">' +
+  function btn(id, x, y, w, h, label, on, sub, off) {
+    return '<g class="bn' + (on ? ' is-on' : '') + '" data-bench="' + esc(id) + '" role="button" tabindex="0"' +
+           (off ? ' opacity=".38"' : '') + '>' +
            '<rect x="' + f1(x) + '" y="' + f1(y) + '" width="' + f1(w) + '" height="' + f1(h) + '" rx="' + f1(h / 2) + '"/>' +
            '<text x="' + f1(x + w / 2) + '" y="' + f1(y + h / 2 + (sub ? -1 : 3.4)) + '" text-anchor="middle">' + esc(label) + '</text>' +
            (sub ? '<text class="bn__sub" x="' + f1(x + w / 2) + '" y="' + f1(y + h / 2 + 9) + '" text-anchor="middle">' + esc(sub) + '</text>' : '') +
@@ -291,30 +292,41 @@
     /* the bench top */
     g += '<path d="M' + f1(F.x + 6) + ',' + f1(RACK.y + RACK.h + 2) + ' H' + f1(F.x + F.w - 6) +
          '" stroke="#C3B69C" stroke-width="2" stroke-linecap="round"/>';
-    /* the controls, one row to a job, each button sized to the words it holds */
+    /* The controls are a grid exactly as wide as the rack above them: three equal actions in
+       a row, Start again in the first column beneath, the reading in the second, and the
+       sample tube as a narrow column of its own down the right. Everything shares an edge
+       with something — that is all "organised" means here. */
     var clock = S.ran ? 'at 30 minutes' : 'at the start';
     g += '<text class="bn__samp" x="' + f1(R.left) + '" y="' + f1(R.clock) + '">Clock: ' + clock +
          (S.sample ? '  \u00b7  sample: ' +
             esc(S.sample.side === 'inside' ? 'inside ' + S.sample.tube : 'water outside ' + S.sample.tube) : '') +
          '</text>';
-    g += btn('run', R.left, R.btn, 106, 26, S.ran ? 'clock has run' : 'Run 30 minutes', S.ran);
-    if (S.sample) {
-      g += btn('test:iodine', R.left + 114, R.btn, 66, 26, 'iodine', S.result && S.result.kind === 'iodine');
-      g += btn('test:benedict', R.left + 188, R.btn, 78, 26, 'Benedict\u2019s', S.result && S.result.kind === 'benedict');
-    }
-    g += btn('reset', R.left, R.reset, 66, 22, 'Start again', false);
 
-    /* The sample stands beside the tests it is being given, spanning both rows, and shows the
-       colour that test would actually produce — with a flame under it when it has been heated. */
+    var GAP = 12, TUBEW = 22, TUBECOL = 36;
+    var colW = (R.right - R.left) - TUBECOL;
+    var pw = (colW - GAP * 2) / 3;
+    var col = [R.left, R.left + pw + GAP, R.left + 2 * (pw + GAP)];
+
+    g += btn('run', col[0], R.btn, pw, 26,
+             S.ran ? 'clock has run' : (pw < 76 ? 'Run 30 min' : 'Run 30 minutes'), S.ran);
+    /* the two tests keep their places whether or not there is anything to test, so the grid
+       does not rearrange itself under the reader between one tap and the next */
+    g += btn('test:iodine', col[1], R.btn, pw, 26, 'iodine',
+             !!(S.result && S.result.kind === 'iodine'), null, !S.sample);
+    g += btn('test:benedict', col[2], R.btn, pw, 26, 'Benedict\u2019s',
+             !!(S.result && S.result.kind === 'benedict'), null, !S.sample);
+    g += btn('reset', col[0], R.reset, pw, 22, 'Start again', false);
+
+    /* The sample stands in its own column, spanning both rows, and shows the colour that test
+       would actually produce — with a flame under it when it has been heated. */
     if (S.sample) {
-      var tx = Math.max(R.left + 282, R.right - 26);
-      g += sampleTube(tx, R.btn - 4, 20, R.reset + 22 - R.btn + 4,
+      g += sampleTube(R.right - TUBEW, R.btn, TUBEW, (R.reset + 16) - R.btn,
                       S.result ? S.result.col : '#EAF2F6', !!(S.result && S.result.kind === 'benedict'));
     }
     if (S.result) {
       var r = S.result;
-      g += '<text class="bn__res" x="' + f1(R.left + 78) + '" y="' + f1(R.res) + '">' + esc(r.word) + '</text>';
-      g += '<text class="bn__sub2" x="' + f1(R.left + 78) + '" y="' + f1(R.sub) + '">' + esc(r.sub) + '</text>';
+      g += '<text class="bn__res" x="' + f1(col[1]) + '" y="' + f1(R.res) + '">' + esc(r.word) + '</text>';
+      g += '<text class="bn__sub2" x="' + f1(col[1]) + '" y="' + f1(R.sub) + '">' + esc(r.sub) + '</text>';
     }
     return g;
   }
