@@ -337,6 +337,7 @@
     /* Draw the words first and measure them. The leader used to start from a guess at the
        text's width — characters × font size × 0.52 — which is out by a unit or two, so the
        line began before the word ended or after it, and never quite touched. */
+    if (L.fs) fs = fs * L.fs;                              /* a quieter note than the organ names */
     var t = el('text', { 'class':'dl__t', x:f1(tx), y:f1(ty), 'font-size':f1(fs), 'text-anchor':anchor }, gLabels);
     lines.forEach(function (l, i) {
       var ts = el('tspan', { x:f1(tx), dy:i ? '1.15em' : '0' }, t);
