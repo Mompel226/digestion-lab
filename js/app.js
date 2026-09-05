@@ -1249,17 +1249,34 @@
 
       function build() {
         if (built) return; built = true;
-        var html = '';
+        /* The glossary is the shared list, not this lab's stations: it holds words the labs
+           use in common that no single station introduces — "net movement", "soluble" — as
+           well as every term a station does introduce. Each is filed under the station that
+           introduces it, and the rest under a heading of their own. */
+        var all = (window.GLOSSARY || []).slice();
+        var where = {};
         ORDER.forEach(function (id) {
-          var st = S[id]; if (!st || !(st.keywords || []).length) return;
-          html += '<section class="gloss__grp" data-station="' + id + '">' +
-                  '<h3 class="gloss__h">' + esc(st.name) + '</h3><dl class="gloss__dl">' +
-                  st.keywords.map(function (w) {
-                    return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
-                           '<dt>' + esc(w.term) + '</dt><dd>' + esc(w.def) + '</dd></div>';
-                  }).join('') + '</dl></section>';
+          var st = S[id]; if (!st) return;
+          (st.keywords || []).forEach(function (w) { where[w.term.toLowerCase()] = id; });
         });
-        list.innerHTML = html;
+        var groups = [], byId = {};
+        ORDER.forEach(function (id) {
+          if (!S[id]) return;
+          byId[id] = { name: S[id].name, rows: [] }; groups.push(byId[id]);
+        });
+        var general = { name: 'Words used across the labs', rows: [] };
+        all.forEach(function (e) {
+          var g = byId[where[e.term.toLowerCase()]] || general;
+          g.rows.push(e);
+        });
+        if (general.rows.length) groups.push(general);
+        list.innerHTML = groups.filter(function (g) { return g.rows.length; }).map(function (g) {
+          return '<section class="gloss__grp"><h3 class="gloss__h">' + esc(g.name) + '</h3><dl class="gloss__dl">' +
+                 g.rows.map(function (w) {
+                   return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
+                          '<dt>' + esc(w.term) + '</dt><dd>' + esc(w.def) + '</dd></div>';
+                 }).join('') + '</dl></section>';
+        }).join('');
       }
 
       function filter() {
