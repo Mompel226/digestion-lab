@@ -150,6 +150,11 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 #bodySvg.is-lab .art,#bodySvg.is-lab .hits,#bodySvg.is-lab .lblg,
 #bodySvg.is-lab .labels,#bodySvg.is-lab #canalPath{display:none}
 /* ---------- the practical bench ---------- */
+/* The detail layer is pointer-events:none so a click reaches the organ underneath it.
+   The bench is the one thing in there that IS meant to be clicked, so its controls take
+   their pointer events back — without this the whole bench is a picture. */
+#bodySvg .detail__anim .bn,#bodySvg .detail__anim .bn rect,#bodySvg .detail__anim .bn text,
+#bodySvg .detail__anim .bn__spot{pointer-events:all}
 #bodySvg .detail__anim .bn rect{fill:#FFFDF9;stroke:#B9AE9B;stroke-width:1}
 #bodySvg .detail__anim .bn text{font:600 11px Calibri,Carlito,sans-serif;fill:#14572B}
 #bodySvg .detail__anim .bn .bn__sub{font-weight:500;font-size:8.5px;fill:#6B6B6B}
