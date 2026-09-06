@@ -119,7 +119,7 @@ The marks do not live here. One Google Sheet collects **every** Biology Lab — 
 with your Google Classroom rosters beside them. One script, one deployment, one URL.
 
 **Set it up once, in the hub repo:**
-[IGCSE-revision-app ▸ The marks spreadsheet](https://github.com/Mompel226/IGCSE-revision-app#the-marks-spreadsheet)
+[human-body-hub ▸ The marks spreadsheet](https://github.com/Mompel226/human-body-hub#the-marks-spreadsheet)
 — five minutes, with both files in full, ready to copy.
 
 Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`, and
