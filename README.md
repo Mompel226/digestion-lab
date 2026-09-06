@@ -19,12 +19,12 @@ at each organ in turn.
 
 ## What is in it
 
-**13 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
+**14 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
 epiglottis, oesophagus, stomach, liver and gall bladder, pancreas, small intestine (duodenum,
-jejunum and ileum), large intestine, rectum and anus, and a Molecules Lab that reaches back
-into Topics 3, 4 and 5.
+jejunum and ileum), large intestine, rectum and anus, a Molecules and enzymes station that reaches
+back into Topics 3, 4 and 5, and a Practicals station for the food tests.
 
-**113 questions** across seven kinds:
+**123 activities** across seven kinds:
 
 | Type | What the student does |
 |---|---|
