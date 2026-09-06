@@ -4,6 +4,12 @@ An interactive revision simulation of **Cambridge IGCSE Biology 0610, Topic 7 �
 
 **Live:** https://mompel226.github.io/digestion-lab/
 
+**Where it sits:** one of the labs behind the [Human Body Hub](https://mompel226.github.io/human-body-hub/),
+which is one shelf of the [Biology Hub](https://mompel226.github.io/biology-hub/) — the front
+door to every Biology app at NLCS Jeju. The "← All labs" button in the header goes back up to
+the shelf. This lab is the pattern every future lab follows: a plate you point at, stations,
+questions that mark themselves, a shared glossary, and answer keys that never enter the repo.
+
 Students click any organ on an anatomical plate of the digestive system and work
 through that station: what the exam wants, what it actually looks like, and a set
 of questions. A meal can also be sent along the whole alimentary canal, stopping
