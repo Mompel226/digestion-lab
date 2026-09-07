@@ -173,9 +173,10 @@ js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
 js/config.js          the three things you edit: the Apps Script URL, the OAuth
                       client ID, and the class list
 js/marking.js         hash-based marking — it can say wrong, not what
-                      NOTE: this file and js/engine.js are a FORK of labs-shared/engine/.
-                      This lab's build does NOT copy them, unlike the Classification Lab's.
-                      Fixing "the engine" once fixes only that lab; fix both by hand.
+                      GENERATED: this file and js/engine.js are copied from
+                      labs-shared/engine/ by tools/build.mjs. Do not edit them here —
+                      the next build overwrites them. Edit labs-shared/engine/ and
+                      rebuild every lab.
 js/terms.js           the colour language of the Learn tab
 js/data/stations.js   GENERATED — presentation + hashes, no answers
 tools/build.mjs       master content -> js/data/stations.js
@@ -274,6 +275,26 @@ needs to change.
   clears WCAG AA on both backgrounds; the weakest measured on the live page is
   4.64:1. See the notes at the top of `js/terms.js`.
 - Anything simplified is disclosed in the **How to use** panel.
+
+## Using this at your own school
+
+**Fork it and it works.** Everything the page loads is in this repository — the engine, the
+marking, the glossary, the pictures. There is no reference to any other repository at run time.
+Fork it, switch on GitHub Pages (Settings ▸ Pages ▸ branch `main`), and it runs.
+
+**What you cannot do is rebuild the questions**, and that is deliberate. `tools/build.mjs`
+reads `../digestion-lab-source/stations.master.js`, the only file with the answers in plain
+text, and that file is never published — which is exactly why no student can read the answers
+out of the site either. Running the build in a fork stops with "Cannot find the master content".
+
+So a fork is a working copy of this lab, not a starting point for a different one. If you want
+to change the questions, write your own master file and build against it; the format is
+documented above, and the shared parts (engine, marking, glossary) live in `labs-shared/` in
+the workspace this lab is built from.
+
+If you only want to *use* it with your classes, you do not need to fork at all — send your
+students the link, and set up your own results spreadsheet as described under *Collecting the
+results*.
 
 ## Credits
 
