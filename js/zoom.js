@@ -741,8 +741,10 @@
   var holdUntil = 0, holdTimer = null, holdFrom = 0;
   /* where the reader is, counting both the panel's own scrolling and the page's */
   function scrollPos() {
-    var p = document.getElementById('panel');
-    return (p ? p.scrollTop : 0) + (global.scrollY || 0);
+    /* Three boxes can be the one that moved: the panel above 1000px, .stage below it, and the
+       window. Counting only two of them made this read a constant on a phone. */
+    var p = document.getElementById('panel'), st = document.querySelector('.stage');
+    return (p ? p.scrollTop : 0) + (st ? st.scrollTop : 0) + (global.scrollY || 0);
   }
   function scheduleRecheck(ms) {
     if (holdTimer) return;

@@ -321,7 +321,10 @@
         cls = ' is-gloss';
       }
       if (e[2]) {
-        return '<b class="tc tc--' + cat + cls + '"' + act + '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
+        /* The category letter prints inside the same element, so reading the word off
+           textContent gives "Cchyme". Carry the word itself. */
+        return '<b class="tc tc--' + cat + cls + '"' + act + (act ? ' data-word="' + esc(m) + '"' : '') +
+               '><i class="tc__n">' + CATS[cat].n + '</i>' + m + '</b>';
       }
       return '<b class="t t--' + cat + cls + '"' + act + '>' + m + '</b>';
     }));
