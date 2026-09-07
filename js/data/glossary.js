@@ -2,6 +2,10 @@
    The definitions every Biology Lab shares. */
 window.GLOSSARY = [
  {
+  "term": "abdomen",
+  "def": "The rear part of an arthropod’s body, behind the thorax or cephalothorax."
+ },
+ {
   "term": "absorption",
   "def": "Absorption is the movement of small food molecules and ions through the wall of the intestine into the blood. (The one exception: fatty acids and glycerol enter the lacteal first and reach the blood later.)"
  },
@@ -28,6 +32,10 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "amphibian",
+  "def": "A vertebrate with smooth, moist skin and no scales, which lays soft eggs in water. The young breathe with gills, the adults with lungs and through the skin."
+ },
+ {
   "term": "amylase",
   "def": "An enzyme (a carbohydrase) that breaks starch down into maltose. Made in the salivary glands and in the pancreas.",
   "also": [
@@ -41,8 +49,20 @@ window.GLOSSARY = [
   "def": "Anaemia is the condition in which the blood carries too little haemoglobin, so it carries less oxygen and the person feels tired and weak. In the diet, the usual cause is too little iron, which is needed to make haemoglobin."
  },
  {
+  "term": "antenna",
+  "def": "A jointed feeler on the head of an arthropod, sensing touch and chemicals. Plural: antennae. Insects and myriapods have one pair, crustaceans two, arachnids none."
+ },
+ {
   "term": "anus",
   "def": "The opening at the end of the alimentary canal through which faeces are egested."
+ },
+ {
+  "term": "arachnid",
+  "def": "An arthropod with two body parts (cephalothorax and abdomen), four pairs of legs, no antennae and no wings. Spiders, scorpions, ticks."
+ },
+ {
+  "term": "arthropod",
+  "def": "An animal with jointed legs, a segmented body and a hard exoskeleton. The four main groups are myriapods, insects, arachnids and crustaceans."
  },
  {
   "term": "assimilation",
@@ -53,8 +73,26 @@ window.GLOSSARY = [
   "def": "An organ that secretes into the alimentary canal but that food never passes through: the salivary glands, pancreas, liver and gall bladder."
  },
  {
+  "term": "autotrophic nutrition",
+  "def": "Making your own organic substances (food) from simple inorganic ones. In plants and the algae this is photosynthesis: carbon dioxide and water are built into glucose using energy from light. An organism that feeds this way is an autotroph.",
+  "sup": true
+ },
+ {
+  "term": "backbone",
+  "def": "The column of small bones (vertebrae) along the back of a vertebrate, around the nerve cord."
+ },
+ {
   "term": "balanced diet",
   "def": "A diet containing carbohydrates, fats and oils, proteins, vitamins, mineral ions, fibre and water in the correct proportions and amounts."
+ },
+ {
+  "term": "base",
+  "def": "One of the four units — A, T, C and G — whose order along a DNA strand carries the genetic information."
+ },
+ {
+  "term": "base sequence",
+  "def": "The order of the bases along a stretch of DNA. Organisms that share a more recent common ancestor have more similar base sequences.",
+  "sup": true
  },
  {
   "term": "bile",
@@ -63,6 +101,14 @@ window.GLOSSARY = [
  {
   "term": "bile duct",
   "def": "The bile duct is the tube that carries bile into the duodenum. Strictly it is the common bile duct: it receives bile from the gall bladder (through the cystic duct) and bile coming straight from the liver (through the hepatic ducts)."
+ },
+ {
+  "term": "binomial system",
+  "def": "An internationally agreed system in which the scientific name of an organism is made up of two parts showing the genus and species. Written in italics or underlined; genus with a capital, species in lower case."
+ },
+ {
+  "term": "bird",
+  "def": "A vertebrate with feathers, front limbs that are wings, a beak with no teeth, lungs, hard-shelled eggs and a constant body temperature."
  },
  {
   "term": "bolus",
@@ -107,6 +153,10 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "cell wall",
+  "def": "A rigid layer outside the cell membrane of plant, fungal and prokaryotic cells. In plants it is made of cellulose; in fungi and prokaryotes it is not. Animal cells have none."
+ },
+ {
   "term": "cellulose",
   "def": "A polymer of glucose that makes up plant cell walls. Humans have no enzyme for it, so it passes through undigested — this is fibre (roughage)."
  },
@@ -116,8 +166,23 @@ window.GLOSSARY = [
   "ext": true
  },
  {
+  "term": "cephalothorax",
+  "def": "The front part of an arachnid’s body: the head and thorax fused into one, carrying the legs."
+ },
+ {
+  "term": "characteristic",
+  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so a characteristic never tells one group from another; that is what a feature does.",
+  "also": [
+   "feature"
+  ]
+ },
+ {
   "term": "chemical digestion",
   "def": "Chemical digestion is the breakdown of large, insoluble molecules into small, soluble molecules, carried out by enzymes."
+ },
+ {
+  "term": "chloroplast",
+  "def": "A structure in plant cells (and in some protoctists) that contains chlorophyll and carries out photosynthesis."
  },
  {
   "term": "chyme",
@@ -138,12 +203,25 @@ window.GLOSSARY = [
   "def": "A ring of muscle in the wall of the alimentary canal; when it contracts, the tube becomes narrower. It is the circular muscle that contracts behind the bolus in peristalsis, squeezing it forwards — so this is the muscle to name."
  },
  {
+  "term": "classification",
+  "def": "The grouping of organisms by the features that they share. Classification systems aim to reflect evolutionary relationships."
+ },
+ {
   "term": "colon",
   "def": "The main part of the large intestine, which reabsorbs water and mineral ions from undigested material."
  },
  {
+  "term": "common ancestor",
+  "def": "An organism from which two or more groups are descended. The more recent the common ancestor, the more closely related the groups.",
+  "sup": true
+ },
+ {
   "term": "complementary",
   "def": "Matching in shape, like a key to a lock. An enzyme's active site is complementary to its substrate: the two fit together, and no other molecule does."
+ },
+ {
+  "term": "compound eye",
+  "def": "An eye made of many small lenses, each facing a slightly different way. Insects have them."
  },
  {
   "term": "concentration",
@@ -171,6 +249,15 @@ window.GLOSSARY = [
   "def": "A part of an experiment set up in the same way as the test but with the one factor being investigated left out or held fixed, so that any difference in the result can be put down to that factor and to nothing else."
  },
  {
+  "term": "cotyledon",
+  "def": "A seed leaf: the leaf, or pair of leaves, already formed inside a seed. Monocotyledons have one, dicotyledons two.",
+  "sup": true
+ },
+ {
+  "term": "crustacean",
+  "def": "An arthropod with more than four pairs of legs and two pairs of antennae; most breathe with gills and live in water. Crabs, lobsters, shrimps, woodlice."
+ },
+ {
   "term": "deficiency disease",
   "def": "A disease caused by not having enough of a particular nutrient in the diet."
  },
@@ -181,6 +268,15 @@ window.GLOSSARY = [
  {
   "term": "dentine",
   "def": "Dentine is the bone-like layer beneath the enamel that makes up most of a tooth. It is softer than enamel and is crossed by tiny tubules running out from the living cells of the pulp, which is why a tooth with worn enamel feels cold and pain."
+ },
+ {
+  "term": "dichotomous key",
+  "def": "A series of paired statements about identifiable features. At each step you choose the statement that is true for the organism, and are sent to another pair or to a name."
+ },
+ {
+  "term": "dicotyledon",
+  "def": "A flowering plant with two cotyledons, broad leaves with a network of veins, and flower parts in fours or fives. Sunflowers, beans, roses, most trees.",
+  "sup": true
  },
  {
   "term": "diffusion",
@@ -194,6 +290,14 @@ window.GLOSSARY = [
  {
   "term": "digestion",
   "def": "Digestion is the break-down of large, insoluble food molecules into small, water-soluble molecules, using mechanical and chemical processes. Only molecules that are that small and that soluble can be absorbed through the wall of the alimentary canal."
+ },
+ {
+  "term": "DNA",
+  "def": "Deoxyribonucleic acid: the molecule that carries genetic information, made of two strands of bases (A, T, C, G) paired in a double helix. The order of the bases is inherited."
+ },
+ {
+  "term": "dry mass",
+  "def": "The mass of an organism with all the water removed: what is left is the material it has made, so an increase in dry mass is real growth."
  },
  {
   "term": "duodenum",
@@ -244,8 +348,21 @@ window.GLOSSARY = [
   "def": "The state reached when there is no longer any net movement, because the concentrations on both sides are equal. The particles are still moving; they are simply moving both ways equally."
  },
  {
+  "term": "evolutionary relationships",
+  "def": "How closely organisms are related by descent from common ancestors. Classification systems aim to reflect them.",
+  "sup": true
+ },
+ {
   "term": "excretion",
   "def": "The removal of the waste products of chemical reactions inside cells, and of substances in excess of requirements — for example urea in urine and carbon dioxide from the lungs."
+ },
+ {
+  "term": "exoskeleton",
+  "def": "A hard skeleton on the outside of the body, as in arthropods. It cannot grow, so the animal moults."
+ },
+ {
+  "term": "external fertilisation",
+  "def": "Fertilisation outside the body, usually in water, as in fish and amphibians."
  },
  {
   "term": "faeces",
@@ -256,12 +373,51 @@ window.GLOSSARY = [
   "def": "Fats and oils (lipids) are nutrients built from glycerol and fatty acids. They store energy, insulate the body and protect organs; butter, oils, nuts and oily fish are rich in them."
  },
  {
+  "term": "feature",
+  "def": "Something an organism has, or does, that can be observed and used to place it in a group — feathers, jointed legs, a cell wall, seeds in a cone. Classification uses features. Habitat and behaviour are not features. Keep it apart from characteristic: the seven characteristics are the processes every living organism carries out.",
+  "also": [
+   "characteristic"
+  ]
+ },
+ {
+  "term": "fern",
+  "def": "A plant with fronds and no flowers, reproducing by spores made in sporangia on the underside of the fronds.",
+  "sup": true
+ },
+ {
+  "term": "fertile offspring",
+  "def": "Offspring that can themselves reproduce. Two organisms belong to one species if they can breed and their offspring are fertile — a mule is not, so horse and donkey are separate species."
+ },
+ {
   "term": "fibre (roughage)",
   "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation."
  },
  {
+  "term": "fish",
+  "def": "A vertebrate with wet scales, fins and gills, which lays soft eggs in water. Its body temperature follows the surroundings."
+ },
+ {
+  "term": "flowering plant",
+  "def": "A plant that reproduces by flowers, with seeds formed inside an ovary. Two groups: monocotyledons and dicotyledons.",
+  "sup": true
+ },
+ {
+  "term": "frond",
+  "def": "The leaf of a fern, usually divided into many leaflets and unrolling from a coil as it grows.",
+  "sup": true
+ },
+ {
+  "term": "fungus",
+  "def": "An organism whose cells have a nucleus and a cell wall not made of cellulose, with no chloroplasts. Most are made of hyphae; yeast is a single cell. Fungi feed by saprotrophic nutrition. Plural: fungi.",
+  "sup": true
+ },
+ {
   "term": "gastric juice",
   "def": "Gastric juice is the fluid secreted by the lining of the stomach: hydrochloric acid, the protease pepsin, and mucus that protects the lining itself."
+ },
+ {
+  "term": "genus",
+  "def": "A group of closely related species. The first word of a scientific name, written with a capital letter: Panthera in Panthera leo. Plural: genera."
  },
  {
   "term": "glucose",
@@ -275,6 +431,10 @@ window.GLOSSARY = [
  {
   "term": "glycogen",
   "def": "The storage carbohydrate of animals: a polymer of glucose (its monomer), made from excess glucose and stored in the liver and muscles."
+ },
+ {
+  "term": "growth",
+  "def": "A permanent increase in size and dry mass. (Dry mass, so that water taken up does not count.)"
  },
  {
   "term": "gum",
@@ -292,6 +452,20 @@ window.GLOSSARY = [
   "ext": true
  },
  {
+  "term": "heterotrophic nutrition",
+  "def": "Taking in organic substances made by other organisms, and breaking them down to be absorbed and used. Animals, fungi and many prokaryotes and protoctists feed this way; each is a heterotroph.",
+  "sup": true
+ },
+ {
+  "term": "holozoic nutrition",
+  "def": "The heterotrophic nutrition of most animals: food is taken into the body, digested inside it, and the products absorbed. Fungi do the opposite — they digest outside and absorb after.",
+  "ext": true
+ },
+ {
+  "term": "host cell",
+  "def": "A living cell that a virus enters and uses to make copies of itself."
+ },
+ {
   "term": "hydrochloric acid",
   "def": "The acid in gastric juice. 0610 gives it two functions: it kills harmful microorganisms in food, and it provides an acidic pH for optimum enzyme activity."
  },
@@ -299,6 +473,11 @@ window.GLOSSARY = [
   "term": "hydrolysis",
   "def": "A reaction in which a bond is broken by adding a molecule of water. Every digestive reaction is a hydrolysis: starch to maltose, protein to amino acids, fat to fatty acids and glycerol. The enzymes that catalyse it are called hydrolases.",
   "ext": true
+ },
+ {
+  "term": "hypha",
+  "def": "One of the fine threads that make up the body of most fungi. Plural: hyphae; the mass of them is the mycelium.",
+  "sup": true
  },
  {
   "term": "ileum",
@@ -313,8 +492,16 @@ window.GLOSSARY = [
   "def": "Ingestion is the taking of substances, for example food and drink, into the body through the mouth."
  },
  {
+  "term": "insect",
+  "def": "An arthropod with three body parts (head, thorax, abdomen), three pairs of legs, usually two pairs of wings, one pair of antennae and compound eyes."
+ },
+ {
   "term": "insoluble",
   "def": "Not able to dissolve. Starch, protein and fat are insoluble, which is why they have to be digested into soluble molecules before they can be absorbed."
+ },
+ {
+  "term": "internal fertilisation",
+  "def": "Fertilisation inside the body of the female, as in mammals, birds and reptiles."
  },
  {
   "term": "iron",
@@ -324,6 +511,10 @@ window.GLOSSARY = [
   "term": "jawbone",
   "def": "The bone in which the roots of the teeth are set, holding each tooth in its socket.",
   "ext": true
+ },
+ {
+  "term": "kingdom",
+  "def": "The largest group in the classification used here. There are five: animal, plant, fungus, prokaryote and protoctist. Viruses belong to none."
  },
  {
   "term": "lacteal",
@@ -348,6 +539,10 @@ window.GLOSSARY = [
   "def": "The lumen is the space inside a tube such as the small intestine, where the food and the digestive juices mix."
  },
  {
+  "term": "magnification",
+  "def": "How many times larger an image or drawing is than the real object: magnification = image size ÷ actual size. Written ×4, with no units."
+ },
+ {
   "term": "malnutrition",
   "def": "The result of a diet that is not balanced — too little, too much, or the wrong proportions."
  },
@@ -366,8 +561,20 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "mammal",
+  "def": "A vertebrate with hair or fur that feeds its young on milk from mammary glands, gives birth to live young, breathes with lungs and keeps a constant body temperature."
+ },
+ {
+  "term": "mammary glands",
+  "def": "The glands of a female mammal that make milk for the young."
+ },
+ {
   "term": "mastication",
   "def": "The cutting and mixing of food with saliva by the teeth and tongue."
+ },
+ {
+  "term": "metabolism",
+  "def": "All the chemical reactions going on inside the cells of an organism — the ones that build molecules and the ones that break them down."
  },
  {
   "term": "microvilli",
@@ -383,6 +590,11 @@ window.GLOSSARY = [
   "def": "A large, broad tooth at the back of the mouth used for chewing and grinding hard food."
  },
  {
+  "term": "monocotyledon",
+  "def": "A flowering plant with one cotyledon, long narrow leaves with parallel veins, and flower parts in threes. Grasses, cereals, lilies, orchids, palms.",
+  "sup": true
+ },
+ {
   "term": "monomer",
   "def": "A small molecule (a sub-unit) that joins with others to build a polymer — glucose is the monomer of starch, glycogen and cellulose; an amino acid is the monomer of protein.",
   "also": [
@@ -392,8 +604,26 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "morphology",
+  "def": "The form and shape of an organism — the visible structure biologists used to classify organisms before DNA sequences.",
+  "ext": true
+ },
+ {
+  "term": "movement",
+  "def": "An action by an organism or part of an organism causing a change of position or place. (The first word is \"action\": movement is something the organism does.)"
+ },
+ {
   "term": "mucus",
   "def": "A slimy layer secreted onto the stomach lining that stops the acid and pepsin digesting the stomach wall."
+ },
+ {
+  "term": "mycelium",
+  "def": "The mass of hyphae that forms the body of a fungus, usually hidden in the soil or in what it feeds on.",
+  "sup": true
+ },
+ {
+  "term": "myriapod",
+  "def": "An arthropod with a body of many similar segments, each with jointed legs, and one pair of antennae. Centipedes and millipedes."
  },
  {
   "term": "negative control",
@@ -411,6 +641,14 @@ window.GLOSSARY = [
   "term": "neutralise",
   "def": "To cancel out an acid using an alkali, raising the pH towards neutral or slightly alkaline.",
   "sup": true
+ },
+ {
+  "term": "nucleus",
+  "def": "The part of a cell that contains the genetic material (DNA in chromosomes) and controls the cell. Present in animal, plant, fungal and protoctist cells; absent from prokaryotes."
+ },
+ {
+  "term": "nutrition",
+  "def": "The taking in of materials for energy, growth and development. Plants take in carbon dioxide, water and mineral ions; animals take in organic substances and water."
  },
  {
   "term": "oesophagus",
@@ -438,8 +676,17 @@ window.GLOSSARY = [
   "def": "The alkaline fluid the pancreas secretes into the duodenum; it contains amylase, protease (trypsin) and lipase."
  },
  {
+  "term": "parasitic nutrition",
+  "def": "Heterotrophic nutrition in which an organism (the parasite) feeds on or in a living host, harming it. Plasmodium, which causes malaria, feeds this way.",
+  "ext": true
+ },
+ {
   "term": "partially permeable",
   "def": "Describes a membrane that lets some substances through but not others, usually according to the size of the molecule. The membrane of every cell is partially permeable, and so is the wall of the small intestine."
+ },
+ {
+  "term": "pathogen",
+  "def": "A disease-causing organism: bacteria, fungi, protoctists and viruses can all be pathogens."
  },
  {
   "term": "pepsin",
@@ -459,6 +706,14 @@ window.GLOSSARY = [
   "def": "The space at the back of the mouth and nose where the path of food and the path of air cross."
  },
  {
+  "term": "phloem",
+  "def": "The tissue that carries sucrose and amino acids around a plant, from the leaves to wherever they are needed."
+ },
+ {
+  "term": "photosynthesis",
+  "def": "The process by which plants make glucose using energy from light: carbon dioxide + water → glucose + oxygen, with light absorbed by chlorophyll in the chloroplasts. It is how autotrophs feed."
+ },
+ {
   "term": "physical digestion",
   "def": "The breakdown of food into smaller pieces without chemical change to the food molecules."
  },
@@ -466,6 +721,11 @@ window.GLOSSARY = [
   "term": "plaque",
   "def": "Plaque is a sticky film of bacteria that builds up on teeth. The bacteria respire the sugar left on the teeth and release acid, which dissolves the enamel and causes decay. (Not required by 0610.)",
   "ext": true
+ },
+ {
+  "term": "plasmid",
+  "def": "A small circle of DNA in a bacterium, separate from the main circular DNA.",
+  "sup": true
  },
  {
   "term": "polymer",
@@ -489,6 +749,11 @@ window.GLOSSARY = [
   "def": "A tooth with a ridged surface used to crush and grind soft food."
  },
  {
+  "term": "prokaryote",
+  "def": "A single-celled organism with no nucleus: its DNA is a circle lying free in the cytoplasm, often with plasmids. A cell wall not made of cellulose; no mitochondria. Bacteria are prokaryotes.",
+  "sup": true
+ },
+ {
   "term": "protease",
   "def": "An enzyme that breaks protein down into smaller peptides and then amino acids. Pepsin (in the stomach) and trypsin (from the pancreas) are proteases.",
   "also": [
@@ -500,6 +765,16 @@ window.GLOSSARY = [
  {
   "term": "protein",
   "def": "A protein is a large molecule: a polymer built from a chain of amino acids (its monomers), of which there are 20 different types. Proteins are needed for growth and the repair of tissues, and every enzyme is a protein; meat, fish, eggs, beans and tofu are rich in them."
+ },
+ {
+  "term": "protein coat",
+  "def": "The layer of protein around the genetic material of a virus.",
+  "sup": true
+ },
+ {
+  "term": "protoctist",
+  "def": "An organism in the kingdom that holds what is left once animals, plants, fungi and prokaryotes are removed: mostly single cells with a nucleus. Some feed like plants (algae), some like animals (Amoeba).",
+  "sup": true
  },
  {
   "term": "pulp",
@@ -520,6 +795,18 @@ window.GLOSSARY = [
  {
   "term": "reducing sugar",
   "def": "A sugar such as glucose or maltose that reacts when heated with Benedict's solution. The test is semi-quantitative — the colour tells you how much is there, not simply whether: blue if there is none, then green, yellow, orange and brick red as the concentration rises. So report the colour you saw, never just 'positive'."
+ },
+ {
+  "term": "reproduction",
+  "def": "The processes that make more of the same kind of organism."
+ },
+ {
+  "term": "reptile",
+  "def": "A vertebrate with dry scales, lungs, and eggs with a leathery waterproof shell laid on land. Its body temperature follows the surroundings."
+ },
+ {
+  "term": "respiration",
+  "def": "The chemical reactions in cells that break down nutrient molecules and release energy for metabolism. It is not breathing: it happens inside every living cell, all the time."
  },
  {
   "term": "rickets",
@@ -543,6 +830,11 @@ window.GLOSSARY = [
   "def": "The glands that secrete saliva into the mouth; they are associated organs, not part of the alimentary canal."
  },
  {
+  "term": "saprotrophic nutrition",
+  "def": "Feeding on dead organic material by releasing enzymes onto it and absorbing the digested products. How fungi feed.",
+  "sup": true
+ },
+ {
   "term": "scurvy",
   "def": "The deficiency disease caused by a lack of vitamin C, with bleeding gums and poor healing."
  },
@@ -551,8 +843,25 @@ window.GLOSSARY = [
   "def": "To release a useful substance made by a gland or cell. The pancreas secretes pancreatic juice into the duodenum; secreting is not the same as excreting, which is getting rid of waste."
  },
  {
+  "term": "sensitivity",
+  "def": "The ability to detect and respond to changes in the internal or external environment."
+ },
+ {
   "term": "soluble",
   "def": "Able to dissolve in a liquid, usually water. Small food molecules such as glucose and amino acids are soluble, which is why they can be carried in the blood and cross the wall of the intestine."
+ },
+ {
+  "term": "species",
+  "def": "A group of organisms that can reproduce to produce fertile offspring."
+ },
+ {
+  "term": "specimen",
+  "def": "The actual organism, or part of one, in front of you — the thing you observe and draw."
+ },
+ {
+  "term": "spore",
+  "def": "A tiny reproductive cell that can grow into a new organism on its own, made by ferns and fungi.",
+  "sup": true
  },
  {
   "term": "starch",
@@ -562,6 +871,10 @@ window.GLOSSARY = [
    "maltose",
    "polymer"
   ]
+ },
+ {
+  "term": "stimulus",
+  "def": "A change in the internal or external environment that an organism can detect — light, temperature, touch, a chemical. Plural: stimuli."
  },
  {
   "term": "substrate",
@@ -586,6 +899,15 @@ window.GLOSSARY = [
   "def": "The reflex that pushes the bolus from the mouth, through the pharynx, into the oesophagus."
  },
  {
+  "term": "taxonomy",
+  "def": "The science of classifying and naming organisms. The groups are called taxa; the ranks run kingdom, phylum, class, order, family, genus, species.",
+  "ext": true
+ },
+ {
+  "term": "thorax",
+  "def": "The middle part of an insect’s body, between the head and the abdomen, to which the legs and wings are attached."
+ },
+ {
   "term": "trachea",
   "def": "The trachea (windpipe) is the tube that carries air from the throat down to the lungs; it is held open by rings of cartilage. It is part of the breathing system, not of the alimentary canal."
  },
@@ -606,6 +928,10 @@ window.GLOSSARY = [
   "def": "The waste product made in the liver from excess amino acids, removed from the blood by the kidneys and excreted in urine."
  },
  {
+  "term": "vertebrate",
+  "def": "An animal with a backbone: a fish, an amphibian, a reptile, a bird or a mammal."
+ },
+ {
   "term": "villus",
   "def": "A finger-like projection of the lining of the small intestine that increases the surface area for absorption (plural: villi). Each villus is covered in microvilli and holds blood capillaries and a lacteal.",
   "also": [
@@ -613,6 +939,11 @@ window.GLOSSARY = [
    "lacteal",
    "absorption"
   ]
+ },
+ {
+  "term": "virus",
+  "def": "A piece of genetic material (DNA or RNA) inside a protein coat. Not a cell, and not in any kingdom: it reproduces only inside a host cell.",
+  "sup": true
  },
  {
   "term": "visking tubing",
@@ -625,5 +956,9 @@ window.GLOSSARY = [
  {
   "term": "vitamin D",
   "def": "Helps the body absorb calcium. A lack of it causes rickets. Found in oily fish and eggs, and made in the skin in sunlight."
+ },
+ {
+  "term": "xylem",
+  "def": "The tissue that carries water and mineral ions up a plant from the roots, and supports it."
  }
 ];
