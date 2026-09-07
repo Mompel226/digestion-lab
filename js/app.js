@@ -1398,13 +1398,16 @@
     document.getElementById('modal').addEventListener('click', function (e) {
       if (e.target === this) this.hidden = true;
     });
+    /* Escape closes whatever is open. It used to name a dialog that no longer exists in the
+       page, which threw on the way past and left the hand-in dialog and the lightbox open;
+       closing by id, and skipping what is not there, cannot fail that way again. */
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       closePeek();
-      document.getElementById('modal').hidden = true;
-      document.getElementById('glossDlg').hidden = true;
-      document.getElementById('pwDlg').hidden = true;
-      document.getElementById('subDlg').hidden = true;
+      ['modal', 'glossDlg', 'subDlg'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (el) el.hidden = true;
+      });
       lb.hidden = true;
     });
     document.getElementById('btnReset').addEventListener('click', function () {
