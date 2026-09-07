@@ -304,8 +304,8 @@
 
     if (tab === 'learn') paintLearn(pane, st);
     else paintDo(pane, st);
-    var panelEl = document.getElementById('panel');
-    panelEl.style.scrollBehavior = 'auto'; panelEl.scrollTop = 0; panelEl.style.scrollBehavior = '';
+    var sc0 = panelScroller();
+    if (sc0) { var pb = sc0.style.scrollBehavior; sc0.style.scrollBehavior = 'auto'; sc0.scrollTop = 0; sc0.style.scrollBehavior = pb || ''; }
     if (window.Zoom) { if (tab === 'learn') window.Zoom.bindLearn(pane); else window.Zoom.unbind(); }
   }
 
@@ -633,16 +633,23 @@
     var stage = box.querySelector('svg.figbox__stage');
     if (stage && stage.pauseAnimations) {
       try { stage.pauseAnimations(); stage.setCurrentTime(0); } catch (e) {}
-      var panel = document.getElementById('panel'), started = false;
+      var started = false, watched = [];
       var check = function () {
-        if (started || !box.isConnected) { if (!box.isConnected) panel.removeEventListener('scroll', check); return; }
-        var pr = panel.getBoundingClientRect(), r = box.getBoundingClientRect();
+        var sc = scrollerFor(box);
+        if (started || !box.isConnected) { if (!box.isConnected) unwatch(); return; }
+        var pr = sc === document.scrollingElement || sc === document.documentElement
+          ? { top: 0, bottom: window.innerHeight, height: window.innerHeight } : sc.getBoundingClientRect();
+        var r = box.getBoundingClientRect();
         var seen = Math.min(r.bottom, pr.bottom) - Math.max(r.top, pr.top);
         if (seen < Math.min(r.height, pr.height) * 0.4) return;
-        started = true; panel.removeEventListener('scroll', check);
+        started = true; unwatch();
         try { stage.setCurrentTime(0); stage.unpauseAnimations(); } catch (e) {}
       };
-      panel.addEventListener('scroll', check, { passive:true });
+      function unwatch() { watched.forEach(function (n) { n.removeEventListener('scroll', check); }); watched = []; }
+      /* watch every box that could be the scroller at this width, and the window with them */
+      [document.getElementById('panel'), document.querySelector('.stage'), window].forEach(function (n) {
+        if (n) { n.addEventListener('scroll', check, { passive:true }); watched.push(n); }
+      });
       setTimeout(check, 80);
     }
     return box;
@@ -895,37 +902,130 @@
     if (location.hash.slice(1) !== id) history.replaceState(null, '', '#' + id);
   }
 
+  /* Which box actually scrolls. Below 1000px the panel is overflow:visible and .stage takes
+     over the scrolling, so scrolling #panel there moves nothing at all — which is why
+     following a word did nothing on an iPad held upright or on a phone. Never assume. */
+  function scrollerFor(el) {
+    for (var n = el.parentNode; n && n.nodeType === 1 && n !== document.body; n = n.parentNode) {
+      var oy = window.getComputedStyle(n).overflowY;
+      if ((oy === 'auto' || oy === 'scroll') && n.scrollHeight > n.clientHeight + 4) return n;
+    }
+    return document.scrollingElement || document.documentElement;
+  }
+  function panelScroller() {
+    var inner = document.getElementById('panelInner');
+    return inner ? scrollerFor(inner) : (document.scrollingElement || document.documentElement);
+  }
+  function topOfScroller(sc) {
+    return sc === document.scrollingElement || sc === document.documentElement
+      ? 0 : sc.getBoundingClientRect().top;
+  }
+  /* The tab bar sticks to the top of that same box, so the first line a reader can actually
+     read starts below it, not at the box's top edge. */
+  function stickyInset(sc) {
+    var tabs = document.querySelector('#panelInner .tabs');
+    if (!tabs || window.getComputedStyle(tabs).position !== 'sticky') return 0;
+    var tr = tabs.getBoundingClientRect();
+    return tr.height && tr.top <= topOfScroller(sc) + tr.height + 2 ? Math.round(tr.height) : 0;
+  }
+  /* A word can send a reader into a section that is folded shut — the "optimum pH" line lives
+     inside a closed <details>, and scrolling to something behind a shut disclosure scrolls to
+     nothing the reader can see. Open the way in first. */
+  function revealAncestors(target) {
+    for (var n = target.parentNode; n && n.nodeType === 1; n = n.parentNode) {
+      if (n.tagName === 'DETAILS' && !n.open) n.open = true;
+    }
+  }
+  function placeBlock(target, smooth, gap) {
+    revealAncestors(target);
+    var sc = scrollerFor(target);
+    var inset = stickyInset(sc) + (gap == null ? 14 : gap);
+    var prev = sc.style.scrollBehavior;
+    sc.style.scrollBehavior = smooth ? 'smooth' : 'auto';
+    sc.scrollTop += (target.getBoundingClientRect().top - topOfScroller(sc)) - inset;
+    sc.style.scrollBehavior = prev || '';
+  }
+  /* Re-place on the next frame and again shortly after. This lab is full of figures, and one
+     of them finishing its layout above the target pushes the paragraph down the page — on a
+     laptop that left the word you followed more than two screens below the fold. */
+  function landOn(target, smooth) {
+    placeBlock(target, smooth);
+    requestAnimationFrame(function () { placeBlock(target, false); });
+    setTimeout(function () { placeBlock(target, false); }, 160);
+    setTimeout(function () { placeBlock(target, false); }, 420);
+  }
+  function toStationTop() { var sc = panelScroller(); if (sc) sc.scrollTop = 0; }
+
+  /* Plurals and forms English refuses to make regularly, and which this lab uses constantly. */
+  var SAME_WORD = { villi: 'villus', microvilli: 'villus', lacteals: 'lacteal', enzymes: 'enzyme',
+    catalysts: 'catalyst', capillaries: 'capillary', enterocytes: 'enterocyte', proteases: 'protease',
+    carbohydrases: 'carbohydrase', nutrients: 'nutrient', faeces: 'faecal', denatures: 'denatured',
+    denature: 'denatured', emulsifies: 'emulsification', emulsify: 'emulsification',
+    emulsifying: 'emulsification', churns: 'churning', egested: 'egestion', undigested: 'digested',
+    incisors: 'incisor', canines: 'canine', premolars: 'premolar', molars: 'molar',
+    peristaltic: 'peristalsis', assimilated: 'assimilation', goblet: 'goblet cell' };
+
+  /* An element's words, with a space at every child boundary. Read straight off textContent,
+     the letter a chip prints in its own <i> glues itself to the first word — "Cchyme" — and a
+     whole-word search then fails on a word that is plainly there. */
+  function wordsOf(el) {
+    var out = '', w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
+    while ((n = w.nextNode())) out += ' ' + n.nodeValue;
+    return out.replace(/\s+/g, ' ').trim();
+  }
+
   /* Landing at the top of a long station and being told to go and find the
      word yourself is no better than not linking at all. Find where the term
-     is actually explained, scroll to it, and flash it so the eye lands on it. */
+     is actually explained, put it at the top of the screen, and flash it. */
   function focusOnTerm(term, cameFrom) {
-    var panel = document.getElementById('panel');
-    var low = term.toLowerCase();
-    var re = new RegExp('(?<![A-Za-z0-9-])' + low.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '(?![A-Za-z0-9-])', 'i');
+    var low = String(term).toLowerCase().trim();
+    var esc2 = function (t) { return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); };
+    var whole = function (t) { return new RegExp('(?<![A-Za-z0-9-])' + esc2(t) + '(?![A-Za-z0-9-])', 'i'); };
+    var starts = function (t) { return new RegExp('(?<![A-Za-z0-9-])' + esc2(t), 'i'); };
 
-    /* a key-word definition is the best landing place, then a sentence, then a caption */
-    var target = null;
-    var kws = document.querySelectorAll('#panelInner .kw');
-    for (var i = 0; i < kws.length && !target; i++) {
-      var dt = kws[i].querySelector('dt');
-      if (dt && re.test(dt.textContent)) target = kws[i];
-    }
-    if (!target) {
-      var lis = document.querySelectorAll('#panelInner .exam-list > li');
-      for (var j = 0; j < lis.length && !target; j++) if (re.test(lis[j].textContent)) target = lis[j];
-    }
-    if (!target) {
-      var caps = document.querySelectorAll('#panelInner .media__cap, #panelInner .later__list li');
-      for (var k = 0; k < caps.length && !target; k++) if (re.test(caps[k].textContent)) target = caps[k];
-    }
-    if (!target) return;
+    /* Tried in order, most exact first. The word a reader clicks is often not the form the
+       destination uses: they click "denatures" and the station says "denatured",
+       "carbohydrases" and it says "carbohydrase", "nutrients" and it says "nutrient". */
+    var tries = [whole(low)];
+    if (SAME_WORD[low]) tries.push(whole(SAME_WORD[low]));
+    var trimmed = low.replace(/(ies|es|ing|ed|al|ic|um|s|y)$/, '');
+    if (trimmed.length >= 4 && trimmed !== low) tries.push(starts(trimmed));
+    if (low.length >= 7) tries.push(starts(low.slice(0, 6)));
+    if (/ /.test(low)) tries.push(whole(low.split(' ')[0]));
 
-    var prev = panel.style.scrollBehavior;
-    panel.style.scrollBehavior = 'smooth';
-    var hr = document.getElementById('panelInner').getBoundingClientRect();
-    var tr = target.getBoundingClientRect();
-    panel.scrollTop += (tr.top - panel.getBoundingClientRect().top) - panel.clientHeight / 2 + tr.height / 2;
-    setTimeout(function () { panel.style.scrollBehavior = prev || ''; }, 600);
+    /* Where to look, best first: the keyword card that defines it, then the lines a student
+       reads, then a caption, then anything else on the station that names it. */
+    var ORDER = [
+      ['#panelInner .kw', function (el) { return el.querySelector('dt') || el; }],
+      ['#panelInner .exam-list > li', null],
+      ['#panelInner .media__cap, #panelInner .later__list li', null],
+      ['#panelInner li', null],
+      ['#panelInner .st-sub, #panelInner .card p, #panelInner .fineprint, #panelInner p', null],
+      ['#panelInner td, #panelInner th', null]
+    ];
+    function firstIn(sel, re, pick) {
+      var els = document.querySelectorAll(sel);
+      for (var i = 0; i < els.length; i++) {
+        var probe = pick ? pick(els[i]) : els[i];
+        if (probe && re.test(wordsOf(probe))) return els[i];
+      }
+      return null;
+    }
+    var target = null, t, k;
+    for (t = 0; t < tries.length && !target; t++)
+      for (k = 0; k < ORDER.length && !target; k++) target = firstIn(ORDER[k][0], tries[t], ORDER[k][1]);
+    /* a table cell is not a paragraph: take the whole table, so the headings come with it */
+    if (target && /^(TD|TH)$/.test(target.tagName)) target = target.closest('table') || target;
+
+    if (!target) {
+      /* nothing on this station names it. Start the reader at the beginning rather than
+         leaving them wherever the previous scroll happened to be. */
+      toStationTop();
+      if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
+      return;
+    }
+    /* arriving from another station: there is nothing to animate from, so land instantly */
+    landOn(target, cameFrom == null);
 
     target.classList.add('flash');
     setTimeout(function () { target.classList.remove('flash'); }, 2800);
@@ -947,18 +1047,16 @@
     el.style.scrollBehavior = prev || '';
   }
   function markWhereWeAre() {
-    var panel = document.getElementById('panel');
-    whereWeWere = { id: current, top: panel ? panel.scrollTop : 0, tab: tab };
+    var sc = panelScroller();
+    whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab };
   }
   function goBackToMark(id) {
     var w = whereWeWere && whereWeWere.id === id ? whereWeWere : null;
     open(id);
     if (!w) return;
-    var panel = document.getElementById('panel');
-    if (!panel) return;
     /* after paintPanel has laid the station out again */
     requestAnimationFrame(function () {
-      requestAnimationFrame(function () { jumpTo(panel, w.top); });
+      requestAnimationFrame(function () { var sc = panelScroller(); if (sc) jumpTo(sc, w.top); });
     });
   }
 
@@ -1272,6 +1370,9 @@
     peekEl = p;
   }
 
+  /* the word itself, never the category letter the chip prints beside it */
+  function termOf(el) { return (el.getAttribute('data-word') || el.textContent).trim(); }
+
   function wireTermClicks(root) {
     root.addEventListener('click', function (e) {
       var t = e.target.closest('[data-peek],[data-jump],[data-gloss]');
@@ -1280,7 +1381,7 @@
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
       else if (t.hasAttribute('data-gloss')) { closePeek(); window.LabGlossary(t.getAttribute('data-gloss')); }
-      else { closePeek(); open(t.getAttribute('data-jump'), false, t.textContent.trim(), current); }
+      else { closePeek(); open(t.getAttribute('data-jump'), false, termOf(t), current); }
     });
     root.addEventListener('keydown', function (e) {
       if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -1290,7 +1391,7 @@
       e.preventDefault();
       if (t.hasAttribute('data-peek')) openPeek(t);
       else if (t.hasAttribute('data-gloss')) window.LabGlossary(t.getAttribute('data-gloss'));
-      else open(t.getAttribute('data-jump'), false, t.textContent.trim(), current);
+      else open(t.getAttribute('data-jump'), false, termOf(t), current);
     });
   }
 
@@ -1484,8 +1585,8 @@
       function build2() { built = false; build(); }
 
       function open(term) {
-        var panel = document.getElementById('panel');
-        atOpen = panel ? panel.scrollTop : null;      /* put the reader back where they were */
+        var scg = panelScroller();
+        atOpen = scg ? scg.scrollTop : null;          /* put the reader back where they were */
         pinTerm = term ? String(term).trim().toLowerCase() : null;
         build2(); find.value = term || ''; filter(); countKnown(); dlg.hidden = false;
         var box = dlg.querySelector('.modal__box');
@@ -1505,8 +1606,8 @@
       document.getElementById('btnGloss').addEventListener('click', function () { open(''); });
       function close() {
         dlg.hidden = true;
-        var panel = document.getElementById('panel');
-        if (panel && atOpen != null) jumpTo(panel, atOpen);
+        var scc = panelScroller();
+        if (scc && atOpen != null) jumpTo(scc, atOpen);
       }
       document.getElementById('glossClose').addEventListener('click', close);
       dlg.addEventListener('click', function (e) { if (e.target === this) close(); });
