@@ -166,6 +166,13 @@ for (const st of STATIONS) {
       if (!ok.length) throw new Error(id + ': no slider value falls within the tolerance');
       p.k = ok;
       v.optimum = a.optimum; v.tolerance = tol; v.explain = a.explain;
+
+    } else {
+      /* Without this the chain simply falls through: the question ships with no answer key at
+         all, the page renders "Unknown activity type", and it can never be marked right — no
+         error, no warning, and only a student would ever find out. The Classification Lab's
+         build has always refused this; this one did not. */
+      throw new Error(id + ': unknown activity type ' + t);
     }
 
     vault[id] = v;

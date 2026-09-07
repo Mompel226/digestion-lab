@@ -199,21 +199,28 @@ assets/video/         the two animations, each with a poster frame
 ### How a station knows its saved answers are still valid
 
 A saved answer is filed by the question's POSITION in the station, and positions are not
-stable: remove one question and everything after it shifts up. So each station's record
-carries a fingerprint of the question set it was made against — the number of questions and
-their types, in order:
+stable: remove one question and everything after it shifts up. So each station's record carries
+a fingerprint of the question set it was made against — the number of questions, and a hash of
+everything a student reads in each one, in order:
 
-    9:match,mcq,mcq,match,blank,sort,mcq,mcq,blank
+    9:852koh
 
 If that changes, the record for that station is dropped and the station is answered again.
 Losing one station's answers is a far smaller harm than handing in a score that was never
 earned.
 
-The fingerprint was once the FIRST LETTER of each type, which could not tell `mcq` from
-`match` — seven of these fourteen stations mix them, so swapping one for the other in the same
-slot left a student credited for a question they never saw. That is closed: the whole type
-name is recorded, and any record still written in the old form no longer matches and is
-dropped. Nothing needs doing about it now.
+**This means editing a question resets that station** — rewording a prompt, adding an option,
+reordering them, changing a label. A typo fix costs that station's progress for anyone who has
+already answered it. That is the intended trade.
+
+The fingerprint deliberately ignores the answer key `k`: it is salted afresh on every build, so
+hashing it would wipe every record on every deploy whether anything had changed or not. A plain
+rebuild with no content change leaves every fingerprint identical — verified in both labs.
+
+Two earlier versions were weaker and are gone. The first was the FIRST LETTER of each question
+type, which could not tell `mcq` from `match`; the second was the full type names, which could
+not see a reworded question at all. Records in either old form no longer match anything and are
+dropped.
 
 ### To change a question or a piece of wording
 
