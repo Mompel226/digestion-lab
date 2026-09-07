@@ -176,7 +176,7 @@
       var t = ev.target.closest ? ev.target.closest('[data-lightbox]') : null;
       if (!t) return;
       ev.stopPropagation();
-      if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + t.getAttribute('data-lightbox'), t.getAttribute('data-cap') || '', 'Photograph');
+      if (typeof global.LabLightbox === 'function') global.LabLightbox(Assets.url(t.getAttribute('data-lightbox')), t.getAttribute('data-cap') || '', 'Photograph');
     });
     gLabels = el('g', { 'class':'detail__labels' }, layer);
     gInsets = el('g', { 'class':'detail__insets' }, layer);
@@ -295,7 +295,7 @@
     d._probing = true;
     var im = new Image();
     im.onload = function () { d.w = im.naturalWidth; d.h = im.naturalHeight; d._probing = false; if (steps[stepIdx] === s) applyStep(s); };
-    im.src = 'assets/' + d.img;
+    im.src = Assets.url(d.img);
   }
   function f1(v) { return (+v).toFixed(1); }
 
@@ -461,7 +461,7 @@
      0..1), become a mask: the picture is dimmed and the organ shown again in
      full colour on top with a soft gold edge. Masks are cached per key. */
   function spotByColour(key, p, win, s) {
-    var src = 'assets/' + p.d.img, id = src + '|' + JSON.stringify(key);
+    var src = Assets.url(p.d.img), id = src + '|' + JSON.stringify(key);
     function apply(url) {
       keyImg.setAttribute('href', url); keyImg.setAttributeNS(XL, 'xlink:href', url);
       [keyImg, keyImgFront].forEach(function (im) { im.setAttribute('x', p.pl.x); im.setAttribute('y', p.pl.y); im.setAttribute('width', p.pl.W); im.setAttribute('height', p.pl.H); });
@@ -551,8 +551,8 @@
     specs.forEach(function (d) {
       if (!d.w) { probe(d, s); pending = true; return; }
       var pl = placeImage(d, target, frame);
-      var im = el('image', { href:'assets/' + d.img, x:f1(pl.x), y:f1(pl.y), width:f1(pl.W), height:f1(pl.H), preserveAspectRatio:'none' }, gImgs);
-      im.setAttributeNS(XL, 'xlink:href', 'assets/' + d.img);
+      var im = el('image', { href:Assets.url(d.img), x:f1(pl.x), y:f1(pl.y), width:f1(pl.W), height:f1(pl.H), preserveAspectRatio:'none' }, gImgs);
+      im.setAttributeNS(XL, 'xlink:href', Assets.url(d.img));
       /* An illustration printed on white paper, laid on the plate, brings its paper with it —
          a bright rectangle around the drawing. Multiplying it into the plate takes the white
          out (white times anything is that thing) and leaves the ink, so the drawing sits on
@@ -613,7 +613,7 @@
     if (!s.img) (s.labels || []).forEach(function (L) { drawLabel(L, placed[0] ? placed[0].pl : null, fs, frame); }); /* a single-picture step already drew its own */
     drawKeys(s.keys || detail.keys || [], seenOf(frame), fs);
 
-    if (s.spot && placed[0]) { spotImg._href = 'assets/' + placed[0].d.img; spot(s.spot, placed[0].pl, win); }
+    if (s.spot && placed[0]) { spotImg._href = Assets.url(placed[0].d.img); spot(s.spot, placed[0].pl, win); }
     if (s.spotKey && placed[0]) spotByColour(s.spotKey, placed[0], win, s);
     /* insets: small crisp photographs in a frame, on top of the illustration, never faded */
     (s.insets || []).forEach(function (ins) {
@@ -631,8 +631,8 @@
       if (ins.bare) el('rect', { x:f1(x - 2), y:f1(y - 2), width:f1(w + 4), height:f1(h + 4), rx:'1.5',
                                  fill:'none', stroke:'#8C8271', 'stroke-width':'.7' }, g);
       if (!ins.bare) el('rect', { x:f1(x - 1.6), y:f1(y - 1.6), width:f1(w + 3.2), height:f1(h + 3.2), rx:'2.4', fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.5', filter:'url(#insetShadow)' }, g);
-      var im = el('image', { href:'assets/' + ins.img, x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
-      im.setAttributeNS(XL, 'xlink:href', 'assets/' + ins.img);
+      var im = el('image', { href:Assets.url(ins.img), x:f1(x), y:f1(y), width:f1(w), height:f1(h), preserveAspectRatio:'none' }, g);
+      im.setAttributeNS(XL, 'xlink:href', Assets.url(ins.img));
       var ipl = { x:x, y:y, W:w, H:h };
       var keep = gLabels; gLabels = g;
       (ins.labels || []).forEach(function (L) { drawLabel(L, ipl, fs * (ins.fs || 0.92), null); });
@@ -650,7 +650,7 @@
       var badge = el('g', { 'class':'inset__zoom', transform:'translate(' + f1(x + w - fs * 0.9) + ',' + f1(y + fs * 0.9) + ')' }, g);
       el('circle', { r:f1(fs * 0.62), fill:'#FFFDF9', stroke:'#B9AE9B', 'stroke-width':'.4' }, badge);
       var bt = el('text', { 'class':'dl__t', 'font-size':f1(fs * 0.78), 'text-anchor':'middle', y:f1(fs * 0.28) }, badge); bt.textContent = '⤢';
-      g.addEventListener('click', function (ev) { ev.stopPropagation(); if (typeof global.LabLightbox === 'function') global.LabLightbox('assets/' + ins.img, capText, 'Photograph'); });
+      g.addEventListener('click', function (ev) { ev.stopPropagation(); if (typeof global.LabLightbox === 'function') global.LabLightbox(Assets.url(ins.img), capText, 'Photograph'); });
       g.addEventListener('keydown', function (ev) { if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); g.dispatchEvent(new MouseEvent('click')); } });
       /* An inset carries no arrow to a feature unless it is linked, so one that would sit
          off the frame or under the key cards is simply slid back in. A linked one stays
@@ -803,17 +803,29 @@
      Held in a list so the browser keeps them, which is what makes the next view appear at once
      rather than a beat after the scroll. */
   var warmed = {}, warm = [];
+  /* requestIdleCallback's second argument is an options dictionary, NOT a number: passing
+     one throws, and this runs inside setStation before stepIdx and the fade timers are set,
+     so a throw here used to leave the previous station on screen with the camera stuck. */
+  var idle = window.requestIdleCallback
+    ? function (f) { window.requestIdleCallback(f, { timeout: 1500 }); }
+    : function (f) { setTimeout(f, 1); };
+  function warmOne(src) { var im = new Image(); im.src = Assets.url(src); warm.push(im); }
   function preload(id) {
-    var d = (global.ZOOM_DETAIL || {})[id]; if (!d) return;
-    (d.steps || [d]).forEach(function (s) {
-      var srcs = (s.imgs || (s.img ? [s] : [])).map(function (x) { return x.img; })
-        .concat((s.insets || []).map(function (x) { return x.img; }));
-      srcs.forEach(function (src) {
-        if (!src || warmed[src]) return;
-        warmed[src] = 1;
-        var im = new Image(); im.src = 'assets/' + src; warm.push(im);
+    try {
+      var d = (global.ZOOM_DETAIL || {})[id]; if (!d) return;
+      var rest = [];
+      (d.steps || [d]).forEach(function (s, i) {
+        var srcs = (s.imgs || (s.img ? [s] : [])).map(function (x) { return x.img; })
+          .concat((s.insets || []).map(function (x) { return x.img; }));
+        srcs.forEach(function (src) {
+          if (!src || warmed[src]) return;
+          warmed[src] = 1;
+          if (i === 0) warmOne(src);        /* the picture on screen now */
+          else rest.push(src);              /* the rest of the walk-through */
+        });
       });
-    });
+      if (rest.length) idle(function () { rest.forEach(warmOne); });
+    } catch (e) { console.error('preload', e); }   /* never take setStation down with it */
   }
   /* how much room in the text each step wants, so a view is not scrolled past in one flick */
   function rooms(id) {

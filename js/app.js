@@ -65,8 +65,15 @@
     if (d.mastery && !d.stations) d = d.mastery;
     return d;
   }
+  var saveBroken = false;
   function save() {
-    try { localStorage.setItem('digestion-lab.v2', JSON.stringify(progress)); } catch (e) {}
+    try { localStorage.setItem('digestion-lab.v2', JSON.stringify(progress)); }
+    catch (e) {
+      /* Private browsing, or a school profile with site data blocked. The work is still held
+         in memory and the hand-in still works — but a reload loses everything, and staying
+         silent lets a student find that out an hour later. Said once per session. */
+      if (!saveBroken) { saveBroken = true; toast('This browser is not saving your work — finish and hand in before you reload.'); }
+    }
   }
   function p(id) {
     if (!progress[id]) progress[id] = { done:{}, tried:{}, sig:(S[id] ? stationSig(S[id]) : '') };
@@ -82,6 +89,16 @@
      harm than handing in a perfect score that was never earned. */
   function stationSig(st) {
     return (st.activities || []).length + ':' +
+           (st.activities || []).map(function (a) { return a.type; }).join(',');
+  }
+  /* The fingerprint used to be the first letter of each type. 'mcq' and 'match' both begin
+     with m, so turning a matching task into a multiple choice left the fingerprint unchanged
+     and the old record survived — crediting a reader for a question they never saw.
+     REMOVE sigLegacy BEFORE THE NEXT CONTENT EDIT SHIPS. It is here only so that this one
+     deploy, which changes no question, resets nobody. While it is here the collision is
+     still open; it simply cannot bite, because nothing is changing. */
+  function sigLegacy(st) {
+    return (st.activities || []).length + ':' +
            (st.activities || []).map(function (a) { return a.type.charAt(0); }).join('');
   }
   function reconcile() {
@@ -90,8 +107,10 @@
       var st = S[id];
       if (!st) { delete progress[id]; dropped++; return; }   /* station itself is gone */
       var sig = stationSig(st);
-      if (progress[id].sig && progress[id].sig !== sig) { progress[id] = { done:{}, tried:{}, sig:sig }; dropped++; }
-      else progress[id].sig = sig;
+      var old = sigLegacy(st);
+      if (progress[id].sig && progress[id].sig !== sig && progress[id].sig !== old) {
+        progress[id] = { done:{}, tried:{}, sig:sig }; dropped++;
+      } else progress[id].sig = sig;
     });
     if (dropped) save();
     return dropped;
@@ -314,7 +333,7 @@
       media.filter(function (x) { return !x.more && x.after === i; })
            .forEach(function (x) { li.appendChild(mediaBox(x)); });
       figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] === i; })
-          .forEach(function (name) { li.appendChild(figBox(name)); });
+          .forEach(function (name) { var fb = figBox(name); if (fb) li.appendChild(fb); });
     });
 
     if (st.id === 'overview') {
@@ -370,7 +389,9 @@
       var R = document.createElement('div');
       R.className = 'card recap';
       var figs = (rc.figs || []).map(function (f) {
-        return '<figure><img src="assets/photos/' + esc(f.src) + '" alt="" loading="lazy"><figcaption>' + rich(f.cap) + '</figcaption></figure>';
+        var fw = Assets.size('photos/' + f.src);
+        return '<figure><img src="' + esc(Assets.url('photos/' + f.src)) + '" alt="" loading="lazy" decoding="async"' +
+               (fw ? ' width="' + fw[0] + '" height="' + fw[1] + '"' : '') + '><figcaption>' + rich(f.cap) + '</figcaption></figure>';
       }).join('');
       var body = (rc.more || []).map(function (sec) {
         return '<div class="recap__h">' + esc(sec.h) + '</div><ul>' + (sec.items || []).map(function (t) { return '<li>' + rich(t) + '</li>'; }).join('') + '</ul>';
@@ -506,10 +527,88 @@
     });
   }
 
+  /* ---------- the three drawings that arrive late ----------
+     js/data/figure-art.js is 185 KB of traced path data — about a quarter of everything a
+     student downloads — and only the tooth and the villus need it. It is no longer a script
+     tag: the page paints without it and fetches it once, then fills in whatever is waiting.
+
+     While it is on its way a box of the RIGHT SHAPE holds the place, so the paragraph under
+     the figure does not jump when the drawing lands. The shape comes from the figure's own
+     viewBox (Figures.needsArt), never a flat guess: toothCompact draws about 548 px tall, so
+     a 220 px placeholder would leave exactly the jump it exists to prevent. */
+  function figWaitBox(name, inPair) {
+    var wh = ((window.Figures || {}).needsArt || {})[name];
+    if (!wh) return null;
+    var w = document.createElement('div');
+    w.className = 'figwait';
+    /* Two frames size a drawing differently, and guessing one for both leaves the jump the
+       placeholder exists to prevent (measured: a paired tooth reserved 749 px for a drawing
+       that lands at 548).
+         · in a pair half nothing stretches the svg, so it settles at exactly the floor
+           keepFigureReadable gives it: viewBox x FIG_MIN_SCALE, scrolling if the cell is narrower
+         · on its own, .media--fig .figbox__stage is width:100%, so the height follows the
+           column width through the aspect ratio, never smaller than that same floor */
+    if (inPair) {
+      w.style.width  = Math.round(FIG_MIN_SCALE * wh[0]) + 'px';
+      w.style.maxWidth = '100%';
+      w.style.height = Math.round(FIG_MIN_SCALE * wh[1]) + 'px';
+    } else {
+      w.style.aspectRatio = wh[0] + ' / ' + wh[1];
+      w.style.minHeight = Math.round(FIG_MIN_SCALE * wh[1]) + 'px';
+    }
+    w.textContent = 'Drawing the diagram…';
+    return w;
+  }
+  var figArt = null;
+  function loadFigureArt() {
+    if (figArt) return figArt;
+    figArt = new Promise(function (done) {
+      if (window.FIGURE_ART) return done(true);
+      var sc = document.createElement('script');
+      sc.src = 'js/data/figure-art.js' + (pageVersion ? '?v=' + pageVersion : '');
+      sc.onload = function () { done(true); };
+      /* null it again so a later station can try once more: one dropped fetch must not
+         leave the placeholder stuck for the rest of the lesson. */
+      sc.onerror = function () { figArt = null; done(false); };
+      document.head.appendChild(sc);
+    }).then(function (ok) { if (ok) fillWaitingFigures(); return ok; });
+    return figArt;
+  }
+  function fillWaitingFigures() {
+    var pane = document.getElementById('panelInner');
+    Array.prototype.forEach.call(document.querySelectorAll('.is-waiting[data-fig]'), function (el) {
+      var name = el.getAttribute('data-fig'), f = window.Figures.get(name);
+      if (!f || !f.svg) return;
+      var wait = el.querySelector('.figwait');
+      if (wait) wait.remove();
+      el.classList.remove('is-waiting');
+      if (el.classList.contains('pair__half')) {
+        /* NOT innerHTML: pairBox appends the "The same structures, drawn" label to this same
+           cell after the figure, and innerHTML would delete it. */
+        el.insertAdjacentHTML('afterbegin', f.svg);
+      } else {
+        el.insertAdjacentHTML('afterbegin', f.svg);
+      }
+      hidePlateParts(el);
+      keepFigureReadable(el);          /* without this a 576-unit viewBox is squeezed into a
+                                          340 px column and its labels shrink to ~5 px */
+    });
+    if (pane) hintScrollers(pane);     /* runs once per paint, so a late figure needs it again */
+  }
+
   /* a drawn diagram, in the same frame as the photographs */
   function figBox(name) {
     var f = window.Figures.get(name);
-    if (!f || !f.svg) return null;
+    if (!f || !f.svg) {
+      var hold = figWaitBox(name);
+      if (!hold) return null;
+      var wait = document.createElement('figure');
+      wait.className = 'media media--fig is-waiting';
+      wait.setAttribute('data-fig', name);
+      wait.appendChild(hold);
+      loadFigureArt();
+      return wait;
+    }
     var box = document.createElement('figure');
     box.className = 'media media--fig';
     box.setAttribute('data-fig', name);
@@ -565,13 +664,19 @@
       if (half.fig) {
         var f = window.Figures.get(half.fig);
         cell.setAttribute('data-fig', half.fig);
-        if (f) { cell.innerHTML = f.svg; hidePlateParts(cell); }
+        if (f && f.svg) { cell.innerHTML = f.svg; hidePlateParts(cell); }
+        else {
+          var hold = figWaitBox(half.fig, true);
+          if (hold) { cell.className += ' is-waiting'; cell.appendChild(hold); loadFigureArt(); }
+        }
       } else {
         var img = new Image();
         img.className = 'media__el media__el--img';
         img.alt = half.label || String(ph.cap).replace(/<[^>]+>/g, '');
         img.loading = 'lazy';
-        img.src = 'assets/photos/' + half.photo;
+        img.decoding = 'async';
+        Assets.box(img, 'photos/' + half.photo);
+        img.src = Assets.url('photos/' + half.photo);
         img.title = 'Click to see it full size';
         if (half.maxw) img.style.maxWidth = half.maxw + 'px';
         img.addEventListener('click', function () { lightbox(img.src, half.label || ph.cap, ph.kind, half.annot); });
@@ -623,7 +728,9 @@
       img.className = 'media__el media__el--img';
       img.alt = String(ph.cap).replace(/<[^>]+>/g, '');
       img.loading = 'lazy';
-      img.src = 'assets/photos/' + ph.src;
+      img.decoding = 'async';
+      Assets.box(img, 'photos/' + ph.src);
+      img.src = Assets.url('photos/' + ph.src);
       img.title = 'Click to see it full size';
       /* never draw an image wider than its own pixels support */
       if (ph.maxw) { img.style.maxWidth = ph.maxw + 'px'; img.style.margin = '0 auto'; }
@@ -678,7 +785,9 @@
     var lb = document.getElementById('lightbox');
     var st = lb.querySelector('.lb__stage');
     st.innerHTML = '';
-    var im = new Image(); im.src = src; im.alt = '';
+    var im = new Image(); im.alt = ''; im.decoding = 'async';
+    Assets.box(im, Assets.relOf(src));
+    im.src = src;
     st.appendChild(im);
     if (annot && annot.length) { st.classList.add('annot'); st.insertAdjacentHTML('beforeend', annotLayer(annot)); }
     else st.classList.remove('annot');
@@ -695,7 +804,8 @@
         tick.className = 'verdict ok';
         tick.textContent = '✓ answered correctly earlier';
         tick.style.marginLeft = 'auto';
-        card.querySelector('.act__top').appendChild(tick);
+        var top = card.querySelector('.act__top');
+        if (top) top.appendChild(tick);
       }
       card.addEventListener('result', function (e) {
         if (!e.detail) return;
@@ -1030,20 +1140,28 @@
     go.disabled = true;
     msg.className = 'submsg'; msg.textContent = url ? 'Sending…' : 'Generating your code…';
 
-    function finish(sent) {
+    /* The POST goes out with mode:'no-cors', so its reply is opaque: this page cannot tell a
+       real 200 from a 500, an error page, or a school portal's login screen. So it never
+       claims a delivery it cannot know — it says the work was handed in and that the code is
+       the receipt. */
+    function finish(sent, offline) {
       go.disabled = false;
       go.style.display = 'none';
       msg.className = 'submsg ok';
-      msg.innerHTML = (sent ? '<b>Sent.</b> ' : '<b>Could not reach the server.</b> ') +
-        'Your completion code is<div class="code">' + code + '</div>' +
-        (sent
-          ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it is now in his records. Keep the code either way.'
-                    : 'Keep it as your receipt.')
-          : 'Paste this into the Google Classroom assignment to hand in.');
+      var head = sent ? '<b>Handed in.</b> '
+               : offline ? '<b>You are offline — nothing was sent yet.</b> '
+               : '<b>Could not reach the server.</b> ';
+      var tail = sent
+        ? (signIn ? 'If you are on Dr Mompel&rsquo;s class list it should now be in his records. Your code is your receipt — keep it whether or not it arrived.'
+                  : 'Your code is your receipt — keep it.')
+        : offline ? 'Your work is saved on this device. Keep the code, and hand in again once you are back online.'
+        : 'Paste this into the Google Classroom assignment to hand in.';
+      msg.innerHTML = head + 'Your completion code is<div class="code">' + code + '</div>' + tail;
       var rec = { name:name.trim(), form:form, code:code, at:payload.at, sent:sent };
       try { localStorage.setItem('digestion-lab.submitted', JSON.stringify(rec)); } catch (e) {}
     }
     if (!url) { finish(false); return; }
+    if (navigator.onLine === false) { finish(false, true); return; }
     fetch(url, { method:'POST', mode:'no-cors',
                  headers:{ 'Content-Type':'text/plain;charset=utf-8' },
                  body:JSON.stringify(payload) })
@@ -1075,7 +1193,9 @@
       var f = window.Figures.get(src.slice(4));
       if (f) { art = '<div class="peek__fig">' + f.svg + '</div>'; p.className += ' has-fig'; }
     } else if (src) {
-      art = '<img src="assets/photos/' + src + '" alt="">';
+      var pw = Assets.size('photos/' + src);
+      art = '<img src="' + Assets.url('photos/' + src) + '" alt=""' +
+            (pw ? ' width="' + pw[0] + '" height="' + pw[1] + '"' : '') + '>';
     }
     p.innerHTML = art +
                   '<div class="peek__note">' + note +
@@ -1424,6 +1544,14 @@
     var start = canon((location.hash || '').slice(1));
     open(S[start] ? start : ORDER[0]);
     paintHeader();
+    /* The drawings arrive only once the browser has nothing better to do. A fixed timer was
+       wrong: on a slow link it fired while the critical scripts were still arriving and 185 KB
+       of path data competed with them for the wire. A figure that is actually on screen does
+       not wait for this — figBox asks for the file itself the moment it needs it.
+       Wrapped, or setTimeout would hand loadFigureArt the timer id as its first argument. */
+    var warmArt = function () { loadFigureArt(); };
+    if (window.requestIdleCallback) window.requestIdleCallback(warmArt, { timeout: 15000 });
+    else setTimeout(warmArt, 6000);
     window.addEventListener('hashchange', function () {
       var id = canon(location.hash.slice(1));
       if (S[id] && id !== current) open(id);
@@ -1454,7 +1582,7 @@
             var m = html.match(/stations\.js\?v=(\d+)/);
             if (!m || m[1] === pageVersion) return;
             updateShown = true;
-            var t = document.getElementById('toast');
+            var t = document.getElementById('updBar') || document.getElementById('toast');
             t.innerHTML = 'A newer version of this page is available. ' +
               '<button class="btn btn--ghost" style="margin-left:8px;padding:3px 12px;font-size:13px" ' +
               'onclick="location.reload()">Reload</button>';

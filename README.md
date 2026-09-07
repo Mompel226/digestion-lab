@@ -173,6 +173,9 @@ js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
 js/config.js          the three things you edit: the Apps Script URL, the OAuth
                       client ID, and the class list
 js/marking.js         hash-based marking — it can say wrong, not what
+                      NOTE: this file and js/engine.js are a FORK of labs-shared/engine/.
+                      This lab's build does NOT copy them, unlike the Classification Lab's.
+                      Fixing "the engine" once fixes only that lab; fix both by hand.
 js/terms.js           the colour language of the Learn tab
 js/data/stations.js   GENERATED — presentation + hashes, no answers
 tools/build.mjs       master content -> js/data/stations.js
@@ -180,10 +183,29 @@ tools/trace-canal.js  how the food's route through the canal was derived from th
                       artwork's own geometry — a development tool, not loaded by the page
 js/data/photos.js     which photographs appear at which station
 js/data/anatomy-art.js  the body plate (public domain)
-js/data/figure-art.js   the tooth and villus plates (public domain)
+js/data/figure-art.js   the tooth and villus plates (public domain). NOT a <script> tag:
+                      it is 185 KB and only three drawings need it, so js/app.js fetches
+                      it on demand and holds a box of the right shape until it lands.
+                      Do not put it back in index.html.
+js/assets.js          where a picture actually lives: the .webp swap and the box a picture
+                      reserves before it arrives
+js/data/photo-size.js GENERATED — every picture's size, and which have a .webp twin
+tools/make-webp.py    writes those .webp twins. Re-run it after adding a photograph,
+                      then rebuild so photo-size.js sees it
 assets/photos/        the images, with CREDITS.md recording where each came from
 assets/video/         the two animations, each with a poster frame
 ```
+
+### Before the next content change ships
+
+`js/app.js` still carries `sigLegacy`. It exists only so that the 2026-09-07 deploy, which
+changed no question, reset nobody's saved progress. **Delete it, and the
+`progress[id].sig !== old` branch beside it, before you deploy any change to a station's
+question set.** Until it is gone, swapping a `match` question for an `mcq` in the same slot
+would leave a student's old record in place and credit them for a question they never saw.
+
+Deleting it means the next deploy that changes a station's questions will reset that station
+for everyone who has already answered it. That is correct and intended — but choose when.
 
 ### To change a question or a piece of wording
 
