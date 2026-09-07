@@ -1298,6 +1298,10 @@
   global.Figures = {
     pie:pie, pieKey:pieKey, dietColours:DIET_COL,
     get:function (name) { return FIGS[name] ? FIGS[name]() : null; },
+    /* The three drawings that cannot be made without js/data/figure-art.js, and the viewBox
+       each one is drawn in. app.js keeps a box of the right SHAPE on screen while the art
+       file is on its way, so nothing below the figure moves when it arrives. */
+    needsArt:{ tooth:[660, 602], toothCompact:[576, 596], villus:[646, 500] },
     names:Object.keys(FIGS)
   };
 })(window);

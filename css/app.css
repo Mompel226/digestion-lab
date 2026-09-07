@@ -440,7 +440,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
   overflow:hidden;animation:peekIn .14s ease-out
 }
 @keyframes peekIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
-.peek img{width:100%;max-width:100%;display:block;background:#fff}
+.peek img{width:100%;height:auto;max-width:100%;display:block;background:#fff}
 /* Two views of one thing, side by side — a real tooth beside the drawing of
    it, or the two radiographs together. They stack on a narrow screen, where
    side-by-side would make each half too small to read. */
@@ -491,7 +491,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 
 /* labels drawn on top of a photograph */
 .annot{position:relative;display:block;line-height:0}
-.annot .media__el--img,.annot img{display:block;width:100%}
+.annot .media__el--img,.annot img{display:block;width:100%;height:auto}
 .annot__svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .annot__svg line{stroke:#fff;stroke-width:2.4;opacity:.95}
 .annot__svg circle{fill:#fff;stroke:#1A1A1A;stroke-width:1.2}
@@ -503,7 +503,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 }
 .annot__lab--big{font-size:14px;background:var(--green);padding:5px 11px}
 .lb__stage{position:relative;display:block;line-height:0;max-width:100%}
-.lb__stage img{max-width:100%;max-height:78vh;object-fit:contain;background:#fff;
+.lb__stage img{max-width:100%;height:auto;max-height:78vh;object-fit:contain;background:#fff;
   border-radius:var(--r-lg) var(--r-lg) 0 0;box-shadow:var(--shadow-lg);display:block;margin:auto}
 @media (max-width:620px){ .annot__lab{font-size:10.5px;padding:3px 7px} }
 
@@ -514,13 +514,19 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
   margin:12px 0 16px;background:var(--card-2);border:1px solid var(--edge);
   border-radius:var(--r);overflow:hidden;box-shadow:var(--shadow)
 }
-.media__el{width:100%;display:block;background:#FFFDF8}
+.media__el{width:100%;height:auto;display:block;background:#FFFDF8}
 .media__el--img{margin:0 auto}
 .annot{display:flex;justify-content:center}
 .media__el--img{cursor:zoom-in;background:#F2EADB;transition:filter .18s}
 .media__el--img:hover{filter:brightness(1.03) saturate(1.04)}
 .media--video .media__el{background:#111}
 .media--fig .figbox__stage{width:100%;display:block;background:#FFFDF8}
+/* The place a drawing holds while js/data/figure-art.js is on its way. Its height comes
+   from an inline aspect-ratio computed from the figure's own viewBox, never from a value
+   here — a flat height would leave exactly the jump this box exists to prevent. */
+.figwait{display:grid;place-items:center;width:100%;background:#F5F2EC;border-radius:8px;
+  color:var(--grey);font-size:13px;font-style:italic}
+.bootnote{margin:40px 0;color:var(--grey);font-size:15px}
 .media__cap{
   padding:10px 14px;border-top:1px solid var(--edge-2);font-size:13.5px;line-height:1.5;
   color:#4A4A4A;background:var(--card)
@@ -791,6 +797,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
   box-shadow:var(--shadow-lg);opacity:0;pointer-events:none;transition:.28s;z-index:60;max-width:88vw;text-align:center
 }
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#updBar{bottom:calc(var(--rail-h) + 66px);background:var(--ink,#25303B)}  /* clear of a station-complete toast */
 
 /* ---------- Responsive ---------- */
 @media (max-width:1000px){
