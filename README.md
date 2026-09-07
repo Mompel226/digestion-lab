@@ -1,337 +1,84 @@
-# Digestion Lab
+<div align="center">
 
-An interactive revision simulation of **Cambridge IGCSE Biology 0610, Topic 7 — Human nutrition**.
+<h1>🍽️ &nbsp;Digestion Lab</h1>
 
-**Live:** https://mompel226.github.io/digestion-lab/
+**Cambridge IGCSE Biology 0610 · Topic 7 — Human nutrition**
 
-**Where it sits:** one of the labs behind the [Human Body Hub](https://mompel226.github.io/human-body-hub/),
-which is one shelf of the [Biology Hub](https://mompel226.github.io/biology-hub/) — the front
-door to every Biology app at NLCS Jeju. The "← All labs" button in the header goes back up to
-the shelf. This lab is the pattern every future lab follows: a plate you point at, stations,
-questions that mark themselves, a shared glossary, and answer keys that never enter the repo.
+[![Open the lab](https://img.shields.io/badge/▶_Open_the_lab-0969DA?style=for-the-badge&logoColor=white)](https://mompel226.github.io/digestion-lab/)
 
-Students click any organ on an anatomical plate of the digestive system and work
-through that station: what the exam wants, what it actually looks like, and a set
-of questions. A meal can also be sent along the whole alimentary canal, stopping
-at each organ in turn.
+![14 stations](https://img.shields.io/badge/14-stations-3D7A54)
+![123 questions](https://img.shields.io/badge/123-questions-8F5D09)
+![Marks itself](https://img.shields.io/badge/questions-mark_themselves-0B6A8C)
+![No sign-up](https://img.shields.io/badge/students-no_sign--up_needed-6FA287)
+
+by **Dr Daniel Mompel Riera** · NLCS Jeju
+
+</div>
+
+![The Digestion Lab: the alimentary canal on the left, a station open on the right](docs/img/screen.jpg)
 
 ---
 
-## What is in it
+## What a student does
 
-**14 stations** — a balanced diet, the alimentary canal overview, mouth and teeth, salivary glands,
-epiglottis, oesophagus, stomach, liver and gall bladder, pancreas, small intestine (duodenum,
-jejunum and ileum), large intestine, rectum and anus, a Molecules and enzymes station that reaches
-back into Topics 3, 4 and 5, and a Practicals station for the food tests.
+Click any organ on the canal and work through that station: what the exam wants, what it
+actually looks like, and questions that say right or wrong — never the answer. Or send a meal
+down the whole canal and stop at each organ in turn.
 
-**123 activities** across seven kinds:
-
-| Type | What the student does |
+|  |  |
 |---|---|
-| Fill the gaps | types the missing words; spelling variants are accepted |
-| Drag & drop | drags terms onto the right structure or stage |
-| Multiple choice | picks an answer; every option explains itself afterwards |
-| Put in order | sequences the steps of a process |
-| Match up | pairs enzyme with substrate, product or pH |
-| Sort into groups | e.g. physical vs chemical digestion, egestion vs excretion |
-| Set the pH | moves a slider and watches the active site distort and denature |
+| 🫃 **14 stations** | diet · the canal · mouth and teeth · salivary glands · epiglottis · oesophagus · stomach · liver and gall bladder · pancreas · small intestine · large intestine · rectum and anus · molecules and enzymes · the practicals |
+| ✍️ **123 questions** | fill the gaps · drag & drop · multiple choice · put in order · match up · sort into groups · set the pH |
+| 🔬 **Real pictures** | dissections, micrographs and photographs, not diagrams of diagrams |
+| 🧪 **A practical you run** | the visking tubing experiment — nothing happens unless you act |
+| 📖 **A shared glossary** | one wording per term, the same in every lab |
 
-**Two real animations** lifted from the lesson slides — a bolus travelling by
-peristalsis, and absorption at the villi — converted from ~5 MB GIFs to H.264
-video under 300 KB each.
+> [!NOTE]
+> **The answers are not in the page.** Each question ships a salted hash of its answer, so the
+> lab can say *wrong* but nothing in the download can say what *right* is. There is no mode
+> that reveals them, because there is nothing to reveal.
 
-**Thirteen drawn diagrams** — peristalsis, churning, emulsification, the villus,
-the surface-area multiplier, starch digestion, swallowing, water reabsorption,
-egestion vs excretion, and the tooth section.
+## Where it sits
 
-**The plate follows the text.** As a station is read, the camera on the anatomical plate flies to the organ and a professional illustration of that organ fades in on the plate itself, registered over its outline. As the Learn text is scrolled, the picture gives way to the next one — the four tooth types photographed and labelled, a real molar cut open, the stomach wall — and three processes are animated on the plate: swallowing on the head section, peristalsis on the oesophagus, churning on the stomach. The liver, gall bladder, pancreas and duodenum share one labelled plate on which the organ being read about is spotlit. Nothing pops up over the page, and nothing on the plate is repeated in the text.
+One of the labs behind the [Human Body Hub](https://mompel226.github.io/human-body-hub/), which
+is one shelf of the [Biology Hub](https://mompel226.github.io/biology-hub/) — the front door to
+every Biology app here. The **← All labs** button goes back up.
 
-**Follow the food** sends a meal along the whole canal in five scenes — ingestion, digestion,
-absorption, assimilation, egestion — with the camera travelling beside it. Saliva runs from the
-salivary glands into the mouth, bile and pancreatic juice into the duodenum, and whichever organ
-is secreting lights up as it does. The card reads one sentence at a time: **Next** and **Back**
-step a sentence, not a scene, so a sentence you missed is one press away, and stepping pauses so
-it waits for you. **⏸ Pause** holds everything, drawing included; **Close** ends the tour and
-opens the station it had reached. On a phone, **⤢ Whole body** on the plate pulls the camera
-back so you can tap a different organ without going to the rail at the bottom.
+> [!TIP]
+> **Want your students' scores in a spreadsheet of your own?**
+> Set it up once, for every lab at the same time:
+> **[Would you like to see how your students are doing?](https://github.com/Mompel226/biology-hub#-would-you-like-to-see-how-your-students-are-doing)**
 
-**Real images from the lesson slides** — photographs, micrographs and electron
-micrographs taken from the class PowerPoints, so revision matches what was taught.
-Click any image to see it full size.
+<details>
+<summary><b>Behind the scenes</b> — how this lab is put together</summary>
 
-Progress is saved in the browser. **Reset** clears it.
+<br>
 
----
+The plate is an SVG with a camera that flies the view between organs; each station has its own
+short animation. The visking-tubing practical is a real simulation — the tubing, the water bath
+and the tests respond to what you do, and nothing happens on its own.
 
-## How it works
+Every question ships a **salted hash** of its answer, made at build time. The lab hashes what
+the student did and compares. That is why it can say *wrong* without anything in the download
+knowing what *right* is.
 
-Check as often as you like. You are told which parts are wrong, **never the answer** — you
-have to work it out. Keep going until every question is right, then hand in. You can also
-hand in part way, to show the work so far; the row says `progress` rather than `complete`.
+The activity engine, the marking and the glossary are shared with every other lab and copied in
+when the lab is built, so a fix reaches all of them. The content — 14 stations, 123 questions
+and the photographs — is this lab's own.
 
-There are no modes and no test: this is a revision app, and a test in a page the student
-controls could not be enforced anyway. What is worth having is the record of the work —
-how many checks it took and how many were right first time — and that is what a hand-in
-carries.
+**Build it:** `node tools/build.mjs`. It stamps `version.txt` and every `?v=` together (the
+stamps are the real cache key), and it refuses to finish unless every answer still marks
+correctly. `js/engine.js`, `js/marking.js`, `js/data/*` and `sw.js` are generated — edit
+`labs-shared/`, not the copies.
 
-## How the answers are kept out of the page
+**Forking:** everything the page loads is in this repository, so a fork runs as-is. You cannot
+rebuild the questions — `tools/build.mjs` needs `../digestion-lab-source/stations.master.js`,
+which is never published. That is the same fact that keeps the answers from students. If you
+only want to *use* the lab, send the link; there is nothing to fork.
 
-This is a static site: everything is downloaded to the student's browser. So the answers
-are not shipped at all.
+Photograph credits: [`assets/photos/CREDITS.md`](assets/photos/CREDITS.md).
 
-* Every question carries a **salted SHA-256 hash** of its correct answer. That is enough
-  to mark an answer right or wrong, and not enough to read it.
-* There is **no mode that reveals an answer**, so nothing in the site needs the plain text
-  and nothing in the site contains it. `js/marking.js` can say *wrong*, and cannot say *what*.
-* Ordering questions ship **pre-shuffled**, so the file never lists the right sequence.
+</details>
 
-Honest limit: multiple-choice and drag questions have small answer spaces, so a student
-with the developer tools open and a brute-force loop could work some out. Typed answers
-are genuinely hard to reverse.
-
-### Editing a question
-
-The only file with the answers in plain text is **`../digestion-lab-source/stations.master.js`**,
-which deliberately lives *outside* this repo so it is never published. Edit it, then:
-
-```bash
-node tools/build.mjs
-```
-
-which regenerates `js/data/stations.js` (presentation + hashes). Add `--vault` if you want
-the encrypted answer key written out for your own checking — the site never loads it, and
-`.gitignore` keeps it out of the repo.
-
-### Editing a definition
-
-Definitions are **not** written in this repo, and not per lab. They live once, in
-**`labs-shared/glossary.master.js`** — found by searching upwards from the repo — so that
-every Biology Lab prints the same wording for the same term. A station lists only the terms
-it *introduces*, by name; the build looks each one up.
-
-That makes agreement mechanical rather than a matter of care: the build **fails** if a
-station names a term the glossary does not define, or if an older station still carries a
-wording of its own that differs. Change a definition there, rebuild each lab, done.
-
-```bash
-node tools/build.mjs
-```
-
-writes `js/data/glossary.js` (the shared list) alongside `js/data/stations.js`.
-
-## Collecting the results
-
-The marks do not live here. One Google Sheet collects **every** Biology Lab — a tab per lab,
-with your Google Classroom rosters beside them. One script, one deployment, one URL.
-
-**Set it up once, in the hub repo:**
-[human-body-hub ▸ The marks spreadsheet](https://github.com/Mompel226/human-body-hub#the-marks-spreadsheet)
-— five minutes, with both files in full, ready to copy.
-
-Then paste the deployed `/exec` URL into [`js/config.js`](js/config.js) as `submitUrl`, and
-the OAuth Client ID as `googleClientId`.
-
-Once a class has been imported, **every student already has a row** on the **Digestion** tab —
-name and class filled in, marks blank. A hand-in fills their row in: the score, the %, whether
-they finished, how many checks it took, how many were right first time, how long they had been
-at it, and the per-station breakdown. A blank row is a student who has not handed in yet, not a
-gap in the data.
-
-**Handing in twice is fine and does not make a second row.** Hand in part way, keep working,
-hand in again: the same row is updated. The count of hand-ins and the date always move, but the
-score and everything with it are replaced only when the new attempt **beat** the last one — so a
-careless re-run cannot wipe out a good result. They are matched to their row by the school
-email they signed in with, never by the name they type.
-
-**The lab is public and stays public.** Anyone in the world can work through it and hand in.
-Signing in is what lets a hand-in be attributed: it is recorded only when the Google account
-that signed in is on the teacher's Students tab, and ignored otherwise — nothing is written
-down for anyone else, not even their email. Everybody gets their completion code on screen.
-
-Leave either setting empty and nothing is recorded anywhere; the lab still works and still
-gives out codes.
-
-Every submission carries a **completion code** derived from the name, class and score,
-salted with the lab's id. The script recomputes it, and a hand-in whose code does not match —
-or whose score is impossible — is written to a separate **Rejected** tab with the reason and
-the payload, and never touches the student's row.
-
----
-
-## Layout
-
-```
-index.html            the page
-css/app.css           design system (Dr Mompel's IGCSE deck palette)
-js/anatomy.js         the clickable plate: organ tagging, labels, the food tour
-js/zoom.js            the plate follows the text: camera, scroll-linked steps, labels, spotlight
-js/data/zoom.js       what each station shows on the plate, step by step, with credits
-js/plateanim.js       swallowing, peristalsis and churning, drawn on the plate itself
-js/figures.js         the animated "See it" diagrams
-js/engine.js          the activity engine (the seven question types)
-js/app.js             wiring: plate ⇄ panel ⇄ rail, progress, tour
-js/config.js          the three things you edit: the Apps Script URL, the OAuth
-                      client ID, and the class list
-js/marking.js         hash-based marking — it can say wrong, not what
-                      GENERATED: this file and js/engine.js are copied from
-                      labs-shared/engine/ by tools/build.mjs. Do not edit them here —
-                      the next build overwrites them. Edit labs-shared/engine/ and
-                      rebuild every lab.
-js/terms.js           the colour language of the Learn tab
-js/data/stations.js   GENERATED — presentation + hashes, no answers
-tools/build.mjs       master content -> js/data/stations.js
-tools/trace-canal.js  how the food's route through the canal was derived from the
-                      artwork's own geometry — a development tool, not loaded by the page
-js/data/photos.js     which photographs appear at which station
-js/data/anatomy-art.js  the body plate (public domain)
-js/data/figure-art.js   the tooth and villus plates (public domain). NOT a <script> tag:
-                      it is 185 KB and only three drawings need it, so js/app.js fetches
-                      it on demand and holds a box of the right shape until it lands.
-                      Do not put it back in index.html.
-js/assets.js          where a picture actually lives: the .webp swap and the box a picture
-                      reserves before it arrives
-js/data/photo-size.js GENERATED — every picture's size, and which have a .webp twin
-tools/make-webp.py    writes those .webp twins. Re-run it after adding a photograph,
-                      then rebuild so photo-size.js sees it
-assets/photos/        the images, with CREDITS.md recording where each came from
-assets/video/         the two animations, each with a poster frame
-```
-
-### How a station knows its saved answers are still valid
-
-A saved answer is filed by the question's POSITION in the station, and positions are not
-stable: remove one question and everything after it shifts up. So each station's record carries
-a fingerprint of the question set it was made against — the number of questions, and a hash of
-everything a student reads in each one, in order:
-
-    9:852koh
-
-If that changes, the record for that station is dropped and the station is answered again.
-Losing one station's answers is a far smaller harm than handing in a score that was never
-earned.
-
-**This means editing a question resets that station** — rewording a prompt, adding an option,
-reordering them, changing a label. A typo fix costs that station's progress for anyone who has
-already answered it. That is the intended trade.
-
-The fingerprint deliberately ignores the answer key `k`: it is salted afresh on every build, so
-hashing it would wipe every record on every deploy whether anything had changed or not. A plain
-rebuild with no content change leaves every fingerprint identical — verified in both labs.
-
-Two earlier versions were weaker and are gone. The first was the FIRST LETTER of each question
-type, which could not tell `mcq` from `match`; the second was the full type names, which could
-not see a reworded question at all. Records in either old form no longer match anything and are
-dropped.
-
-### To change a question or a piece of wording
-
-Everything a student reads lives in `js/data/stations.js`. Each station has
-`learn.exam` (the mark-scheme answer), `learn.real` (above-syllabus notes),
-`learn.golden` (the mistake to avoid), `keywords`, and `activities`.
-
-After editing, bump the `?v=` numbers in `index.html` so browsers pick up the
-change instead of serving a cached copy.
-
-### To swap a photograph
-
-Drop a replacement into `assets/photos/` with the same filename. Nothing else
-needs to change.
-
----
-
-## Design rules this follows
-
-- The **exam answer is the main content**, badged Core, `S` (Supplement) or
-  `extension`. Everything past it — links to other 0610 topics, what IB adds, and
-  the real science 0610 leaves out — sits in one tagged "Going further" section
-  and never displaces it; nothing appears in both. Stations with a big exam
-  footprint also carry an amber "In the exam — what to write here" box.
-- Syllabus wording: *physical digestion* (not "mechanical"), *faeces*, *oesophagus*,
-  British spellings throughout.
-- Labels are laid out at runtime with a collision pass, so **no two labels can
-  overlap** on the plate or on any diagram, whatever is shown or hidden.
-- **Highlighted words are actionable.** A dotted underline opens a small picture
-  in place (what fats, protein or iron actually look like); a solid underline
-  scrolls to the exact sentence that explains the term, flashes it, and offers a
-  way back. Which treatment a word gets is set
-  in `PEEK` and `JUMP` in `js/terms.js`. A word never links to the station you are
-  already on.
-- **No image is ever upscaled.** Each carries a `maxw` equal to half its own pixel
-  width, so on a 2x screen it is drawn at most 1:1. A small sharp picture beats a
-  large soft one; if a source is too small to be useful at any size, it is dropped
-  rather than stretched.
-- **Every image must pass a test: does it teach something the words cannot?**
-  Food groups get a picture of the foods, because a student may not know tofu is
-  protein. Vitamins and minerals get a picture of the *deficiency*, because that
-  is the memorable and examinable part. Water gets nothing.
-- **Images only where they earn it.** The alimentary canal station has none: the
-  plate on the left already is the canal, so it offers "trace it on the diagram"
-  instead of repeating itself as a picture.
-- **Colour coding never stands alone.** Each of the five processes wears a chip
-  carrying its number in the sequence, so the coding survives colour blindness and
-  greyscale printing — and the number teaches the order, which is examinable.
-  Green is not used for meaning anywhere, because green is the app's own colour.
-  Seven categories, inside the six-to-eight limit the research supports. Every ink
-  clears WCAG AA on both backgrounds; the weakest measured on the live page is
-  4.64:1. See the notes at the top of `js/terms.js`.
-- Anything simplified is disclosed in the **How to use** panel.
-
-## Using this at your own school
-
-**Fork it and it works.** Everything the page loads is in this repository — the engine, the
-marking, the glossary, the pictures. There is no reference to any other repository at run time.
-Fork it, switch on GitHub Pages (Settings ▸ Pages ▸ branch `main`), and it runs.
-
-**What you cannot do is rebuild the questions**, and that is deliberate. `tools/build.mjs`
-reads `../digestion-lab-source/stations.master.js`, the only file with the answers in plain
-text, and that file is never published — which is exactly why no student can read the answers
-out of the site either. Running the build in a fork stops with "Cannot find the master content".
-
-So a fork is a working copy of this lab, not a starting point for a different one. If you want
-to change the questions, write your own master file and build against it; the format is
-documented above, and the shared parts (engine, marking, glossary) live in `labs-shared/` in
-the workspace this lab is built from.
-
-If you only want to *use* it with your classes, you do not need to fork at all — send your
-students the link, and set up your own results spreadsheet as described under *Collecting the
-results*.
-
-## Credits
-
-The high-fibre foods photograph is by **formulatehealth** from Wikimedia Commons,
-**CC BY 2.0** — attribution required, and it is credited both in
-`assets/photos/CREDITS.md` and inside the pop-up where the image appears.
-
-
-Anatomical plates are public domain from Wikimedia Commons: the body by
-Mariana Ruiz (LadyofHats) and Jmarchn, the tooth section by Jak, the villus by
-Snow93. Photographs and micrographs come from the class lesson slides — see
-`assets/photos/CREDITS.md`. All labels, animations, questions, code and page
-design are original to this simulation.
-
-## Offline
-
-`sw.js` is generated by `tools/build.mjs` from `labs-shared/sw.template.js` and registered by
-a small inline script at the foot of `index.html`. Its scope is this lab's own folder, so it
-can never touch the other labs, the hubs or the sims — which share the origin.
-
-**The HTML document is fetched network-first.** While a student is online they see the live
-page exactly as they would with no worker, and a deploy reaches them on their next reload —
-verified. The cache is only the fall-back for when the network is not there. That is what
-makes this safe on GitHub Pages, where we cannot set response headers and so cannot dig a
-browser out of a stale copy. Everything else is cache-first, safely, because every other URL
-carries a `?v=` stamp or a content hash and so changes whenever its file does.
-
-If it ever has to go:
-
-```
-cp ../../labs-shared/sw-killswitch.js sw.js
-git add sw.js && git commit -m "Kill switch" && git push
-```
-
-then build with `node tools/build.mjs --no-sw` until every device has loaded the site once.
-The switch has been rehearsed at a `/<lab>/` path with both labs registered: it removes only
-this lab's caches, unregisters itself, and the lab keeps working without it. Rehearse it at a
-subpath, never at a localhost root — the prefix comes from the scope, so at a root it deletes
-nothing while appearing to work.
-
+Made by **Dr Daniel Mompel Riera** · Biology, NLCS Jeju ·
+[dmompelriera@nlcsjeju.kr](mailto:dmompelriera@nlcsjeju.kr)
