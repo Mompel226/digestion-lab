@@ -91,24 +91,18 @@
     return (st.activities || []).length + ':' +
            (st.activities || []).map(function (a) { return a.type; }).join(',');
   }
-  /* The fingerprint used to be the first letter of each type. 'mcq' and 'match' both begin
-     with m, so turning a matching task into a multiple choice left the fingerprint unchanged
-     and the old record survived — crediting a reader for a question they never saw.
-     REMOVE sigLegacy BEFORE THE NEXT CONTENT EDIT SHIPS. It is here only so that this one
-     deploy, which changes no question, resets nobody. While it is here the collision is
-     still open; it simply cannot bite, because nothing is changing. */
-  function sigLegacy(st) {
-    return (st.activities || []).length + ':' +
-           (st.activities || []).map(function (a) { return a.type.charAt(0); }).join('');
-  }
+  /* The fingerprint was once the first letter of each type, and 'mcq' and 'match' both begin
+     with m — so turning a matching task into a multiple choice left it unchanged and the old
+     record survived, crediting a reader for a question they never saw. A record written in
+     that old form no longer matches anything and is dropped, which is the point: it is the
+     only honest thing to do with a record we cannot trust. */
   function reconcile() {
     var dropped = 0;
     Object.keys(progress).forEach(function (id) {
       var st = S[id];
       if (!st) { delete progress[id]; dropped++; return; }   /* station itself is gone */
       var sig = stationSig(st);
-      var old = sigLegacy(st);
-      if (progress[id].sig && progress[id].sig !== sig && progress[id].sig !== old) {
+      if (progress[id].sig && progress[id].sig !== sig) {
         progress[id] = { done:{}, tried:{}, sig:sig }; dropped++;
       } else progress[id].sig = sig;
     });
