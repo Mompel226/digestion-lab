@@ -4,7 +4,8 @@
      node tools/build.mjs [password]
 
    Reads   ../digestion-lab-source/stations.master.js   (has the answers)
-   Writes  js/data/stations.js    presentation + salted hashes, NO answers
+   Writes  js/engine.js, js/marking.js         copied from labs-shared/engine/
+           js/data/stations.js    presentation + salted hashes, NO answers
 
    The hashes let the page mark an answer right or wrong without the answer
    existing anywhere in the download. Nothing in the site can say what the
@@ -14,7 +15,7 @@
    of the answers for your own checking. The site never loads it, .gitignore
    keeps it out of the repo, and it is not published.
    ============================================================ */
-import { readFileSync, writeFileSync, existsSync, readdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, readdirSync, statSync, copyFileSync } from 'node:fs';
 import { webcrypto as crypto, createHash } from 'node:crypto';
 import { dirname, resolve, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -56,6 +57,19 @@ if (!GLOSS_PATH) {
   process.exit(1);
 }
 const { GLOSSARY } = await import(pathToFileURL(GLOSS_PATH).href);
+
+/* ---------- the shared engine ----------
+   engine.js draws and runs the activity types; marking.js hashes an answer and compares it,
+   so the answers themselves are never in the page. Both are SHARED: labs-shared/engine/ is
+   the source and every lab copies it in at build time, exactly as the Classification Lab
+   does. Never edit js/engine.js or js/marking.js here — the next build overwrites them.
+   Edit labs-shared/engine/ and rebuild every lab. */
+const SHARED = dirname(GLOSS_PATH);
+for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js']]) {
+  const src = resolve(SHARED, from);
+  if (!existsSync(src)) { console.error('Cannot find ' + from + ' in ' + SHARED); process.exit(1); }
+  copyFileSync(src, resolve(REPO, to));
+}
 const DEF = new Map(GLOSSARY.map(e => [e.term.toLowerCase(), e]));
 
 /* A station's keywords may be plain names (preferred) or the older {term, def} pairs.

@@ -79,7 +79,7 @@ window.GLOSSARY = [
  },
  {
   "term": "backbone",
-  "def": "The column of small bones (vertebrae) along the back of a vertebrate, around the nerve cord."
+  "def": "The column of small units (vertebrae) along the back of a vertebrate, around the nerve cord. They are bone in most vertebrates and cartilage in sharks and rays."
  },
  {
   "term": "balanced diet",
@@ -171,7 +171,7 @@ window.GLOSSARY = [
  },
  {
   "term": "characteristic",
-  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so a characteristic never tells one group from another; that is what a feature does.",
+  "def": "One of the seven processes that every living organism carries out — movement, respiration, sensitivity, growth, reproduction, excretion and nutrition. All living organisms share all seven, so naming a characteristic never picks out a group on its own; that is what a feature does. The way a characteristic is carried out can differ, and nutrition is the example: autotrophic in plants, heterotrophic in animals and fungi.",
   "also": [
    "feature"
   ]
@@ -179,6 +179,11 @@ window.GLOSSARY = [
  {
   "term": "chemical digestion",
   "def": "Chemical digestion is the breakdown of large, insoluble molecules into small, soluble molecules, carried out by enzymes."
+ },
+ {
+  "term": "chitin",
+  "def": "The tough material a fungal cell wall is made of — and the same material as an arthropod’s exoskeleton. It is not cellulose, which is what a plant cell wall is made of.",
+  "ext": true
  },
  {
   "term": "chloroplast",
@@ -221,7 +226,7 @@ window.GLOSSARY = [
  },
  {
   "term": "compound eye",
-  "def": "An eye made of many small lenses, each facing a slightly different way. Insects have them."
+  "def": "An eye made of many small lenses, each facing a slightly different way. Insects and crustaceans have them; arachnids have simple eyes instead."
  },
  {
   "term": "concentration",
@@ -393,8 +398,13 @@ window.GLOSSARY = [
   "def": "Plant material, mostly cellulose, that is not digested; it adds bulk so that peristalsis can move food along, and helps prevent constipation."
  },
  {
+  "term": "fibrous root system",
+  "def": "Many roots of about the same thickness spreading out from the base of the stem, with no single main root. Monocotyledons have one.",
+  "sup": true
+ },
+ {
   "term": "fish",
-  "def": "A vertebrate with wet scales, fins and gills, which lays soft eggs in water. Its body temperature follows the surroundings."
+  "def": "A vertebrate with wet scales, fins and gills kept all its life. Most lay soft eggs in water and fertilise them outside the body; sharks fertilise internally and many bear live young. Body temperature follows the surroundings."
  },
  {
   "term": "flowering plant",
@@ -404,6 +414,11 @@ window.GLOSSARY = [
  {
   "term": "frond",
   "def": "The leaf of a fern, usually divided into many leaflets and unrolling from a coil as it grows.",
+  "sup": true
+ },
+ {
+  "term": "fruit",
+  "def": "The ripened ovary of a flower, holding the seeds that formed inside it.",
   "sup": true
  },
  {
@@ -562,7 +577,7 @@ window.GLOSSARY = [
  },
  {
   "term": "mammal",
-  "def": "A vertebrate with hair or fur that feeds its young on milk from mammary glands, gives birth to live young, breathes with lungs and keeps a constant body temperature."
+  "def": "A vertebrate with hair or fur that feeds its young on milk from mammary glands, breathes with lungs and keeps a constant body temperature. Fertilisation is internal and almost all give birth to live young; the platypus and the echidnas lay eggs."
  },
  {
   "term": "mammary glands",
@@ -648,7 +663,7 @@ window.GLOSSARY = [
  },
  {
   "term": "nutrition",
-  "def": "The taking in of materials for energy, growth and development. Plants take in carbon dioxide, water and mineral ions; animals take in organic substances and water."
+  "def": "The taking in of materials for energy, growth and development. Plants take in carbon dioxide, water and mineral ions; animals take in organic substances, mineral ions and water."
  },
  {
   "term": "oesophagus",
@@ -672,8 +687,18 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "ovary",
+  "def": "In a flower, the part that holds the ovules; after fertilisation it becomes the fruit and the ovules become the seeds. In an animal, the organ that makes egg cells.",
+  "sup": true
+ },
+ {
   "term": "pancreatic juice",
   "def": "The alkaline fluid the pancreas secretes into the duodenum; it contains amylase, protease (trypsin) and lipase."
+ },
+ {
+  "term": "parasite",
+  "def": "An organism that lives on or in another organism, its host, taking food from it and doing it harm. Parasites are found in several groups: animals such as the tapeworm and the flea, protoctists such as the malaria parasite, and many fungi.",
+  "sup": true
  },
  {
   "term": "parasitic nutrition",
@@ -686,7 +711,7 @@ window.GLOSSARY = [
  },
  {
   "term": "pathogen",
-  "def": "A disease-causing organism: bacteria, fungi, protoctists and viruses can all be pathogens."
+  "def": "A disease-causing organism. Pathogens are not one group: bacteria (cholera, tuberculosis), viruses (influenza, measles), fungi (athlete’s foot, ringworm) and protoctists (malaria) can all be pathogens. Most bacteria and most viruses cause no disease at all — pathogen describes what an organism does, not what it is."
  },
  {
   "term": "pepsin",
@@ -843,6 +868,11 @@ window.GLOSSARY = [
   "def": "To release a useful substance made by a gland or cell. The pancreas secretes pancreatic juice into the duodenum; secreting is not the same as excreting, which is getting rid of waste."
  },
  {
+  "term": "seed",
+  "def": "A fertilised ovule: a young plant and a store of food, inside a protective coat.",
+  "sup": true
+ },
+ {
   "term": "sensitivity",
   "def": "The ability to detect and respond to changes in the internal or external environment."
  },
@@ -873,6 +903,11 @@ window.GLOSSARY = [
   ]
  },
  {
+  "term": "stigma",
+  "def": "The sticky tip of the female part of a flower, where pollen lands.",
+  "sup": true
+ },
+ {
   "term": "stimulus",
   "def": "A change in the internal or external environment that an organism can detect — light, temperature, touch, a chemical. Plural: stimuli."
  },
@@ -897,6 +932,11 @@ window.GLOSSARY = [
  {
   "term": "swallowing",
   "def": "The reflex that pushes the bolus from the mouth, through the pharynx, into the oesophagus."
+ },
+ {
+  "term": "tap root",
+  "def": "One main root growing straight down with smaller roots branching from it. Dicotyledons have one.",
+  "sup": true
  },
  {
   "term": "taxonomy",
@@ -926,6 +966,11 @@ window.GLOSSARY = [
  {
   "term": "urea",
   "def": "The waste product made in the liver from excess amino acids, removed from the blood by the kidneys and excreted in urine."
+ },
+ {
+  "term": "vascular bundle",
+  "def": "A strand of xylem and phloem running through a plant: xylem carries water up, phloem carries food. In a ring in a dicotyledon stem, scattered in a monocotyledon stem.",
+  "sup": true
  },
  {
   "term": "vertebrate",

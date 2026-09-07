@@ -1,5 +1,6 @@
 /* ============================================================
-   engine.js — the activity engine.
+   engine.js — the activity engine. SHARED: the copy in labs-shared/engine/ is the
+   source; each lab's build copies it in. Edit it there, then rebuild every lab.
 
    Types: blank · drag · mcq · order · match · sort · ph
 
@@ -680,6 +681,11 @@
       if (!maker) { var e = h('div', 'act'); e.textContent = 'Unknown activity type: ' + a.type; return e; }
       return maker(a, idx, id);
     },
+    /* A lab can add an activity type of its own: register(type, maker, "Name shown on the card").
+       The maker gets (a, idx, id) and returns the card; the helpers below build the shell and
+       the Check / Try again foot exactly as the built-in types do. */
+    register: function (type, maker, name) { MAKERS[type] = maker; if (name) KIND_NAME[type] = name; },
+    util: { h:h, shell:shell, foot:foot, shuffle:shuffle, imgEl:imgEl, makeDraggable:makeDraggable, dropTarget:dropTarget, dragHint:dragHint },
     KIND_NAME: KIND_NAME
   };
 })(window);
