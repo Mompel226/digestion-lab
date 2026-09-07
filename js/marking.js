@@ -1,7 +1,9 @@
 /* ============================================================
-   marking.js — marks answers without holding them.
+   marking.js — marks answers without holding them. SHARED: the copy in
+   labs-shared/engine/ is the source; each lab's build copies it in.
 
-   Each question ships a salted SHA-256 hash of its correct answer.
+   Each question ships a salted SHA-256 hash of its correct answer. Types: blank, mcq,
+   order, match, sort, drag, ph, grid, hotspot.
    We hash what the student did and compare. A wrong answer can be
    reported as wrong; a right answer cannot be read out of the file.
 
@@ -45,6 +47,8 @@
          not sit on that grid. Snap before hashing so marking never depends on
          how the value happened to arrive. */
       case 'ph':    return H([id, 'ph', (Math.round(Number(r) * 2) / 2).toFixed(1)]);
+      /* hotspots on a picture: the response is the ids of the regions clicked */
+      case 'hotspot': return H([id, 'hotspot', r.slice().sort().join(',')]);
     }
     return Promise.resolve('');
   }
@@ -61,6 +65,20 @@
         var right = oks.filter(Boolean).length, gaps = {};
         keys.forEach(function (g, i) { gaps[g] = oks[i]; });
         return { correct: right === keys.length, score: right, total: keys.length, gaps: gaps };
+      });
+    }
+    /* A grid of ticks is marked row by row, like the gaps of a cloze: the response is
+       {row: [ticked column indexes]}, and each row's ticks are hashed against its own key,
+       so a wrong row can be named without any row being corrected. */
+    if (a.type === 'grid') {
+      var rows = Object.keys(a.k);
+      return Promise.all(rows.map(function (r) {
+        var ticked = (response[r] || []).slice().sort(function (x, y) { return x - y; }).join(',');
+        return H([id, 'grid', String(r), ticked]).then(function (h) { return h === a.k[r]; });
+      })).then(function (oks) {
+        var right = oks.filter(Boolean).length, gaps = {};
+        rows.forEach(function (r, i) { gaps[r] = oks[i]; });
+        return { correct: right === rows.length, score: right, total: rows.length, gaps: gaps };
       });
     }
     if (a.type === 'ph') {
