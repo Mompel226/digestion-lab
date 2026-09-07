@@ -34,9 +34,9 @@ down the whole canal and stop at each organ in turn.
 | 📖 **A shared glossary** | one wording per term, the same in every lab |
 
 > [!NOTE]
-> **The answers are not in the page.** Each question ships a salted hash of its answer, so the
-> lab can say *wrong* but nothing in the download can say what *right* is. There is no mode
-> that reveals them, because there is nothing to reveal.
+> **The answers are not in the page — at all.** The lab can tell a student they are wrong, but
+> nothing in it knows what *right* is. There is no setting that reveals the answers, because
+> there is nothing to reveal. How that works is explained below.
 
 ## Where it sits
 
@@ -50,31 +50,51 @@ every Biology app here. The **← All labs** button goes back up.
 > **[Would you like to see how your students are doing?](https://github.com/Mompel226/biology-hub#-would-you-like-to-see-how-your-students-are-doing)**
 
 <details>
-<summary><b>Behind the scenes</b> — how this lab is put together</summary>
+<summary><b>Behind the scenes</b> — how this lab works, in plain English</summary>
 
 <br>
 
-The plate is an SVG with a camera that flies the view between organs; each station has its own
-short animation. The visking-tubing practical is a real simulation — the tubing, the water bath
-and the tests respond to what you do, and nothing happens on its own.
+**The drawing you click.** The alimentary canal is not a picture — it is a drawing the page can
+move around in, so when you choose an organ the view travels to it and settles, and small
+animations play where they help. It is the same drawing at every size, so it stays sharp on a
+phone and on a projector.
 
-Every question ships a **salted hash** of its answer, made at build time. The lab hashes what
-the student did and compares. That is why it can say *wrong* without anything in the download
-knowing what *right* is.
+**Why the answers are not in the page.** This is the part worth understanding.
 
-The activity engine, the marking and the glossary are shared with every other lab and copied in
-when the lab is built, so a fix reaches all of them. The content — 14 stations, 123 questions
-and the photographs — is this lab's own.
+Anything a web page can show, a student can find by digging around in it. So the answers are
+never sent to the student at all. Instead, each question carries a *scrambled fingerprint* of
+its answer. When a student answers, the page scrambles what they typed in exactly the same way
+and compares the two fingerprints. The same answer always makes the same fingerprint, so a match
+means they were right.
 
-**Build it:** `node tools/build.mjs`. It stamps `version.txt` and every `?v=` together (the
-stamps are the real cache key), and it refuses to finish unless every answer still marks
-correctly. `js/engine.js`, `js/marking.js`, `js/data/*` and `sw.js` are generated — edit
-`labs-shared/`, not the copies.
+The trick is that scrambling only works one way. You cannot start from a fingerprint and work
+back to the answer — so nothing in the page, and nothing a student can dig out of it, can say
+what the right answer is. The lab can only ever tell them *not that one*.
 
-**Forking:** everything the page loads is in this repository, so a fork runs as-is. You cannot
-rebuild the questions — `tools/build.mjs` needs `../digestion-lab-source/stations.master.js`,
-which is never published. That is the same fact that keeps the answers from students. If you
-only want to *use* the lab, send the link; there is nothing to fork.
+The real answers live in one file on my own computer, which is never published. That is also
+why nobody else can rebuild this lab's questions, even if they copy everything else.
+
+**What is shared with the other labs.** The part that draws a question, handles the dragging and
+does the marking is identical in every lab, so it is kept in one place and copied in whenever a
+lab is rebuilt. Fix something once and every lab gets the fix. The glossary works the same way —
+one wording per term, everywhere, so *emulsification* never means two things.
+
+What belongs to this lab alone is its content: the 14 stations, the 123 questions, and the
+photographs.
+
+**Rebuilding it** (only needed if you change the content). One command reads the master file
+with the answers in it and writes out the published version with only the fingerprints. It
+refuses to finish unless every single answer still marks correctly — so a mistake in the
+content stops the lab being published rather than reaching a student.
+
+```
+node tools/build.mjs
+```
+
+**Copying it for your own school.** Everything the page needs is in this repository, so a copy
+runs straight away. What you cannot do is change the questions, because the file with the
+answers was never published. If you just want to use the lab with your classes, you do not need
+a copy at all — send your students the link.
 
 Photograph credits: [`assets/photos/CREDITS.md`](assets/photos/CREDITS.md).
 
