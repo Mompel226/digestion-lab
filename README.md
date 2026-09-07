@@ -196,16 +196,24 @@ assets/photos/        the images, with CREDITS.md recording where each came from
 assets/video/         the two animations, each with a poster frame
 ```
 
-### Before the next content change ships
+### How a station knows its saved answers are still valid
 
-`js/app.js` still carries `sigLegacy`. It exists only so that the 2026-09-07 deploy, which
-changed no question, reset nobody's saved progress. **Delete it, and the
-`progress[id].sig !== old` branch beside it, before you deploy any change to a station's
-question set.** Until it is gone, swapping a `match` question for an `mcq` in the same slot
-would leave a student's old record in place and credit them for a question they never saw.
+A saved answer is filed by the question's POSITION in the station, and positions are not
+stable: remove one question and everything after it shifts up. So each station's record
+carries a fingerprint of the question set it was made against — the number of questions and
+their types, in order:
 
-Deleting it means the next deploy that changes a station's questions will reset that station
-for everyone who has already answered it. That is correct and intended — but choose when.
+    9:match,mcq,mcq,match,blank,sort,mcq,mcq,blank
+
+If that changes, the record for that station is dropped and the station is answered again.
+Losing one station's answers is a far smaller harm than handing in a score that was never
+earned.
+
+The fingerprint was once the FIRST LETTER of each type, which could not tell `mcq` from
+`match` — seven of these fourteen stations mix them, so swapping one for the other in the same
+slot left a student credited for a question they never saw. That is closed: the whole type
+name is recorded, and any record still written in the old form no longer matches and is
+dropped. Nothing needs doing about it now.
 
 ### To change a question or a piece of wording
 
