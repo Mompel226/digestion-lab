@@ -259,6 +259,37 @@
            .map(function (e) { return escRe(e[0]); }).join('|') + ')(?![A-Za-z0-9-])', 'gi');
 
   /* Escape first, then mark, so a term can never be injected as markup. */
+  /* ---------- what a mark promises ----------
+     Three marks, three different things, and a reader must be able to tell them apart before
+     clicking:
+
+       a magnifying glass  a picture opens where you are
+       a faint dotted rule the definition opens where you are
+       an arrow            you are taken to another station
+
+     So the arrow is only ever used when there is something at the other end worth the journey
+     — the organ itself, a diagram, an activity about it. A word that only wants explaining
+     gets the definition, in place: the back chip fades after a few seconds, and a reader who
+     misses it has to find their own way back, which is a poor trade for one sentence.
+
+     These are the words with something at the other end: an organ, or the bench where the
+     idea is done. Everything else that has a definition now opens it. */
+  var GOES_THERE = {};
+  ('peristalsis peristaltic bolus bile emulsification villus villi microvilli lacteal lacteals ' +
+   'pepsin gastric juice hydrochloric acid chyme amylase salivary amylase saliva maltase trypsin ' +
+   'pancreatic juice lipase mastication incisor incisors canine canines premolar premolars molar molars ' +
+   'enamel dentine pulp cement faeces glycogen hepatic portal vein ' +
+   'denatured active site substrate diffusion osmosis active transport starch maltose glucose ' +
+   'amino acids fatty acids glycerol enzyme enzymes optimum ph concentration gradient ' +
+   'epithelium goblet cell goblet cells lumen capillary capillaries enterocyte enterocytes ' +
+   'mucus protease pancreatic amylase carbohydrase nutrient nutrients').split(' ')
+    .forEach(function (w) { GOES_THERE[w] = true; });
+  ['gastric juice', 'hydrochloric acid', 'salivary amylase', 'pancreatic juice', 'hepatic portal vein',
+   'active site', 'active transport', 'amino acids', 'fatty acids', 'optimum ph',
+   'concentration gradient', 'goblet cell', 'goblet cells', 'pancreatic amylase']
+    .forEach(function (w) { GOES_THERE[w] = true; });
+
+  var wentTo = null;
   var here = null;                       /* the station being read, so we never link to itself */
   /* A marker is an offer to go and look at something. Repeating the offer on
      every later mention of the same word turns it into noise: the reader has
@@ -269,7 +300,7 @@
      reader has met every word above, and a column of magnifying glasses is
      just clutter. */
   var seen = null, quiet = false;
-  function setStation(id) { here = id; seen = Object.create(null); quiet = false; }
+  function setStation(id) { here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); }
   function setQuiet(v) { quiet = !!v; }
 
   /* _like this_ underlines a phrase. Some words carry a mark because the syllabus asks a
@@ -310,7 +341,10 @@
               (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') +
               ' tabindex="0" role="button"';
         cls = ' is-peek';
-      } else if (JUMP[low] && JUMP[low] !== here) {
+      } else if (JUMP[low] && JUMP[low] !== here && GOES_THERE[low] && !(wentTo && wentTo[JUMP[low]])) {
+        /* Only the FIRST word on a station that leads to a given organ carries the arrow. Two
+           words sending a reader to the same page is one journey too many. */
+        if (wentTo) wentTo[JUMP[low]] = true;
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
       } else if (DEFINED[low] && !KNOWN[low]) {
@@ -319,6 +353,11 @@
            common case and must not turn the page into a field of markers. */
         act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
+      } else if (JUMP[low] && JUMP[low] !== here && !(wentTo && wentTo[JUMP[low]])) {
+        /* no definition written for it, so the station that teaches it is the only answer */
+        if (wentTo) wentTo[JUMP[low]] = true;
+        act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
+        cls = ' is-jump';
       }
       if (e[2]) {
         /* The category letter prints inside the same element, so reading the word off
