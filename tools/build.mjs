@@ -66,7 +66,8 @@ const { GLOSSARY } = await import(pathToFileURL(GLOSS_PATH).href);
    does. Never edit js/engine.js or js/marking.js here — the next build overwrites them.
    Edit labs-shared/engine/ and rebuild every lab. */
 const SHARED = dirname(GLOSS_PATH);
-for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js']]) {
+for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'],
+                          ['engine/sync.js', 'js/sync.js']]) {
   const src = resolve(SHARED, from);
   if (!existsSync(src)) { console.error('Cannot find ' + from + ' in ' + SHARED); process.exit(1); }
   copyFileSync(src, resolve(REPO, to));
