@@ -1049,3 +1049,14 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 /* handing in: who you are, and the Google button */
 .signinbox{margin:10px 0 4px;min-height:44px;display:flex;justify-content:center}
 .who{margin:8px 0 2px;font-size:13.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* a narrow phone: the header wraps onto two rows rather than running off the screen */
+@media (max-width:540px){
+  .hdr{flex-wrap:wrap;row-gap:6px;padding:8px 10px}
+  .hdr__mark{flex:1 1 100%;overflow:visible}
+  .hdr__spacer{display:none}
+  .hdr__stats{flex:1 1 100%;flex-wrap:wrap;gap:6px}
+  .hbtn{padding:5px 9px;font-size:12.5px}
+  .stat{padding:3px 9px 3px 4px}
+  #btnReset .hbtn__long{display:none} #btnReset .hbtn__short{display:inline;font-size:13px;font-weight:600}
+}
