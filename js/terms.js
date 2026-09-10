@@ -64,9 +64,9 @@
 
   var PLAIN_WORDS = {
     /* every remaining word the shared glossary defines, so none is a dead end */
-    plain: ['alimentary canal','anaemia','anus','associated organ','bile duct','colon','complementary','concentration','constipation','consumed','control','deficiency disease','duodenum','epiglottis','equilibrium','gum','hepatocyte','ileum','jawbone','malnutrition','model','net movement','oesophagus','optimum','partially permeable','periodontal fibres','pharynx','plaque','reabsorbed','reabsorption','rectum','rickets','root canal','salivary glands','scurvy','secrete','trachea','urea','visking tubing'],
+    plain: ['alimentary canal','anaemia','anus','associated organ','associated organs','bile duct','colon','complementary','concentration','concentrations','constipation','consumed','control','controls','deficiency disease','duodenum','epiglottis','equilibrium','gum','gums','hepatocyte','ileum','jawbone','malnutrition','model','net movement','oesophagus','optimum','partially permeable','periodontal fibres','pharynx','plaque','reabsorbed','reabsorption','rectum','rickets','root canal','salivary glands','scurvy','secrete','secretes','trachea','urea','visking tubing'],
 
-    ingestion: ['ingested','ingest','swallowing','swallowed','swallow','taken into the body'],
+    ingestion: ['ingested','ingest','swallowing','swallowed','swallows','swallow','taken into the body'],
 
     physical: ['mastication','chewing','chews','chew','churning','churns','churn','peristalsis',
                'peristaltic','bolus','chyme','emulsification','emulsifies','emulsify','emulsifying',
@@ -75,11 +75,11 @@
                'circular muscle','longitudinal muscle','physically'],
 
     chemical: ['enzyme','enzymes','amylase','salivary amylase','pancreatic amylase','maltase','lactase',
-               'sucrase','protease','proteases','pepsin','trypsin','lipase','carbohydrase','carbohydrases',
+               'sucrase','protease','proteases','pepsin','trypsin','lipase','lipases','carbohydrase','carbohydrases',
                'hydrochloric acid','gastric juice','pancreatic juice','saliva','bile','mucus','denature','denatures',
                'denatured','denaturation','optimum ph','alkaline','acidic','neutralises','neutralise',
                'hydrolysis','hydrolyses','hydrolysed','hydrolase','hydrolases','catabolic',
-               'neutralisation','catalyst','catalysts','active site','substrate','chemically'],
+               'neutralisation','catalyst','catalysts','active site','substrate','substrates','chemically'],
 
     absorption:['villus','villi','microvilli','microvillus','circular folds','lacteal','lacteals',
                 'capillary','capillaries','epithelium','diffusion','diffuse','diffuses','diffused',
@@ -98,7 +98,7 @@
 
     molecule:  ['starch','maltose','glucose','galactose','fructose','sucrose','lactose','cellulose',
                 'protein','proteins','polypeptide','polypeptides','amino acid','amino acids','lipid','lipids',
-                'fat','fats','oils','fatty acid','fatty acids','glycerol','triglyceride','triglycerides',
+                'fat','fats','oil','oils','fatty acid','fatty acids','glycerol','triglyceride','triglycerides',
                 'monosaccharide','monosaccharides','disaccharide','disaccharides','polysaccharide',
                 'reducing sugar','reducing sugars','simple sugars','monomer','monomers','polymer','polymers',
                 'insoluble','soluble','nutrient','nutrients',
@@ -223,6 +223,8 @@
     var g = (typeof window !== 'undefined' && window.GLOSSARY) || [];
     g.forEach(function (e) { DEFINED[e.term.toLowerCase()] = e.term; });
   })();
+  /* a plural, a singular, the verb behind a noun or an alias opens the term's definition: the forms are worked out at build time */
+  function defined(low) { if (DEFINED[low]) return DEFINED[low]; var F = (typeof window !== 'undefined' && window.GLOSSARY_FORMS) || {}; return F[low] || null; }
 
   /* Words the reader has said they know. A mark on a word is an offer of help, and an offer
      that cannot be declined becomes clutter — so once a definition has been read and
@@ -347,11 +349,11 @@
         if (wentTo) wentTo[JUMP[low]] = true;
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
         cls = ' is-jump';
-      } else if (DEFINED[low] && !KNOWN[low]) {
+      } else if (defined(low) && !KNOWN[defined(low).toLowerCase()]) {
         /* A word with nothing to show and nowhere to go still has a definition. It gets the
            quietest mark of the three — a fine dotted rule, no icon — because it is the most
            common case and must not turn the page into a field of markers. */
-        act = ' data-gloss="' + esc(DEFINED[low]) + '" tabindex="0" role="button"';
+        act = ' data-gloss="' + esc(defined(low)) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
       } else if (JUMP[low] && JUMP[low] !== here && !(wentTo && wentTo[JUMP[low]])) {
         /* no definition written for it, so the station that teaches it is the only answer */
