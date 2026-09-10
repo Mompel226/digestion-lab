@@ -226,6 +226,8 @@
   }
 
   /* ---------- panel ---------- */
+  /* the other number of a term, when the glossary gives one: stoma → stomata, microvilli → microvillus */
+  function numberOf(w) { return w && w.plural ? ' <small class="num" title="The plural">plural: ' + esc(w.plural) + '</small>' : w && w.singular ? ' <small class="num" title="The singular">singular: ' + esc(w.singular) + '</small>' : ''; }
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
@@ -462,7 +464,7 @@
           var tag = g.ext ? ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>'
                   : g.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
-                 '<dt>' + M(w.term) + tag + '</dt>' +
+                 '<dt>' + M(w.term) + numberOf(g) + tag + '</dt>' +
                  '<p class="kw__ask">Do you know it? Tap to check</p>' +
                  '<dd>' + M(w.def) + '</dd></div>';
         }).join('') + '</dl>';
@@ -1672,8 +1674,8 @@
                      ? '<p class="gloss__also">See also: ' + w.also.map(function (t) {
                          return '<button type="button" class="gloss__see" data-see="' + esc(t) + '">' + esc(t) + '</button>';
                        }).join(' ') + '</p>' : '';
-                   return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + w.def).toLowerCase()) + '">' +
-                          '<dt>' + esc(w.term) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + got + '</dd></div>';
+                   return '<div class="gloss__row" data-term="' + esc((w.term + ' ' + (w.plural || '') + ' ' + (w.singular || '') + ' ' + w.def).toLowerCase()) + '">' +
+                          '<dt>' + esc(w.term) + numberOf(w) + tierTag(w) + '</dt><dd>' + esc(w.def) + also + got + '</dd></div>';
                  }).join('') + '</dl></section>';
         }).join('');
       }
