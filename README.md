@@ -4,7 +4,7 @@
 
 **Cambridge IGCSE Biology 0610 · Topic 7 — Human nutrition**
 
-[![Open the lab](https://img.shields.io/badge/▶_Open_the_lab-0969DA?style=for-the-badge&logoColor=white)](https://mompel226.github.io/digestion-lab/)
+[![Open the lab](https://img.shields.io/badge/▶_Open_the_lab-0969DA?style=for-the-badge&logoColor=white)](https://nlcsbiology.com/digestion-lab/)
 
 ![14 stations](https://img.shields.io/badge/14-stations-3D7A54)
 ![123 questions](https://img.shields.io/badge/123-questions-8F5D09)
@@ -40,8 +40,8 @@ down the whole canal and stop at each organ in turn.
 
 ## Where it sits
 
-One of the labs behind the [Human Body Hub](https://mompel226.github.io/human-body-hub/), which
-is one shelf of the [Biology Hub](https://mompel226.github.io/biology-hub/) — the front door to
+One of the labs behind the [Human Body Hub](https://nlcsbiology.com/human-body-hub/), which
+is one shelf of the [Biology Hub](https://nlcsbiology.com/biology-hub/) — the front door to
 every Biology app here. The **← All labs** button goes back up.
 
 > [!TIP]
