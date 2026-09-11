@@ -331,9 +331,13 @@
   }
 
   function mark(text) {
-    return underlineTags(underlineMarks(esc(text)).replace(RE, function (m) {
+    return underlineTags(underlineMarks(esc(text)).replace(RE, function (m, _g, at, whole) {
       var low = m.toLowerCase(), e = INFO[low];
       if (!e) return m;
+      /* the same spelling can be the wrong word: "the main SOURCE of energy" is not a phloem source */
+      var before = String(whole).slice(0, at).replace(/<[^>]*>/g, '');
+      var after = String(whole).slice(at + m.length).replace(/<[^>]*>/g, '');
+      if (wrongSense(low, before, after)) return m;
       var cat = e[1], act = '', cls = '';
       var first = !quiet && !(seen && seen[low]);
       if (seen) seen[low] = true;
