@@ -330,6 +330,26 @@
     });
   }
 
+  var NOT_HERE = {
+    'source':     [{ before: /\b(light|energy|heat|power|water|food)\s+$/i },
+                   { after: /^\s+of\s+(energy|light|heat|food|protein|carbohydrate|water|income)/i }],
+    'sources':    [{ before: /\b(light|energy|heat|power|food)\s+$/i },
+                   { after: /^\s+of\s+(energy|light|heat|food)/i }],
+    'capillary':  [{ after: /^\s+tube/i }],
+    'capillaries':[{ after: /^\s+tube/i }],
+    'control':    [{ after: /^\s+(the|it|them|this|these|for|every|all|each)\b/i }]
+  };
+  function wrongSense(low, before, after) {
+    var rules = NOT_HERE[low];
+    if (!rules) return false;
+    for (var i = 0; i < rules.length; i++) {
+      var r = rules[i];
+      if (r.before && r.before.test(before)) return true;
+      if (r.after && r.after.test(after)) return true;
+    }
+    return false;
+  }
+
   function mark(text) {
     return underlineTags(underlineMarks(esc(text)).replace(RE, function (m, _g, at, whole) {
       var low = m.toLowerCase(), e = INFO[low];
