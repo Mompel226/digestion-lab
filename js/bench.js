@@ -202,7 +202,11 @@
     /* the tubing, knotted above the rim and again at the bottom */
     g += '<rect x="' + f1(bx) + '" y="' + f1(by + 6) + '" width="' + f1(bagW) + '" height="' + f1(bh - 12) +
          '" rx="' + f1(bagW / 2) + '" fill="#F3E6C8" opacity=".95" stroke="#C9AE72" stroke-width="1.4"/>';
-    g += '<path d="M' + f1(bx) + ',' + f1(by + 6) + ' v' + f1(bh - 12) + ' M' + f1(bx + bagW) + ',' + f1(by + 6) + ' v' + f1(bh - 12) +
+    /* The dotted line down each side of the bag is the membrane. The bag is a stadium — its
+       corner radius is half its width — so its sides are only straight between the two curves.
+       Drawn the full height, the dots ran on past the curve and out of the bag at the bottom. */
+    var bagR = bagW / 2, memY = by + 6 + bagR, memH = Math.max(0, bh - 12 - bagW);
+    g += '<path d="M' + f1(bx) + ',' + f1(memY) + ' v' + f1(memH) + ' M' + f1(bx + bagW) + ',' + f1(memY) + ' v' + f1(memH) +
          '" stroke="#FFFDF9" stroke-width="1.8" stroke-dasharray="1.3 5" stroke-linecap="round"/>';
     [by + 6, by + bh - 6].forEach(function (ky) {
       g += '<ellipse cx="' + f1(CX[i]) + '" cy="' + f1(ky) + '" rx="' + f1(bagW / 4 + 0.5) + '" ry="3.2" fill="#E4D2A4" stroke="#B99C5E" stroke-width="1.2"/>'; });
