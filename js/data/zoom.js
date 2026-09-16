@@ -1412,12 +1412,12 @@ window.ZOOM_DETAIL = {
         "at": 0,
         "anim": "bench",
         "focus": "bench",
-        "animAlt": "visking",
+        "animAlt": "viskingModel",
         "focusAlt": "set-up",
         "lab": true,
         "noback": true,
         "label": "Your bench: sample any tube, inside or outside, before or after the 30 minutes",
-        "labelAlt": "The apparatus, labelled. Inside the tube is the lumen of the small intestine; the tubing is the wall of a villus; the water outside is the blood in a capillary"
+        "labelAlt": "The model beside the real thing. Matching colours mark the three parts that correspond: what is being digested, the barrier it must cross, and where whatever crosses ends up"
       }
     ]
   }

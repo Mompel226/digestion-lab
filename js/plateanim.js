@@ -813,6 +813,117 @@
     return g;
   }
 
+
+  /* ---------------- the model beside the thing it models ----------------
+     Students could not tell what the bench was a picture of. This puts the two
+     side by side and colours the three parts that correspond, so the match is
+     read off the drawing rather than worked out: what is being digested (amber),
+     the barrier it must cross (teal), and where what crosses ends up (red).
+     The frame is portrait and narrow, so the panels are columns and the pairs
+     are named underneath rather than beside, as they would be on a wide sheet. */
+  var MDL = { IN:'#C8811F', WALL:'#1F7A8C', OUT:'#B6412A' };
+
+  function maltosePair(x, y, s) {
+    s = s || 1;
+    return '<circle cx="' + f1(x - 2.4 * s) + '" cy="' + f1(y) + '" r="' + f1(2.5 * s) + '" fill="#D98F2E"/>' +
+           '<circle cx="' + f1(x + 2.4 * s) + '" cy="' + f1(y) + '" r="' + f1(2.5 * s) + '" fill="#D98F2E"/>';
+  }
+  function tag(t, x, y, fs, col, anchor) {
+    return '<text x="' + f1(x) + '" y="' + f1(y) + '" font-size="' + f1(fs) + '" fill="' + col +
+           '" text-anchor="' + (anchor || 'middle') + '" font-weight="600" paint-order="stroke"' +
+           ' stroke="#FFFDF9" stroke-width="' + f1(fs * 0.34) + '" stroke-linejoin="round">' + t + '</text>';
+  }
+
+  function viskingModel(ctx) {
+    var F = ctx.frame || { x:30, y:116, w:280, h:448 };
+    var fs = Math.max(7.4, (ctx.fs || 11) * 0.74);
+    var ax = F.x + F.w * 0.27, bx = F.x + F.w * 0.73;
+    var yT = F.y + F.h * 0.10, yB = F.y + F.h * 0.50;
+    var g = '';
+
+    g += tag('THE MODEL', ax, F.y + F.h * 0.055, fs * 0.98, '#4A5A66');
+    g += tag('THE REAL THING', bx, F.y + F.h * 0.055, fs * 0.98, '#4A5A66');
+
+    /* ---- A: the visking tubing, drawn small ---- */
+    var T = { x:ax - 34, y:yT + 8, w:68, h:(yB - yT) - 8, r:34 };
+    var B = { x:ax - 18, y:yT, w:36, h:(yB - yT) - 24 };
+    var bag = viskingBag(B);
+    g += beaker(T, yT + 30);
+    g += '<path d="' + bag.d + '" fill="' + MDL.OUT + '" opacity=".10"/>';   /* the water it sits in */
+    g += bag.g;
+    g += '<path d="' + bag.d + '" fill="' + MDL.IN + '" opacity=".20"/>';
+    g += '<path d="' + bag.d + '" fill="none" stroke="' + MDL.WALL + '" stroke-width="2.4" opacity=".85"/>';
+    g += '<path d="' + bag.d + '" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-dasharray="1.4 6" stroke-linecap="round"/>';
+    g += starchBlob(bag.cx - 5, yT + 44, 0.72, 0) + starchBlob(bag.cx + 4, yT + 74, 0.72, 1);
+    if (global.Bench) g += global.Bench.amylase(bag.cx + 3, yT + 58, 0.62) +
+                           global.Bench.amylase(bag.cx - 4, yT + 92, 0.62);
+    g += maltosePair(bag.cx, yT + 108, 0.8);
+    g += maltosePair(T.x + 12, yT + 84, 0.8) + maltosePair(T.x + T.w - 12, yT + 104, 0.8);
+    g += tag('water', T.x + 9, yB - 10, fs * 0.88, MDL.OUT, 'start');
+
+    /* ---- B: a villus, the same three parts ---- */
+    var vw = 40, vTop = yT + 26, vBase = yB - 18, cx = bx, wallY = vBase;
+    g += '<rect x="' + f1(bx - 54) + '" y="' + f1(yT) + '" width="108" height="' + f1(wallY - yT) +
+         '" rx="5" fill="' + MDL.IN + '" opacity=".14"/>';
+    /* the gut wall the villi stand on, so a finger reads as a projection and not a pipe */
+    g += '<rect x="' + f1(bx - 54) + '" y="' + f1(wallY) + '" width="108" height="' + f1(yB + 6 - wallY) +
+         '" rx="3" fill="#F6E7DA" stroke="' + MDL.WALL + '" stroke-width="1.6" opacity=".9"/>';
+    function finger(c, w, top, o) {
+      var d = 'M' + f1(c - w / 2) + ',' + f1(wallY + 2) + ' V' + f1(top + w / 2) +
+              ' a' + f1(w / 2) + ',' + f1(w / 2) + ' 0 0 1 ' + f1(w) + ',0 V' + f1(wallY + 2);
+      return '<path d="' + d + '" fill="#F6E7DA" opacity="' + o + '"/>' +
+             '<path d="' + d + '" fill="none" stroke="' + MDL.WALL + '" stroke-width="' + (o < 1 ? 1.6 : 3) + '" opacity="' + o + '"/>';
+    }
+    g += finger(bx - 44, 26, vTop + 26, 0.45) + finger(bx + 44, 26, vTop + 30, 0.45);   /* its neighbours */
+    g += finger(cx, vw, vTop, 1);
+    /* one cell thick: a second line just inside the wall */
+    g += '<path d="M' + f1(cx - vw / 2 + 4) + ',' + f1(wallY) + ' V' + f1(vTop + vw / 2) +
+         ' a' + f1(vw / 2 - 4) + ',' + f1(vw / 2 - 4) + ' 0 0 1 ' + f1(vw - 8) + ',0 V' + f1(wallY) +
+         '" fill="none" stroke="#FFFDF9" stroke-width="1.2" opacity=".95"/>';
+    /* the capillary loop inside it */
+    g += '<path d="M' + f1(cx - 7) + ',' + f1(wallY) + ' V' + f1(vTop + 26) +
+         ' a7,9 0 0 1 14,0 V' + f1(wallY) + '" fill="none" stroke="' + MDL.OUT +
+         '" stroke-width="4.8" stroke-linecap="round" opacity=".85"/>';
+    /* what is where: starch stays in the lumen, maltose crosses into the blood */
+    g += starchBlob(cx - 34, yT + 12, 0.56, 2) + starchBlob(cx + 30, yT + 16, 0.56, 3);
+    g += maltosePair(cx - 30, vTop + 14, 0.75) + maltosePair(cx + 28, vTop + 30, 0.75);
+    g += maltosePair(cx, vTop + 46, 0.75) + maltosePair(cx + 1, vTop + 70, 0.75);
+    /* the crossing, said with one arrow rather than a sentence */
+    g += '<path d="M' + f1(cx - 26) + ',' + f1(vTop + 20) + ' Q' + f1(cx - 14) + ',' + f1(vTop + 30) + ' ' +
+         f1(cx - 5) + ',' + f1(vTop + 42) + '" fill="none" stroke="' + MDL.OUT +
+         '" stroke-width="1.5" opacity=".8" marker-end="url(#mdlArrow)"/>';
+    g += '<defs><marker id="mdlArrow" viewBox="0 0 8 8" refX="6" refY="4" markerWidth="5" markerHeight="5" orient="auto">' +
+         '<path d="M0,1 L7,4 L0,7 Z" fill="' + MDL.OUT + '"/></marker></defs>';
+    g += tag('lumen', bx - 50, yT + 12, fs * 0.88, MDL.IN, 'start');
+    g += tag('gut wall', bx, yB + 2, fs * 0.82, MDL.WALL);
+
+    /* ---- what matches what ---- */
+    var rows = [
+      [MDL.IN,   'inside the tube', 'the lumen'],
+      [MDL.WALL, 'the tubing',      'the villus wall'],
+      [MDL.OUT,  'water outside',   'the blood']
+    ];
+    var y0 = F.y + F.h * 0.60, gap = F.h * 0.078, mid = F.x + F.w * 0.5;
+    rows.forEach(function (r, i) {
+      var y = y0 + i * gap;
+      g += '<rect x="' + f1(F.x + F.w * 0.04) + '" y="' + f1(y - gap * 0.36) + '" width="' + f1(F.w * 0.92) +
+           '" height="' + f1(gap * 0.72) + '" rx="' + f1(gap * 0.3) + '" fill="' + r[0] + '" opacity=".08"/>';
+      g += '<circle cx="' + f1(F.x + F.w * 0.09) + '" cy="' + f1(y) + '" r="' + f1(fs * 0.36) + '" fill="' + r[0] + '"/>';
+      g += tag(r[1], mid - fs * 0.9, y + fs * 0.34, fs, r[0], 'end');
+      g += '<text x="' + f1(mid) + '" y="' + f1(y + fs * 0.34) + '" font-size="' + f1(fs) +
+           '" fill="' + r[0] + '" text-anchor="middle">↔</text>';
+      g += tag(r[2], mid + fs * 0.9, y + fs * 0.34, fs, r[0], 'start');
+    });
+
+    /* ---- the key, so every drawn thing is named once ---- */
+    var ky = F.y + F.h * 0.885, kx = F.x + F.w * 0.10;
+    g += starchBlob(kx, ky, 0.62, 0) + tag('starch', kx + 13, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    if (global.Bench) g += global.Bench.amylase(kx + F.w * 0.33, ky, 0.6);
+    g += tag('amylase', kx + F.w * 0.33 + 9, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    g += maltosePair(kx + F.w * 0.66, ky, 0.8) + tag('maltose', kx + F.w * 0.66 + 10, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    return g;
+  }
+
   /* The two tests, drawn as the tubes a student actually ends up holding. Only the water
      from outside the tubing is tested: that is the whole result. */
   function viskingTests(ctx) {
@@ -903,7 +1014,7 @@
      It keeps its own state, so a redraw does not undo what has been done (bench.js). */
   function bench(ctx) { return global.Bench ? global.Bench.draw(ctx) : ''; }
 
-  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests, viskingThree:viskingThree, bench:bench };
+  var ANIMS = { peristalsis:peristalsis, swallow:swallow, churn:churn, bileflow:bileflow, maltase:maltase, portal:portal, saliva:saliva, visking:visking, viskingTests:viskingTests, viskingThree:viskingThree, viskingModel:viskingModel, bench:bench };
   /* every animation goes through here so the frame is known before any label is written */
   global.PlateAnim = {};
   Object.keys(ANIMS).forEach(function (k) {
