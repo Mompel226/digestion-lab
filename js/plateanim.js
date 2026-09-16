@@ -1127,21 +1127,26 @@
     g += '<path d="' + bag.d + '" fill="none" stroke="#FFFDF9" stroke-width="' + f1(2 * mq) +
          '" stroke-dasharray="' + f1(1.4 * mq) + ' ' + f1(6 * mq) + '" stroke-linecap="round"/>';
     var bU = function (f) { return B.y + B.h * f; };
-    g += starchOf(bag.cx - 1 * mq, bU(0.26), 0.58 * mq, 0);
-    if (!tiny) g += starchOf(bag.cx + 2 * mq, bU(0.44), 0.58 * mq, 1);
-    g += amyOf(bag.cx - 4 * mq, bU(0.58), 0.66 * mq);
-    g += maltOf(bag.cx - 4 * mq, bU(0.78), 0.88 * mq) +
-         maltOf(bag.cx + 3 * mq, bU(0.90), 0.88 * mq);
-    g += maltOf(T.x + tw * 0.17, T.y + T.h * 0.38, 0.88 * mq) +
-         maltOf(T.x + T.w - tw * 0.16, T.y + T.h * 0.66, 0.88 * mq) +
-         maltOf(T.x + tw * 0.22, T.y + T.h * 0.93, 0.88 * mq);
-    g += badge('1', bag.cx, bU(0.045), fs * 0.68, Z.IN);
-    g += badge('2', bag.cx + bag.bw * 0.92, bU(0.72), fs * 0.68, Z.WALL);
-    g += badge('3', T.x + tw * 0.17, T.y + T.h * 0.72, fs * 0.68, Z.OUT);
+    g += starchOf(bag.cx - 1 * mq, bU(0.32), 0.58 * mq, 0);
+    if (!tiny) g += starchOf(bag.cx + 2 * mq, bU(0.48), 0.58 * mq, 1);
+    g += amyOf(bag.cx - 4 * mq, bU(0.64), 0.66 * mq);
+    g += maltOf(bag.cx - 4 * mq, bU(0.84), 0.88 * mq) +
+         maltOf(bag.cx + 3 * mq, bU(0.94), 0.88 * mq);
+    g += maltOf(T.x + tw * 0.12, bU(0.28), 0.88 * mq) +
+         maltOf(T.x + T.w - tw * 0.12, bU(0.44), 0.88 * mq) +
+         maltOf(T.x + tw * 0.12, bU(0.86), 0.88 * mq);
+        /* The bag is a lens, so it is narrow at the ends: up at the knot the number was wider
+       than the tubing and read as marking the knot rather than what is inside it. It sits a
+       seventh of the way down, where the tubing has opened out, and never wider than it. */
+    g += badge('1', bag.cx, bU(0.15), Math.min(fs * 0.68, bag.bw * 0.55), Z.IN);
+        /* the bag is widest at its middle and closes towards the knots, so a number placed at
+       the widest half-width sat outside the membrane down here, floating in the water */
+    g += badge('2', bag.cx + bag.bw * 0.83, bU(0.74), fs * 0.68, Z.WALL);
+    g += badge('3', T.x + tw * 0.155, bU(0.66), Math.min(fs * 0.68, tw * 0.115), Z.OUT);
     var mfs2 = fs * (tiny ? 1.0 : 0.90);
-    g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.26), bag.cx - 1 * mq, bU(0.26), mfs2, 'start');
-    g += label(tiny ? 'visking tubing' : 'visking tubing\n(the membrane)', mlx, bU(0.45), bag.cx + bag.bw * 0.92, bU(0.45), mfs2, 'start');
-    g += label(tiny ? 'distilled water' : 'distilled\nwater', mlx, T.y + T.h * 0.78, T.x + T.w - wi, T.y + T.h * 0.78, mfs2, 'start');
+    g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.32), bag.cx - 1 * mq, bU(0.32), mfs2, 'start');
+    g += label(tiny ? 'visking tubing' : 'visking tubing\n(the membrane)', mlx, bU(0.56), bag.cx + bag.bw * 0.92, bU(0.56), mfs2, 'start');
+    g += label(tiny ? 'distilled water' : 'distilled\nwater', mlx, bU(0.80), T.x + T.w - wi, bU(0.80), mfs2, 'start');
 
     /* ============ 2 · the real thing ============ */
     g += plain(tiny ? 'THE REAL THING — a villus' : 'THE REAL THING — a villus of the small intestine', mid, vTitle, fs * 0.92, '#4A5A66', 'middle', 600);
@@ -1265,14 +1270,15 @@
                     maltOf(farL, tip + vh * 0.55, 0.8 * vq) +
                     maltOf(farR, tip + vh * 0.45, 0.8 * vq) +
                     maltOf(mid - vboxW * 0.085, bTop + fs * 1.3, 0.8 * vq);
-    g += badge('1', vboxX + vboxW * 0.045, bTop + fs * 1.5, fs * 0.68, Z.IN);
+    var b1x = vboxX + vboxW * 0.045, b1y = bTop + fs * 1.5;
+    g += badge('1', b1x, b1y, fs * 0.68, Z.IN);
     g += badge('2', mid - vw * 0.44, tip + vh * 0.46, fs * 0.68, Z.WALL);
     g += badge('3', mid - vx, aY + (loopB - aY) * 0.78, fs * 0.68, Z.OUT);
     /* Every leader is ruled horizontally at the height of the part it names, and no two
        parts on a side share a height. Sloping leaders crossed each other and crossed other
        labels, which in Paper 6 loses the mark the label was for. */
-    var RX = vboxX + vboxW * 0.655, LX = vboxX + vboxW * 0.295;
-    g += label('lumen', LX, bTop + fs * 1.5, vboxX + vboxW * 0.105, bTop + fs * 1.5, fs, 'end');
+    var RX = vboxX + vboxW * 0.655;
+    g += label('lumen', b1x + fs * 1.25, b1y, null, null, fs, 'start');
     g += label('microvilli', RX, tip + vh * 0.04, mid + vw * 0.34, tip + vh * 0.04, fs, 'start');
     g += label(tiny ? 'epithelium' : 'epithelium —\none cell thick', RX, tip + vh * 0.25, mid + vw / 2, tip + vh * 0.25, fs, 'start');
     g += label('capillary network', RX, loopY[1], mid + vx * 0.72, loopY[1], fs, 'start');
