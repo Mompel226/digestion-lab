@@ -936,10 +936,28 @@
     var mid = F.x + F.w * 0.5, g = '';
 
     /* ============ 1 · the model ============ */
-    var aTop = F.y + F.h * 0.045, aBot = F.y + F.h * 0.275;
-    g += plain('THE MODEL — visking tubing', mid, aTop - fs * 0.5, fs * 0.92, '#4A5A66', 'middle', 600);
-    var T = { x:mid - 30, y:aTop + 6, w:60, h:aBot - aTop - 6, r:30 };
-    var B = { x:mid - 16, y:aTop, w:32, h:aBot - aTop - 18 };
+    var aTop = F.y + F.h * 0.052, aBot = F.y + F.h * 0.225;
+    var axc = F.x + F.w * 0.645;                      /* across from the key, not centred */
+    /* ---- the key, at the top left, beside the model it explains ---- */
+    var rows = [['1', Z.IN,   [Z.INbg],       'inside the tube', 'the lumen'],
+                ['2', Z.WALL, [Z.FLESH],      'the tubing',      'the epithelium'],
+                ['3', Z.OUT,  [Z.ART, Z.VEN], 'the water',       'the blood']];
+    var ly = F.y + F.h * 0.075, gap = F.h * 0.046, kfs2 = fs * 0.92;
+    g += plain('KEY — THE SAME THREE PARTS', F.x + 5, ly - gap * 0.72, fs * 0.8, '#6B7A82', 'start', 700);
+    rows.forEach(function (r, i) {
+      var y = ly + i * gap, sx = F.x + 5, sw = kfs2 * 1.6, sh = kfs2 * 1.3;
+      r[2].forEach(function (c, k) {
+        g += '<rect x="' + f1(sx + k * sw / r[2].length) + '" y="' + f1(y - sh * 0.62) +
+             '" width="' + f1(sw / r[2].length) + '" height="' + f1(sh) + '" fill="' + c + '"/>';
+      });
+      g += '<rect x="' + f1(sx) + '" y="' + f1(y - sh * 0.62) + '" width="' + f1(sw) + '" height="' + f1(sh) +
+           '" rx="2" fill="none" stroke="' + r[1] + '" stroke-width="1.3"/>';
+      g += badge(r[0], sx + sw + kfs2 * 0.8, y, kfs2 * 0.58, r[1]);
+      g += plain(r[3] + ' \u2192 ' + r[4], sx + sw + kfs2 * 1.7, y + kfs2 * 0.32, kfs2 * 0.92, r[1], 'start', 600);
+    });
+    g += plain('THE MODEL', axc, aTop - fs * 0.5, fs * 0.92, '#4A5A66', 'middle', 600);
+    var T = { x:axc - 26, y:aTop + 6, w:52, h:aBot - aTop - 6, r:26 };
+    var B = { x:axc - 14, y:aTop, w:28, h:aBot - aTop - 16 };
     var bag = viskingBag(B);
     /* The water is drawn to the tube's own outline — round-bottomed, not a box. A
        rectangle left square corners sticking out past the glass at the bottom. */
@@ -965,12 +983,12 @@
     g += badge('1', bag.cx, aTop + 30, fs * 0.62, Z.IN);
     g += badge('2', bag.cx + bag.bw, aTop + 62, fs * 0.62, Z.WALL);
     g += badge('3', T.x + 11, aTop + 90, fs * 0.62, Z.OUT);
-    g += label('starch and\namylase', F.x + F.w * 0.30, aTop + 26, bag.cx - 6, aTop + 42, fs, 'end');
-    g += label('visking tubing', F.x + F.w * 0.70, aTop + 52, bag.cx + bag.bw, aTop + 54, fs, 'start');
-    g += label('distilled\nwater', F.x + F.w * 0.30, aTop + 88, T.x + 9, aTop + 96, fs, 'end');
+    g += label('starch and\namylase', F.x + F.w * 0.795, aTop + 14, bag.cx + bag.bw, aTop + 14, fs * 0.85, 'start');
+    g += label('visking\ntubing', F.x + F.w * 0.795, aTop + 42, bag.cx + bag.bw, aTop + 42, fs * 0.85, 'start');
+    g += label('distilled\nwater', F.x + F.w * 0.795, aTop + 68, T.x + T.w - 6, aTop + 68, fs * 0.85, 'start');
 
     /* ---- the molecules, named once for both drawings ---- */
-    var ky = F.y + F.h * 0.295, kx = F.x + F.w * 0.035, kfs = fs * 0.86;
+    var ky = F.y + F.h * 0.247, kx = F.x + F.w * 0.035, kfs = fs * 0.86;
     g += starchBlob(kx + 5, ky, 0.55, 0) + plain('starch', kx + 14, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
     g += enzyme(kx + F.w * 0.26, ky, 0.55, '#7A5AA8', '#5A3F84') +
          plain('amylase', kx + F.w * 0.26 + 7, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
@@ -979,7 +997,7 @@
     g += maltosePair(kx + F.w * 0.81, ky, 0.72) + plain('maltose', kx + F.w * 0.81 + 8, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
 
     /* ============ 2 · the real thing ============ */
-    var bTop = F.y + F.h * 0.345, base = F.y + F.h * 0.665, vw = 62, tip = bTop + 22;
+    var bTop = F.y + F.h * 0.295, base = F.y + F.h * 0.615, vw = 60, tip = bTop + 22;
     g += plain('THE REAL THING — a villus', mid, bTop - fs * 0.9, fs * 0.92, '#4A5A66', 'middle', 600);
     g += '<rect x="' + f1(F.x + 4) + '" y="' + f1(bTop) + '" width="' + f1(F.w - 8) +
          '" height="' + f1(base - bTop) + '" rx="4" fill="' + Z.INbg + '" stroke="' + Z.IN + '" stroke-width="1.2" stroke-opacity=".55"/>';
@@ -1008,13 +1026,18 @@
        blood reads as one zone with the water in the model. It follows the vessels rather
        than boxing the whole core, which would have swept the lacteal in with them. */
     g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
-         ' m32,0 V' + f1(base + 8) + '" fill="none" stroke="' + Z.OUTbg + '" stroke-width="11.5" stroke-linecap="round"/>';
+         ' m32,0 V' + f1(base + 24) + '" fill="none" stroke="' + Z.OUTbg + '" stroke-width="11.5" stroke-linecap="round"/>';
     g += '<path d="M' + f1(mid - 16) + ',' + f1(tip + 28) + ' a16,13 0 0 1 32,0" fill="none" stroke="' + Z.OUTbg +
          '" stroke-width="12" stroke-linecap="round"/>';
-    g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
+    g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 24) + ' V' + f1(tip + 28) +
          '" fill="none" stroke="' + Z.ART + '" stroke-width="4.6" stroke-linecap="round"/>';
-    g += '<path d="M' + f1(mid + 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
+    g += '<path d="M' + f1(mid + 16) + ',' + f1(base + 24) + ' V' + f1(tip + 28) +
          '" fill="none" stroke="' + Z.VEN + '" stroke-width="4.6" stroke-linecap="round"/>';
+    /* which way the blood is travelling, said with an arrowhead on each */
+    g += '<path d="M' + f1(mid - 20) + ',' + f1(base + 15) + ' L' + f1(mid - 16) + ',' + f1(base + 8) +
+         ' L' + f1(mid - 12) + ',' + f1(base + 15) + ' Z" fill="' + Z.ART + '"/>';
+    g += '<path d="M' + f1(mid + 12) + ',' + f1(base + 13) + ' L' + f1(mid + 16) + ',' + f1(base + 20) +
+         ' L' + f1(mid + 20) + ',' + f1(base + 13) + ' Z" fill="' + Z.VEN + '"/>';
     g += '<path d="M' + f1(mid - 16) + ',' + f1(tip + 28) + ' a16,13 0 0 1 32,0" fill="none" stroke="' + Z.OUT +
          '" stroke-width="3.6" stroke-linecap="round"/>';
     for (var q = 0; q < 3; q++) {
@@ -1052,27 +1075,23 @@
     g += label('epithelium —\none cell thick', RX, tip + 28, mid + vw / 2, tip + 28, fs, 'start');
     g += label('capillary network', RX, tip + 52, mid + 16, tip + 52, fs, 'start');
     g += label('goblet cell', RX, gy, ep.gobAt ? ep.gobAt.x : mid + vw / 2, gy, fs, 'start');
-    g += plain('arteriole', mid - 20, base + 26, fs * 0.9, Z.ART, 'end', 600);
-    g += plain('venule', mid + 20, base + 26, fs * 0.9, Z.VEN, 'start', 600);
+    g += plain('arteriole', mid - 24, base + 30, fs * 0.9, Z.ART, 'end', 600);
+    g += plain('blood in, from the aorta', mid - 24, base + 39, fs * 0.76, '#6B7A82', 'end');
+    g += plain('venule', mid + 24, base + 30, fs * 0.9, Z.VEN, 'start', 600);
+    g += plain('blood out, to the liver', mid + 24, base + 39, fs * 0.76, '#6B7A82', 'start');
+    g += plain('(the hepatic portal vein)', mid + 24, base + 39 + fs * 1.05, fs * 0.76, '#6B7A82', 'start');
 
-    /* ============ 3 · what matches what ============ */
-    var rows = [['1', Z.IN,   [Z.INbg],        'inside the tube', 'the lumen'],
-                ['2', Z.WALL, [Z.FLESH],       'the tubing',      'the epithelium'],
-                ['3', Z.OUT,  [Z.ART, Z.VEN],  'the water',       'the blood']];
-    var ly = F.y + F.h * 0.782, gap = F.h * 0.046;
-    g += plain('KEY — THE SAME THREE PARTS', F.x + F.w * 0.05, ly - gap * 0.8, fs * 0.82, '#6B7A82', 'start', 700);
-    rows.forEach(function (r, i) {
-      var y = ly + i * gap, sx = F.x + F.w * 0.05, sw = fs * 1.7, sh = fs * 1.35;
-      /* the swatch is the key: it is painted in the colour that part is painted in above,
-         which for the blood is the two vessels rather than a wash */
-      r[2].forEach(function (c, k) {
-        g += '<rect x="' + f1(sx + k * sw / r[2].length) + '" y="' + f1(y - sh * 0.62) +
-             '" width="' + f1(sw / r[2].length) + '" height="' + f1(sh) + '" fill="' + c + '"/>';
-      });
-      g += '<rect x="' + f1(sx) + '" y="' + f1(y - sh * 0.62) + '" width="' + f1(sw) + '" height="' + f1(sh) +
-           '" rx="2" fill="none" stroke="' + r[1] + '" stroke-width="1.4"/>';
-      g += badge(r[0], sx + sw + fs * 0.95, y, fs * 0.62, r[1]);
-      g += plain(r[3] + '  →  ' + r[4], sx + sw + fs * 2.1, y + fs * 0.34, fs * 0.98, r[1], 'start', 600);
+    /* ============ 3 · where the model stops being true ============
+       A model is only worth as much as the reader knows its limits. In the tubing the
+       maltose simply diffuses out; in the gut it never crosses at all. */
+    var ny0 = F.y + F.h * 0.735, nfs = fs * 0.86;
+    g += plain('WHERE THE MODEL STOPS BEING TRUE', F.x + 5, ny0, nfs * 0.92, '#8A5A2B', 'start', 700);
+    ['Maltose does not cross the wall. Maltase on the',
+     'epithelium breaks it down to glucose first, and the',
+     'glucose is taken in by active transport, using energy',
+     'from respiration. In the tubing it just diffuses out.'
+    ].forEach(function (line, i) {
+      g += plain(line, F.x + 5, ny0 + 11 + i * (nfs * 1.25), nfs * 0.92, '#5A6670', 'start');
     });
     return g;
   }
