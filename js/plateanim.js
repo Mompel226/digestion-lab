@@ -860,37 +860,62 @@
       pts.push({ x:mid + Math.cos(a) * r, y:cy - Math.sin(a) * r, nx:Math.cos(a), ny:-Math.sin(a) }); }
     for (i = 1; i <= nSide; i++) pts.push({ x:mid + r, y:cy + (i / nSide) * side, nx:1, ny:0 });
 
-    var inner = '', cells = '', brush = '', nuclei = '', goblet = '';
-    var gob = Math.round(nSide * 0.45);                       /* one cell low on the left */
+    var inner = '', cells = '', brush = '', nuclei = '', goblet = '', gobAt = null;
+    var gob = nSide + nCap + 3;                              /* down the right side, clear of the cap */
     pts.forEach(function (p, k) {
       var ix = p.x - p.nx * t, iy = p.y - p.ny * t;
       inner += (k ? ' L' : 'M') + f1(ix) + ',' + f1(iy);
-      /* the wall between this cell and the next */
       cells += '<line x1="' + f1(p.x) + '" y1="' + f1(p.y) + '" x2="' + f1(ix) + '" y2="' + f1(iy) +
                '" stroke="' + Z.WALL + '" stroke-width="1" stroke-opacity=".8"/>';
       if (k === pts.length - 1) return;
       var q = pts[k + 1], mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
       var nx = (p.nx + q.nx) / 2, ny = (p.ny + q.ny) / 2, m = Math.sqrt(nx * nx + ny * ny) || 1;
       nx /= m; ny /= m;
+      var tx = -ny, ty = nx;
       if (k === gob) {
-        /* a goblet cell: narrow at its base, open at the surface, with mucus at the mouth */
-        goblet += '<path d="M' + f1(mx - nx * t) + ',' + f1(my - ny * t) +
-                  ' L' + f1(mx + ny * 4.6) + ',' + f1(my - nx * 4.6) +
-                  ' L' + f1(mx - ny * 4.6) + ',' + f1(my + nx * 4.6) + ' Z" fill="#CFE0EF" stroke="' + Z.WALL + '" stroke-width="1"/>';
-        goblet += '<circle cx="' + f1(mx + nx * 2.6) + '" cy="' + f1(my + ny * 2.6) + '" r="2" fill="#9DBBD6"/>';
+        /* A goblet cell is goblet-shaped: a narrow stalk at the base opening into a cup at
+           the surface, full of mucus. Drawn the same size as its neighbours it was just
+           another cell with a label pointing at it. It carries no brush border either. */
+        var wi = 1.8, wo = 8.4, deep = t * 1.25;
+        goblet += '<path d="M' + f1(mx - nx * deep - tx * wi) + ',' + f1(my - ny * deep - ty * wi) +
+                  ' L' + f1(mx - tx * wo) + ',' + f1(my - ty * wo) +
+                  ' Q' + f1(mx - nx * 2.4) + ',' + f1(my - ny * 2.4) + ' ' +
+                         f1(mx + tx * wo) + ',' + f1(my + ty * wo) +
+                  ' L' + f1(mx - nx * deep + tx * wi) + ',' + f1(my - ny * deep + ty * wi) + ' Z"' +
+                  ' fill="#CFE0EF" stroke="' + Z.WALL + '" stroke-width="1.4"/>';
+        for (var mg = -2; mg <= 2; mg++)
+          goblet += '<circle cx="' + f1(mx - nx * (5 + Math.abs(mg)) + tx * mg * 2.5) +
+                    '" cy="' + f1(my - ny * (5 + Math.abs(mg)) + ty * mg * 2.5) + '" r="1.4" fill="#8FB2D2"/>';
+        /* the mucus it has just let go of, so the cell is doing something */
+        goblet += '<circle cx="' + f1(mx + nx * 5) + '" cy="' + f1(my + ny * 5) + '" r="2.1" fill="#B9D2E6" opacity=".9"/>';
+        gobAt = { x:mx + nx * 4, y:my + ny * 4 };
       } else {
         nuclei += '<ellipse cx="' + f1(mx - nx * t * 0.62) + '" cy="' + f1(my - ny * t * 0.62) +
                   '" rx="2.1" ry="1.7" fill="' + Z.WALL + '" opacity=".55" transform="rotate(' +
                   f1(Math.atan2(ny, nx) * 180 / Math.PI) + ',' + f1(mx - nx * t * 0.62) + ',' + f1(my - ny * t * 0.62) + ')"/>';
-        /* three folds of membrane to a cell — microvilli belong to the cell, not to the villus */
-        for (var j = -1; j <= 1; j++) {
-          var bx = mx + ny * j * 2.4, by = my - nx * j * 2.4;
-          brush += '<line x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(bx + nx * 4.2) +
-                   '" y2="' + f1(by + ny * 4.2) + '" stroke="' + Z.WALL + '" stroke-width="1.1" stroke-linecap="round" stroke-opacity=".85"/>';
-        }
       }
     });
-    return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet };
+
+    /* The brush border is set out along the surface at a fixed spacing, not shared out per
+       cell. Per cell, the crowded cells over the curved tip grew a denser fringe than the
+       straight sides, which said the tip has more microvilli than the rest. It does not. */
+    for (i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i], p1 = pts[i + 1];
+      var seg = Math.sqrt((p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y));
+      var count = Math.max(1, Math.round(seg / 3.1));
+      for (var c = 0; c < count; c++) {
+        var u = (c + 0.5) / count;
+        var bx = p0.x + (p1.x - p0.x) * u, by = p0.y + (p1.y - p0.y) * u;
+        var bnx = p0.nx + (p1.nx - p0.nx) * u, bny = p0.ny + (p1.ny - p0.ny) * u;
+        var bm = Math.sqrt(bnx * bnx + bny * bny) || 1; bnx /= bm; bny /= bm;
+        if (i === gob) continue;                       /* a goblet cell has none */
+        brush += '<line x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(bx + bnx * 4) +
+                 '" y2="' + f1(by + bny * 4) + '" stroke="' + Z.WALL +
+                 '" stroke-width="1.05" stroke-linecap="round" stroke-opacity=".85"/>';
+      }
+    }
+
+    return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet, gobAt:gobAt };
   }
 
   function viskingModel(ctx) {
@@ -930,7 +955,7 @@
     g += badge('3', T.x + 11, aTop + 90, fs * 0.62, Z.OUT);
     g += label('starch and\namylase', F.x + F.w * 0.30, aTop + 26, bag.cx - 6, aTop + 42, fs, 'end');
     g += label('visking tubing', F.x + F.w * 0.70, aTop + 52, bag.cx + bag.bw, aTop + 54, fs, 'start');
-    g += label('water', F.x + F.w * 0.30, aTop + 92, T.x + 9, aTop + 96, fs, 'end');
+    g += label('distilled\nwater', F.x + F.w * 0.30, aTop + 88, T.x + 9, aTop + 96, fs, 'end');
 
     /* ---- the molecules, named once for both drawings ---- */
     var ky = F.y + F.h * 0.295, kx = F.x + F.w * 0.06;
@@ -990,12 +1015,16 @@
     g += badge('1', F.x + 15, bTop + 11, fs * 0.66, Z.IN);
     g += badge('2', mid - vw / 2 + 1, tip + 44, fs * 0.66, Z.WALL);
     g += badge('3', mid - 16, tip + 58, fs * 0.66, Z.ART);
-    g += label('lumen', F.x + F.w * 0.30, bTop + 30, F.x + 34, bTop + 20, fs, 'end');
-    g += label('microvilli', F.x + F.w * 0.66, tip - 6, mid + vw * 0.36, tip + 2, fs, 'start');
-    g += label('epithelium —\none cell thick', F.x + F.w * 0.66, tip + 34, mid + vw / 2, tip + 40, fs, 'start');
-    g += label('capillary\nnetwork', F.x + F.w * 0.66, tip + 82, mid + 14, tip + 66, fs, 'start');
-    g += label('lacteal', F.x + F.w * 0.30, tip + 58, mid, tip + 54, fs, 'end');
-    g += label('goblet cell', F.x + F.w * 0.30, base - 24, mid - vw / 2 + 2, base - 28, fs, 'end');
+    /* Every leader is ruled horizontally at the height of the part it names, and no two
+       parts on a side share a height. Sloping leaders crossed each other and crossed other
+       labels, which in Paper 6 loses the mark the label was for. */
+    var gy = ep.gobAt ? ep.gobAt.y : tip + 70, RX = F.x + F.w * 0.66, LX = F.x + F.w * 0.30;
+    g += label('lumen', LX, bTop + 16, F.x + 34, bTop + 16, fs, 'end');
+    g += label('lacteal', LX, tip + 86, mid, tip + 86, fs, 'end');
+    g += label('microvilli', RX, tip + 4, mid + vw * 0.34, tip + 4, fs, 'start');
+    g += label('epithelium —\none cell thick', RX, tip + 28, mid + vw / 2, tip + 28, fs, 'start');
+    g += label('capillary network', RX, tip + 52, mid + 16, tip + 52, fs, 'start');
+    g += label('goblet cell', RX, gy, ep.gobAt ? ep.gobAt.x : mid + vw / 2, gy, fs, 'start');
     g += plain('arteriole', mid - 20, base + 26, fs * 0.9, Z.ART, 'end', 600);
     g += plain('venule', mid + 20, base + 26, fs * 0.9, Z.VEN, 'start', 600);
 
