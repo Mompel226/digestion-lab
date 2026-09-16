@@ -1147,6 +1147,10 @@
     g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.32), bag.cx - 1 * mq, bU(0.32), mfs2, 'start');
     g += label(tiny ? 'visking tubing' : 'visking tubing\n(the membrane)', mlx, bU(0.56), bag.cx + bag.bw * 0.92, bU(0.56), mfs2, 'start');
     g += label(tiny ? 'distilled water' : 'distilled\nwater', mlx, bU(0.80), T.x + T.w - wi, bU(0.80), mfs2, 'start');
+    /* The one molecule that crosses is worth naming where it has crossed. It goes to the
+       left of the tube, where nothing else is: the three labels on the right are already
+       spaced to the bag, and a fourth among them would have closed the gaps up. */
+    g += label('maltose', T.x - fs * 0.9, bU(0.86), T.x + tw * 0.12, bU(0.86), mfs2, 'end');
 
     /* ============ 2 · the real thing ============ */
     g += plain(tiny ? 'THE REAL THING — a villus' : 'THE REAL THING — a villus of the small intestine', mid, vTitle, fs * 0.92, '#4A5A66', 'middle', 600);
