@@ -516,6 +516,11 @@
     /* A lab step draws its own apparatus and nothing of the body belongs in the frame —
        not the organs, not their labels, not the canal. `hide` only reaches art paths. */
     svg.classList.toggle('is-lab', !!s.lab);
+    /* The toggles above the plate — Follow the food, Labels, Beyond syllabus, Whole body —
+       all act on the alimentary canal. A lab step has drawn its own apparatus in place of
+       the body, so they have nothing to work on and are hidden with it. */
+    var col = document.querySelector('.bodycol');
+    if (col) col.classList.toggle('is-lab', !!s.lab);
     wipe();
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
