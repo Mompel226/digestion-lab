@@ -1023,14 +1023,14 @@
        Laid out in fractions of the plate, the bands closed up on a short plate while the
        type, which is sized in pixels, did not, and the rows landed on one another. Every
        band below is placed from the one above it and from the type it has to carry. */
-    var kx = F.x + W * 0.014, kfs = fs * 0.86, nfs = fs * 0.86;
+    var kx = F.x + W * 0.014, kfs = fs * 0.86, nfs = fs * 0.92;
     var kW = W * (wide ? 0.355 : 0.44);          /* the key's own column */
     var NOTE = 'Amylase breaks starch into maltose in both. In the tubing the maltose then diffuses straight out ' +
                'through the wall. In the gut it cannot: maltase on the microvilli has to break it into glucose first, ' +
                'and the glucose is taken in by active transport. That last step is where the model stops being a fair copy.';
     var nx0 = F.x + W * 0.012, nw = W * 0.976, nPad = W * 0.022;
     var noteLines = tiny ? [] : wrapTo(NOTE, nw - nPad * 2, nfs);
-    var noteH = tiny ? 0 : fs * 0.9 + nfs * (3.35 + (noteLines.length - 1) * 1.25);
+    var noteH = tiny ? 0 : fs * 0.9 + nfs * (3.45 + (noteLines.length - 1) * 1.25);
     var bodyH = H - noteH;                       /* everything above the closing note */
     var kHead = F.y + fs * 1.4;                  /* KEY ... */
     var kCols = kHead + fs * 1.45;               /* model / body */
@@ -1052,8 +1052,8 @@
     /* the villus, and the stretch of gut wall it stands on */
     var vboxX = F.x + W * (wide ? 0.560 : 0.012), vboxW = W * (wide ? 0.428 : 0.976);
     var mid   = vboxX + vboxW / 2;
-    var vTitle = wide ? F.y + fs * 1.4 : Math.max(leftEnd, aBot) + fs * 2.1;
-    var bTop   = vTitle + fs * 1.0;
+    var vTitle = wide ? F.y + fs * 1.3 : Math.max(leftEnd, aBot) + fs * 1.9;
+    var bTop   = vTitle + fs * 2.6;
     /* room under the wall for where the two vessels are going, which depends on how wide the
        villus turns out to be, which depends on the room left over: settled in two passes */
     var vwCap = Math.min(W * 0.215, vboxW * 0.30);
@@ -1093,7 +1093,7 @@
     /* the glyphs grow with the type beside them; at a fixed size they read as smudges on a
        plate whose words are half as big again */
     var mfs = fs * 0.86, gq = fs / 8;
-    var mcol = [kx + kW * 0.030, kx + kW * 0.500];   /* two to a row, down the key's column */
+    var mcol = [kx + kW * 0.030, kx + kW * 0.440];   /* two to a row, down the key's column */
     if (!tiny) {
       g += plain('THE MOLECULES', kx, mHead, fs * 0.82, '#6B7A82', 'start', 700);
       g += (Bn ? Bn.starchFlat(mcol[0], mrow[0], 0.52 * gq) : starchBlob(mcol[0], mrow[0], 0.68 * gq, 0)) +
@@ -1105,7 +1105,7 @@
     }
 
     /* ---- the apparatus, in the colours it wears on the bench ---- */
-    g += plain('THE MODEL', axc, aTop - fs * 0.7, fs * 0.92, '#4A5A66', 'middle', 600);
+    g += plain('THE MODEL', axc, aTop - fs * 0.8, fs * 1.05, '#2F3E46', 'middle', 700);
     var T = { x:axc - tw / 2, y:aTop + fs * 0.95, w:tw, h:aBot - aTop - fs * 0.95 };
     var B = { x:axc - bw / 2, y:aTop, w:bw, h:aBot - aTop - fs * 2.5 };
     var mq = bw / 28;                                 /* the bag was drawn 28 units across */
@@ -1160,7 +1160,10 @@
                Math.max(T.x + mfs2 * 0.24, T.x + tw * 0.22 - 4.3 * mq - sGap), bU(0.86), mfs2, 'end');
 
     /* ============ 2 · the real thing ============ */
-    g += plain(tiny ? 'THE REAL THING — a villus' : 'THE REAL THING — a villus of the small intestine', mid, vTitle, fs * 0.92, '#4A5A66', 'middle', 600);
+    /* One muted grey line was read straight past. It is a heading now: a quiet line saying
+       which half of the figure you are in, and under it, large and dark, the thing itself. */
+    g += plain('THE REAL THING', mid, vTitle, fs * 0.80, '#8A97A0', 'middle', 700);
+    g += plain(tiny ? 'a villus' : 'a villus of the small intestine', mid, vTitle + fs * 1.40, fs * 1.24, '#2F3E46', 'middle', 700);
     /* The gut wall the villi stand on, and the lumen above it. The lumen is the beige that
        is inside the tubing in the model, because it is the same place; the wall wears the
        tubing's own colour, because it is the same barrier. */
@@ -1279,7 +1282,6 @@
     if (!tiny) g += starchOf(mid - vboxW * 0.205, bTop + fs * 3.0, 0.52 * vq, 2) +
                     starchOf(mid + vboxW * 0.400, bTop + fs * 1.9, 0.52 * vq, 3) +
                     maltOf(farL, tip + vh * 0.55, 0.8 * vq) +
-                    maltOf(farR, tip + vh * 0.45, 0.8 * vq) +
                     maltOf(mid - vboxW * 0.085, bTop + fs * 1.3, 0.8 * vq);
     var b1x = vboxX + vboxW * 0.045, b1y = bTop + fs * 1.5;
     g += badge('1', b1x, b1y, fs * 0.68, Z.IN);
@@ -1312,12 +1314,12 @@
     var nTop = F.y + bodyH + fs * 0.9;
     if (!tiny) {
     g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nw) + '" height="' + f1(F.y + H - nTop) +
-         '" rx="4" fill="#F7EFE2" stroke="#D8BE95" stroke-width="1.1"/>';
-    g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nfs * 0.42) + '" height="' + f1(F.y + H - nTop) +
-         '" rx="2" fill="#B07A34"/>';
-    g += plain('WHERE THE MODEL STOPS BEING TRUE', nx0 + nPad, nTop + nfs * 1.5, nfs * 0.94, '#8A5A2B', 'start', 700);
+         '" rx="4" fill="#FBF1DF" stroke="#C79A4E" stroke-width="1.6"/>';
+    g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nfs * 0.62) + '" height="' + f1(F.y + H - nTop) +
+         '" rx="2" fill="#A8641C"/>';
+    g += plain('WHERE THE MODEL STOPS BEING TRUE', nx0 + nPad, nTop + nfs * 1.5, nfs * 1.06, '#8A4B12', 'start', 700);
     noteLines.forEach(function (line, i) {
-      g += plain(line, nx0 + nPad, nTop + nfs * 2.85 + i * nfs * 1.25, nfs, '#5A6670', 'start');
+      g += plain(line, nx0 + nPad, nTop + nfs * 2.90 + i * nfs * 1.25, nfs, '#4A5560', 'start');
     });
     }
 
