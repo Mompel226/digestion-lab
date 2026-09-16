@@ -856,17 +856,6 @@
            '<text x="' + f1(x) + '" y="' + f1(y + r * 0.53) + '" font-size="' + f1(r * 1.5) +
            '" fill="#FFFDF9" text-anchor="middle" font-weight="700">' + n + '</text>';
   }
-  /* Break a sentence to a width rather than to a guess. Hand-wrapped lines were written
-     for one plate size and ran off every other one. */
-  function wrapTo(text, width, size) {
-    var words = String(text).split(' '), out = [], line = '';
-    words.forEach(function (w) {
-      var t = line ? line + ' ' + w : w;
-      if (line && t.length * size * 0.50 > width) { out.push(line); line = w; } else line = t;
-    });
-    if (line) out.push(line);
-    return out;
-  }
   function plain(t, x, y, fs, col, anchor, weight) {
     return '<text x="' + f1(x) + '" y="' + f1(y) + '" font-size="' + f1(fs) + '" fill="' + col +
            '" text-anchor="' + (anchor || 'middle') + '"' + (weight ? ' font-weight="' + weight + '"' : '') + '>' + t + '</text>';
@@ -1023,15 +1012,12 @@
        Laid out in fractions of the plate, the bands closed up on a short plate while the
        type, which is sized in pixels, did not, and the rows landed on one another. Every
        band below is placed from the one above it and from the type it has to carry. */
-    var kx = F.x + W * 0.014, kfs = fs * 0.86, nfs = fs * 0.92;
+    var kx = F.x + W * 0.014, kfs = fs * 0.86;
     var kW = W * (wide ? 0.355 : 0.44);          /* the key's own column */
-    var NOTE = 'Amylase breaks starch into maltose in both. In the tubing the maltose then diffuses straight out ' +
-               'through the wall. In the gut it cannot: maltase on the microvilli has to break it into glucose first, ' +
-               'and the glucose is taken in by active transport. That last step is where the model stops being a fair copy.';
-    var nx0 = F.x + W * 0.012, nw = W * 0.976, nPad = W * 0.022;
-    var noteLines = tiny ? [] : wrapTo(NOTE, nw - nPad * 2, nfs);
-    var noteH = tiny ? 0 : fs * 0.9 + nfs * (3.45 + (noteLines.length - 1) * 1.25);
-    var bodyH = H - noteH;                       /* everything above the closing note */
+    /* Where the model stops being true is said by a button on the plate now, not by a band
+       at the foot of this figure. Set as large as it could be and still fit, it was still
+       read past — and it was taking a fifth of the height from the drawing to do it. */
+    var bodyH = H;
     var kHead = F.y + fs * 1.4;                  /* KEY ... */
     var kCols = kHead + fs * 1.45;               /* model / body */
     var ly    = kCols + kfs * 1.1;               /* first key row */
@@ -1305,23 +1291,6 @@
     g += plain('venule', veX, vy, fs * 0.94, Z.VEN, 'middle', 700);
     g += plain('blood out, to the liver', veX, vy + fs * 1.15, fs * 0.8, '#6B7A82', 'middle');
     g += plain('(the hepatic portal vein)', veX, vy + fs * 2.15, fs * 0.78, '#6B7A82', 'middle');
-
-    /* ============ 3 · where the model stops being true ============
-       A model is only worth as much as the reader knows its limits. In the tubing the
-       maltose simply diffuses out; in the gut it never crosses at all. The band runs the
-       width of the plate: cornered, it read as a footnote rather than as the correction
-       to everything above it. */
-    var nTop = F.y + bodyH + fs * 0.9;
-    if (!tiny) {
-    g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nw) + '" height="' + f1(F.y + H - nTop) +
-         '" rx="4" fill="#FBF1DF" stroke="#C79A4E" stroke-width="1.6"/>';
-    g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nfs * 0.62) + '" height="' + f1(F.y + H - nTop) +
-         '" rx="2" fill="#A8641C"/>';
-    g += plain('WHERE THE MODEL STOPS BEING TRUE', nx0 + nPad, nTop + nfs * 1.5, nfs * 1.06, '#8A4B12', 'start', 700);
-    noteLines.forEach(function (line, i) {
-      g += plain(line, nx0 + nPad, nTop + nfs * 2.90 + i * nfs * 1.25, nfs, '#4A5560', 'start');
-    });
-    }
 
     FRAME = keepFrame; TIGHT = keepTight;
     return g;

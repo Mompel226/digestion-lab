@@ -1142,3 +1142,25 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 }
 .bodycol.is-lab #tDiagramHint::before{ content:"\2190"; font-size:1.2em; line-height:1; }
 .bodycol.is-lab #tDiagram[aria-pressed="true"] ~ #tDiagramHint{ display:none; }
+/* The limits of the model had been a note at the foot of the figure, where it was read past
+   however large it was set. It is a button now: it owns the words instead of competing with
+   the drawing for room, and the drawing gets that room back. */
+#tLimits { display:none; }
+.bodycol.is-lab #tLimits{
+  display:inline-flex; background:#A8322A; color:#FFFDF9; border-color:#A8322A; font-weight:600;
+  box-shadow:0 1px 2px rgba(80,25,20,.2), 0 4px 10px rgba(80,25,20,.16);
+}
+.bodycol.is-lab #tLimits::before{ content:"\26A0\FE0E\00a0\00a0"; font-weight:400; }
+.bodycol.is-lab #tLimits:hover{ background:#7E2119; border-color:#7E2119; }
+.limits{ margin:.65em 0; padding-left:1.15em; }
+.limits li{ margin:.5em 0; }
+/* On a phone these two controls wrapped the plate's toolbar onto a second row, and the row
+   comes straight off the height of the drawing — a fifth of the label size. The toolbar is
+   kept to one row there: the note goes, its work already done by two filled, coloured
+   buttons on a bar that now holds only three things, and the red one says its own name. */
+#tLimits .lbl-short{ display:none; }
+@media (max-width:560px){
+  .bodycol.is-lab #tDiagramHint{ display:none; }
+  #tLimits .lbl-long{ display:none; }
+  #tLimits .lbl-short{ display:inline; }
+}

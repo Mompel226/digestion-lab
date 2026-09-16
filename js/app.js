@@ -1794,6 +1794,13 @@
       });
     })();
 
+    (function () {
+      var dlg = document.getElementById('limitsDlg'), open = document.getElementById('tLimits');
+      if (!dlg || !open) return;
+      open.addEventListener('click', function () { dlg.hidden = false; });
+      document.getElementById('limitsClose').addEventListener('click', function () { dlg.hidden = true; });
+      dlg.addEventListener('click', function (e) { if (e.target === this) this.hidden = true; });
+    })();
     document.getElementById('btnHelp').addEventListener('click', function () {
       document.getElementById('modal').hidden = false;
     });
@@ -1809,7 +1816,7 @@
     document.addEventListener('keydown', function (e) {
       if (e.key !== 'Escape') return;
       closePeek();
-      ['modal', 'glossDlg', 'subDlg'].forEach(function (id) {
+      ['modal', 'glossDlg', 'subDlg', 'limitsDlg'].forEach(function (id) {
         var el = document.getElementById(id);
         if (el) el.hidden = true;
       });
