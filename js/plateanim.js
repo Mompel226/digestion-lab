@@ -827,8 +827,9 @@
 
      The frame is 280 wide and portrait, so the two drawings are stacked. Side by side
      neither is wide enough to label, which is what made the first attempt unreadable. */
-  var Z = { IN:'#3F7A2E', WALL:'#1F7A8C', OUT:'#B6412A',
-            INbg:'#E4EFDD', OUTbg:'#F7DEDC', FLESH:'#F6E7DA' };
+  var Z = { IN:'#2F6B22', WALL:'#12626F', OUT:'#A8322A',
+            INbg:'#CBE3BC', OUTbg:'#F3C9C4', FLESH:'#F6E7DA',
+            ART:'#C0392B', VEN:'#3A6EA5' };
 
   function maltosePair(x, y, s) {
     s = s || 1;
@@ -875,64 +876,90 @@
     g += label('visking tubing', F.x + F.w * 0.70, aTop + 52, bag.cx + bag.bw, aTop + 54, fs, 'start');
     g += label('water', F.x + F.w * 0.30, aTop + 92, T.x + 9, aTop + 96, fs, 'end');
 
+    /* ---- the molecules, named once for both drawings ---- */
+    var ky = F.y + F.h * 0.295, kx = F.x + F.w * 0.06;
+    g += starchBlob(kx + 6, ky, 0.6, 0) + plain('starch', kx + 17, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    if (global.Bench) g += global.Bench.amylase(kx + F.w * 0.36, ky, 0.6);
+    g += plain('amylase', kx + F.w * 0.36 + 8, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    g += maltosePair(kx + F.w * 0.68, ky, 0.78) + plain('maltose', kx + F.w * 0.68 + 9, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+
     /* ============ 2 · the real thing ============ */
-    var bTop = F.y + F.h * 0.345, base = F.y + F.h * 0.695, vw = 66, tip = bTop + 24;
+    var bTop = F.y + F.h * 0.345, base = F.y + F.h * 0.665, vw = 62, tip = bTop + 22;
     g += plain('THE REAL THING — a villus', mid, bTop - fs * 0.9, fs * 0.92, '#4A5A66', 'middle', 600);
     g += '<rect x="' + f1(F.x + 4) + '" y="' + f1(bTop) + '" width="' + f1(F.w - 8) +
-         '" height="' + f1(base - bTop) + '" rx="4" fill="' + Z.INbg + '"/>';
+         '" height="' + f1(base - bTop) + '" rx="4" fill="' + Z.INbg + '" stroke="' + Z.IN + '" stroke-width="1.2" stroke-opacity=".55"/>';
     g += '<rect x="' + f1(F.x + 4) + '" y="' + f1(base) + '" width="' + f1(F.w - 8) +
          '" height="10" fill="' + Z.FLESH + '" stroke="' + Z.WALL + '" stroke-width="1.4"/>';
-    g += plain('wall of the small intestine', mid, base + 22, fs * 0.84, '#6B7A82');
     var vd = 'M' + f1(mid - vw / 2) + ',' + f1(base) + ' V' + f1(tip + vw / 2) +
              ' a' + f1(vw / 2) + ',' + f1(vw / 2) + ' 0 0 1 ' + f1(vw) + ',0 V' + f1(base);
-    /* the neighbours, so this reads as one finger of a lining */
     [-1, 1].forEach(function (k) {
-      var c = mid + k * (vw + 16), w = 30;
-      g += '<path d="M' + f1(c - w / 2) + ',' + f1(base) + ' V' + f1(tip + 34) +
+      var c = mid + k * (vw + 18), w = 28;
+      g += '<path d="M' + f1(c - w / 2) + ',' + f1(base) + ' V' + f1(tip + 32) +
            ' a' + f1(w / 2) + ',' + f1(w / 2) + ' 0 0 1 ' + f1(w) + ',0 V' + f1(base) +
-           '" fill="' + Z.FLESH + '" opacity=".55" stroke="' + Z.WALL + '" stroke-width="1.3"/>';
+           '" fill="' + Z.FLESH + '" opacity=".6" stroke="' + Z.WALL + '" stroke-width="1.3"/>';
     });
     g += '<path d="' + vd + ' Z" fill="' + Z.FLESH + '"/>';
-    /* the lacteal up the middle, the capillary network around it */
-    g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 26) + '" fill="none" stroke="#C9D6B4" stroke-width="9" stroke-linecap="round"/>';
-    g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 26) + '" fill="none" stroke="#7E9B5E" stroke-width="1.3" stroke-dasharray="3 3"/>';
-    g += '<path d="M' + f1(mid - 17) + ',' + f1(base) + ' V' + f1(tip + 30) + ' a17,15 0 0 1 34,0 V' + f1(base) +
-         '" fill="none" stroke="' + Z.OUT + '" stroke-width="4.4" stroke-linecap="round"/>';
-    /* the wall: one cell thick, with microvilli along it and a goblet cell set into it */
-    g += '<path d="' + vd + '" fill="none" stroke="' + Z.WALL + '" stroke-width="3"/>';
+    /* the lacteal up the middle */
+    g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 24) + '" fill="none" stroke="#DCE8C4" stroke-width="9" stroke-linecap="round"/>';
+    g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 24) + '" fill="none" stroke="#6F8F4A" stroke-width="1.3" stroke-dasharray="3 3"/>';
+    /* blood in, blood out: an arteriole up one side, a venule down the other, the capillary
+       network joining them over the top. Red and blue because that is how every diagram a
+       student will meet draws them, and the colours are the label. */
+    g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
+         '" fill="none" stroke="' + Z.ART + '" stroke-width="4.6" stroke-linecap="round"/>';
+    g += '<path d="M' + f1(mid + 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
+         '" fill="none" stroke="' + Z.VEN + '" stroke-width="4.6" stroke-linecap="round"/>';
+    g += '<path d="M' + f1(mid - 16) + ',' + f1(tip + 28) + ' a16,13 0 0 1 32,0" fill="none" stroke="' + Z.OUT +
+         '" stroke-width="3.6" stroke-linecap="round"/>';
+    for (var q = 0; q < 3; q++) {
+      var qy = tip + 44 + q * 22;
+      if (qy > base - 6) break;
+      g += '<path d="M' + f1(mid - 16) + ',' + f1(qy) + ' H' + f1(mid + 16) + '" fill="none" stroke="' + Z.OUT +
+           '" stroke-width="1.8" opacity=".8"/>';
+    }
+    /* the wall: one cell thick, microvilli along it, a goblet cell set into it */
+    g += '<path d="' + vd + '" fill="none" stroke="' + Z.WALL + '" stroke-width="3.2"/>';
     g += '<path d="' + vd + '" fill="none" stroke="#FFFDF9" stroke-width="1.1" transform="translate(0,4)"/>';
-    var mv = '';
-    for (var i = 0; i <= 26; i++) {
-      var t = i / 26, ang = Math.PI * (1 - t), rr = vw / 2;
+    for (var i = 0; i <= 24; i++) {
+      var ang = Math.PI * (1 - i / 24), rr = vw / 2;
       var px = mid + Math.cos(ang) * rr, py = (tip + vw / 2) - Math.sin(ang) * rr;
       if (py > base - 4) continue;
-      mv += '<line x1="' + f1(px) + '" y1="' + f1(py) + '" x2="' + f1(px + Math.cos(ang) * 4.5) +
-            '" y2="' + f1(py - Math.sin(ang) * 4.5) + '" stroke="' + Z.WALL + '" stroke-width="1.5" stroke-linecap="round"/>';
+      g += '<line x1="' + f1(px) + '" y1="' + f1(py) + '" x2="' + f1(px + Math.cos(ang) * 4.5) +
+           '" y2="' + f1(py - Math.sin(ang) * 4.5) + '" stroke="' + Z.WALL + '" stroke-width="1.5" stroke-linecap="round"/>';
     }
-    g += mv;
-    g += '<path d="M' + f1(mid - vw / 2 + 2) + ',' + f1(base - 34) + ' q-7,-9 0,-17 q7,8 0,17 Z" fill="#DCE9F2" stroke="' + Z.WALL + '" stroke-width="1.2"/>';
-    g += starchBlob(F.x + 26, bTop + 12, 0.58, 2) + starchBlob(F.x + F.w - 40, bTop + 10, 0.58, 3);
-    g += maltosePair(mid - vw / 2 - 16, tip + 30, 0.76) + maltosePair(mid + vw / 2 + 16, tip + 44, 0.76);
-    g += maltosePair(mid - 10, tip + 62, 0.76) + maltosePair(mid + 9, tip + 86, 0.76);
-    g += badge('1', F.x + 16, bTop + 12, fs * 0.62, Z.IN);
-    g += badge('2', mid - vw / 2 + 1, tip + 52, fs * 0.62, Z.WALL);
-    g += badge('3', mid - 17, tip + 96, fs * 0.62, Z.OUT);
-    g += label('lumen', F.x + F.w * 0.30, bTop + 30, F.x + 30, bTop + 22, fs, 'end');
-    g += label('microvilli', F.x + F.w * 0.66, tip - 4, mid + vw * 0.34, tip + 4, fs, 'start');
-    g += label('epithelium —\none cell thick', F.x + F.w * 0.66, tip + 40, mid + vw / 2, tip + 46, fs, 'start');
-    g += label('blood\ncapillary', F.x + F.w * 0.66, tip + 92, mid + 17, tip + 96, fs, 'start');
-    g += label('lacteal', F.x + F.w * 0.30, tip + 72, mid, tip + 70, fs, 'end');
-    g += label('goblet cell', F.x + F.w * 0.30, base - 36, mid - vw / 2 + 2, base - 40, fs, 'end');
+    g += '<path d="M' + f1(mid - vw / 2 + 2) + ',' + f1(base - 26) + ' q-7,-9 0,-16 q7,7 0,16 Z" fill="#DCE9F2" stroke="' + Z.WALL + '" stroke-width="1.2"/>';
+    g += starchBlob(F.x + 30, bTop + 11, 0.56, 2) + maltosePair(F.x + F.w - 34, bTop + 12, 0.74);
+    g += maltosePair(mid - vw / 2 - 13, tip + 26, 0.74) + maltosePair(mid + vw / 2 + 13, tip + 40, 0.74);
+    g += badge('1', F.x + 15, bTop + 11, fs * 0.66, Z.IN);
+    g += badge('2', mid - vw / 2 + 1, tip + 44, fs * 0.66, Z.WALL);
+    g += badge('3', mid, tip + 30, fs * 0.66, Z.OUT);
+    g += label('lumen', F.x + F.w * 0.30, bTop + 30, F.x + 34, bTop + 20, fs, 'end');
+    g += label('microvilli', F.x + F.w * 0.66, tip - 6, mid + vw * 0.36, tip + 2, fs, 'start');
+    g += label('epithelium —\none cell thick', F.x + F.w * 0.66, tip + 34, mid + vw / 2, tip + 40, fs, 'start');
+    g += label('capillary\nnetwork', F.x + F.w * 0.66, tip + 82, mid + 14, tip + 66, fs, 'start');
+    g += label('lacteal', F.x + F.w * 0.30, tip + 58, mid, tip + 54, fs, 'end');
+    g += label('goblet cell', F.x + F.w * 0.30, base - 24, mid - vw / 2 + 2, base - 28, fs, 'end');
+    g += plain('arteriole', mid - 20, base + 26, fs * 0.9, Z.ART, 'end', 600);
+    g += plain('venule', mid + 20, base + 26, fs * 0.9, Z.VEN, 'start', 600);
 
     /* ============ 3 · what matches what ============ */
-    var rows = [['1', Z.IN, 'inside the tube', 'the lumen'],
-                ['2', Z.WALL, 'the tubing', 'the epithelium'],
-                ['3', Z.OUT, 'the water', 'the blood']];
-    var ly = F.y + F.h * 0.775, gap = F.h * 0.043;
+    var rows = [['1', Z.IN,   [Z.INbg],        'inside the tube', 'the lumen'],
+                ['2', Z.WALL, [Z.FLESH],       'the tubing',      'the epithelium'],
+                ['3', Z.OUT,  [Z.ART, Z.VEN],  'the water',       'the blood']];
+    var ly = F.y + F.h * 0.782, gap = F.h * 0.046;
+    g += plain('KEY — THE SAME THREE PARTS', F.x + F.w * 0.05, ly - gap * 0.8, fs * 0.82, '#6B7A82', 'start', 700);
     rows.forEach(function (r, i) {
-      var y = ly + i * gap;
-      g += badge(r[0], F.x + F.w * 0.09, y, fs * 0.58, r[1]);
-      g += plain(r[2] + '  →  ' + r[3], F.x + F.w * 0.16, y + fs * 0.34, fs * 0.98, r[1], 'start', 600);
+      var y = ly + i * gap, sx = F.x + F.w * 0.05, sw = fs * 1.7, sh = fs * 1.35;
+      /* the swatch is the key: it is painted in the colour that part is painted in above,
+         which for the blood is the two vessels rather than a wash */
+      r[2].forEach(function (c, k) {
+        g += '<rect x="' + f1(sx + k * sw / r[2].length) + '" y="' + f1(y - sh * 0.62) +
+             '" width="' + f1(sw / r[2].length) + '" height="' + f1(sh) + '" fill="' + c + '"/>';
+      });
+      g += '<rect x="' + f1(sx) + '" y="' + f1(y - sh * 0.62) + '" width="' + f1(sw) + '" height="' + f1(sh) +
+           '" rx="2" fill="none" stroke="' + r[1] + '" stroke-width="1.4"/>';
+      g += badge(r[0], sx + sw + fs * 0.95, y, fs * 0.62, r[1]);
+      g += plain(r[3] + '  →  ' + r[4], sx + sw + fs * 2.1, y + fs * 0.34, fs * 0.98, r[1], 'start', 600);
     });
     return g;
   }
