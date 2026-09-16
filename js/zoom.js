@@ -726,7 +726,11 @@
     if (vAnim && global.PlateAnim && global.PlateAnim[vAnim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      var stripDeep = Math.max(30, strip.getBoundingClientRect().height / ppu(frame) + 7);
+      /* The strip is still settling when this is read — it animates in, and a caption that
+         wraps to another line grows it after the box has been measured — so take whichever
+         of the two heights is larger and leave a margin on top of it. */
+      var sDeep = Math.max(strip.getBoundingClientRect().height, strip.scrollHeight || 0);
+      var stripDeep = Math.max(34, sDeep / ppu(frame) + 12);
       gAnim.innerHTML = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, seen:seenOf(frame), strip:stripDeep, /* a lab step hides the floating Whole body button, so labels in the top right
                  corner need not dodge it */
               compact:!s.lab && ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:vFocus || detail.organ });

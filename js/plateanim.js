@@ -879,65 +879,83 @@
   function epithelium(mid, vw, tip, base, t, sc) {
     sc = sc || 1;
     var r = vw / 2, cy = tip + r, side = base - cy;
-    var nSide = Math.max(3, Math.round(side / (13 * sc))), nCap = 13, pts = [], i, a;
+    /* The outline is sampled densely first, so the inner face of the wall is a curve rather
+       than a polygon, and the cells are then set out along it by arc length. One cell to a
+       sample put the crowded samples over the curved tip half a cell apart, so the cells
+       there came out half the width of the ones down the sides — which says the tip is built
+       of smaller cells. It is not: a villus is one row of the same cell all the way round.
+       The only one that differs is the goblet cell, and it differs because it is one. */
+    var nSide = Math.max(8, Math.round(side / (4 * sc))), nCap = 30, pts = [], i, a;
     for (i = 0; i < nSide; i++) pts.push({ x:mid - r, y:base - (i / nSide) * side, nx:-1, ny:0 });
     for (i = 0; i <= nCap; i++) { a = Math.PI * (1 - i / nCap);
       pts.push({ x:mid + Math.cos(a) * r, y:cy - Math.sin(a) * r, nx:Math.cos(a), ny:-Math.sin(a) }); }
     for (i = 1; i <= nSide; i++) pts.push({ x:mid + r, y:cy + (i / nSide) * side, nx:1, ny:0 });
 
+    var cum = [0];
+    for (i = 1; i < pts.length; i++)
+      cum[i] = cum[i - 1] + Math.sqrt((pts[i].x - pts[i - 1].x) * (pts[i].x - pts[i - 1].x) +
+                                      (pts[i].y - pts[i - 1].y) * (pts[i].y - pts[i - 1].y));
+    var total = cum[pts.length - 1];
+    /* where the outline has got to, a given distance along it */
+    function sample(L) {
+      var j = 1;
+      while (j < cum.length - 1 && cum[j] < L) j++;
+      var p0 = pts[j - 1], p1 = pts[j], seg = cum[j] - cum[j - 1] || 1, u = (L - cum[j - 1]) / seg;
+      var nx = p0.nx + (p1.nx - p0.nx) * u, ny = p0.ny + (p1.ny - p0.ny) * u;
+      var m = Math.sqrt(nx * nx + ny * ny) || 1;
+      return { x:p0.x + (p1.x - p0.x) * u, y:p0.y + (p1.y - p0.y) * u, nx:nx / m, ny:ny / m };
+    }
+
     var inner = '', cells = '', brush = '', nuclei = '', goblet = '', gobAt = null;
-    var gob = nSide + nCap + 3;                              /* down the right side, clear of the cap */
     pts.forEach(function (p, k) {
-      var ix = p.x - p.nx * t, iy = p.y - p.ny * t;
-      inner += (k ? ' L' : 'M') + f1(ix) + ',' + f1(iy);
-      cells += '<line x1="' + f1(p.x) + '" y1="' + f1(p.y) + '" x2="' + f1(ix) + '" y2="' + f1(iy) +
+      inner += (k ? ' L' : 'M') + f1(p.x - p.nx * t) + ',' + f1(p.y - p.ny * t);
+    });
+
+    /* every cell the same length of wall, all the way round */
+    var nCell = Math.max(6, Math.round(total / (13 * sc))), cellL = total / nCell;
+    var gobCell = Math.floor((side + Math.PI * r + side * 0.70) / cellL);
+    var gobL0 = gobCell * cellL, gobL1 = gobL0 + cellL;
+    for (i = 0; i <= nCell; i++) {
+      var w = sample(Math.min(total, i * cellL));
+      cells += '<line x1="' + f1(w.x) + '" y1="' + f1(w.y) + '" x2="' + f1(w.x - w.nx * t) + '" y2="' + f1(w.y - w.ny * t) +
                '" stroke="' + Z.LINE + '" stroke-width="' + f1(sc) + '" stroke-opacity=".8"/>';
-      if (k === pts.length - 1) return;
-      var q = pts[k + 1], mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
-      var nx = (p.nx + q.nx) / 2, ny = (p.ny + q.ny) / 2, m = Math.sqrt(nx * nx + ny * ny) || 1;
-      nx /= m; ny /= m;
-      var tx = -ny, ty = nx;
-      if (k === gob) {
+    }
+    for (i = 0; i < nCell; i++) {
+      var c = sample((i + 0.5) * cellL), nx = c.nx, ny = c.ny, tx = -ny, ty = nx;
+      if (i === gobCell) {
         /* A goblet cell is goblet-shaped: a narrow stalk at the base opening into a cup at
            the surface, full of mucus. Drawn the same size as its neighbours it was just
            another cell with a label pointing at it. It carries no brush border either. */
         var wi = 1.8 * sc, wo = 8.4 * sc, deep = t * 1.25;
-        goblet += '<path d="M' + f1(mx - nx * deep - tx * wi) + ',' + f1(my - ny * deep - ty * wi) +
-                  ' L' + f1(mx - tx * wo) + ',' + f1(my - ty * wo) +
-                  ' Q' + f1(mx - nx * 2.4 * sc) + ',' + f1(my - ny * 2.4 * sc) + ' ' +
-                         f1(mx + tx * wo) + ',' + f1(my + ty * wo) +
-                  ' L' + f1(mx - nx * deep + tx * wi) + ',' + f1(my - ny * deep + ty * wi) + ' Z"' +
+        goblet += '<path d="M' + f1(c.x - nx * deep - tx * wi) + ',' + f1(c.y - ny * deep - ty * wi) +
+                  ' L' + f1(c.x - tx * wo) + ',' + f1(c.y - ty * wo) +
+                  ' Q' + f1(c.x - nx * 2.4 * sc) + ',' + f1(c.y - ny * 2.4 * sc) + ' ' +
+                         f1(c.x + tx * wo) + ',' + f1(c.y + ty * wo) +
+                  ' L' + f1(c.x - nx * deep + tx * wi) + ',' + f1(c.y - ny * deep + ty * wi) + ' Z"' +
                   ' fill="#E7E2F2" stroke="' + Z.LINE + '" stroke-width="' + f1(1.1 * sc) + '"/>';
         for (var mg = -2; mg <= 2; mg++)
-          goblet += '<circle cx="' + f1(mx - nx * (5 + Math.abs(mg)) * sc + tx * mg * 2.5 * sc) +
-                    '" cy="' + f1(my - ny * (5 + Math.abs(mg)) * sc + ty * mg * 2.5 * sc) + '" r="' + f1(1.4 * sc) + '" fill="#B0A6D2"/>';
+          goblet += '<circle cx="' + f1(c.x - nx * (5 + Math.abs(mg)) * sc + tx * mg * 2.5 * sc) +
+                    '" cy="' + f1(c.y - ny * (5 + Math.abs(mg)) * sc + ty * mg * 2.5 * sc) + '" r="' + f1(1.4 * sc) + '" fill="#B0A6D2"/>';
         /* the mucus it has just let go of, so the cell is doing something */
-        goblet += '<circle cx="' + f1(mx + nx * 5 * sc) + '" cy="' + f1(my + ny * 5 * sc) + '" r="' + f1(2.1 * sc) + '" fill="#CFC7E6" opacity=".9"/>';
-        gobAt = { x:mx + nx * 4 * sc, y:my + ny * 4 * sc };
+        goblet += '<circle cx="' + f1(c.x + nx * 5 * sc) + '" cy="' + f1(c.y + ny * 5 * sc) + '" r="' + f1(2.1 * sc) + '" fill="#CFC7E6" opacity=".9"/>';
+        gobAt = { x:c.x + nx * 4 * sc, y:c.y + ny * 4 * sc };
       } else {
-        nuclei += '<ellipse cx="' + f1(mx - nx * t * 0.62) + '" cy="' + f1(my - ny * t * 0.62) +
+        nuclei += '<ellipse cx="' + f1(c.x - nx * t * 0.62) + '" cy="' + f1(c.y - ny * t * 0.62) +
                   '" rx="' + f1(2.1 * sc) + '" ry="' + f1(1.7 * sc) + '" fill="' + Z.WALL + '" opacity=".55" transform="rotate(' +
-                  f1(Math.atan2(ny, nx) * 180 / Math.PI) + ',' + f1(mx - nx * t * 0.62) + ',' + f1(my - ny * t * 0.62) + ')"/>';
+                  f1(Math.atan2(ny, nx) * 180 / Math.PI) + ',' + f1(c.x - nx * t * 0.62) + ',' + f1(c.y - ny * t * 0.62) + ')"/>';
       }
-    });
+    }
 
     /* The brush border is set out along the surface at a fixed spacing, not shared out per
        cell. Per cell, the crowded cells over the curved tip grew a denser fringe than the
        straight sides, which said the tip has more microvilli than the rest. It does not. */
-    for (i = 0; i < pts.length - 1; i++) {
-      var p0 = pts[i], p1 = pts[i + 1];
-      var seg = Math.sqrt((p1.x - p0.x) * (p1.x - p0.x) + (p1.y - p0.y) * (p1.y - p0.y));
-      var count = Math.max(1, Math.round(seg / (3.1 * sc)));
-      for (var c = 0; c < count; c++) {
-        var u = (c + 0.5) / count;
-        var bx = p0.x + (p1.x - p0.x) * u, by = p0.y + (p1.y - p0.y) * u;
-        var bnx = p0.nx + (p1.nx - p0.nx) * u, bny = p0.ny + (p1.ny - p0.ny) * u;
-        var bm = Math.sqrt(bnx * bnx + bny * bny) || 1; bnx /= bm; bny /= bm;
-        if (i === gob) continue;                       /* a goblet cell has none */
-        brush += '<line x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(bx + bnx * 4 * sc) +
-                 '" y2="' + f1(by + bny * 4 * sc) + '" stroke="' + Z.LINE +
-                 '" stroke-width="' + f1(1.05 * sc) + '" stroke-linecap="round" stroke-opacity=".85"/>';
-      }
+    var mv = 3.1 * sc;
+    for (var L = mv * 0.5; L < total; L += mv) {
+      if (L > gobL0 && L < gobL1) continue;                   /* a goblet cell has none */
+      var b = sample(L);
+      brush += '<line x1="' + f1(b.x) + '" y1="' + f1(b.y) + '" x2="' + f1(b.x + b.nx * 4 * sc) +
+               '" y2="' + f1(b.y + b.ny * 4 * sc) + '" stroke="' + Z.LINE +
+               '" stroke-width="' + f1(1.05 * sc) + '" stroke-linecap="round" stroke-opacity=".85"/>';
     }
 
     return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet, gobAt:gobAt };
@@ -1007,7 +1025,12 @@
        band below is placed from the one above it and from the type it has to carry. */
     var kx = F.x + W * 0.014, kfs = fs * 0.86, nfs = fs * 0.86;
     var kW = W * (wide ? 0.355 : 0.44);          /* the key's own column */
-    var noteH = tiny ? 0 : nfs * 4.6 + fs * 0.9;
+    var NOTE = 'Amylase breaks starch into maltose in both. In the tubing the maltose then diffuses straight out ' +
+               'through the wall. In the gut it cannot: maltase on the microvilli has to break it into glucose first, ' +
+               'and the glucose is taken in by active transport. That last step is where the model stops being a fair copy.';
+    var nx0 = F.x + W * 0.012, nw = W * 0.976, nPad = W * 0.022;
+    var noteLines = tiny ? [] : wrapTo(NOTE, nw - nPad * 2, nfs);
+    var noteH = tiny ? 0 : fs * 0.9 + nfs * (3.35 + (noteLines.length - 1) * 1.25);
     var bodyH = H - noteH;                       /* everything above the closing note */
     var kHead = F.y + fs * 1.4;                  /* KEY ... */
     var kCols = kHead + fs * 1.45;               /* model / body */
@@ -1052,7 +1075,9 @@
                 ['3', Z.OUT,  Z.OUTbg,  '#8FB2D2', 'the distilled water','the blood',      0]];
     var gap = kgap;
     var sw = kfs * 1.9, sh = kfs * 1.25, sx0 = kx + kfs * 1.9;
-    g += plain('KEY — THE SAME THREE PARTS, THE SAME COLOUR', kx, kHead, fs * 0.82, '#6B7A82', 'start', 700);
+    /* The heading is capped to the key's own column: set in capitals it is wider than its
+       character count suggests, and on a narrower plate it ran into THE MODEL. */
+    g += plain('KEY — THE SAME THREE PARTS', kx, kHead, Math.min(fs * 0.82, kW / 19), '#6B7A82', 'start', 700);
     rows.forEach(function (r, i) {
       var y = ly + i * gap, yt = y - sh * 0.66;
       g += badge(r[0], kx + kfs * 0.72, y, kfs * 0.72, r[1]);
@@ -1231,7 +1256,9 @@
     g += starchOf(gapL, tip + vh * 0.62, 0.52 * vq, 4) +
          starchOf(gapL, tip + vh * 0.86, 0.52 * vq, 5) +
          starchOf(farL, tip + vh * 0.72, 0.52 * vq, 0);
-    if (!tiny) g += starchOf(farR, tip + vh * 0.86, 0.52 * vq, 1);
+    /* the right-hand side of the lumen is all label lane from the tip to the goblet cell,
+       so the extra starch goes down the left with the rest */
+    if (!tiny) g += starchOf(farL, tip + vh * 0.38, 0.52 * vq, 1);
     /* the open lumen above the villus tips only exists on a plate with room for it */
     if (!tiny) g += starchOf(mid - vboxW * 0.205, bTop + fs * 3.0, 0.52 * vq, 2) +
                     starchOf(mid + vboxW * 0.400, bTop + fs * 1.9, 0.52 * vq, 3) +
@@ -1265,17 +1292,14 @@
        maltose simply diffuses out; in the gut it never crosses at all. The band runs the
        width of the plate: cornered, it read as a footnote rather than as the correction
        to everything above it. */
-    var nx0 = F.x + W * 0.012, nw = W * 0.976;
-    var nTop = F.y + bodyH + fs * 0.9, nPad = W * 0.022;
+    var nTop = F.y + bodyH + fs * 0.9;
     if (!tiny) {
     g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nw) + '" height="' + f1(F.y + H - nTop) +
          '" rx="4" fill="#F7EFE2" stroke="#D8BE95" stroke-width="1.1"/>';
     g += '<rect x="' + f1(nx0) + '" y="' + f1(nTop) + '" width="' + f1(nfs * 0.42) + '" height="' + f1(F.y + H - nTop) +
          '" rx="2" fill="#B07A34"/>';
     g += plain('WHERE THE MODEL STOPS BEING TRUE', nx0 + nPad, nTop + nfs * 1.5, nfs * 0.94, '#8A5A2B', 'start', 700);
-    wrapTo('Maltose does not cross the wall. Maltase on the brush border breaks it to glucose first, and the ' +
-           'glucose is taken in by active transport. In the tubing it simply diffuses out.',
-           nw - nPad * 2, nfs).forEach(function (line, i) {
+    noteLines.forEach(function (line, i) {
       g += plain(line, nx0 + nPad, nTop + nfs * 2.85 + i * nfs * 1.25, nfs, '#5A6670', 'start');
     });
     }
