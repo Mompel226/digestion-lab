@@ -860,7 +860,7 @@
       pts.push({ x:mid + Math.cos(a) * r, y:cy - Math.sin(a) * r, nx:Math.cos(a), ny:-Math.sin(a) }); }
     for (i = 1; i <= nSide; i++) pts.push({ x:mid + r, y:cy + (i / nSide) * side, nx:1, ny:0 });
 
-    var inner = '', cells = '', brush = '', nuclei = '', goblet = '', gobAt = null;
+    var inner = '', cells = '', brush = '', nuclei = '', goblet = '', malt = '', gobAt = null;
     var gob = nSide + nCap + 3;                              /* down the right side, clear of the cap */
     pts.forEach(function (p, k) {
       var ix = p.x - p.nx * t, iy = p.y - p.ny * t;
@@ -890,6 +890,9 @@
         goblet += '<circle cx="' + f1(mx + nx * 5) + '" cy="' + f1(my + ny * 5) + '" r="2.1" fill="#B9D2E6" opacity=".9"/>';
         gobAt = { x:mx + nx * 4, y:my + ny * 4 };
       } else {
+        /* maltase sits in the membrane of the brush border — it is not floating in the gut,
+           which is the difference between it and the amylase out in the lumen */
+        if (k % 6 === 2) malt += enzyme(mx + nx * 2, my + ny * 2, 0.42, '#2E8B74', '#1D6455');
         nuclei += '<ellipse cx="' + f1(mx - nx * t * 0.62) + '" cy="' + f1(my - ny * t * 0.62) +
                   '" rx="2.1" ry="1.7" fill="' + Z.WALL + '" opacity=".55" transform="rotate(' +
                   f1(Math.atan2(ny, nx) * 180 / Math.PI) + ',' + f1(mx - nx * t * 0.62) + ',' + f1(my - ny * t * 0.62) + ')"/>';
@@ -915,7 +918,16 @@
       }
     }
 
-    return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet, gobAt:gobAt };
+    return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet, malt:malt, gobAt:gobAt };
+  }
+
+  /* the same pac-man the bench draws, in whatever colour is asked for */
+  function enzyme(cx, cy, sc, fill, line) {
+    sc = sc || 1;
+    return '<path d="M' + f1(cx - 6.5 * sc) + ',' + f1(cy - 4 * sc) +
+           ' a' + f1(6.5 * sc) + ',' + f1(6 * sc) + ' 0 1 0 ' + f1(13 * sc) + ',0' +
+           ' l' + f1(-3.6 * sc) + ',0 l' + f1(-2.9 * sc) + ',' + f1(3.6 * sc) + ' l' + f1(-2.9 * sc) + ',' + f1(-3.6 * sc) + ' Z"' +
+           ' fill="' + fill + '" fill-opacity=".9" stroke="' + line + '" stroke-width="1" stroke-linejoin="round"/>';
   }
 
   function viskingModel(ctx) {
@@ -958,11 +970,13 @@
     g += label('distilled\nwater', F.x + F.w * 0.30, aTop + 88, T.x + 9, aTop + 96, fs, 'end');
 
     /* ---- the molecules, named once for both drawings ---- */
-    var ky = F.y + F.h * 0.295, kx = F.x + F.w * 0.06;
-    g += starchBlob(kx + 6, ky, 0.6, 0) + plain('starch', kx + 17, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
-    if (global.Bench) g += global.Bench.amylase(kx + F.w * 0.36, ky, 0.6);
-    g += plain('amylase', kx + F.w * 0.36 + 8, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
-    g += maltosePair(kx + F.w * 0.68, ky, 0.78) + plain('maltose', kx + F.w * 0.68 + 9, ky + fs * 0.34, fs * 0.92, '#4A5A66', 'start');
+    var ky = F.y + F.h * 0.295, kx = F.x + F.w * 0.035, kfs = fs * 0.86;
+    g += starchBlob(kx + 5, ky, 0.55, 0) + plain('starch', kx + 14, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
+    g += enzyme(kx + F.w * 0.26, ky, 0.55, '#7A5AA8', '#5A3F84') +
+         plain('amylase', kx + F.w * 0.26 + 7, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
+    g += enzyme(kx + F.w * 0.54, ky, 0.55, '#2E8B74', '#1D6455') +
+         plain('maltase', kx + F.w * 0.54 + 7, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
+    g += maltosePair(kx + F.w * 0.81, ky, 0.72) + plain('maltose', kx + F.w * 0.81 + 8, ky + kfs * 0.34, kfs, '#4A5A66', 'start');
 
     /* ============ 2 · the real thing ============ */
     var bTop = F.y + F.h * 0.345, base = F.y + F.h * 0.665, vw = 62, tip = bTop + 22;
@@ -990,6 +1004,13 @@
     /* blood in, blood out: an arteriole up one side, a venule down the other, the capillary
        network joining them over the top. Red and blue because that is how every diagram a
        student will meet draws them, and the colours are the label. */
+    /* the same pale red the water is painted in, laid under the vessels as a halo, so the
+       blood reads as one zone with the water in the model. It follows the vessels rather
+       than boxing the whole core, which would have swept the lacteal in with them. */
+    g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
+         ' m32,0 V' + f1(base + 8) + '" fill="none" stroke="' + Z.OUTbg + '" stroke-width="11.5" stroke-linecap="round"/>';
+    g += '<path d="M' + f1(mid - 16) + ',' + f1(tip + 28) + ' a16,13 0 0 1 32,0" fill="none" stroke="' + Z.OUTbg +
+         '" stroke-width="12" stroke-linecap="round"/>';
     g += '<path d="M' + f1(mid - 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
          '" fill="none" stroke="' + Z.ART + '" stroke-width="4.6" stroke-linecap="round"/>';
     g += '<path d="M' + f1(mid + 16) + ',' + f1(base + 8) + ' V' + f1(tip + 28) +
@@ -1009,8 +1030,14 @@
        cell in the row and not something stuck on the side. */
     g += '<path d="' + vd + '" fill="none" stroke="' + Z.WALL + '" stroke-width="1.6"/>';
     g += '<path d="' + ep.inner + '" fill="none" stroke="' + Z.WALL + '" stroke-width="1.4" stroke-opacity=".75"/>';
-    g += ep.cells + ep.brush + ep.nuclei + ep.goblet;
-    g += starchBlob(F.x + 30, bTop + 11, 0.56, 2) + maltosePair(F.x + F.w - 34, bTop + 12, 0.74);
+    g += ep.cells + ep.brush + ep.nuclei + ep.goblet + ep.malt;
+        /* starch and amylase are in the lumen, as they are inside the tubing in the model:
+       amylase is secreted into the gut, it is not part of the wall */
+    g += starchBlob(F.x + 34, bTop + 12, 0.56, 2) + starchBlob(F.x + F.w - 46, bTop + 11, 0.56, 3) +
+         starchBlob(mid - vw / 2 - 26, tip + 66, 0.56, 4) + starchBlob(mid + vw / 2 + 26, tip + 88, 0.56, 5);
+    g += enzyme(F.x + 62, bTop + 26, 0.52, '#7A5AA8', '#5A3F84') +
+         enzyme(mid + vw / 2 + 30, tip + 30, 0.52, '#7A5AA8', '#5A3F84');
+    g += maltosePair(F.x + F.w - 34, bTop + 12, 0.74);
     g += maltosePair(mid - vw / 2 - 13, tip + 26, 0.74) + maltosePair(mid + vw / 2 + 13, tip + 40, 0.74);
     g += badge('1', F.x + 15, bTop + 11, fs * 0.66, Z.IN);
     g += badge('2', mid - vw / 2 + 1, tip + 44, fs * 0.66, Z.WALL);
