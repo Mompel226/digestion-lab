@@ -720,14 +720,17 @@
         el('circle', { 'class':'dl__d', cx:f1(ax - idx), cy:f1(ay - idy), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, g);
       }
     });
+    /* The caption is written before the animation is drawn, so a figure that has to keep out
+       from under it can be told how deep it really is at this width. */
+    strip.innerHTML = '<b>' + (vLabel || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (vAnim && global.PlateAnim && global.PlateAnim[vAnim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, /* a lab step hides the floating Whole body button, so labels in the top right
+      var stripDeep = Math.max(30, strip.getBoundingClientRect().height / ppu(frame) + 7);
+      gAnim.innerHTML = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, seen:seenOf(frame), strip:stripDeep, /* a lab step hides the floating Whole body button, so labels in the top right
                  corner need not dodge it */
               compact:!s.lab && ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:vFocus || detail.organ });
     }
-    strip.innerHTML = '<b>' + (vLabel || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;
   }
 
