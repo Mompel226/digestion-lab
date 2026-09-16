@@ -1417,7 +1417,7 @@ window.ZOOM_DETAIL = {
         "lab": true,
         "noback": true,
         "label": "Your bench: sample any tube, inside or outside, before or after the 30 minutes",
-        "labelAlt": "The model beside the real thing. Matching colours mark the three parts that correspond: what is being digested, the barrier it must cross, and where whatever crosses ends up"
+        "labelAlt": "The model above the real thing. The same number marks the same part in both: 1 what is being digested, 2 the barrier it crosses, 3 where whatever crosses ends up"
       }
     ]
   }
