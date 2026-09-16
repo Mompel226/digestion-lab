@@ -848,6 +848,51 @@
            '" text-anchor="' + (anchor || 'middle') + '"' + (weight ? ' font-weight="' + weight + '"' : '') + '>' + t + '</text>';
   }
 
+
+  /* A row of columnar cells following the villus outline. Returns the pieces separately so
+     the caller can lay them over the right things: the inner face, the walls between cells,
+     the brush border, the nuclei, and the one goblet cell. */
+  function epithelium(mid, vw, tip, base, t) {
+    var r = vw / 2, cy = tip + r, side = base - cy;
+    var nSide = Math.max(3, Math.round(side / 13)), nCap = 13, pts = [], i, a;
+    for (i = 0; i < nSide; i++) pts.push({ x:mid - r, y:base - (i / nSide) * side, nx:-1, ny:0 });
+    for (i = 0; i <= nCap; i++) { a = Math.PI * (1 - i / nCap);
+      pts.push({ x:mid + Math.cos(a) * r, y:cy - Math.sin(a) * r, nx:Math.cos(a), ny:-Math.sin(a) }); }
+    for (i = 1; i <= nSide; i++) pts.push({ x:mid + r, y:cy + (i / nSide) * side, nx:1, ny:0 });
+
+    var inner = '', cells = '', brush = '', nuclei = '', goblet = '';
+    var gob = Math.round(nSide * 0.45);                       /* one cell low on the left */
+    pts.forEach(function (p, k) {
+      var ix = p.x - p.nx * t, iy = p.y - p.ny * t;
+      inner += (k ? ' L' : 'M') + f1(ix) + ',' + f1(iy);
+      /* the wall between this cell and the next */
+      cells += '<line x1="' + f1(p.x) + '" y1="' + f1(p.y) + '" x2="' + f1(ix) + '" y2="' + f1(iy) +
+               '" stroke="' + Z.WALL + '" stroke-width="1" stroke-opacity=".8"/>';
+      if (k === pts.length - 1) return;
+      var q = pts[k + 1], mx = (p.x + q.x) / 2, my = (p.y + q.y) / 2;
+      var nx = (p.nx + q.nx) / 2, ny = (p.ny + q.ny) / 2, m = Math.sqrt(nx * nx + ny * ny) || 1;
+      nx /= m; ny /= m;
+      if (k === gob) {
+        /* a goblet cell: narrow at its base, open at the surface, with mucus at the mouth */
+        goblet += '<path d="M' + f1(mx - nx * t) + ',' + f1(my - ny * t) +
+                  ' L' + f1(mx + ny * 4.6) + ',' + f1(my - nx * 4.6) +
+                  ' L' + f1(mx - ny * 4.6) + ',' + f1(my + nx * 4.6) + ' Z" fill="#CFE0EF" stroke="' + Z.WALL + '" stroke-width="1"/>';
+        goblet += '<circle cx="' + f1(mx + nx * 2.6) + '" cy="' + f1(my + ny * 2.6) + '" r="2" fill="#9DBBD6"/>';
+      } else {
+        nuclei += '<ellipse cx="' + f1(mx - nx * t * 0.62) + '" cy="' + f1(my - ny * t * 0.62) +
+                  '" rx="2.1" ry="1.7" fill="' + Z.WALL + '" opacity=".55" transform="rotate(' +
+                  f1(Math.atan2(ny, nx) * 180 / Math.PI) + ',' + f1(mx - nx * t * 0.62) + ',' + f1(my - ny * t * 0.62) + ')"/>';
+        /* three folds of membrane to a cell — microvilli belong to the cell, not to the villus */
+        for (var j = -1; j <= 1; j++) {
+          var bx = mx + ny * j * 2.4, by = my - nx * j * 2.4;
+          brush += '<line x1="' + f1(bx) + '" y1="' + f1(by) + '" x2="' + f1(bx + nx * 4.2) +
+                   '" y2="' + f1(by + ny * 4.2) + '" stroke="' + Z.WALL + '" stroke-width="1.1" stroke-linecap="round" stroke-opacity=".85"/>';
+        }
+      }
+    });
+    return { inner:inner + ' Z', cells:cells, brush:brush, nuclei:nuclei, goblet:goblet };
+  }
+
   function viskingModel(ctx) {
     var F = ctx.frame || { x:30, y:116, w:280, h:448 };
     var fs = Math.max(7.6, (ctx.fs || 11) * 0.72);
@@ -859,9 +904,20 @@
     var T = { x:mid - 30, y:aTop + 6, w:60, h:aBot - aTop - 6, r:30 };
     var B = { x:mid - 16, y:aTop, w:32, h:aBot - aTop - 18 };
     var bag = viskingBag(B);
-    g += '<rect x="' + f1(T.x + 3) + '" y="' + f1(aTop + 22) + '" width="' + f1(T.w - 6) +
-         '" height="' + f1(T.y + T.h - aTop - 26) + '" fill="' + Z.OUTbg + '"/>';
-    g += beaker(T, aTop + 22);
+    /* The water is drawn to the tube's own outline — round-bottomed, not a box. A
+       rectangle left square corners sticking out past the glass at the bottom. */
+    var wl = aTop + 22, wr = T.r * 0.55;
+    var waterD = 'M' + f1(T.x + 3) + ',' + f1(wl) + ' H' + f1(T.x + T.w - 3) +
+                 ' V' + f1(T.y + T.h - wr) + ' a' + f1(T.w / 2 - 3) + ',' + f1(wr) +
+                 ' 0 0 1 ' + f1(-(T.w - 6)) + ',0 Z';
+    g += '<path d="' + waterD + '" fill="' + Z.OUTbg + '"/>';
+    g += '<ellipse cx="' + f1(T.x + T.w / 2) + '" cy="' + f1(wl) + '" rx="' + f1(T.w / 2 - 3) +
+         '" ry="3.4" fill="' + Z.OUT + '" opacity=".22"/>';
+    /* the glass over it, so the rim reads as glass rather than paint */
+    g += '<path fill="none" stroke="#9FB3BD" stroke-width="2.1" stroke-linejoin="round" d="M' + f1(T.x) + ',' + f1(T.y) +
+         ' V' + f1(T.y + T.h - wr) + ' a' + f1(T.w / 2) + ',' + f1(wr) + ' 0 0 0 ' + f1(T.w) + ',0 V' + f1(T.y) + '"/>';
+    g += '<ellipse cx="' + f1(T.x + T.w / 2) + '" cy="' + f1(T.y) + '" rx="' + f1(T.w / 2) +
+         '" ry="5" fill="none" stroke="#9FB3BD" stroke-width="2.1"/>';
     g += '<path d="' + bag.d + '" fill="' + Z.INbg + '"/>';
     g += '<path d="' + bag.d + '" fill="none" stroke="' + Z.WALL + '" stroke-width="2.6"/>';
     g += '<path d="' + bag.d + '" fill="none" stroke="#FFFDF9" stroke-width="2" stroke-dasharray="1.4 6" stroke-linecap="round"/>';
@@ -898,7 +954,11 @@
            ' a' + f1(w / 2) + ',' + f1(w / 2) + ' 0 0 1 ' + f1(w) + ',0 V' + f1(base) +
            '" fill="' + Z.FLESH + '" opacity=".6" stroke="' + Z.WALL + '" stroke-width="1.3"/>';
     });
-    g += '<path d="' + vd + ' Z" fill="' + Z.FLESH + '"/>';
+    /* the epithelium is a band of cells around a core; both are drawn before anything
+       that runs inside the core, or the fill paints over the vessels */
+    var ep = epithelium(mid, vw, tip, base, 8.5);
+    g += '<path d="' + vd + ' Z" fill="#EBD7C6"/>';
+    g += '<path d="' + ep.inner + '" fill="' + Z.FLESH + '"/>';
     /* the lacteal up the middle */
     g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 24) + '" fill="none" stroke="#DCE8C4" stroke-width="9" stroke-linecap="round"/>';
     g += '<path d="M' + f1(mid) + ',' + f1(base) + ' V' + f1(tip + 24) + '" fill="none" stroke="#6F8F4A" stroke-width="1.3" stroke-dasharray="3 3"/>';
@@ -917,22 +977,19 @@
       g += '<path d="M' + f1(mid - 16) + ',' + f1(qy) + ' H' + f1(mid + 16) + '" fill="none" stroke="' + Z.OUT +
            '" stroke-width="1.8" opacity=".8"/>';
     }
-    /* the wall: one cell thick, microvilli along it, a goblet cell set into it */
-    g += '<path d="' + vd + '" fill="none" stroke="' + Z.WALL + '" stroke-width="3.2"/>';
-    g += '<path d="' + vd + '" fill="none" stroke="#FFFDF9" stroke-width="1.1" transform="translate(0,4)"/>';
-    for (var i = 0; i <= 24; i++) {
-      var ang = Math.PI * (1 - i / 24), rr = vw / 2;
-      var px = mid + Math.cos(ang) * rr, py = (tip + vw / 2) - Math.sin(ang) * rr;
-      if (py > base - 4) continue;
-      g += '<line x1="' + f1(px) + '" y1="' + f1(py) + '" x2="' + f1(px + Math.cos(ang) * 4.5) +
-           '" y2="' + f1(py - Math.sin(ang) * 4.5) + '" stroke="' + Z.WALL + '" stroke-width="1.5" stroke-linecap="round"/>';
-    }
-    g += '<path d="M' + f1(mid - vw / 2 + 2) + ',' + f1(base - 26) + ' q-7,-9 0,-16 q7,7 0,16 Z" fill="#DCE9F2" stroke="' + Z.WALL + '" stroke-width="1.2"/>';
+    /* The wall, drawn as what it is: a single row of cells. An outline with spikes on it
+       says 'one cell thick' in words the drawing does not back up. Each cell here is
+       walled off from its neighbours, carries a nucleus, and wears its own brush border
+       of microvilli — and one of them is a goblet cell, so the reader can see it is one
+       cell in the row and not something stuck on the side. */
+    g += '<path d="' + vd + '" fill="none" stroke="' + Z.WALL + '" stroke-width="1.6"/>';
+    g += '<path d="' + ep.inner + '" fill="none" stroke="' + Z.WALL + '" stroke-width="1.4" stroke-opacity=".75"/>';
+    g += ep.cells + ep.brush + ep.nuclei + ep.goblet;
     g += starchBlob(F.x + 30, bTop + 11, 0.56, 2) + maltosePair(F.x + F.w - 34, bTop + 12, 0.74);
     g += maltosePair(mid - vw / 2 - 13, tip + 26, 0.74) + maltosePair(mid + vw / 2 + 13, tip + 40, 0.74);
     g += badge('1', F.x + 15, bTop + 11, fs * 0.66, Z.IN);
     g += badge('2', mid - vw / 2 + 1, tip + 44, fs * 0.66, Z.WALL);
-    g += badge('3', mid, tip + 30, fs * 0.66, Z.OUT);
+    g += badge('3', mid - 16, tip + 58, fs * 0.66, Z.ART);
     g += label('lumen', F.x + F.w * 0.30, bTop + 30, F.x + 34, bTop + 20, fs, 'end');
     g += label('microvilli', F.x + F.w * 0.66, tip - 6, mid + vw * 0.36, tip + 2, fs, 'start');
     g += label('epithelium —\none cell thick', F.x + F.w * 0.66, tip + 34, mid + vw / 2, tip + 40, fs, 'start');
