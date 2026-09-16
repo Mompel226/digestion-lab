@@ -1134,7 +1134,7 @@
          maltOf(bag.cx + 3 * mq, bU(0.94), 0.88 * mq);
     g += maltOf(T.x + tw * 0.12, bU(0.28), 0.88 * mq) +
          maltOf(T.x + T.w - tw * 0.12, bU(0.44), 0.88 * mq) +
-         maltOf(T.x + tw * 0.12, bU(0.86), 0.88 * mq);
+         maltOf(T.x + tw * 0.22, bU(0.86), 0.88 * mq);
         /* The bag is a lens, so it is narrow at the ends: up at the knot the number was wider
        than the tubing and read as marking the knot rather than what is inside it. It sits a
        seventh of the way down, where the tubing has opened out, and never wider than it. */
@@ -1144,13 +1144,17 @@
     g += badge('2', bag.cx + bag.bw * 0.83, bU(0.74), fs * 0.68, Z.WALL);
     g += badge('3', T.x + tw * 0.155, bU(0.66), Math.min(fs * 0.68, tw * 0.115), Z.OUT);
     var mfs2 = fs * (tiny ? 1.0 : 0.90);
-    g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.32), bag.cx - 1 * mq, bU(0.32), mfs2, 'start');
+    var sGap = mfs2 * 0.50;
+    g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.32),
+               bag.cx + 3.1 * mq + sGap, bU(0.32), mfs2, 'start');
     g += label(tiny ? 'visking tubing' : 'visking tubing\n(the membrane)', mlx, bU(0.56), bag.cx + bag.bw * 0.92, bU(0.56), mfs2, 'start');
     g += label(tiny ? 'distilled water' : 'distilled\nwater', mlx, bU(0.80), T.x + T.w - wi, bU(0.80), mfs2, 'start');
     /* The one molecule that crosses is worth naming where it has crossed. It goes to the
        left of the tube, where nothing else is: the three labels on the right are already
        spaced to the bag, and a fourth among them would have closed the gaps up. */
-    g += label('maltose', T.x - fs * 0.9, bU(0.86), T.x + tw * 0.12, bU(0.86), mfs2, 'end');
+        /* on a narrow tube the gap would put the dot through the glass, so it stops there */
+    g += label('maltose', T.x - fs * 0.9, bU(0.86),
+               Math.max(T.x + mfs2 * 0.24, T.x + tw * 0.22 - 4.3 * mq - sGap), bU(0.86), mfs2, 'end');
 
     /* ============ 2 · the real thing ============ */
     g += plain(tiny ? 'THE REAL THING — a villus' : 'THE REAL THING — a villus of the small intestine', mid, vTitle, fs * 0.92, '#4A5A66', 'middle', 600);
