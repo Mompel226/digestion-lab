@@ -1144,9 +1144,12 @@
     g += badge('2', bag.cx + bag.bw * 0.83, bU(0.74), fs * 0.68, Z.WALL);
     g += badge('3', T.x + tw * 0.155, bU(0.66), Math.min(fs * 0.68, tw * 0.115), Z.OUT);
     var mfs2 = fs * (tiny ? 1.0 : 0.90);
-    var sGap = mfs2 * 0.50;
+    var sGap = mfs2 * 0.07;   /* the dot's centre a shade outside the molecule's edge,
+                                 so it bites into it by about a third of its own width:
+                                 landed on the centre it hid the molecule, stood off it
+                                 entirely it read as pointing at the space beside it */
     g += label(tiny ? 'starch + amylase' : 'starch and\namylase', mlx, bU(0.32),
-               bag.cx + 3.1 * mq + sGap, bU(0.32), mfs2, 'start');
+               bag.cx + 2.42 * mq + sGap, bU(0.32), mfs2, 'start');
     g += label(tiny ? 'visking tubing' : 'visking tubing\n(the membrane)', mlx, bU(0.56), bag.cx + bag.bw * 0.92, bU(0.56), mfs2, 'start');
     g += label(tiny ? 'distilled water' : 'distilled\nwater', mlx, bU(0.80), T.x + T.w - wi, bU(0.80), mfs2, 'start');
     /* The one molecule that crosses is worth naming where it has crossed. It goes to the

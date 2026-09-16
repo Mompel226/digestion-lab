@@ -1630,10 +1630,16 @@
        same glassware drawn still and labelled, captioned with what each part stands for in
        the body. Students could not always tell what they were looking at. */
     var tDia = document.getElementById('tDiagram');
+    /* The note beside the button stops once the button has been used — once ever, not once
+       a session, so it does not nag a student who already knows what it does. */
+    var DIA_SEEN = 'digestion-lab.diagram-seen', labCol = document.querySelector('.bodycol');
+    try { if (localStorage.getItem(DIA_SEEN) && labCol) labCol.classList.add('diagram-seen'); } catch (e) {}
     if (tDia) tDia.addEventListener('click', function () {
       var on = this.getAttribute('aria-pressed') !== 'true';
       this.setAttribute('aria-pressed', on);
       this.textContent = on ? 'The bench' : 'Labelled diagram';
+      if (labCol) labCol.classList.add('diagram-seen');
+      try { localStorage.setItem(DIA_SEEN, '1'); } catch (e) {}
       if (window.Zoom) window.Zoom.setView(on ? 'alt' : null);
     });
     tourBtn().addEventListener('click', function () {
