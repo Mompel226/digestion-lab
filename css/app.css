@@ -1133,3 +1133,13 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 #tDiagram:hover{ background:#7A4F07; border-color:#7A4F07; }
 #tDiagram[aria-pressed="true"]{ background:#14572B; border-color:#14572B; }
 #tDiagram[aria-pressed="true"]:hover{ background:#0E3D1E; border-color:#0E3D1E; }
+/* Filled and coloured, the button was still being walked past, so a note points at it —
+   until it has been used once, ever, and then never again. */
+#tDiagramHint{ display:none; }
+.bodycol.is-lab #tDiagramHint{
+  display:inline-flex; align-items:center; gap:.3em; white-space:nowrap;
+  font:600 12.5px/1.2 Calibri,Carlito,"Segoe UI",-apple-system,sans-serif; color:#A16207;
+}
+.bodycol.is-lab #tDiagramHint::before{ content:"\2190"; font-size:1.2em; line-height:1; }
+.bodycol.is-lab.diagram-seen #tDiagramHint,
+.bodycol.is-lab #tDiagram[aria-pressed="true"] ~ #tDiagramHint{ display:none; }
