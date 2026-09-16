@@ -5,6 +5,7 @@
 
    Reads   ../digestion-lab-source/stations.master.js   (has the answers)
    Writes  js/engine.js, js/marking.js         copied from labs-shared/engine/
+           js/signin.js                        copied from labs-shared/ (one sign-in for the whole site)
            js/data/stations.js    presentation + salted hashes, NO answers
 
    The hashes let the page mark an answer right or wrong without the answer
@@ -68,7 +69,7 @@ const { GLOSSARY } = await import(pathToFileURL(GLOSS_PATH).href);
 const SHARED = dirname(GLOSS_PATH);
 const { formsOf } = await import(pathToFileURL(resolve(SHARED, 'glossary-forms.mjs')).href);
 for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'], ['engine/syllabus.js', 'js/syllabus.js'],
-                          ['engine/sync.js', 'js/sync.js']]) {
+                          ['engine/sync.js', 'js/sync.js'], ['signin.js', 'js/signin.js']]) {
   const src = resolve(SHARED, from);
   if (!existsSync(src)) { console.error('Cannot find ' + from + ' in ' + SHARED); process.exit(1); }
   copyFileSync(src, resolve(REPO, to));
