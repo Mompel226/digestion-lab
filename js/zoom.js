@@ -521,6 +521,14 @@
        the body, so they have nothing to work on and are hidden with it. */
     var col = document.querySelector('.bodycol');
     if (col) col.classList.toggle('is-lab', !!s.lab);
+    /* A lab step can offer the same apparatus two ways: the bench you work at, and the
+       same thing drawn still and labelled. The toggle above the plate picks which. The
+       step object itself is not copied — the callbacks further down compare it by
+       identity — so the choice is carried in three locals. */
+    var alt = !!(s.animAlt && global.PlateView === 'alt');
+    var vAnim  = alt ? s.animAlt : s.anim;
+    var vFocus = alt ? (s.focusAlt || s.focus) : s.focus;
+    var vLabel = alt ? (s.labelAlt || s.label) : s.label;
     wipe();
     dimRect.setAttribute('width', 0); spotImg.setAttribute('width', 0); spotImg.removeAttribute('href');
     keyImgFront.setAttribute('width', 0); keyImgFront.removeAttribute('href'); keyImg.setAttribute('width', 0);
@@ -712,12 +720,12 @@
         el('circle', { 'class':'dl__d', cx:f1(ax - idx), cy:f1(ay - idy), r:f1(fs * 0.22), 'stroke-width':f1(fs * 0.08) }, g);
       }
     });
-    if (s.anim && global.PlateAnim && global.PlateAnim[s.anim] && !prefersStill()) {
+    if (vAnim && global.PlateAnim && global.PlateAnim[vAnim] && !prefersStill()) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
-      gAnim.innerHTML = global.PlateAnim[s.anim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, compact:ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:s.focus || detail.organ });
+      gAnim.innerHTML = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, compact:ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:vFocus || detail.organ });
     }
-    strip.innerHTML = '<b>' + (s.label || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
+    strip.innerHTML = '<b>' + (vLabel || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
     if (pending) return;
   }
 
@@ -888,7 +896,8 @@
   /* The plate is rebuilt from scratch by some controls (labels, beyond,
      reset). That wipes the detail layer, so it is put back here. */
   function refresh() { if (!svg) return; if (!layer || !layer.isConnected) build(); if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); setBox(cur); }
-  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, flyTo:flyTo, frameFor:frameFor, CAM:CAM, rooms:rooms,
+  function setView(v) { global.PlateView = v; refresh(); }
+  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, setView:setView, flyTo:flyTo, frameFor:frameFor, CAM:CAM, rooms:rooms,
                   outline:outlineFor, outlineIn:outlineIn, ppu:ppu,
                   bindLearn:bindLearn, unbind:unbind, update:update, _spot:function () { return SPOT; },
                   _state:function () { return { cur:cur, station:station, step:stepIdx, steps:steps.length, detail:detail && (steps[stepIdx] || {}).img }; } };

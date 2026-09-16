@@ -1626,6 +1626,16 @@
       window.Anatomy.render(svg);
       if (window.Zoom) window.Zoom.refresh();
     });
+    /* The practical has two views of one apparatus: the bench a student works at, and the
+       same glassware drawn still and labelled, captioned with what each part stands for in
+       the body. Students could not always tell what they were looking at. */
+    var tDia = document.getElementById('tDiagram');
+    if (tDia) tDia.addEventListener('click', function () {
+      var on = this.getAttribute('aria-pressed') !== 'true';
+      this.setAttribute('aria-pressed', on);
+      this.textContent = on ? 'The bench' : 'Labelled diagram';
+      if (window.Zoom) window.Zoom.setView(on ? 'alt' : null);
+    });
     tourBtn().addEventListener('click', function () {
       if (this.dataset.running === '1') stopTourUI(true); else startTour();
     });
