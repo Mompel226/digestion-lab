@@ -1123,3 +1123,13 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .bodycol.is-lab #tBody { display:none; }
 #tDiagram { display:none; }
 .bodycol.is-lab #tDiagram { display:inline-flex; }
+/* It is the only control on this plate and it was read as decoration, so it is
+   filled rather than outlined, and says what it will show. */
+#tDiagram{
+  background:#14572B; color:#FFFDF9; border-color:#14572B; font-weight:600;
+  box-shadow:0 1px 2px rgba(20,60,40,.18), 0 4px 10px rgba(20,60,40,.16);
+}
+#tDiagram::before{ content:"\29C9\00a0\00a0"; font-weight:400; }
+#tDiagram:hover{ background:#0E3D1E; border-color:#0E3D1E; }
+#tDiagram[aria-pressed="true"]{ background:#A16207; border-color:#A16207; }
+#tDiagram[aria-pressed="true"]:hover{ background:#7A4F07; border-color:#7A4F07; }
