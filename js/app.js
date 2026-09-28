@@ -41,7 +41,7 @@
     tooth:[['Enamel','hardest substance in the body'],['Dentine','softer, and it senses pain'],['Pulp cavity','blood vessels and nerves'],['Gum',''],['Cement','anchors the root'],['Jaw bone',''],['Blood vessel',''],['Nerve','']],
     emulsify:[['Bile','coats one large fat droplet and splits it into many small ones'],['Same amount of fat','far more surface for lipase to work on — physical, not chemical']],
     egestVsExcrete:[['Egestion','fibre, undigested food and dead gut cells — never entered a cell — passed out as faeces'],['Excretion','urea from the liver in urine; carbon dioxide from respiration in the breath — made inside cells']],
-    waterColon:[['Blood vessel','water and mineral salts are carried away'],['Contents','watery from the small intestine on the left; solid faeces to the rectum on the right']],
+    waterColon:[['Blood vessel','the water is carried away'],['Contents','watery from the small intestine on the left; solid faeces to the rectum on the right']],
     chewing:[['One large piece','16 enzymes fit round it'],['Four smaller pieces','32 enzymes fit — same food, twice the edge']],
     starchPath:[['Amylase','starch → maltose, in the mouth and duodenum'],['Maltase','maltose → glucose, on the epithelium of the small intestine']],
     sameBalance:[['A 7-year-old','growing — most protein'],['An office worker','sitting most of the day'],['A builder','heavy work — most energy']]
@@ -353,11 +353,23 @@
     list.className = 'exam-list';
     card.appendChild(list);
 
+    /* What you need to know holds the 2026–28 syllabus only (Daniel, 28 Sep 2026: "do not add these to the what
+       you need to know sections but a separate one"). A sentence from an older 0610 syllabus (tagged in
+       past-syllabus.json) or beyond the syllabus (`ext`) is drawn the same way, with its pictures and widgets,
+       but in the card below: "Not in the 2026–28 syllabus". Each li keeps its place in the master as data-i. */
+    var off = { old: document.createElement('ul'), beyond: document.createElement('ul') }, offAt = { old: [], beyond: [] };
+    off.old.className = off.beyond.className = 'exam-list exam-list--off';
+    function offOf(b, i) {
+      if (st.past && st.past.exam && st.past.exam[i] != null) return 'old';
+      return typeof b === 'object' && b.ext ? 'beyond' : null;
+    }
+
     /* An exam bullet is a string, or {text, sup:true} for Supplement-only
        content, or {text, ext:true} for what the decks teach but 0610 does not
        examine. The badge lets a Core candidate see the fence. */
     var rooms = (window.Zoom && window.Zoom.rooms) ? window.Zoom.rooms(st.id) : {};
     (st.learn.exam || []).forEach(function (b, i) {
+      var offK = offOf(b, i);
       var li = document.createElement('li');
       var txt = typeof b === 'string' ? b : b.text;
       var badge = '';
@@ -366,17 +378,25 @@
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
       if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
       /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
-      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = pastSplit(txt, pe, M);
-      if (pe != null && !pSplit) badge = pastBadge(pe);
+      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = null;
+      if (pe != null) badge = pastBadge(pe);
+      else if (offK === 'beyond') badge = '';       /* its heading says so */
       li.innerHTML = badge + (pSplit || M(txt));
       /* Some sentences carry a view on the plate that deserves to be looked at. Those get extra
          room, so the reader scrolls through them at a pace where each picture is actually seen. */
-      if (rooms[i]) li.style.minHeight = rooms[i] + 'px';
-      list.appendChild(li);
+      if (rooms[i] && !offK) li.style.minHeight = rooms[i] + 'px';
+      li.setAttribute('data-i', i);
+      if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
+      else list.appendChild(li);
       media.filter(function (x) { return !x.more && x.after === i; })
            .forEach(function (x) { li.appendChild(mediaBox(x)); });
       figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] === i; })
           .forEach(function (name) { var fb = figBox(name); if (fb) li.appendChild(fb); });
+    });
+
+    /* the card below reads in the station's order: a part moved out of sentence 3 comes after sentence 3 (`near`) */
+    ['old', 'beyond'].forEach(function (k) {
+      offAt[k].sort(function (x, y) { return x.k - y.k; }).forEach(function (x) { off[k].appendChild(x.li); });
     });
 
     if (st.id === 'overview') {
@@ -395,11 +415,14 @@
 
     /* The mistake to avoid comes AFTER the facts: a refutation only works
        once the reader has something to hold it against. */
+    var goldOld = null;
     if (st.learn && st.learn.golden) {
       var g = document.createElement('div');
       g.className = 'golden';
-      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here' + (st.past && st.past.golden && !st.past.golden.from ? ' ' + pastBadge(st.past.golden) : '') + '</div><p>' + (pastSplit(st.learn.golden, st.past && st.past.golden, M) || M(st.learn.golden)) + '</p>';
-      card.appendChild(g);
+      var gOld = !!(st.past && st.past.golden && !st.past.golden.from);
+      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here' + (gOld ? ' ' + pastBadge(st.past.golden) : '') + '</div><p>' + (pastSplit(st.learn.golden, st.past && st.past.golden, M) || M(st.learn.golden)) + '</p>';
+      /* a mistake about something from an older syllabus goes with it, into the card below */
+      if (gOld) goldOld = g; else card.appendChild(g);
     }
 
     /* What the examiner asks here: the words to write, Core and Supplement kept apart,
@@ -421,6 +444,23 @@
       card.appendChild(ef);
     }
     pane.appendChild(card);
+
+    /* the sentences that are not in the 2026–28 syllabus, right below the ones that are */
+    if (off.old.children.length || off.beyond.children.length || goldOld) {
+      var oc = document.createElement('div');
+      oc.className = 'card offsyl';
+      oc.innerHTML = '<div class="card__h">Not in the 2026\u201328 syllabus</div>';
+      if (off.old.children.length || goldOld) {
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">In older syllabuses \u2014 you may meet these in past papers</div>');
+        oc.appendChild(off.old);
+        if (goldOld) oc.appendChild(goldOld);
+      }
+      if (off.beyond.children.length) {
+        oc.insertAdjacentHTML('beforeend', '<div class="offsyl__h">Beyond the syllabus \u2014 here to help the rest make sense</div>');
+        oc.appendChild(off.beyond);
+      }
+      pane.appendChild(oc);
+    }
 
     /* A recap of an earlier topic that this station rests on: a little always in view, the rest
        (graphs, the words that earn marks, how it is asked) behind one expandable section. */

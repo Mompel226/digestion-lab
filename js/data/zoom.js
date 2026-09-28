@@ -571,7 +571,7 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 5,
+        "at": 6,
         "img": "zoom/stomach-wall-block.jpg",
         "fixed": [
           154,
@@ -643,7 +643,7 @@ window.ZOOM_DETAIL = {
       {
         "at": 0,
         "focus": "liver-fill",
-        "label": "Between meals: the liver keeps making bile, the way into the duodenum is shut, and the gall bladder fills and stores it",
+        "label": "The liver makes bile, and the gall bladder stores it",
         "keep": true,
         "noback": true,
         "anim": "bileflow",
@@ -664,7 +664,7 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 2,
+        "at": 3,
         "focus": "liver",
         "label": "The cycle: the gall bladder fills between meals, then a meal arrives — it squeezes its stored bile out, and fresh bile from the liver flows straight down as well",
         "keep": true,
@@ -689,7 +689,7 @@ window.ZOOM_DETAIL = {
       {
         "at": 4,
         "focus": "liver-release",
-        "label": "During a meal: bile pours into the duodenum from the gall bladder and from the liver, to neutralise the chyme and emulsify the fats",
+        "label": "During a meal: bile pours into the duodenum, where it neutralises the acid from the stomach and emulsifies the fats",
         "keep": true,
         "noback": true,
         "anim": "bileflow",
@@ -819,7 +819,7 @@ window.ZOOM_DETAIL = {
         "full": true,
         "soft": 2,
         "noback": true,
-        "label": "The small intestine — duodenum, jejunum and ileum — and where bile and pancreatic juice come in",
+        "label": "The small intestine — the duodenum, then the ileum — and where bile and pancreatic juice come in",
         "credit": "OpenStax College, CC BY 3.0",
         "labels": [
           {
@@ -875,7 +875,7 @@ window.ZOOM_DETAIL = {
         "dropWhite": true
       },
       {
-        "at": 4,
+        "at": 6,
         "cam": {
           "cx": 175,
           "cy": 640,
@@ -917,8 +917,7 @@ window.ZOOM_DETAIL = {
           }
         ],
         "dwell": 700,
-        "fade": 520,
-        "sub": 0.55
+        "fade": 520
       },
       {
         "at": 7,
@@ -946,11 +945,11 @@ window.ZOOM_DETAIL = {
           213
         ],
         "soft": 3,
-        "label": "Level 2 — villi: finger-like projections all over every fold, about ten times more area again",
+        "label": "Villi: finger-like projections all over the lining, each built from many cells",
         "credit": "light micrograph, ×70, from the 7.5 deck",
         "labels": [
           {
-            "t": "level 2 · villi · ×10 more",
+            "t": "villi",
             "at": [
               0.5,
               0.3
@@ -1010,11 +1009,11 @@ window.ZOOM_DETAIL = {
           130
         ],
         "soft": 3,
-        "label": "Level 3 — microvilli: folds of the cell membrane itself, only visible with an electron microscope; about twenty times more area again",
+        "label": "Microvilli: folds of the cell membrane itself, only visible with an electron microscope",
         "credit": "electron micrograph, ×18,000, from the 7.5 deck",
         "labels": [
           {
-            "t": "level 3 · microvilli · ×20 more",
+            "t": "microvilli",
             "at": [
               0.78,
               0.5
@@ -1047,60 +1046,6 @@ window.ZOOM_DETAIL = {
         "scroll": 190,
         "fade": 520,
         "room": 380
-      },
-      {
-        "at": 9,
-        "cam": {
-          "cx": 175,
-          "cy": 640,
-          "w": 280
-        },
-        "noback": true,
-        "label": "The three levels together: folds × villi × microvilli — up to 600 times the surface area of a flat tube",
-        "credit": "from the 7.5 deck",
-        "insets": [
-          {
-            "img": "photos/folds-real-photo.jpg",
-            "at": [
-              38,
-              600,
-              92
-            ],
-            "cap": "circular folds · ×3"
-          },
-          {
-            "img": "zoom/villi-lm.jpg",
-            "at": [
-              138,
-              576,
-              46
-            ],
-            "cap": "villi · ×10"
-          },
-          {
-            "img": "zoom/microvilli-em.jpg",
-            "at": [
-              192,
-              600,
-              92
-            ],
-            "cap": "microvilli · ×20"
-          }
-        ],
-        "labels": [
-          {
-            "t": "together: up to 600× the area of a flat tube",
-            "plate": true,
-            "tx": [
-              162,
-              712
-            ],
-            "anchor": "middle"
-          }
-        ],
-        "dwell": 700,
-        "scroll": 150,
-        "fade": 520
       },
       {
         "at": 10,
@@ -1233,6 +1178,60 @@ window.ZOOM_DETAIL = {
         "spotlight": [
           "liver"
         ]
+      },
+      {
+        "at": 16,
+        "cam": {
+          "cx": 175,
+          "cy": 640,
+          "w": 280
+        },
+        "noback": true,
+        "label": "The three levels together: folds × villi × microvilli — up to 600 times the surface area of a flat tube",
+        "credit": "from the 7.5 deck",
+        "insets": [
+          {
+            "img": "photos/folds-real-photo.jpg",
+            "at": [
+              38,
+              600,
+              92
+            ],
+            "cap": "circular folds · ×3"
+          },
+          {
+            "img": "zoom/villi-lm.jpg",
+            "at": [
+              138,
+              576,
+              46
+            ],
+            "cap": "villi · ×10"
+          },
+          {
+            "img": "zoom/microvilli-em.jpg",
+            "at": [
+              192,
+              600,
+              92
+            ],
+            "cap": "microvilli · ×20"
+          }
+        ],
+        "labels": [
+          {
+            "t": "together: up to 600× the area of a flat tube",
+            "plate": true,
+            "tx": [
+              162,
+              712
+            ],
+            "anchor": "middle"
+          }
+        ],
+        "dwell": 700,
+        "scroll": 150,
+        "fade": 520
       }
     ],
     "keys": [
