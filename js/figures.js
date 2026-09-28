@@ -1046,7 +1046,7 @@
       svg: svg('-16 6 486 204',
         /* the blood vessel that takes the water away */
         '<rect x="34" y="30" width="376" height="24" rx="12" fill="#FAE0DC" stroke="#C0392B" stroke-width="1.8"/>' +
-        '<text class="fs" x="222" y="46" text-anchor="middle" style="fill:#8A2A20">blood — water and mineral salts are carried away</text>' +
+        '<text class="fs" x="222" y="46" text-anchor="middle" style="fill:#8A2A20">blood — the water is carried away</text>' +
         /* the colon wall, segmenting */
         '<path fill="#F3E1D3" stroke="#C08A72" stroke-width="2.6" stroke-linejoin="round" d="' + frames[0] + '">' +
         A + '"d" values="' + frames.join(';') + '" dur="' + DUR + '" repeatCount="indefinite" ' +
@@ -1057,7 +1057,7 @@
         '<text class="fs" x="400" y="163" text-anchor="end">stored in the rectum</text>' +
         '<text class="fl" x="222" y="186" text-anchor="middle">The pouches squeeze in turn, kneading the contents</text>' +
         '<text class="fl" x="222" y="205" text-anchor="middle">against the wall so the water has time to leave.</text>'),
-      cap:'<b>The colon.</b> It does not push with one smooth wave like the oesophagus — neighbouring pouches squeeze in turn, working the contents against the wall so water and mineral salts have time to be absorbed. What arrives watery leaves solid. Watch the trap though: <b>most</b> of the water is absorbed in the <b>small</b> intestine, not here.'
+      cap:'<b>The colon.</b> It does not push with one smooth wave like the oesophagus — neighbouring pouches squeeze in turn, working the contents against the wall so the water has time to be absorbed. What arrives watery leaves solid. Watch the trap though: <b>most</b> of the water is absorbed in the <b>small</b> intestine, not here.'
     };
   }
 

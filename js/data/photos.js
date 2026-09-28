@@ -99,7 +99,7 @@ window.PHOTOS = {
       "src": "surface-area-levels.jpg",
       "kind": "Illustration",
       "cap": "<b>All three levels in one picture — read it a, b, c.</b> (a) The tube, cut open: the ridges running round the inside are the <b>circular folds</b>. The little box on one fold is zoomed into (b): the fold's whole surface is covered in <b>villi</b>, each one a finger of tissue built from many cells, with blood vessels running up inside. The little box on one villus is zoomed into (c): the wall of the villus is a single layer of cells, and the one cell pulled out at the top right shows the <b>microvilli</b> — the fringe on its top edge, which is just its own membrane folded. Three levels, one inside the next.",
-      "after": 9,
+      "after": 16,
       "maxw": 900
     },
     {

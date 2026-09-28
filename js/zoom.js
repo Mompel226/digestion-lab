@@ -753,8 +753,13 @@
     if (!lis || !lis.length) return Math.max(0, stepIdx);
     var line = readingLine(), idx = -1, frac = 0;
     for (var i = 0; i < lis.length; i++) {
-      var r = lis[i].getBoundingClientRect();
-      if (r.top <= line) { idx = i; frac = r.height ? (line - r.top) / r.height : 0; } else break;
+      var r = lis[i].getBoundingClientRect(), at = lis[i].getAttribute('data-i');
+      if (r.top > line) break;
+      /* a step is tied to a sentence's place in the master (data-i), not its place on the page: the
+         sentences that are not in the 2026–28 syllabus are drawn in a card of their own, further down,
+         and one of those brings on only a picture of its own; any other leaves the last picture up */
+      if (lis[i].parentNode.classList.contains('exam-list--off') && !steps.some(function (s) { return (s.at || 0) === +at; })) continue;
+      idx = at != null ? +at : i; frac = r.height ? (line - r.top) / r.height : 0;
     }
     var best = 0;
     steps.forEach(function (s, j) { var at = s.at || 0, sub = s.sub || 0; if (at < idx || (at === idx && sub <= frac)) best = j; });
