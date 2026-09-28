@@ -619,7 +619,7 @@
         ring:'<path d="' + CELL + '" fill="none" stroke="#E8A33D" stroke-width="4.6"/>',
         body:'A thin, partially permeable skin around the whole cell. It holds the cell ' +
              'together and controls what enters and leaves — the waste made inside passes out through it.' },
-      { k:'er', t:'rough\nendoplasmic\nreticulum', side:'L', ly:198, ax:366, ay:206, core:0,
+      { k:'er', t:'rough\nendoplasmic\nreticulum', side:'L', ly:198, ax:366, ay:206, core:0, old:'2022',
         ring:ERD.map(function (d) { return '<path d="' + d + '" fill="none" stroke="#E8A33D" stroke-width="7.6" opacity=".55" stroke-linecap="round"/>'; }).join(''),
         body:'Folded sheets of membrane covered in ribosomes. Proteins made on them are ' +
              'folded here and passed on to the Golgi apparatus.' },
@@ -631,7 +631,7 @@
         ring:'<ellipse cx="' + NX + '" cy="' + NY + '" rx="36" ry="31" fill="none" stroke="#E8A33D" stroke-width="3.2"/>',
         body:'The control centre. It holds the chromosomes — the DNA carrying the instructions ' +
              'for every protein the cell makes. The dark spot inside it is the nucleolus.' },
-      { k:'vesicle', t:'vesicle', side:'R', ly:180, ax:486, ay:176, core:0,
+      { k:'vesicle', t:'vesicle', side:'R', ly:180, ax:486, ay:176, core:0, old:'2022',
         ring:'<circle cx="498" cy="176" r="12.5" fill="none" stroke="#E8A33D" stroke-width="2.6"/>',
         body:'A small bag of membrane. It carries a finished substance to the cell membrane ' +
              'and releases it outside the cell.' },
@@ -679,9 +679,9 @@
         'fill="#FFFFFF" stroke="#0F6E8C" stroke-width="1.6"/>' +
         '<text class="cardt" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 20) + '">' + o.t.replace('\n', ' ') + '</text>' +
         '<rect x="' + (CARD.x + CARD.w - (o.core ? 96 : 118)) + '" y="' + (CARD.y + 8) + '" width="' + (o.core ? 62 : 84) + '" height="15" rx="7.5" ' +
-        'fill="' + (o.core ? '#E4F1E8' : '#F3EEE2') + '" stroke="' + (o.core ? '#2E7D46' : '#B9A87E') + '" stroke-width="1"/>' +
+        'fill="' + (o.core ? '#E4F1E8' : o.old ? '#FBF1E2' : '#F3EEE2') + '" stroke="' + (o.core ? '#2E7D46' : o.old ? '#DDBB85' : '#B9A87E') + '" stroke-width="1"/>' +
         '<text class="cardtag" x="' + (CARD.x + CARD.w - (o.core ? 65 : 76)) + '" y="' + (CARD.y + 19) + '" text-anchor="middle" ' +
-        'style="fill:' + (o.core ? '#2E7D46' : '#8A7647') + '">' + (o.core ? 'in 0610' : 'beyond 0610') + '</text>' +
+        'style="fill:' + (o.core ? '#2E7D46' : o.old ? '#7A4B12' : '#8A7647') + '">' + (o.core ? 'in 0610' : o.old ? 'until ' + o.old : 'beyond 0610') + '</text>' +   /* until 2022: an older syllabus had it */
         '<text class="cardb" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 38) + '">' +
         body.map(function (l, i) { return '<tspan x="' + (CARD.x + 14) + '" dy="' + (i ? '15' : '0') + '">' + l + '</tspan>'; }).join('') +
         '</text>' +

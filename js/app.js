@@ -234,6 +234,26 @@
   function esc(s) {
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
+
+  /* ---------- the old syllabus ----------
+     What this lab teaches that the 2026–28 syllabus does not include, although an older 0610 syllabus did
+     (peristalsis, until 2015). It stays, because past papers ask it, and its badge names the syllabus it
+     belongs to. The words are Cambridge's own, from labs-shared/syllabus-past.json through the build. */
+  var PAST = window.PAST_SYLLABUS || { statements: {}, terms: {} };
+  function pastTerm(term) { return (PAST.terms || {})[String(term || '').toLowerCase()] || null; }
+  function pastBadge(id, cls) {
+    var x = (PAST.statements || {})[id && id.id ? id.id : id];
+    if (!x) return '';
+    /* the note says what the 2026–28 syllabus does instead, and whether recent papers still give marks for it */
+    var tip = 'In the 0610 syllabus until ' + x.until + (x.tier ? ' (' + x.tier + ')' : '') + ': \u201c' + x.text + '\u201d. ' +
+              (x.note || ('It is not in the 2026\u201328 syllabus, so your exam is unlikely to ask it. Past papers up to ' + x.until + ' may ask it.'));
+    return '<span class="' + (cls || 'sup sup--old') + ' tip" tabindex="0" data-tip="' + esc(tip).replace(/"/g, '&quot;') + '">old syllabus \u00b7 until ' + esc(x.until) + '</span>';
+  }
+  /* a sentence only part of which is old: the badge goes in front of that part (`from`, in past-syllabus.json) */
+  function pastSplit(txt, pe, M) {
+    var at = pe && pe.from ? String(txt).indexOf(pe.from) : -1;
+    return at >= 0 ? (at ? M(txt.slice(0, at)) : '') + pastBadge(pe.id) + ' ' + M(txt.slice(at)) : null;
+  }
   function icon() {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="#14572B" stroke-width="1.8" ' +
       'stroke-linecap="round" stroke-linejoin="round">' +
@@ -345,7 +365,10 @@
          'b.sup' is truthy for every plain bullet. */
       if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on Paper 4 (Extended) only. Core candidates can skip it.">S</span>';
       if (typeof b === 'object' && b.ext) badge = '<span class="sup sup--ext tip" tabindex="0" data-tip="Extension — not in the 2026–28 syllabus. Here to make sense of the rest; you will not be asked to write it.">extension</span>';
-      li.innerHTML = badge + M(txt);
+      /* in an older 0610 syllabus: its badge names that syllabus (and replaces "extension") */
+      var pe = st.past && st.past.exam ? st.past.exam[i] : null, pSplit = pastSplit(txt, pe, M);
+      if (pe != null && !pSplit) badge = pastBadge(pe);
+      li.innerHTML = badge + (pSplit || M(txt));
       /* Some sentences carry a view on the plate that deserves to be looked at. Those get extra
          room, so the reader scrolls through them at a pace where each picture is actually seen. */
       if (rooms[i]) li.style.minHeight = rooms[i] + 'px';
@@ -375,7 +398,7 @@
     if (st.learn && st.learn.golden) {
       var g = document.createElement('div');
       g.className = 'golden';
-      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here</div><p>' + M(st.learn.golden) + '</p>';
+      g.innerHTML = '<div class="golden__h">⬤ Check yourself — the mistake students make here' + (st.past && st.past.golden && !st.past.golden.from ? ' ' + pastBadge(st.past.golden) : '') + '</div><p>' + (pastSplit(st.learn.golden, st.past && st.past.golden, M) || M(st.learn.golden)) + '</p>';
       card.appendChild(g);
     }
 
@@ -444,9 +467,10 @@
       var L = document.createElement('div');
       L.className = 'card later';
       L.innerHTML = '<div class="card__h">Going further — links to other topics, IB, and beyond the syllabus</div>' +
-        '<ul class="later__list">' + further.map(function (x) {
+        '<ul class="later__list">' + further.map(function (x, j) {
+          var pid = st.past && st.past.further ? st.past.further[j] : null;   /* in an older 0610 syllabus: say which */
           var kind = /^IB/.test(x.ref) ? ' later__ref--ib' : /^(Beyond|Not in)/.test(x.ref) ? ' later__ref--beyond' : '';
-          return '<li><span class="later__ref' + kind + '">' + esc(x.ref) + '</span>' + M(x.text) + '</li>';
+          return '<li>' + (pid != null && /^(Beyond|Not in)/.test(x.ref) ? pastBadge(pid, 'later__ref later__ref--old') : '<span class="later__ref' + kind + '">' + esc(x.ref) + '</span>' + (pid != null ? pastBadge(pid, 'later__ref later__ref--old') : '')) + M(x.text) + '</li>';
         }).join('') + '</ul>';
       pane.appendChild(L);
     }
@@ -464,7 +488,7 @@
         '<dl class="kw-grid">' +
         st.keywords.map(function (w) {
           var g = (window.GLOSSARY || []).filter(function (e) { return e.term.toLowerCase() === w.term.toLowerCase(); })[0] || {};
-          var tag = g.ext ? ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>'
+          var tag = pastTerm(w.term) ? ' ' + pastBadge(pastTerm(w.term), 'tier tier--old') : g.ext ? ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>'
                   : g.sup ? ' <span class="tier tier--sup" title="Supplement — Paper 4 (Extended) only">Supplement</span>' : '';
           return '<div class="kw kw--flip" role="button" tabindex="0" aria-expanded="false">' +
                  '<dt>' + M(w.term) + numberOf(g) + tag + '</dt>' +
@@ -478,7 +502,7 @@
         };
         c.addEventListener('click', function (e) {
           /* a glossary marker inside the word keeps its own job */
-          if (e.target.closest('[data-peek],[data-jump]')) return;
+          if (e.target.closest('[data-peek],[data-jump],.tip')) return;   /* a badge opens its note, not the card */
           turn();
         });
         c.addEventListener('keydown', function (e) {
@@ -633,7 +657,7 @@
     box.className = 'media media--fig';
     box.setAttribute('data-fig', name);
     box.innerHTML = f.svg + '<figcaption class="media__cap">' +
-      '<span class="kindtag kindtag--fig">Diagram</span> ' + f.cap + '</figcaption>';
+      '<span class="kindtag kindtag--fig">Diagram</span> ' + (PAST.widgets && PAST.widgets['fig:' + name] ? pastBadge(PAST.widgets['fig:' + name]) : '') + f.cap + '</figcaption>';
     hidePlateParts(box);
     keepFigureReadable(box);
     /* An animated figure starts when the page paints, so by the time it is scrolled into
@@ -858,6 +882,13 @@
     paintGoLine(pane, st);
     (st.activities || []).forEach(function (a, i) {
       var card = window.Engine.render(a, i, st.id + ':' + i);
+      /* a question on something the 2026–28 syllabus does not include says which syllabus it comes from */
+      var pq = st.past && st.past.q ? st.past.q[i] : null;
+      if (pq != null) {
+        var qtop = card.querySelector('.act__top'), qn = qtop && qtop.querySelector('.act__n'), qbox = document.createElement('span');
+        qbox.innerHTML = pastBadge(pq, 'act__old');
+        if (qtop && qbox.firstChild) { if (qn) qn.insertAdjacentElement('afterend', qbox.firstChild); else qtop.appendChild(qbox.firstChild); }
+      }
       if (p(st.id).done[i]) {
         var tick = document.createElement('span');
         tick.className = 'verdict ok';
@@ -1701,6 +1732,7 @@
          which is not decoration: a Core candidate reading 'periodontal fibres' needs to know
          they are not expected to learn it, not to wonder why they have never seen it. */
       function tierTag(w) {
+        var pid = pastTerm(w.term); if (pid) return ' ' + pastBadge(pid, 'tier tier--old');
         if (w.ext) return ' <span class="tier tier--ext" title="Worth knowing, but 0610 will not ask you to name it">not asked in 0610</span>';
         if (w.sup) return ' <span class="tier tier--sup" title="Supplement — examined on Paper 4 (Extended) only">Supplement</span>';
         return '';
