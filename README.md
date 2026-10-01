@@ -22,8 +22,9 @@ by **Dr Daniel Mompel Riera** · NLCS Jeju
 ## What a student does
 
 Click any organ on the canal and work through that station: what the exam wants, what it
-actually looks like, and questions that say right or wrong — never the answer. Or send a meal
-down the whole canal and stop at each organ in turn.
+actually looks like, and questions that say right or wrong — never the answer. Or press
+**Follow the food**: five scenes (ingestion, digestion, absorption, assimilation, egestion) carry
+a meal from mouth to anus and open the station for each.
 
 |  |  |
 |---|---|
@@ -42,7 +43,7 @@ down the whole canal and stop at each organ in turn.
 
 One of the labs behind the [Human Body Hub](https://nlcsbiology.com/human-body-hub/), which
 is one shelf of the [Biology Hub](https://nlcsbiology.com/biology-hub/) — the front door to
-every Biology app here. The **← All labs** button goes back up.
+every Biology app here. The **← The body** button goes back up.
 
 > [!TIP]
 > **Want your students' scores in a spreadsheet of your own?**

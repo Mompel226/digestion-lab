@@ -4,9 +4,16 @@
      node tools/build.mjs [password]
 
    Reads   ../digestion-lab-source/stations.master.js   (has the answers)
-   Writes  js/engine.js, js/marking.js         copied from labs-shared/engine/
+           ../digestion-lab-source/past-syllabus.json   (the old-syllabus badges)
+   Writes  js/engine.js, js/marking.js, js/sync.js, js/homework.js, js/syllabus.js   copied from labs-shared/engine/
            js/signin.js                        copied from labs-shared/ (one sign-in for the whole site)
            js/data/stations.js    presentation + salted hashes, NO answers
+           js/data/glossary.js    the shared definitions
+           js/data/syllabus.js, js/data/syllabus-older.js   the syllabus text, for the IGCSE 0610 badge
+           js/data/photo-size.js  the pixel size of every picture
+           index.html             every ?v= stamped; version.txt the same stamp
+           sw.js                  the offline worker, from labs-shared/sw.template.js
+           ../../labs-shared/labs.json   this lab's station and question counts
 
    The hashes let the page mark an answer right or wrong without the answer
    existing anywhere in the download. Nothing in the site can say what the
@@ -74,7 +81,7 @@ const { formsOf } = await import(pathToFileURL(resolve(SHARED, 'glossary-forms.m
 const { loadPast, pastOf, pastPage } = await import(pathToFileURL(resolve(SHARED, 'past-syllabus.mjs')).href);
 const PAST = loadPast(SHARED, resolve(REPO, '../digestion-lab-source'));
 for (const [from, to] of [['engine/engine.js', 'js/engine.js'], ['engine/marking.js', 'js/marking.js'], ['engine/syllabus.js', 'js/syllabus.js'],
-                          ['engine/sync.js', 'js/sync.js'], ['signin.js', 'js/signin.js']]) {
+                          ['engine/sync.js', 'js/sync.js'], ['engine/homework.js', 'js/homework.js'], ['signin.js', 'js/signin.js']]) {
   const src = resolve(SHARED, from);
   if (!existsSync(src)) { console.error('Cannot find ' + from + ' in ' + SHARED); process.exit(1); }
   copyFileSync(src, resolve(REPO, to));
@@ -351,6 +358,24 @@ const stamped = idx.replace(/(\.(?:js|css))\?v=\d+/g, `$1?v=${STAMP}`);
 const nStamp = (idx.match(/\.(?:js|css)\?v=\d+/g) || []).length;
 if (!nStamp) throw new Error('index.html has no ?v= stamps to bump — cache busting would be silent');
 writeFileSync(idxPath, stamped);
+
+/* ---------- the register ----------
+   labs-shared/labs.json is the single register: this lab's counts are written by this build, as the Plants
+   and Circulation builds write theirs, so the hubs' percentages and the Apps Script's totals can never
+   disagree with what is here. It is rewritten only when a count changes (30 Sep 2026: this build used to
+   leave it to be edited by hand). */
+{
+  const LAB = 'digestion-lab';
+  const regPath = resolve(SHARED, 'labs.json');
+  const reg = JSON.parse(readFileSync(regPath, 'utf8'));
+  const row = reg.labs.find(l => l.id === LAB);
+  if (!row) throw new Error('labs-shared/labs.json has no entry for ' + LAB + ' — add one (id, name, shelf, url, store) before building');
+  if (row.stations !== pub.length || row.questions !== nAct) {
+    row.stations = pub.length; row.questions = nAct;
+    writeFileSync(regPath, JSON.stringify(reg, null, 2).replace(/\{\n\s+"id"/g, '{ "id"') + '\n');
+    console.log(`  labs.json             ${LAB} now ${pub.length} stations · ${nAct} questions — rebuild the hubs (node tools/stamp.mjs) so they see it`);
+  }
+}
 
 const SW_LAB = 'digestion-lab';
 const SW_TEMPLATE = resolve(dirname(GLOSS_PATH), 'sw.template.js');

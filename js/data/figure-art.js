@@ -1,4 +1,4 @@
-/* Public-domain diagrams used inside the "See it" figures.
+/* Public-domain diagrams used inside the Learn figures (js/figures.js).
    Tooth section: "Tooth Section numbered.svg" by Jak, Wikimedia Commons (public domain);
      the numeric labels have been removed so the simulation can add its own.
    Intestinal villus: "Intestinal villus simplified.svg" by Snow93, Wikimedia Commons (public domain).

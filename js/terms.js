@@ -140,7 +140,7 @@
      on click, rather than being stretched.
 
      Third element = the credit line, shown under the note. Every borrowed
-     image has one; SOURCES.md carries the full record. */
+     image has one; assets/photos/CREDITS.md carries the full record. */
   var PEEK = {
     /* Two questions students ask that a sentence cannot answer, so each opens a drawing:
        why one sugar answers Benedict's when another does not, and what "a large molecule"
@@ -442,5 +442,4 @@
     }).observe(document.body, { subtree: true, childList: true, characterData: true });
   }
   if (document.body) watch(); else document.addEventListener('DOMContentLoaded', watch);
-  window.KeepUnits = { join: join };
 })();
