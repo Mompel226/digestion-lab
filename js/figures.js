@@ -1,5 +1,5 @@
 /* ============================================================
-   figures.js — animated SVG diagrams for the "See it" tab.
+   figures.js — animated SVG diagrams, drawn inline in Learn under the sentence each illustrates.
    Each figure returns an SVG string; label positions are fixed
    and hand-checked so nothing overlaps at any width.
    ============================================================ */
@@ -37,59 +37,6 @@
   function arrow(id, colour, d, width) {
     return '<path d="' + d + '" stroke="' + colour + '" stroke-width="' + (width || 2.2) +
            '" fill="none" stroke-linecap="round" marker-end="url(#' + id + ')"/>';
-  }
-
-
-  /* ---------------------------------------------------------------
-     Muscle movement, done by morphing the wall itself.
-
-     A tube is drawn by sampling its half-width down its length. Where
-     the bolus is, the wall bulges; just behind it the circular muscle
-     squeezes the wall in; just ahead the wall relaxes open to receive
-     it. Advancing that pattern one step at a time gives a set of
-     keyframes, and SMIL interpolates between them — so what you see is
-     the wall itself moving, the way a real gut does, not a blob sliding
-     down a fixed pipe.
-
-     Easing is a slow-in/slow-out spline: real muscle does not move at
-     constant speed.
-     --------------------------------------------------------------- */
-  function gauss(x, s) { return Math.exp(-(x * x) / (2 * s * s)); }
-
-  /* One frame of a vertical tube. cx = centre line, y0..y1 = extent. */
-  function tubeFrame(o, bolusY) {
-    var n = 46, left = [], right = [], i, y, w;
-    for (i = 0; i <= n; i++) {
-      y = o.y0 + (o.y1 - o.y0) * (i / n);
-      w = o.w
-        + o.bulge   * gauss(y - bolusY, o.sBulge)              /* the bolus stretches the wall */
-        - o.squeeze * gauss(y - (bolusY - o.behind), o.sSq)    /* circular muscle grips behind it */
-        + o.open    * gauss(y - (bolusY + o.ahead), o.sOpen);  /* the tube relaxes open in front */
-      w = Math.max(2.5, w);
-      left.push([(o.cx - w).toFixed(1), y.toFixed(1)]);
-      right.push([(o.cx + w).toFixed(1), y.toFixed(1)]);
-    }
-    right.reverse();
-    return 'M' + left.map(function (p) { return p.join(','); }).join(' L') +
-           ' L' + right.map(function (p) { return p.join(','); }).join(' L') + ' Z';
-  }
-
-  /* A whole travelling wave, as a semicolon-separated list of frames. */
-  function tubeFrames(o, from, to, steps) {
-    var out = [], i;
-    for (i = 0; i <= steps; i++) out.push(tubeFrame(o, from + (to - from) * (i / steps)));
-    return out.join(';');
-  }
-  function bolusFrames(from, to, steps, key) {
-    var out = [], i;
-    for (i = 0; i <= steps; i++) out.push((from + (to - from) * (i / steps)).toFixed(1));
-    return out.join(';');
-  }
-  /* slow in, slow out — one spline per gap between frames */
-  function ease(steps) {
-    var s = [], i;
-    for (i = 0; i < steps; i++) s.push('0.42 0 0.58 1');
-    return s.join(';');
   }
 
 
@@ -204,92 +151,6 @@
         '<text class="fb" x="317" y="252" text-anchor="middle" style="fill:#0F6E8C">' + manyN + ' enzymes fit</text>' +
         '<text class="fl" x="230" y="278" text-anchor="middle">Same amount of food. Twice the edge, so twice as many enzymes work at once.</text>'),
       cap:'<b>Physical digestion increases surface area.</b> The mass of food does not change &#8212; both sides here are the same amount of food. What changes is how much <i>edge</i> there is for enzymes to attach to, and you can count it: ' + one.count + ' enzymes fit around the whole piece, ' + manyN + ' around the four smaller ones. That is the whole point of chewing.'
-    };
-  }
-
-  /* ---------------- tooth cross-section ---------------- */
-  function tooth() {
-    var art = (global.FIGURE_ART || {}).tooth;
-    if (!art) return { svg:'', cap:'' };
-    return {
-      svg: plateFig(art, {
-        viewBox:'-132 44 660 602', leftX:-14, rightX:384, minGap:26, top:66, bottom:598,
-        /* the plate's own leader lines and brackets are hidden: we draw our own,
-           so the labels are laid out by us and cannot collide */
-        hide:[55,56,57,58,59,60,61,62,68,69,70,71],
-        labels:[
-          { side:'right', ly:116, at:[281,116], text:'Enamel',  sub:'hardest substance in the body' },
-          { side:'right', ly:172, at:[260,167], text:'Dentine', sub:'softer, and it senses pain' },
-          { side:'right', ly:224, at:[203,214], text:'Pulp cavity' },
-          { side:'right', ly:262, at:[323,236], text:'Gum' },
-          { side:'right', ly:330, at:[279,400], text:'Cement',  sub:'thin layer on the root surface' },
-          { side:'right', ly:436, at:[308,435], text:'Jaw bone' },
-          { side:'right', ly:520, at:[290,560], text:'Blood vessel' },
-          { side:'right', ly:576, at:[290,570], text:'Nerve' }
-        ],
-        brackets:[
-          { x:26, y0:62,  y1:262, text:'Crown' },
-          { x:26, y0:274, y1:556, text:'Root' }
-        ],
-        note:[190, 632, 'The pulp holds the blood vessels and nerves — which is why a deep cavity hurts.', 'middle']
-      }),
-      cap:'<b>Enamel</b> is the hardest substance in the body and protects the tooth. <b>Dentine</b> lies beneath it and can sense pain. The <b>pulp cavity</b> holds the blood vessels and nerves. <b>Cement</b> and the periodontal fibres anchor the root in the jaw bone.'
-    };
-  }
-
-  /* ---------------- four tooth types ---------------- */
-
-  /* ---------------- peristalsis ---------------- */
-  function peristalsis() {
-    var TUBE = { cx:150, y0:24, y1:268, w:25, bulge:15, sBulge:15,
-                 squeeze:17, behind:34, sSq:15, open:7, ahead:44, sOpen:20 };
-    var STEPS = 22, DUR = '4.4s';
-    var wallD = tubeFrames(TUBE, 10, 288, STEPS);
-    var by    = bolusFrames(10, 288, STEPS);
-
-    /* the muscle layers, drawn as short marks that thicken where they contract */
-    var marks = '';
-    for (var k = 0; k < 13; k++) {
-      var y = 34 + k * 18;
-      marks += '<g>' +
-        '<line x1="' + (TUBE.cx - 44) + '" y1="' + y + '" x2="' + (TUBE.cx - 30) + '" y2="' + y +
-        '" stroke="#B4614A" stroke-width="3" stroke-linecap="round" opacity=".35">' +
-        A + '"opacity" values=".3;1;.3" dur="' + DUR + '" begin="' + (-4.4 + k * 0.32) + 's" repeatCount="indefinite"/>' +
-        A + '"stroke-width" values="3;6;3" dur="' + DUR + '" begin="' + (-4.4 + k * 0.32) + 's" repeatCount="indefinite"/></line>' +
-        '<line x1="' + (TUBE.cx + 30) + '" y1="' + y + '" x2="' + (TUBE.cx + 44) + '" y2="' + y +
-        '" stroke="#B4614A" stroke-width="3" stroke-linecap="round" opacity=".35">' +
-        A + '"opacity" values=".3;1;.3" dur="' + DUR + '" begin="' + (-4.4 + k * 0.32) + 's" repeatCount="indefinite"/>' +
-        A + '"stroke-width" values="3;6;3" dur="' + DUR + '" begin="' + (-4.4 + k * 0.32) + 's" repeatCount="indefinite"/></line>' +
-        '</g>';
-    }
-
-    return {
-      svg: svg('-4 8 452 292',
-        marks +
-        /* the wall itself deforms — that is the whole point */
-        '<path fill="#F6E3DD" stroke="#C4776A" stroke-width="2.6" stroke-linejoin="round" d="' +
-          tubeFrame(TUBE, 10) + '">' +
-          A + '"d" values="' + wallD + '" dur="' + DUR + '" repeatCount="indefinite" ' +
-          'calcMode="spline" keySplines="' + ease(STEPS) + '"/></path>' +
-        /* the bolus, squashed by the grip behind it */
-        '<ellipse cx="150" cy="10" rx="21" ry="17" fill="#E8A33D" stroke="#A96B18" stroke-width="2">' +
-          A + '"cy" values="' + by + '" dur="' + DUR + '" repeatCount="indefinite" ' +
-          'calcMode="spline" keySplines="' + ease(STEPS) + '"/>' +
-          A + '"ry" values="17;20;16;20;17" dur="' + DUR + '" repeatCount="indefinite"/>' +
-          A + '"rx" values="21;19;22;19;21" dur="' + DUR + '" repeatCount="indefinite"/></ellipse>' +
-        '<text class="fs" x="150" y="20" text-anchor="middle">from the mouth</text>' +
-        '<text class="fs" x="150" y="286" text-anchor="middle">to the stomach</text>' +
-        /* labels */
-        '<g class="fl">' +
-        '<path class="ld" d="M300,86 L196,104"/><text x="304" y="90">Circular muscle</text>' +
-        '<text class="fs" x="304" y="104">contracts <tspan font-weight="700">behind</tspan> the bolus</text>' +
-        '<text class="fs" x="304" y="117">and squeezes it forward</text>' +
-        '<path class="ld" d="M300,166 L182,158"/><text x="304" y="170">The bolus</text>' +
-        '<text class="fs" x="304" y="184">a ball of chewed food</text>' +
-        '<path class="ld" d="M300,228 L188,214"/><text x="304" y="232">The tube ahead relaxes</text>' +
-        '<text class="fs" x="304" y="246">opening to receive it</text>' +
-        '</g>'),
-      cap:'<b>Peristalsis.</b> Watch the wall, not the food. Circular muscle contracts <b>behind</b> the bolus and the tube relaxes <b>in front</b> of it, and that travelling wave squeezes the food along. It happens the whole way from oesophagus to rectum, and it works even lying down — which is why you can swallow upside down. Fibre gives the muscle bulk to grip.'
     };
   }
 
@@ -472,29 +333,6 @@
     return {
       svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + lens + cell + '</svg>'),
       cap:'<b>The villus.</b> Four adaptations, each with a reason: villi and microvilli give a <b>large surface area</b>; the wall is <b>one cell thick</b> so the diffusion distance is short; a <b>dense capillary network</b> carries nutrients away and keeps the concentration gradient steep; a <b>lacteal</b> takes the fatty acids and glycerol. The little squares of the wall are the epithelial cells — <b>enterocytes</b>: click the lens to see one enlarged.'
-    };
-  }
-
-  /* ---------------- surface-area multiplier ---------------- */
-  function surfaceArea() {
-    return {
-      svg: svg('0 0 440 200',
-        '<g><rect x="20" y="44" width="110" height="72" rx="8" fill="#F6E2CE" stroke="#C98E76" stroke-width="2"/>' +
-        '<path d="M20,104 C36,80 52,128 68,96 C84,66 100,124 116,92 C124,76 128,86 130,92" fill="none" stroke="#C98E76" stroke-width="3"/>' +
-        '<text class="fb" x="75" y="34" text-anchor="middle">Circular folds</text>' +
-        '<text class="fs" x="75" y="134" text-anchor="middle">×3</text></g>' +
-        '<g><rect x="165" y="44" width="110" height="72" rx="8" fill="#F6E2CE" stroke="#C98E76" stroke-width="2"/>' +
-        '<path d="M172,116 C172,80 180,66 188,66 C196,66 204,80 204,116 M208,116 C208,80 216,66 224,66 C232,66 240,80 240,116 M244,116 C244,80 252,66 260,66 C268,66 270,80 270,116" fill="none" stroke="#C98E76" stroke-width="3"/>' +
-        '<text class="fb" x="220" y="34" text-anchor="middle">Villi</text>' +
-        '<text class="fs" x="220" y="134" text-anchor="middle">×10 more</text></g>' +
-        '<g><rect x="310" y="44" width="110" height="72" rx="8" fill="#F6E2CE" stroke="#C98E76" stroke-width="2"/>' +
-        '<path d="M316,110 l0,-42 M324,110 l0,-42 M332,110 l0,-42 M340,110 l0,-42 M348,110 l0,-42 M356,110 l0,-42 M364,110 l0,-42 M372,110 l0,-42 M380,110 l0,-42 M388,110 l0,-42 M396,110 l0,-42 M404,110 l0,-42 M412,110 l0,-42" stroke="#C98E76" stroke-width="2.4" stroke-linecap="round"/>' +
-        '<text class="fb" x="365" y="34" text-anchor="middle">Microvilli</text>' +
-        '<text class="fs" x="365" y="134" text-anchor="middle">×20 more</text></g>' +
-        arrowDefs('ar3', '#14572B') + arrow('ar3', '#14572B', 'M138,80 L158,80') + arrow('ar3', '#14572B', 'M283,80 L303,80') +
-        '<text class="fl" x="220" y="168" text-anchor="middle">Together they raise the surface area up to <tspan class="fb">600×</tspan> that of a flat tube.</text>' +
-        '<text class="fs" x="220" y="188" text-anchor="middle">About 250 m² of absorbing surface — roughly a tennis court.</text>'),
-      cap:'Three levels of folding multiply together: <b>circular folds</b> (×3), <b>villi</b> (×10) and <b>microvilli</b> (×20). More surface area means more sites for small soluble molecules to be absorbed.'
     };
   }
 
@@ -742,106 +580,6 @@
     };
   }
 
-  /* ---------------- stomach churning ---------------- */
-  /* Sample a smooth centre line through a list of points (Catmull-Rom). Used to
-     sweep one continuous tube: oesophagus, stomach and duodenum are the same
-     tube, so drawing them as three pieces and then trying to hide the joins was
-     always going to look like three pieces. */
-  function crPoint(P, u) {
-    var n = P.length - 1, i = Math.min(Math.floor(u * n), n - 1), t = u * n - i;
-    var p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(n, i + 2)];
-    var t2 = t * t, t3 = t2 * t;
-    return [0.5 * ((2*p1[0]) + (-p0[0]+p2[0])*t + (2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2 + (-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
-            0.5 * ((2*p1[1]) + (-p0[1]+p2[1])*t + (2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2 + (-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)];
-  }
-
-  function churn() {
-    /* One continuous tube, swept along a centre line that starts up in the
-       oesophagus and ends out in the duodenum, with a different width on each
-       side. The asymmetry is what makes the J: a long greater curvature on the
-       outside, a short lesser one on the inside. Orientation follows the body
-       plate beside it — liver on the viewer's left, so the stomach's fundus
-       domes to the right and the pylorus leaves to the left. Contraction rings
-       then travel towards the pylorus, squeezing the wall as they pass and
-       getting stronger as they go, which is what gastric waves do. */
-    var DUR = '5.5s', N = 96, STEPS = 30;
-    var MID = [[190,20],[190,64],[224,96],[240,140],[228,182],[186,210],[132,218],[92,224],[64,246],[54,276]];
-
-    function at(u) {
-      var p = crPoint(MID, u), q = crPoint(MID, Math.min(1, u + 0.004));
-      var dx = q[0] - p[0], dy = q[1] - p[1], L = Math.hypot(dx, dy) || 1;
-      return { x:p[0], y:p[1], nx:dy / L, ny:-dx / L };
-    }
-    /* width each side: oesophagus narrow, stomach wide and lopsided, pylorus
-       narrow again, duodenum narrow */
-    function prof(u, keys) {
-      var i = 0;
-      while (i < keys.length - 2 && u > keys[i + 1][0]) i++;
-      var a = keys[i], b = keys[i + 1], f = (u - a[0]) / (b[0] - a[0] || 1);
-      f = Math.max(0, Math.min(1, f));
-      f = f * f * (3 - 2 * f);                                  /* ease, so no kinks */
-      return a[1] + (b[1] - a[1]) * f;
-    }
-    var OUT = [[0,9],[0.10,13],[0.20,40],[0.34,56],[0.50,50],[0.66,30],[0.78,15],[0.88,10],[1,9]];
-    var INN = [[0,9],[0.10,11],[0.22,20],[0.40,24],[0.58,20],[0.72,13],[0.84,10],[1,9]];
-
-    function wall(rings) {
-      var i, u, s, wo, wi, Lo = [], Li = [];
-      for (i = 0; i <= N; i++) {
-        u = i / N; s = at(u);
-        wo = prof(u, OUT); wi = prof(u, INN);
-        rings.forEach(function (r) {
-          var g = gauss(u - r, .045) * (13 + 12 * r) * (u > .12 && u < .84 ? 1 : 0);
-          wo -= g; wi -= g * .75;
-        });
-        wo = Math.max(6, wo); wi = Math.max(5.5, wi);
-        Lo.push([(s.x + s.nx * wo).toFixed(1), (s.y + s.ny * wo).toFixed(1)]);
-        Li.push([(s.x - s.nx * wi).toFixed(1), (s.y - s.ny * wi).toFixed(1)]);
-      }
-      Li.reverse();
-      return 'M' + Lo.map(function (q) { return q.join(','); }).join(' L') +
-             ' L' + Li.map(function (q) { return q.join(','); }).join(' L') + ' Z';
-    }
-
-    var frames = [], i;
-    for (i = 0; i <= STEPS; i++) {
-      var a = .24 + (i / STEPS) * .56, b = a - .26;
-      var rings = [a]; if (b > .18) rings.push(b);
-      frames.push(wall(rings));
-    }
-    frames.push(frames[0]);
-
-    function bit(cx, cy, r, delay, dx, dy) {
-      return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="#B5762F" opacity=".9">' +
-        '<animateTransform attributeName="transform" type="translate" ' +
-        'values="0,0; ' + dx + ',' + dy + '; ' + (-dx) + ',' + (dy / 2) + '; 0,0" ' +
-        'dur="' + DUR + '" begin="' + delay + 's" repeatCount="indefinite"/>' +
-        A + '"r" values="' + r + ';' + (r * .55).toFixed(1) + ';' + r + '" dur="' + DUR + '" repeatCount="indefinite"/></circle>';
-    }
-    var food = bit(226,118,7,0,-12,26) + bit(240,150,6,.5,-16,-12) + bit(212,168,6.5,1.1,10,18) +
-               bit(204,132,5.5,1.7,-8,28) + bit(214,196,5,2.2,-18,-8) + bit(178,204,6,2.8,12,-20);
-
-    return {
-      svg: svg('0 0 540 300',
-        '<path fill="#F3DFCB" stroke="#B07E4A" stroke-width="3" stroke-linejoin="round" d="' + frames[0] + '">' +
-        A + '"d" values="' + frames.join(';') + '" dur="' + DUR + '" repeatCount="indefinite"/></path>' +
-        food +
-        '<path class="ld" d="M312,98 L276,124"/><text class="fb" x="318" y="96">Muscular wall</text>' +
-        '<text class="fs" x="318" y="112">rings of muscle squeeze and</text>' +
-        '<text class="fs" x="318" y="126">travel towards the exit &#8212; this</text>' +
-        '<text class="fs" x="318" y="140">is physical digestion</text>' +
-        '<path class="ld" d="M312,172 L244,168"/><text class="fb" x="318" y="170">Gastric juice</text>' +
-        '<text class="fs" x="318" y="186">hydrochloric acid + pepsin</text>' +
-        '<path class="ld" d="M312,234 L104,236"/><text class="fb" x="318" y="232">Chyme</text>' +
-        '<text class="fs" x="318" y="248">the soupy, acidic mixture</text>' +
-        '<text class="fs" x="318" y="262">that leaves the stomach</text>' +
-        '<path class="ld" d="M156,36 L180,32"/>' +
-        '<text class="fs" x="150" y="39" text-anchor="end">from the oesophagus</text>' +
-        '<text class="fs" x="52" y="292" text-anchor="middle">to the duodenum</text>'),
-      cap:'<b>Churning is physical digestion.</b> Three layers of muscle in the stomach wall run in different directions, so it can squeeze in more than one plane at once. Rings of contraction travel towards the pylorus about three times a minute, breaking the food into smaller pieces and mixing it thoroughly with the gastric juice. Nothing is broken chemically by the squeezing itself &#8212; that is pepsin&#8217;s job. What leaves is <b>chyme</b>.'
-    };
-  }
-
   /* ---------------- starch pathway ---------------- */
   function starchPath() {
     /* Laid out as one left-to-right pathway, because that is what it is:
@@ -890,111 +628,6 @@
     };
   }
 
-
-  /* ---------------- swallowing: the epiglottis ---------------- */
-  function swallow() {
-    /* A mid-sagittal section of the mouth and throat, facing left, with the
-       four things that actually happen in a swallow animated on it: the soft
-       palate lifts and closes off the nose, the tongue drives the bolus back,
-       the larynx rises so the epiglottis tips down over its own opening, and
-       the bolus passes behind it into the oesophagus.
-
-       Drawn from landmarks rather than freehand — nose, lips, chin, hard
-       palate, tongue, pharynx, larynx and oesophagus each have fixed
-       coordinates — because the first attempt read as a box with a flap in
-       it and you could not tell it was a mouth. */
-    var DUR = '6s';
-
-    /* the face in profile: forehead, nose, lips, chin, jaw, neck */
-    /* Built from landmarks — brow, nose bridge, nose tip, lips, chin, jaw —
-       with the corners rounded, rather than guessed as long curves. Guessing
-       produced a blob with no nose on it twice. */
-    var profile = 'M170,24 L121.9,34.7 Q116,36 113.0,41.2 L95.0,72.8 Q92,78 88.1,82.6 ' +
-      'L83.9,87.4 Q80,92 75.9,96.4 L56.1,117.6 Q52,122 57.9,123.3 L75.6,127.1 Q80,128 78.0,132.0 ' +
-      'Q76,136 80.0,138.0 L82.6,139.3 Q88,142 82.6,144.7 L79.4,146.3 Q74,149 79.2,152.0 ' +
-      'L82.8,154.0 Q88,157 84.0,161.5 Q80,166 84.0,170.5 L90.0,177.5 Q94,182 99.1,185.2 ' +
-      'L110.9,192.8 Q116,196 121.7,197.9 L140.3,204.1 Q146,206 146.2,212.0 L150,316 ' +
-      'L276,316 L276,150 C276,88 236,34 170,24 Z';
-
-    var face =
-      '<path d="' + profile + '" fill="#F7E2D4" stroke="#C79A83" stroke-width="2.2"/>' +
-      /* skull base, so the top of the head is not empty */
-      '<path d="M168,32 C224,40 258,84 262,140 L228,140 C224,96 202,58 162,44 Z" fill="#EEE1CE"/>' +
-      /* nasal cavity */
-      '<path d="M84,102 C110,86 152,78 190,80 C214,82 226,88 230,100 L230,122 ' +
-      'C204,116 150,114 116,120 C102,122 90,114 84,108 Z" fill="#DDEFF6" stroke="#8CB5C6" stroke-width="1.6"/>' +
-      '<path d="M108,96 q18,5 34,2 M112,106 q20,5 36,2 M120,116 q16,3 30,1" ' +
-      'fill="none" stroke="#8CB5C6" stroke-width="1.4" stroke-linecap="round"/>' +
-      /* hard palate */
-      '<path d="M90,124 L210,120 L210,132 L90,136 Z" fill="#F1E7D3" stroke="#B79E77" stroke-width="1.6"/>' +
-      /* pharynx: the shared space, joining mouth above to both tubes below */
-      '<path d="M210,120 C240,124 252,142 252,168 L252,214 L196,214 L196,178 C196,150 200,132 210,124 Z" fill="#FAF3EA"/>' +
-      /* lower jaw */
-      '<path d="M90,158 C112,170 146,178 176,178 L176,192 C142,192 106,184 88,172 Z" ' +
-      'fill="#F1E7D3" stroke="#B79E77" stroke-width="1.6"/>' +
-      /* trachea in front, cartilage rings, running to the bottom edge */
-      '<path d="M186,214 C182,244 182,276 184,308 L216,308 C214,276 214,244 218,214 Z" ' +
-      'fill="#E4F0F6" stroke="#6E9CB0" stroke-width="2"/>' +
-      [0,1,2,3].map(function (i) {
-        return '<path d="M188,' + (228 + i * 20) + ' q14,5 27,0" fill="none" stroke="#6E9CB0" stroke-width="2.4" stroke-linecap="round"/>';
-      }).join('') +
-      /* oesophagus behind it */
-      '<path d="M228,214 C226,244 226,276 228,308 L254,308 C252,276 252,244 254,214 Z" ' +
-      'fill="#F3E4D7" stroke="#B07E4A" stroke-width="2"/>';
-
-    /* ---- moving parts ---- */
-    var palDown = 'M212,126 C228,134 238,148 240,166 C234,168 228,164 224,157 C218,146 212,136 206,131 Z';
-    var palUp   = 'M212,126 C230,120 246,112 254,106 C257,113 255,121 248,125 C236,132 220,133 206,131 Z';
-    var tonLow  = 'M92,152 C116,140 152,134 182,140 C204,145 214,160 214,180 ' +
-                  'C214,194 200,200 176,200 C142,200 108,192 90,180 Z';
-    var tonHigh = 'M92,150 C116,128 154,120 184,130 C206,137 216,156 216,178 ' +
-                  'C216,194 198,198 172,198 C138,198 106,190 90,178 Z';
-    var epiUp   = 'M192,214 C190,198 195,184 204,177 C212,184 212,201 204,211 Z';
-    /* folded: a lid over the opening of the trachea, and no further. The
-       oesophagus is behind it and must stay open — the bolus goes past the
-       epiglottis, not through it. */
-    var epiDown = 'M186,212 C196,206 210,205 221,209 C216,218 198,220 188,218 Z';
-
-    var soft = '<path fill="#E7BCAB" stroke="#B4796A" stroke-width="1.6" d="' + palDown + '">' +
-      A + '"d" values="' + [palDown,palDown,palUp,palUp,palUp,palDown].join(';') +
-      '" dur="' + DUR + '" repeatCount="indefinite" keyTimes="0;0.2;0.34;0.62;0.8;1"/></path>';
-    var tongue = '<path fill="#DE8480" stroke="#A45653" stroke-width="1.8" d="' + tonLow + '">' +
-      A + '"d" values="' + [tonLow,tonLow,tonHigh,tonHigh,tonLow,tonLow].join(';') +
-      '" dur="' + DUR + '" repeatCount="indefinite" keyTimes="0;0.18;0.34;0.58;0.74;1"/></path>';
-    var epi = '<path fill="#F0C79F" stroke="#A9743C" stroke-width="1.8" d="' + epiUp + '">' +
-      A + '"d" values="' + [epiUp,epiUp,epiDown,epiDown,epiUp,epiUp].join(';') +
-      '" dur="' + DUR + '" repeatCount="indefinite" keyTimes="0;0.26;0.4;0.66;0.78;1"/></path>';
-    var laryn = '<g><animateTransform attributeName="transform" type="translate" ' +
-      'values="0,0; 0,0; 0,-11; 0,-11; 0,0; 0,0" keyTimes="0;0.26;0.4;0.66;0.78;1" ' +
-      'dur="' + DUR + '" repeatCount="indefinite"/>' + epi + '</g>';
-
-    var K = '0;0.2;0.36;0.5;0.62;0.88;1';
-    var bolus = '<ellipse rx="14" ry="10.5" fill="#C98A45" stroke="#8A5A2B" stroke-width="1.6">' +
-      A + '"cx" values="126;158;204;238;241;241;241" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
-      A + '"cy" values="162;152;150;188;232;300;300" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
-      A + '"rx" values="14;14;13;12;11;11;14" keyTimes="' + K + '" dur="' + DUR + '" repeatCount="indefinite"/>' +
-      A + '"opacity" values="0;.96;.96;.96;.96;.96;0" keyTimes="0;0.06;0.36;0.5;0.62;0.9;1" dur="' + DUR + '" repeatCount="indefinite"/>' +
-      '</ellipse>';
-
-    function lab(x, y, t, ax) {
-      return '<text class="fs" x="' + x + '" y="' + y + '"' + (ax ? ' text-anchor="' + ax + '"' : '') + '>' + t + '</text>';
-    }
-    var leaders =
-      '<path class="ld" d="M300,100 L226,100"/>' + lab(306, 103, 'nasal cavity') +
-      '<path class="ld" d="M300,128 L212,127"/>' + lab(306, 131, 'hard palate') +
-      '<path class="ld" d="M300,156 L240,154"/>' + lab(306, 159, 'soft palate') +
-      '<path class="ld" d="M300,196 L214,198"/>' + lab(306, 199, 'epiglottis') +
-      '<path class="ld" d="M300,250 L242,250"/>' + lab(306, 253, 'oesophagus') +
-      '<path class="ld" d="M124,286 L192,270"/>' + lab(118, 289, 'trachea', 'end') +
-      '<path class="ld" d="M104,206 L146,188"/>' + lab(98, 209, 'tongue', 'end');
-
-    return {
-      svg: svg('0 0 470 322',
-        face + soft + tongue + bolus + laryn + leaders +
-        '<text class="fl" x="235" y="20" text-anchor="middle">One swallow, seen from the side</text>'),
-      cap:'Watch the order. The <b>soft palate</b> lifts and seals off the nose. The <b>tongue</b> humps up and drives the <b>bolus</b> backwards. The larynx rises as it goes, so the <b>epiglottis</b> tips down over the opening of the <b>trachea</b> and the bolus is guided past it into the <b>oesophagus</b>. Breathing stops for about a second while this happens &#8212; which is why talking while eating is how food goes down the wrong way.'
-    };
-  }
 
   /* ---------------- water reabsorption in the colon ---------------- */
   function waterColon() {
@@ -1148,8 +781,8 @@
      system, so the way to keep labels readable in a narrower box is to make
      the box itself narrower — drop the explanatory sub-lines, pull the label
      column in, and the type comes back up to full size when the SVG is
-     scaled to fit. The long-form version above is still the one used when a
-     figure has the whole width to itself. */
+     scaled to fit. (The full-width version, tooth(), was never shown; it went
+     to the archive on 1 Oct 2026.) */
   function toothCompact() {
     /* The pair version of the tooth plate. It lost its explanatory sub-lines
        when it was first cut down to fit half a row, and that made it a poorer
@@ -1290,18 +923,21 @@
     };
   }
 
-  var FIGS = { sameBalance:sameBalance, toothCompact:toothCompact, chewing:chewing, tooth:tooth, peristalsis:peristalsis,
-               emulsify:emulsify, villus:villus, surfaceArea:surfaceArea,
-               egestVsExcrete:egestVsExcrete, churn:churn, starchPath:starchPath,
-               swallow:swallow, waterColon:waterColon, reducingSugar:reducingSugar, starchStructure:starchStructure };
+  /* Every figure the page asks for (app.js FIGS, photos.js, terms.js). Five drawings nothing ever asked for
+     (tooth, peristalsis, surfaceArea, churn, swallow) and their helpers were moved to the IGCSE archive folder
+     on 1 Oct 2026; the plate's own peristalsis, churning and swallowing animations are in plateanim.js. */
+  var FIGS = { sameBalance:sameBalance, toothCompact:toothCompact, chewing:chewing,
+               emulsify:emulsify, villus:villus,
+               egestVsExcrete:egestVsExcrete, starchPath:starchPath,
+               waterColon:waterColon, reducingSugar:reducingSugar, starchStructure:starchStructure };
 
   global.Figures = {
     pie:pie, pieKey:pieKey, dietColours:DIET_COL,
     get:function (name) { return FIGS[name] ? FIGS[name]() : null; },
-    /* The three drawings that cannot be made without js/data/figure-art.js, and the viewBox
+    /* The two drawings that cannot be made without js/data/figure-art.js, and the viewBox
        each one is drawn in. app.js keeps a box of the right SHAPE on screen while the art
        file is on its way, so nothing below the figure moves when it arrives. */
-    needsArt:{ tooth:[660, 602], toothCompact:[576, 596], villus:[646, 500] },
+    needsArt:{ toothCompact:[576, 596], villus:[646, 500] },
     names:Object.keys(FIGS)
   };
 })(window);

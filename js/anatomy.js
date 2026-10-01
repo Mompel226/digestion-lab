@@ -1,7 +1,7 @@
 /* ============================================================
    anatomy.js — the clickable body.
 
-   The artwork is a public-domain anatomical plate (see js/art.js).
+   The artwork is a public-domain anatomical plate (see js/data/anatomy-art.js).
    This module does four things to it:
      1. tags the artwork's paths into named organ groups
      2. dims every organ except the one being studied
@@ -355,34 +355,6 @@
     anim = null;
   }
 
-  /* a guided tour: travel to each stop in turn and pause there long enough
-     to take in the station that has just opened */
-  var tourTimer = null, touring = false;
-  function tour(stops, opts) {
-    stopTour();
-    touring = true;
-    var i = 0, at = 0;
-    var travelMs = (opts && opts.travelMs) || 1500;
-    var holdMs = (opts && opts.holdMs) || 2600;
-    function next() {
-      if (!touring) return;
-      if (i >= stops.length) { touring = false; if (opts && opts.onDone) opts.onDone(); return; }
-      var s = stops[i++];
-      travel(at, s.t, travelMs, function () {
-        at = s.t;
-        if (!touring) return;
-        if (opts && opts.onArrive) opts.onArrive(s);
-        tourTimer = setTimeout(next, holdMs);
-      });
-    }
-    next();
-  }
-  function stopTour() {
-    touring = false;
-    if (tourTimer) { clearTimeout(tourTimer); tourTimer = null; }
-    stopJourney();
-  }
-
   /* how far along the canal each station sits — used to park the bolus; read off the landmarks */
   var STATION_MARK = { 'mouth':'mouth', 'salivary-glands':'mouth', 'epiglottis':'pharynx', 'oesophagus':'oesophagus',
                        'stomach':'stomach', 'liver':'duodenum', 'gall-bladder':'duodenum', 'pancreas':'duodenum',
@@ -391,7 +363,7 @@
 
   global.Anatomy = {
     ORGANS:ORGANS, state:state, render:render, highlight:paint,
-    tour:tour, stopTour:stopTour, travel:travel, stopJourney:stopJourney,
+    travel:travel, stopJourney:stopJourney,   /* the guided tour is js/tour.js ("Follow the food") */
     placeBolus:placeBolus, marks:getMarks,
     stopFor:stopFor
   };

@@ -11,7 +11,7 @@
 <!-- The tab icon: the alimentary canal itself — oesophagus, stomach, a loop of intestine —
      drawn as one continuous tube on the app's own green. It was a pair of lungs. -->
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='7' fill='%2314572B'/><g fill='none' stroke='%23FFFFFF' stroke-linecap='round'><path d='M16.5 4.5 V9.5' stroke-width='3'/><path d='M16.5 9.5 C10 9.5 6.5 14 8.8 18.2 C11 22 17.6 21.8 18.6 17' stroke-width='3.2'/><path d='M18.6 17 C23 18.4 24 23 20.4 25.4 C16.4 28 10.6 26 10.6 22.4' stroke-width='3'/></g></svg>">
-<link rel="stylesheet" href="css/app.css?v=1790583158">
+<link rel="stylesheet" href="css/app.css?v=1790783112">
 </head>
 <body>
 <div class="app">
@@ -35,11 +35,11 @@
         <b><span id="qDone">0</span>/<span id="qTotal">0</span></b> <span class="stat__lbl">questions</span>
       </span>
       <span class="stat stat--stations" title="Stations finished">
-        <b><span id="stDone">0</span>/<span id="stTotal">15</span></b> <span class="stat__lbl">stations</span>
+        <b><span id="stDone">0</span>/<span id="stTotal">14</span></b> <span class="stat__lbl">stations</span>
       </span>
       <button class="hbtn hbtn--save tip tip--right" id="btnSubmit" hidden data-tip="Signed in, your work is sent to Dr Mompel’s records on its own as you go. Press to see, or to sign in.">Saves as you go</button>
       <a class="hbtn" href="https://nlcsbiology.com/human-body-hub/"
-         title="All of the Biology Labs">← All labs</a>
+         title="The human body: every body topic, and this lab">← The body</a>
       <button class="hbtn" id="btnGloss" title="Every word the labs use, with its definition"><span class="hbtn__long">Glossary</span><span class="hbtn__short" aria-hidden="true">A–Z</span></button>
       <button class="hbtn" id="btnHelp"><span class="hbtn__long">How to use</span><span class="hbtn__short" aria-hidden="true">?</span></button>
       <button class="hbtn" id="btnReset" title="Start every station again">Reset</button>
@@ -95,8 +95,6 @@
 </div>
 
 
-</div>
-
 <div class="modal" id="subDlg" hidden role="dialog" aria-modal="true" aria-label="Your work and the records">
   <div class="modal__box modal__box--sm">
     <button class="modal__close" id="subClose" aria-label="Close">×</button>
@@ -149,7 +147,7 @@
       <li><b>Click any organ</b> on the body, or any step on the bar along the bottom.</li>
       <li>Each station has two tabs: <b>Learn</b> — what you must know — and <b>Practise</b>, the questions.</li>
       <li><b>Check as often as you like.</b> You are told which parts are wrong, <b>never the answer</b> — you have to work it out. Keep going until it is all right. Signed in, your work is saved for Dr&nbsp;Mompel on its own &mdash; there is nothing to press at the end.</li>
-      <li><b>Follow the food</b> plays the whole journey, mouth to anus, and opens each station as it arrives.</li>
+      <li><b>Follow the food</b> plays the journey as five processes, mouth to anus, and opens the station for each one.</li>
       <li>An underlined word can be clicked: <b>🔍</b> opens a picture there and then, <b>↗</b> jumps to the station that explains it and brings you back.</li>
       <li>Your work is kept <b>in this browser</b> and, once you sign in with your school account, sent to Dr&nbsp;Mompel&rsquo;s records on its own as you go &mdash; there is nothing to hand in. Signed in, it follows you to another computer.</li>
     </ul>
@@ -162,8 +160,8 @@
         <li>A key word in the <b>same colour as a chip</b> belongs to that stage. Food molecules are the exception: dotted underline, because you must never mix them up with the enzymes acting on them.</li>
         <li>Words deliberately <b>not</b> coloured are worth noticing — <i>excretion</i> stays plain black, because it is not one of the five.</li>
         <li>The <b>colour key sits at the top of every Learn tab</b>, so you never have to remember.</li>
-        <li>A <b>green-bordered box</b> is the mistake students most often make there. A small <b>S</b> badge means Supplement (Paper 4 only). A <b>blue “Real science” box</b> is true, and goes beyond the syllabus. <b>“Beyond the syllabus”</b> is worth knowing but not named in 0610 — turn those off with the button. <b>What you need to know</b> holds only what the syllabus for exams in 2026–2029 asks: Cambridge’s syllabus for 2029 is word for word the same as the one for 2026–2028, so the list serves every student sitting the exams from 2026 to 2029. Press the <b>IGCSE 0610</b> badge and choose your year: it shows the year of your exams and your syllabus. Everything else is in the card right below the list, <b>“Not in the syllabus for 2026–2029”</b>: first what an older 0610 syllabus had, with a badge such as <b>“old syllabus · until 2015”</b> — past papers may ask it, so tap the badge to read the old statement and whether recent papers still give marks for it — then what is beyond the syllabus, there to help the rest make sense. Do not skip it: an exam question can still use these ideas, and knowing them can be what earns you full marks.</li>
-        <li>Under the key words, <b>“Where this comes back later in the course”</b> shows the same organ turning up in a later topic, with the syllabus reference.</li>
+        <li>A <b>green-bordered box</b> is the mistake students most often make there. A small <b>S</b> badge means Supplement (Extended papers 2 and 4 only). <b>“Beyond the syllabus”</b> is not named in 0610: it helps the rest make sense, and an exam question can still use it — the <b>Beyond syllabus</b> button shows or hides those organs on the body. <b>What you need to know</b> holds only what the syllabus for exams in 2026–2029 asks: Cambridge’s syllabus for 2029 is word for word the same as the one for 2026–2028, so the list serves every student sitting the exams from 2026 to 2029. Press the <b>IGCSE 0610</b> badge and choose your year: it shows the year of your exams and your syllabus. Everything else is in the card right below the list, <b>“Not in the syllabus for 2026–2029”</b>: first what an older 0610 syllabus had, with a badge such as <b>“old syllabus · until 2015”</b> — past papers may ask it, so tap the badge to read the old statement and whether recent papers still give marks for it — then what is beyond the syllabus, there to help the rest make sense. Do not skip it: an exam question can still use these ideas, and knowing them can be what earns you full marks.</li>
+        <li>Above the key words, <b>“Going further”</b> links this station to other 0610 topics (with the syllabus reference), to what IB adds, and to science beyond the syllabus.</li>
       </ul>
     </details>
 
@@ -171,7 +169,7 @@
       <summary>What is simplified here</summary>
       <ul>
         <li>The body is a real anatomical plate, so the organs are in their true positions. The <b>liver is on your left as you look at the screen</b> — the patient's right. That is the convention, and how the exam will draw it.</li>
-        <li>The <b>gall bladder</b> station lights the gall bladder <i>and</i> the bile ducts in the liver: they are drawn as one piece, which shows the whole route — liver → ducts → gall bladder → bile duct → duodenum.</li>
+        <li>The <b>liver</b> station also lights the gall bladder <i>and</i> the bile ducts in the liver: they are drawn as one piece, which shows the whole route — liver → ducts → gall bladder → bile duct → duodenum.</li>
         <li>Optimum pH values are single figures (pepsin ≈ 2, amylase ≈ 7, trypsin and lipase ≈ 8). Real enzymes work across a range; the figure is the peak.</li>
         <li>The food particle shrinks and changes colour as it travels: a visual aid, not a measurement.</li>
         <li>The small intestine is drawn as a few tidy coils. In life it is 6–7 m of tightly packed loops.</li>
@@ -192,36 +190,38 @@
 
     <p class="fineprint"><a class="by-me" href="https://github.com/Mompel226" target="_blank" rel="noopener" title="Who made this — and everything else that is free to use"><b>Dr Daniel Mompel Riera</b></a> — Biology, North London Collegiate School Jeju.
        Questions or corrections: <a href="mailto:dmompelriera@nlcsjeju.kr">dmompelriera@nlcsjeju.kr</a>.
-       One of the <a href="https://nlcsbiology.com/human-body-hub/">Biology Labs</a>.</p>
+       One of the <a href="https://nlcsbiology.com/human-body-hub/">Human Body</a> labs ·
+       <a href="https://nlcsbiology.com/biology-hub/">Biology Hub</a></p>
   </div>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script src="js/config.js?v=1790583158" defer></script>
-<script src="js/data/photo-size.js?v=1790583158" defer></script>
-<script src="js/assets.js?v=1790583158" defer></script>
-<script src="js/data/glossary.js?v=1790583158" defer></script>
-<script src="js/data/syllabus.js?v=1790583158" defer></script>
-  <script src="js/data/stations.js?v=1790583158" defer></script>
-<script src="js/data/photos.js?v=1790583158" defer></script>
+<script src="https://accounts.google.com/gsi/client?hl=en-GB" async defer></script>
+<script src="js/config.js?v=1790783112" defer></script>
+<script src="js/data/photo-size.js?v=1790783112" defer></script>
+<script src="js/assets.js?v=1790783112" defer></script>
+<script src="js/data/glossary.js?v=1790783112" defer></script>
+<script src="js/data/syllabus.js?v=1790783112" defer></script>
+  <script src="js/data/stations.js?v=1790783112" defer></script>
+<script src="js/data/photos.js?v=1790783112" defer></script>
 <!-- js/data/figure-art.js is NOT loaded here. It is 185 KB of drawn path data, a quarter of
      everything a student waits for, and only three figures in the whole lab need it. It is
      fetched on demand by loadFigureArt() in js/app.js. -->
-<script src="js/data/anatomy-art.js?v=1790583158" defer></script>
-<script src="js/data/zoom.js?v=1790583158" defer></script>
-<script src="js/bench.js?v=1790583158" defer></script>
-<script src="js/plateanim.js?v=1790583158" defer></script>
-  <script src="js/zoom.js?v=1790583158" defer></script>
-<script src="js/anatomy.js?v=1790583158" defer></script>
-<script src="js/tour.js?v=1790583158" defer></script>
-<script src="js/terms.js?v=1790583158" defer></script>
-<script src="js/figures.js?v=1790583158" defer></script>
-<script src="js/marking.js?v=1790583158" defer></script>
-<script src="js/sync.js?v=1790583158" defer></script>
-<script src="js/signin.js?v=1790583158" defer></script>
-<script src="js/engine.js?v=1790583158" defer></script>
-<script src="js/syllabus.js?v=1790583158" defer></script>
-<script src="js/app.js?v=1790583158" defer></script>
+<script src="js/data/anatomy-art.js?v=1790783112" defer></script>
+<script src="js/data/zoom.js?v=1790783112" defer></script>
+<script src="js/bench.js?v=1790783112" defer></script>
+<script src="js/plateanim.js?v=1790783112" defer></script>
+  <script src="js/zoom.js?v=1790783112" defer></script>
+<script src="js/anatomy.js?v=1790783112" defer></script>
+<script src="js/tour.js?v=1790783112" defer></script>
+<script src="js/terms.js?v=1790783112" defer></script>
+<script src="js/figures.js?v=1790783112" defer></script>
+<script src="js/marking.js?v=1790783112" defer></script>
+<script src="js/sync.js?v=1790783112" defer></script>
+<script src="js/signin.js?v=1790783112" defer></script>
+<script src="js/homework.js?v=1790783112" defer></script>
+<script src="js/engine.js?v=1790783112" defer></script>
+<script src="js/syllabus.js?v=1790783112" defer></script>
+<script src="js/app.js?v=1790783112" defer></script>
 <!-- The lab offline. The worker lives at this lab's root, so on Pages its scope is exactly
      /<lab>/ — this lab and nothing above it. No Service-Worker-Allowed header is needed, which
      matters because we cannot set headers on Pages.
