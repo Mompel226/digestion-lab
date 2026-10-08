@@ -35,9 +35,11 @@ a meal from mouth to anus and open the station for each.
 | 📖 **A shared glossary** | one wording per term, the same in every lab |
 
 > [!NOTE]
-> **The answers are not in the page — at all.** The lab can tell a student they are wrong, but
-> nothing in it knows what *right* is. There is no setting that reveals the answers, because
-> there is nothing to reveal. How that works is explained below.
+> **The right answers are stored only as scrambled fingerprints.** The lab can tell a student they
+> are wrong, but its questions cannot show what *right* is. The explanations of the multiple-choice
+> options are published with the lab, scrambled, for the pupils whose teacher gives them the Accommodation:
+> each sees an explanation after a second wrong try. Someone who unscrambles them could learn an
+> answer. How that works is explained below.
 
 ## Where it sits
 
@@ -60,7 +62,7 @@ move around in, so when you choose an organ the view travels to it and settles, 
 animations play where they help. It is the same drawing at every size, so it stays sharp on a
 phone and on a projector.
 
-**Why the answers are not in the page.** This is the part worth understanding.
+**Why the right answers are not in the page.** This is the part worth understanding.
 
 Anything a web page can show, a student can find by digging around in it. So the answers are
 never sent to the student at all. Instead, each question carries a *scrambled fingerprint* of
@@ -69,11 +71,18 @@ and compares the two fingerprints. The same answer always makes the same fingerp
 means they were right.
 
 The trick is that scrambling only works one way. You cannot start from a fingerprint and work
-back to the answer — so nothing in the page, and nothing a student can dig out of it, can say
+back to the answer — so no fingerprint, and nothing a student can dig out of one, can say
 what the right answer is. The lab can only ever tell them *not that one*.
 
 The real answers live in one file on my own computer, which is never published. That is also
 why nobody else can rebuild this lab's questions, even if they copy everything else.
+
+**The one exception: the explanations (since 8 October 2026).** For a pupil whose teacher has
+switched on the Accommodation, the page fetches `js/data/whys.js` and, after a second, different
+wrong try at a multiple-choice question, shows the explanation of each option they chose. That file
+is public like every file here and scrambled with a key the page itself carries, so it is not a
+secret: no other pupil's page fetches it, but someone who unscrambles it by hand could learn which
+options are right.
 
 **What is shared with the other labs.** The part that draws a question, handles the dragging and
 does the marking is identical in every lab, so it is kept in one place and copied in whenever a
