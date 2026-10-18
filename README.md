@@ -97,6 +97,8 @@ with the answers in it and writes out the published version with only the finger
 refuses to finish unless every single answer still marks correctly — so a mistake in the
 content stops the lab being published rather than reaching a student.
 
+The `tools/` named here stay on Daniel's computer: they are not in this repository (since 18 Oct 2026).
+
 ```
 node tools/build.mjs
 ```
