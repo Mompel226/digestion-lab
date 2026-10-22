@@ -2051,7 +2051,7 @@
     }
     var start = canon((location.hash || '').slice(1).replace(/\/practise$/, ''));
     open(S[start] ? start : ORDER[0]);
-    practiseTab(S[start] ? start : ORDER[0]);
+    if (S[start]) practiseTab(start); else { wantDo = false; practiseTab(ORDER[0]); }   // no such station: the first one, on Learn, the address tidied
     paintHeader();
     /* The drawings arrive only once the browser has nothing better to do. A fixed timer was
        wrong: on a slow link it fired while the critical scripts were still arriving and 185 KB
