@@ -2041,8 +2041,17 @@
       toast('Started again: ' + ids.length + ' station' + (ids.length === 1 ? '' : 's') + '. Your record keeps everything you did before.');
     });
 
-    var start = canon((location.hash || '').slice(1));
+    /* §practise-link (22 Oct 2026, My assessments' Revise tab): "?tab=practise" (or "#<station>/practise") opens that
+       station on its Practise tab, and the address keeps only "#<station>" after. A link without it opens Learn, as before. */
+    var wantDo = /[?&]tab=practise(&|$)/.test(location.search) || /\/practise$/.test(location.hash);
+    function practiseTab(id) {
+      if (/[?&]tab=practise(&|$)/.test(location.search) || /\/practise$/.test(location.hash)) history.replaceState(null, '', location.pathname + '#' + id);
+      if (wantDo && S[id] && current === id) { tab = 'do'; paintPanel(); }
+      wantDo = false;
+    }
+    var start = canon((location.hash || '').slice(1).replace(/\/practise$/, ''));
     open(S[start] ? start : ORDER[0]);
+    practiseTab(S[start] ? start : ORDER[0]);
     paintHeader();
     /* The drawings arrive only once the browser has nothing better to do. A fixed timer was
        wrong: on a slow link it fired while the critical scripts were still arriving and 185 KB
@@ -2053,8 +2062,8 @@
     if (window.requestIdleCallback) window.requestIdleCallback(warmArt, { timeout: 15000 });
     else setTimeout(warmArt, 6000);
     window.addEventListener('hashchange', function () {
-      var id = canon(location.hash.slice(1));
-      if (S[id] && id !== current) open(id);
+      var raw = location.hash.slice(1), id = canon(raw.replace(/\/practise$/, ''));
+      if (S[id] && (id !== current || /\/practise$/.test(raw))) { if (id !== current) open(id); if (/\/practise$/.test(raw)) { wantDo = true; practiseTab(id); } }
     });
   }
 
