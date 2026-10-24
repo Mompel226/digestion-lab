@@ -149,8 +149,8 @@
         '<text class="fs" x="317" y="232" text-anchor="middle">same food: 4 &#215; (36 &#215; 36)</text>' +
         '<text class="fb" x="115" y="252" text-anchor="middle" style="fill:#0F6E8C">' + one.count + ' enzymes fit round it</text>' +
         '<text class="fb" x="317" y="252" text-anchor="middle" style="fill:#0F6E8C">' + manyN + ' enzymes fit</text>' +
-        '<text class="fl" x="230" y="278" text-anchor="middle">Same amount of food. Twice the edge, so twice as many enzymes work at once.</text>'),
-      cap:'<b>Physical digestion increases surface area.</b> The mass of food does not change &#8212; both sides here are the same amount of food. What changes is how much <i>edge</i> there is for enzymes to attach to, and you can count it: ' + one.count + ' enzymes fit around the whole piece, ' + manyN + ' around the four smaller ones. That is the whole point of chewing.'
+        '<text class="fl" x="230" y="278" text-anchor="middle">Same mass of food. Twice the edge, so twice as many enzymes work at once.</text>'),
+      cap:'<b>Physical digestion increases surface area.</b> The mass of food does not change &#8212; both sides here are the same mass of food. What changes is how much <i>edge</i> there is for enzymes to attach to, and you can count it: ' + one.count + ' enzymes fit around the whole piece, ' + manyN + ' around the four smaller ones. That is the whole point of chewing.'
     };
   }
 
@@ -223,7 +223,7 @@
         '<line x1="0" y1="0" x2="0" y2="11" stroke="#4E7D4A" stroke-width="2.4" stroke-linecap="round"/>' +
         '<circle cx="0" cy="0" r="4" fill="#6FA36B" stroke="#3F6B3C" stroke-width="1"/></g>' +
         '<text class="fs" x="38" y="218">a bile salt (bile is not an enzyme)</text>' +
-        '<text class="fl" x="228" y="250" text-anchor="middle">Same amount of fat. Far more surface for <tspan class="fb" style="fill:#BC235B">lipase</tspan> to work on.</text>' +
+        '<text class="fl" x="228" y="250" text-anchor="middle">Same mass of fat. Far more surface for <tspan class="fb" style="fill:#BC235B">lipase</tspan> to work on.</text>' +
         '<text class="fs" x="228" y="265" text-anchor="middle">No bonds are broken here — this is <tspan font-weight="700">physical</tspan>, not chemical.</text>'),
       cap:'<b>Emulsification.</b> Bile salts crowd onto the surface of a large fat droplet, and the churning of the gut then breaks it into many small ones that cannot re-join, because each is coated. Bile is <b>not</b> an enzyme: the fat molecules are unchanged, there is simply far more surface for lipase to attack. Bile is also alkaline, so it neutralises the acid arriving from the stomach.'
     };
@@ -771,9 +771,9 @@
     return {
       svg: svg('0 0 470 296',
         '<text class="fl" x="235" y="20" text-anchor="middle">The same seven components \u2014 but not in the same proportions.</text>' +
-        '<text class="fl" x="235" y="36" text-anchor="middle">Both the <tspan font-weight="700">mix</tspan> and the <tspan font-weight="700">amount</tspan> change with age and activity.</text>' +
+        '<text class="fl" x="235" y="36" text-anchor="middle">Both the <tspan font-weight="700">mix</tspan> and the <tspan font-weight="700">mass of food</tspan> change with age and activity.</text>' +
         g + key),
-      cap:'A balanced diet is not one fixed menu \u2014 and not one fixed recipe either. The <b>mix</b> changes as well as the <b>amount</b>. The growing 7-year-old needs the largest share of <b>protein</b> and <b>mineral ions</b> (calcium, for bones and teeth); the builder needs the largest share of <b>carbohydrate and fat</b>, because heavy work needs energy; the office worker sits between them. Watch the trap: a smaller <b>slice</b> is not less food. Fibre is a 7% slice for the builder and an 8% slice for the child, but his whole plate is far bigger, so he still eats much more fibre. Requirements change with <b>age, activity, pregnancy and breastfeeding</b>.'
+      cap:'A balanced diet is not one fixed menu \u2014 and not one fixed recipe either. The <b>mix</b> changes as well as the <b>total mass of food</b>. The growing 7-year-old needs the largest share of <b>protein</b> and <b>mineral ions</b> (calcium, for bones and teeth); the builder needs the largest share of <b>carbohydrate and fat</b>, because heavy work needs energy; the office worker sits between them. Watch the trap: a smaller <b>slice</b> is not less food. Fibre is a 7% slice for the builder and an 8% slice for the child, but his whole plate is far bigger, so he still eats much more fibre. Requirements change with <b>age, activity, pregnancy and breastfeeding</b>.'
     };
   }
 

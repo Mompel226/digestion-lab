@@ -36,7 +36,7 @@
   var FIG_LEGEND = {
     villus:[['Microvilli','the brush border'],['Epithelium','one cell thick'],['Villus','a finger-like projection built from many cells'],['Capillaries','glucose + amino acids'],['Lacteal','fatty acids + glycerol'],['Blood vessel','on to the hepatic portal vein']],
     tooth:[['Enamel','hardest substance in the body'],['Dentine','softer, and it senses pain'],['Pulp cavity','blood vessels and nerves'],['Gum',''],['Cement','anchors the root'],['Jaw bone',''],['Blood vessel',''],['Nerve','']],
-    emulsify:[['Bile','coats one large fat droplet and splits it into many small ones'],['Same amount of fat','far more surface for lipase to work on — physical, not chemical']],
+    emulsify:[['Bile','coats one large fat droplet and splits it into many small ones'],['Same mass of fat','far more surface for lipase to work on — physical, not chemical']],
     egestVsExcrete:[['Egestion','fibre, undigested food and dead gut cells — never entered a cell — passed out as faeces'],['Excretion','urea from the liver in urine; carbon dioxide from respiration in the breath — made inside cells']],
     waterColon:[['Blood vessel','the water is carried away'],['Contents','watery from the small intestine on the left; solid faeces to the rectum on the right']],
     chewing:[['One large piece','16 enzymes fit round it'],['Four smaller pieces','32 enzymes fit — same food, twice the edge']],
