@@ -301,9 +301,21 @@
      off entirely, for the Key words list at the foot of the page: by then the
      reader has met every word above, and a column of magnifying glasses is
      just clutter. */
-  var seen = null, quiet = false;
-  function setStation(id) { here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); }
+  var seen = null, quiet = false, teaching = false;
+  /* this station's key-word cards (the flip cards at the bottom of its Learn tab), by the word in lower case. Each key word
+     has ONE card in the lab, in the station that first teaches it (Daniel, 25 Oct 2026: "please do not repeat keywords"),
+     and in that station the word's first mention leads down to its card ("should then link to the flashcard at the
+     bottom of it"), never away to another station. A word whose card is here
+     never sends the reader to another station: it goes down to the card, or opens its picture or its definition.
+     KW_DONE: the cards a mention has led down to; KW_OFF: the words marked outside What you need to know without using
+     up their way down; UNDER: the words met inside an underlined syllabus phrase */
+  var KW = {}, KW_DONE = {}, KW_OFF = {}, UNDER = {};
+  function setStation(id) {
+    here = id; seen = Object.create(null); quiet = false; wentTo = Object.create(null); KW = {}; KW_DONE = {}; KW_OFF = {}; UNDER = {};
+    (global.STATIONS || []).forEach(function (s) { if (s.id === id) (s.keywords || []).forEach(function (w) { KW[String(w.term).toLowerCase()] = w.term; }); });
+  }
   function setQuiet(v) { quiet = !!v; }
+  function teach(v) { teaching = !!v; }
 
   /* _like this_ underlines a phrase. Some words carry a mark because the syllabus asks a
      candidate to produce them — what each kind of tooth does — but they are not glossary
@@ -359,15 +371,40 @@
       var after = String(whole).slice(at + m.length).replace(/<[^>]*>/g, '');
       if (wrongSense(low, before, after)) return m;
       var cat = e[1], act = '', cls = '';
-      var first = !quiet && !(seen && seen[low]);
-      if (seen) seen[low] = true;
+      var def = defined(low), mine = KW[low] || (def && KW[def.toLowerCase()]), card = !e[2] && mine;
+      /* a word whose key-word card is in this station and has not led down to it yet: its first mention in What you
+         need to know (Terms.teach) goes down to the card. Before that, a mention inside an underlined syllabus phrase
+         (never clickable) or anywhere else (a picture's words, the card below) comes out as it always did without using
+         up that way down, and a picture opens where it always did. The stage chips get no arrow */
+      var down = card && !quiet && !KW_DONE[card], keep = false, under = false, inUnder = false;
+      if (down) {
+        var raw = String(whole).slice(0, at);
+        inUnder = raw.lastIndexOf(U0) > raw.lastIndexOf(U1);
+        if (inUnder) UNDER[low] = true;
+        else if (!teaching) {
+          if (KW_OFF[low] || (seen && seen[low])) return m;
+          if (!PEEK[low]) { KW_OFF[low] = card; keep = true; }
+        } else under = !!UNDER[low] && !!def && !KNOWN[def.toLowerCase()];
+      }
+      var first = keep || under || (!quiet && !(seen && seen[low]));
+      if (seen && !keep) seen[low] = true;
       if (!first) return m;                     /* plain after the first time on the page */
-      if (PEEK[low]) {
+      /* a word whose key-word card is in this station never sends the reader to another station (25 Oct 2026) */
+      var away = !mine && JUMP[low] && JUMP[low] !== here;
+      /* the journey such a word used to take still counts as this station's one way there, so no other word takes it up */
+      if (mine && wentTo && JUMP[low] && JUMP[low] !== here && GOES_THERE[low] && !(PEEK[low] && !under)) wentTo[JUMP[low]] = true;
+      if (PEEK[low] && !under) {     /* a picture an underline used to hide stays hidden */
         act = ' data-peek="' + PEEK[low][0] + '" data-note="' + esc(PEEK[low][1]) + '"' +
               (PEEK[low][2] ? ' data-credit="' + esc(PEEK[low][2]) + '"' : '') +
               ' tabindex="0" role="button"';
         cls = ' is-peek';
-      } else if (JUMP[low] && JUMP[low] !== here && GOES_THERE[low] && !(wentTo && wentTo[JUMP[low]])) {
+      } else if (down && teaching && !inUnder && def && !KNOWN[def.toLowerCase()]) {
+        /* its key-word card is at the bottom of this station: down to it, not away */
+        KW_DONE[card] = true;
+        if (seen) for (var w in KW_OFF) if (KW_OFF[w] === card) seen[w] = true;   /* its other words, as they were */
+        act = ' data-kw="' + esc(card.toLowerCase()) + '" tabindex="0" role="button"';
+        cls = ' is-kw';
+      } else if (away && GOES_THERE[low] && !(wentTo && wentTo[JUMP[low]])) {
         /* Only the FIRST word on a station that leads to a given organ carries the arrow. Two
            words sending a reader to the same page is one journey too many. */
         if (wentTo) wentTo[JUMP[low]] = true;
@@ -379,7 +416,7 @@
            common case and must not turn the page into a field of markers. */
         act = ' data-gloss="' + esc(defined(low)) + '" tabindex="0" role="button"';
         cls = ' is-gloss';
-      } else if (JUMP[low] && JUMP[low] !== here && !(wentTo && wentTo[JUMP[low]])) {
+      } else if (away && !(wentTo && wentTo[JUMP[low]])) {
         /* no definition written for it, so the station that teaches it is the only answer */
         if (wentTo) wentTo[JUMP[low]] = true;
         act = ' data-jump="' + JUMP[low] + '" tabindex="0" role="button"';
@@ -411,7 +448,7 @@
 
   global.Terms = {
     setKnown:setKnown, isKnown:isKnown, forgetAll:forgetAll, knownCount:knownCount, mark:mark, legend:legend, CATS:CATS, setStation:setStation,
-                   setQuiet:setQuiet, PEEK:PEEK, JUMP:JUMP };
+                   setQuiet:setQuiet, teach:teach, PEEK:PEEK, JUMP:JUMP };
 })(window);
 
 /* A number never parts from its unit at a line break — 20 °C, 5 min, 48 mm, 60 %, 4 marks, pH 2 — wherever the page
