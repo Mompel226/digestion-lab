@@ -11,7 +11,7 @@
 ![Marks itself](https://img.shields.io/badge/questions-mark_themselves-0B6A8C)
 ![No sign-up](https://img.shields.io/badge/students-no_sign--up_needed-6FA287)
 
-by **Dr Daniel Mompel Riera** · NLCS Jeju
+by **Dr Daniel Mompel Riera**
 
 </div>
 
@@ -112,7 +112,7 @@ Photograph credits: [`assets/photos/CREDITS.md`](assets/photos/CREDITS.md).
 
 </details>
 
-Made by **Dr Daniel Mompel Riera** · Biology, NLCS Jeju ·
+Made by **Dr Daniel Mompel Riera** ·
 [dmompelriera@nlcsjeju.kr](mailto:dmompelriera@nlcsjeju.kr)
 
 ## Licence
