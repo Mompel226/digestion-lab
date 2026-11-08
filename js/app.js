@@ -378,8 +378,8 @@
 
     /* An exam bullet is a string, or {text, sup:true} for Supplement-only
        content, or {text, ext:true} for what the decks teach but the 0610 syllabus
-       does not list (it goes to the card below). The S badge lets a Core
-       candidate see the fence. */
+       does not list (it goes to the card below). The S badge marks the
+       fence; every pupil learns both sides of it (all sit the Extended papers). */
     var rooms = (window.Zoom && window.Zoom.rooms) ? window.Zoom.rooms(st.id) : {};
     (st.learn.exam || []).forEach(function (b, i) {
       var offK = offOf(b, i);
@@ -388,7 +388,7 @@
       var badge = '';
       /* typeof check matters: a JS string has a built-in .sup() method, so
          'b.sup' is truthy for every plain bullet. */
-      if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement — examined on the Extended papers (2 and 4) only. Core candidates can skip it.">S</span>';
+      if (typeof b === 'object' && b.sup) badge = '<span class="sup tip" tabindex="0" data-tip="Supplement: examined on the Extended papers (2 and 4). Learn it too.">S</span>';
       /* in an older 0610 syllabus: its badge names that syllabus; beyond the syllabus: no badge, its heading says so */
       var pe = st.past && st.past.exam ? st.past.exam[i] : null;
       if (pe != null) badge = pastBadge(pe);
