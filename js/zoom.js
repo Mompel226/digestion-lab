@@ -117,6 +117,41 @@
   function prefersStill() {
     return global.matchMedia && global.matchMedia('(prefers-reduced-motion: reduce)').matches;
   }
+  /* Reduce motion (9 Nov 2026): a plate drawing stands still on the frame it shows `t` seconds in — the view's `still` in
+     js/data/zoom.js, a moment when every part of it shows, else 2 s. Each of its SMIL animations is made to have run for
+     exactly that long and to have ended just now, by the plate's own clock, and to stay there (fill freeze, its repeat
+     cut there); one that has not begun by then is taken out, and one already over keeps its own ending. (An animation
+     made to end before the clock's start is not drawn at all: the browser keeps no interval that ends before time 0,
+     so the part falls back to its plain look — tried first, 9 Nov 2026: the saliva drops and the bolus were missing.)
+     The picture is the frame a reader without Reduce motion sees at that moment. Only the drawing's own animations change: the plate's clock runs on, so the tour's droplets,
+     which share it, are left alone. The Practicals bench has no animation of its own and stays fully pressable. */
+  function holdStill(g, html, t) {
+    var secs = function (v) { v = String(v || '').trim(); var n = parseFloat(v); return /ms$/.test(v) ? n / 1000 : /min$/.test(v) ? n * 60 : n; };
+    var now = 0; try { now = svg.getCurrentTime(); } catch (e) {}
+    var end = Math.max(0.001, now - 0.02);
+    var tmp = document.createElementNS(NS, 'g');
+    tmp.innerHTML = html;
+    Array.prototype.forEach.call(tmp.querySelectorAll('animate, animateTransform, animateMotion, animateColor, set'), function (a) {
+      var b = secs(a.getAttribute('begin') || '0'); if (isNaN(b)) b = 0;
+      var d = secs(a.getAttribute('dur')), rc = a.getAttribute('repeatCount'), rd = a.getAttribute('repeatDur');
+      var span = rc === 'indefinite' || rd === 'indefinite' || isNaN(d) ? Infinity
+        : Math.min(rc ? parseFloat(rc) * d : Infinity, rd ? secs(rd) : Infinity, !rc && !rd ? d : Infinity);
+      var run = t - b;
+      if (run < 0) { a.parentNode.removeChild(a); return; }
+      run = Math.max(run, 0.001);                     /* one that begins at that very moment shows its first frame */
+      if (d > 0 && run >= d && Math.abs(run / d - Math.round(run / d)) < 1e-6) run += 0.001;   /* a loop just ending: its next start */
+      if (run >= span) {
+        if (a.getAttribute('fill') === 'freeze') a.setAttribute('begin', (end - span).toFixed(3) + 's'); else a.parentNode.removeChild(a);
+        return;
+      }
+      a.removeAttribute('repeatCount'); a.removeAttribute('end');
+      a.setAttribute('repeatDur', run.toFixed(3) + 's');
+      a.setAttribute('begin', (end - run).toFixed(3) + 's');
+      a.setAttribute('fill', 'freeze');
+    });
+    g.textContent = '';
+    while (tmp.firstChild) g.appendChild(tmp.firstChild);
+  }
 
   /* ---------- the detail layer, drawn inside the plate ---------- */
   function el(name, attrs, parent) {
@@ -724,7 +759,9 @@
     /* The caption is written before the animation is drawn, so a figure that has to keep out
        from under it can be told how deep it really is at this width. */
     strip.innerHTML = '<b>' + (vLabel || '') + '</b>' + (s.credit ? '<span>' + s.credit + '</span>' : '');
-    if (vAnim && global.PlateAnim && global.PlateAnim[vAnim] && !prefersStill()) {
+    /* Every reader gets the drawing (Daniel, 9 Nov 2026, on Reduce motion: "Nothing should disappear. Everything was
+       there for a reason."); with Reduce motion switched on it stands still instead of moving (holdStill). */
+    if (vAnim && global.PlateAnim && global.PlateAnim[vAnim]) {
       var ab = s.animBox ? { x:s.animBox[0], y:s.animBox[1], w:s.animBox[2], h:s.animBox[3] } : target;
       var r = svg.getBoundingClientRect();
       /* The strip is still settling when this is read — it animates in, and a caption that
@@ -732,9 +769,10 @@
          of the two heights is larger and leave a margin on top of it. */
       var sDeep = Math.max(strip.getBoundingClientRect().height, strip.scrollHeight || 0);
       var stripDeep = Math.max(34, sDeep / ppu(frame) + 12);
-      gAnim.innerHTML = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, seen:seenOf(frame), strip:stripDeep, /* a lab step hides the floating Whole body button, so labels in the top right
+      var drawn = global.PlateAnim[vAnim]({ box:ab, img:placed[0] ? placed[0].pl : null, fs:fs, u:frame.w / 200, frame:frame, seen:seenOf(frame), strip:stripDeep, /* a lab step hides the floating Whole body button, so labels in the top right
                  corner need not dodge it */
               compact:!s.lab && ppu(frame) < 1.6, inFill:inFillFor, outline:outlineFor, outlineIn:outlineIn, focus:vFocus || detail.organ });
+      if (prefersStill()) holdStill(gAnim, drawn, s.still != null ? s.still : 2); else gAnim.innerHTML = drawn;
     }
     if (pending) return;
   }

@@ -32,7 +32,7 @@ a meal from mouth to anus and open the station for each.
 | ✍️ **123 questions** | fill the gaps · drag & drop · multiple choice · put in order · match up · sort into groups · set the pH |
 | 🔬 **Real pictures** | dissections, micrographs and photographs, not diagrams of diagrams |
 | 🧪 **A practical you run** | the visking tubing experiment — nothing happens unless you act |
-| 📖 **A shared glossary** | one wording per term, the same in every lab |
+| 📖 **A shared glossary** | one wording per term, the same in every lab; press 한국어, 中文 or 日本語 to see each word's name in Korean, Chinese or Japanese (the definitions stay in English) |
 
 > [!NOTE]
 > **The right answers are stored only as scrambled fingerprints.** The lab can tell a student they

@@ -12,6 +12,9 @@
    labels — our own labels, `at` and `tx` in fractions of the picture
    spot   — highlight one organ of the biliary plate in full colour
    anim   — an animation drawn on the plate (plateanim.js)
+   still  — with Reduce motion switched on, the animation stands still on its
+            frame this many seconds in, chosen where every part of it shows
+            (zoom.js holdStill; else 2 s)
    Fractions were measured from the pictures' pixels, not guessed. */
 window.ZOOM_DETAIL = {
   "mouth": {
@@ -429,7 +432,8 @@ window.ZOOM_DETAIL = {
         "corner": "tl"
       }
     ],
-    "anim": "saliva"
+    "anim": "saliva",
+    "still": 2
   },
   "epiglottis": {
     "organ": "epiglottis",
@@ -448,6 +452,7 @@ window.ZOOM_DETAIL = {
       296
     ],
     "anim": "swallow",
+    "still": 4,
     "label": "Swallowing: the larynx rises and the epiglottis tips over the windpipe, so the bolus goes down the oesophagus",
     "credit": "Patrick J. Lynch, CC BY 2.5",
     "keys": [
@@ -470,6 +475,7 @@ window.ZOOM_DETAIL = {
   "oesophagus": {
     "organ": "oesophagus",
     "anim": "peristalsis",
+    "still": 3.5,
     "noback": true,
     "label": "Peristalsis: the wall itself moves — circular muscle contracts behind the bolus and relaxes ahead of it",
     "keys": [
@@ -497,6 +503,7 @@ window.ZOOM_DETAIL = {
       {
         "at": 0,
         "anim": "churn",
+        "still": 2.5,
         "animBox": [
           202,
           438,
@@ -648,6 +655,7 @@ window.ZOOM_DETAIL = {
         "keep": true,
         "noback": true,
         "anim": "bileflow",
+        "still": 4.5,
         "hide": [
           {
             "organ": "gall-bladder"
@@ -671,6 +679,7 @@ window.ZOOM_DETAIL = {
         "keep": true,
         "noback": true,
         "anim": "bileflow",
+        "still": 2,
         "hide": [
           {
             "organ": "gall-bladder"
@@ -694,6 +703,7 @@ window.ZOOM_DETAIL = {
         "keep": true,
         "noback": true,
         "anim": "bileflow",
+        "still": 9,
         "hide": [
           {
             "organ": "gall-bladder"
@@ -720,6 +730,7 @@ window.ZOOM_DETAIL = {
         "keep": true,
         "noback": true,
         "anim": "portal",
+        "still": 3,
         "animBox": [
           140,
           470,
@@ -751,6 +762,7 @@ window.ZOOM_DETAIL = {
     "keep": true,
     "noback": true,
     "anim": "bileflow",
+    "still": 2.5,
     "focus": "pancreas",
     "paint": [
       {
@@ -1049,6 +1061,7 @@ window.ZOOM_DETAIL = {
           "w": 280
         },
         "anim": "maltase",
+        "still": 5,
         "animBox": [
           48,
           600,
@@ -1152,6 +1165,7 @@ window.ZOOM_DETAIL = {
         "keep": true,
         "noback": true,
         "anim": "portal",
+        "still": 3,
         "animBox": [
           140,
           470,
