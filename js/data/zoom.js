@@ -1,11 +1,12 @@
-/* The plate follows the text: what appears on the body plate at each
-   station, and how it changes as the Learn text is scrolled.
+/* The plate follows the open card: what appears on the body plate at each
+   station, and how it changes as the cards of the Learn text open.
 
    organ  — which plate organ the camera frames
    steps  — one entry per picture, in reading order; `at` is the index of
-            the exam bullet that brings it on (with `sub`, a fraction of
-            the way down that bullet). A station with one picture is a
-            single object.
+            the exam bullet whose card brings it on (js/app.js viewFor:
+            a card with no view of its own shows the one before it).
+            A station with one picture is a single object.
+   fade   — a slower crossfade for that view, in ms (zoom.js goStep)
    img/roi/window/cover/scale/fixed — where the picture goes (see zoom.js)
    imgs   — several pictures placed explicitly, e.g. two photographs stacked
    labels — our own labels, `at` and `tx` in fractions of the picture
@@ -507,6 +508,58 @@ window.ZOOM_DETAIL = {
       },
       {
         "at": 1,
+        "img": "zoom/stomach-wall-block.jpg",
+        "fixed": [
+          154,
+          372,
+          168
+        ],
+        "window": [
+          148,
+          366,
+          180,
+          236
+        ],
+        "label": "The stomach wall: the lining with its gastric glands, then three layers of muscle",
+        "credit": "Encyclopædia Britannica, from the 7.3 deck",
+        "labels": [
+          {
+            "t": "gastric glands\nmake gastric juice",
+            "at": [
+              0.4,
+              0.36
+            ],
+            "tx": [
+              0.7,
+              0.2
+            ]
+          },
+          {
+            "t": "mucus-coated lining",
+            "at": [
+              0.3,
+              0.1
+            ],
+            "tx": [
+              0.62,
+              0.05
+            ]
+          },
+          {
+            "t": "three muscle layers\nrunning in different\ndirections",
+            "at": [
+              0.45,
+              0.72
+            ],
+            "tx": [
+              0.68,
+              0.62
+            ]
+          }
+        ]
+      },
+      {
+        "at": 4,
         "img": "photos/stomach-inside.jpg",
         "fixed": [
           150,
@@ -569,58 +622,6 @@ window.ZOOM_DETAIL = {
             "anchor": "start"
           }
         ]
-      },
-      {
-        "at": 6,
-        "img": "zoom/stomach-wall-block.jpg",
-        "fixed": [
-          154,
-          372,
-          168
-        ],
-        "window": [
-          148,
-          366,
-          180,
-          236
-        ],
-        "label": "The stomach wall: the lining with its gastric glands, then three layers of muscle",
-        "credit": "Encyclopædia Britannica, from the 7.3 deck",
-        "labels": [
-          {
-            "t": "gastric glands\nmake gastric juice",
-            "at": [
-              0.4,
-              0.36
-            ],
-            "tx": [
-              0.7,
-              0.2
-            ]
-          },
-          {
-            "t": "mucus-coated lining",
-            "at": [
-              0.3,
-              0.1
-            ],
-            "tx": [
-              0.62,
-              0.05
-            ]
-          },
-          {
-            "t": "three muscle layers\nrunning in different\ndirections",
-            "at": [
-              0.45,
-              0.72
-            ],
-            "tx": [
-              0.68,
-              0.62
-            ]
-          }
-        ]
       }
     ],
     "keys": [
@@ -664,9 +665,9 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 3,
-        "focus": "liver",
-        "label": "The cycle: the gall bladder fills between meals, then a meal arrives — it squeezes its stored bile out, and fresh bile from the liver flows straight down as well",
+        "at": 2,
+        "focus": "liver-release",
+        "label": "During a meal: bile pours into the duodenum, where it neutralises the acid from the stomach and emulsifies the fats",
         "keep": true,
         "noback": true,
         "anim": "bileflow",
@@ -687,9 +688,9 @@ window.ZOOM_DETAIL = {
         ]
       },
       {
-        "at": 4,
-        "focus": "liver-release",
-        "label": "During a meal: bile pours into the duodenum, where it neutralises the acid from the stomach and emulsifies the fats",
+        "at": 3,
+        "focus": "liver",
+        "label": "The cycle: the gall bladder fills between meals, then a meal arrives — it squeezes its stored bile out, and fresh bile from the liver flows straight down as well",
         "keep": true,
         "noback": true,
         "anim": "bileflow",
@@ -916,7 +917,6 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 700,
         "fade": 520
       },
       {
@@ -978,10 +978,7 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 700,
-        "scroll": 190,
-        "fade": 520,
-        "room": 380
+        "fade": 520
       },
       {
         "at": 8,
@@ -1042,10 +1039,7 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 700,
-        "scroll": 190,
-        "fade": 520,
-        "room": 380
+        "fade": 520
       },
       {
         "at": 10,
@@ -1081,10 +1075,7 @@ window.ZOOM_DETAIL = {
           }
         ],
         "credit": "micrograph: L. Howard & K. Connolly, Dartmouth, public domain",
-        "dwell": 700,
-        "scroll": 190,
-        "fade": 500,
-        "room": 380
+        "fade": 500
       },
       {
         "at": 11,
@@ -1149,8 +1140,6 @@ window.ZOOM_DETAIL = {
             ]
           }
         ],
-        "dwell": 700,
-        "scroll": 150,
         "fade": 500
       },
       {
@@ -1229,8 +1218,6 @@ window.ZOOM_DETAIL = {
             "anchor": "middle"
           }
         ],
-        "dwell": 700,
-        "scroll": 150,
         "fade": 520
       }
     ],

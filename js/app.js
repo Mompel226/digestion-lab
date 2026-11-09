@@ -276,6 +276,9 @@
     var st = S[current]; if (!st) return;
     var host = document.getElementById('panelInner'), sc = stationScore(current);
     host.innerHTML = '';
+    /* every card is drawn shut again: the strip and the plate go back to the station's own (a card held them) */
+    if (window.PlateFold) { if (window.PlateFold.auto) window.PlateFold.auto(false); if (window.PlateFold.lend) window.PlateFold.lend(false); }
+    if (window.Zoom && window.Zoom.show) window.Zoom.show(0);
 
     var head = document.createElement('div');
     head.className = 'st-head';
@@ -345,7 +348,6 @@
     else paintDo(pane, st);
     var sc0 = panelScroller();
     if (sc0) { var pb = sc0.style.scrollBehavior; sc0.style.scrollBehavior = 'auto'; sc0.scrollTop = 0; sc0.style.scrollBehavior = pb || ''; }
-    if (window.Zoom) { if (tab === 'learn') window.Zoom.bindLearn(pane); else window.Zoom.unbind(); }
   }
 
   function paintLearn(pane, st) {
@@ -380,7 +382,6 @@
        content, or {text, ext:true} for what the decks teach but the 0610 syllabus
        does not list (it goes to the card below). The S badge marks the
        fence; every pupil learns both sides of it (all sit the Extended papers). */
-    var rooms = (window.Zoom && window.Zoom.rooms) ? window.Zoom.rooms(st.id) : {};
     (st.learn.exam || []).forEach(function (b, i) {
       var offK = offOf(b, i);
       var li = document.createElement('li');
@@ -398,16 +399,20 @@
       if (window.Terms && Terms.teach) Terms.teach(teachHere);
       li.innerHTML = badge + M(txt);
       if (window.Terms && Terms.teach) Terms.teach(false);
-      /* Some sentences carry a view on the plate that deserves to be looked at. Those get extra
-         room, so the reader scrolls through them at a pace where each picture is actually seen. */
-      if (rooms[i] && !offK) li.style.minHeight = rooms[i] + 'px';
+      var headed = typeof b === 'object' && !!b.head;
       li.setAttribute('data-i', i);
+      /* A sentence with a heading is a card: its heading always shows, its words open one card at a time, and the
+         plate shows that card's view while it is open (Daniel, 8 Nov 2026, after the Inheritance Lab: "I would like to
+         apply this system … just to standardize things … Particularly when you're supposed to be about something,
+         seeing an image related to that"; docs/LAB-STRUCTURE-PLAN.md section 6). The Classification Lab's makeCard. */
+      if (headed) makeCard(li, b.head, st, i);
       if (offK) offAt[offK].push({ k: typeof b === 'object' && b.near != null ? b.near + 0.5 : i, li: li });
       else list.appendChild(li);
+      /* the photographs and drawings of a sentence sit under it: inside its card, so they show while the card is open */
       media.filter(function (x) { return !x.more && x.after === i; })
-           .forEach(function (x) { li.appendChild(mediaBox(x)); });
+           .forEach(function (x) { (li.__body || li).appendChild(mediaBox(x)); });
       figs.filter(function (f) { return FIG_AFTER[st.id + ':' + f] === i; })
-          .forEach(function (name) { var fb = figBox(name); if (fb) li.appendChild(fb); });
+          .forEach(function (name) { var fb = figBox(name); if (fb) (li.__body || li).appendChild(fb); });
     });
 
     /* the card below reads in the station's order: a part moved out of sentence 3 comes after sentence 3 (`near`) */
@@ -732,6 +737,7 @@
         var pr = sc === document.scrollingElement || sc === document.documentElement
           ? { top: 0, bottom: window.innerHeight, height: window.innerHeight } : sc.getBoundingClientRect();
         var r = box.getBoundingClientRect();
+        if (!r.height) return;                 /* inside a shut card: it starts when its card opens (box.__shown) */
         var seen = Math.min(r.bottom, pr.bottom) - Math.max(r.top, pr.top);
         if (seen < Math.min(r.height, pr.height) * 0.4) return;
         started = true; unwatch();
@@ -739,10 +745,19 @@
       };
       function unwatch() { watched.forEach(function (n) { n.removeEventListener('scroll', check); }); watched = []; }
       /* watch every box that could be the scroller at this width, and the window with them */
-      [document.getElementById('panel'), document.querySelector('.stage'), window].forEach(function (n) {
-        if (n) { n.addEventListener('scroll', check, { passive:true }); watched.push(n); }
-      });
+      function watch() {
+        [document.getElementById('panel'), document.querySelector('.stage'), window].forEach(function (n) {
+          if (n) { n.addEventListener('scroll', check, { passive:true }); watched.push(n); }
+        });
+      }
+      watch();
       setTimeout(check, 80);
+      /* its card opened: from the beginning once it is in view; its card shut: back to its first frame, still */
+      box.__shown = function (on) {
+        unwatch(); started = false;
+        try { stage.pauseAnimations(); stage.setCurrentTime(0); } catch (e) {}
+        if (on) { watch(); setTimeout(check, 80); }
+      };
     }
     return box;
   }
@@ -1140,6 +1155,80 @@
   }
   function toStationTop() { var sc = panelScroller(); if (sc) sc.scrollTop = 0; }
 
+  /* the card that holds an element (or the card itself), opened if it is shut; returns it, or null */
+  function openCardOf(el) {
+    var c = el ? (el.__open ? el : (el.closest ? el.closest('.xcard') : null)) : null;
+    if (c && c.__open && !c.classList.contains('is-open')) c.__open(true);
+    return c;
+  }
+
+  /* ---------- the view on the plate that a sentence's card shows ----------
+     Each view in js/data/zoom.js is brought on at a sentence (`at`, its place in the master). A card shows the view
+     brought on at its own sentence. A sentence of What you need to know with no view of its own shows the last view
+     before it there: the one the plate showed while it was read, when the plate followed the scroll. A sentence in the
+     card below ("Not in the syllabus for 2026–2029") with no view of its own shows the view of the sentence it was taken
+     from (`near`), else the station's first view. Returns the view's place in the station's list (0: its first). */
+  function offAt(st, i) {
+    var b = ((st.learn || {}).exam || [])[i];
+    return !!((st.past && st.past.exam && st.past.exam[i] != null) || (b && typeof b === 'object' && b.ext));
+  }
+  function viewFor(st, i, seen) {
+    var ats = window.Zoom && window.Zoom.ats ? window.Zoom.ats(st.id) : [];
+    if (!ats.length) return 0;
+    var own = ats.lastIndexOf(i);
+    if (own > -1) return own;
+    var b = ((st.learn || {}).exam || [])[i];
+    if (offAt(st, i)) {
+      seen = seen || {}; seen[i] = 1;
+      return b && typeof b === 'object' && b.near != null && !seen[b.near] ? viewFor(st, b.near, seen) : 0;
+    }
+    var j = 0;
+    ats.forEach(function (a, k) { if (a <= i && !offAt(st, a)) j = k; });
+    return j;
+  }
+
+  /* ---------- a sentence as a card ----------
+     The heading is a button; the words under it open on a press, one card at a time in the station. Opening one shows
+     its view on the plate (viewFor, Zoom.show: the camera, the fade and the preloading are the plate's own); closing it
+     gives the station's first view back. On a phone the plate is a strip pinned above the notes: a card whose sentence
+     brings its own view opens the strip for it, as the Plants Lab's drawings do (PlateFold.lend); a card holding its own
+     photograph, drawing or film, and no view of its own, folds the strip away while it is open (PlateFold.auto, Daniel,
+     9 Nov 2026: "Yes, fold it"). The Classification Lab's makeCard. */
+  function makeCard(li, head, st, i) {
+    var body = document.createElement('div');
+    body.className = 'xcard__b';
+    while (li.firstChild) body.appendChild(li.firstChild);
+    var btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'xcard__h'; btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML = '<span class="xcard__t">' + esc(head) + '</span><span class="xcard__a" aria-hidden="true"></span>';
+    li.classList.add('xcard');
+    li.appendChild(btn); li.appendChild(body);
+    body.hidden = true;
+    li.__body = body;
+    li.__open = function (on, fromPicture) {
+      if (on) Array.prototype.forEach.call(document.querySelectorAll('#panelInner .xcard.is-open'), function (o) { if (o !== li && o.__open) o.__open(false, true); });
+      li.classList.toggle('is-open', !!on);
+      body.hidden = !on;
+      btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+      var j = on ? viewFor(st, i) : 0, own = !!on && j > 0 && (window.Zoom && window.Zoom.ats ? window.Zoom.ats(st.id) : []).lastIndexOf(i) === j;
+      if (window.PlateFold) {
+        if (window.PlateFold.lend) window.PlateFold.lend(own);
+        if (window.PlateFold.auto && (!on || !fromPicture)) window.PlateFold.auto(!!on && !own && !!body.querySelector('.media, figure, video'));
+      }
+      /* an animated drawing starts from its beginning when its card opens, and stands still on its first frame when shut */
+      Array.prototype.forEach.call(body.querySelectorAll('[data-fig]'), function (f) { if (f.__shown) f.__shown(!!on); });
+      if (!on) Array.prototype.forEach.call(body.querySelectorAll('video'), function (v) { try { v.pause(); } catch (e) {} });
+      if (on) hintScrollers(body);       /* a drawing wider than a phone: centred, its labels listed (measurable only now) */
+      if (fromPicture) return;
+      if (window.Zoom && window.Zoom.show) window.Zoom.show(j);
+    };
+    btn.addEventListener('click', function () {
+      var on = !li.classList.contains('is-open');
+      li.__open(on);
+      if (on) showWhole(li, true);
+    });
+  }
+
   /* Plurals and forms English refuses to make regularly, and which this lab uses constantly. */
   var SAME_WORD = { villi: 'villus', microvilli: 'villus', lacteals: 'lacteal', enzymes: 'enzyme',
     catalysts: 'catalyst', capillaries: 'capillary', enterocytes: 'enterocyte', proteases: 'protease',
@@ -1154,7 +1243,8 @@
      whole-word search then fails on a word that is plainly there. */
   function wordsOf(el) {
     var out = '', w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null, false), n;
-    while ((n = w.nextNode())) out += ' ' + n.nodeValue;
+    /* a card's heading is not its sentence: a word followed here lands where it did before the cards (9 Nov 2026) */
+    while ((n = w.nextNode())) if (!(n.parentNode && n.parentNode.closest && n.parentNode.closest('.xcard__h'))) out += ' ' + n.nodeValue;
     return out.replace(/\s+/g, ' ').trim();
   }
 
@@ -1208,6 +1298,9 @@
       if (cameFrom && S[cameFrom]) showBackChip(cameFrom, term);
       return;
     }
+    /* the line found may be inside a sentence's card: open it, or the page would land on words nobody can see
+       (the Circulation Lab's audit, 8 Nov 2026) */
+    openCardOf(target);
     /* arriving from another station: there is nothing to animate from, so land instantly */
     landOn(target, cameFrom == null);
 
@@ -1230,14 +1323,17 @@
     el.scrollTop = top;
     el.style.scrollBehavior = prev || '';
   }
+  /* and which card they had open (its place among the station's cards, which a repaint keeps): the way back opens it
+     again, or "← back" would return to a page of closed cards (the Circulation Lab's audit) */
   function markWhereWeAre() {
-    var sc = panelScroller();
-    whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab };
+    var sc = panelScroller(), cards = document.querySelectorAll('#panelInner .xcard'), was = document.querySelector('#panelInner .xcard.is-open');
+    whereWeWere = { id: current, top: sc ? sc.scrollTop : 0, tab: tab, card: was ? Array.prototype.indexOf.call(cards, was) : -1 };
   }
   function goBackToMark(id) {
     var w = whereWeWere && whereWeWere.id === id ? whereWeWere : null;
     open(id);
     if (!w) return;
+    if (w.card > -1) openCardOf(document.querySelectorAll('#panelInner .xcard')[w.card]);
     /* after paintPanel has laid the station out again */
     requestAnimationFrame(function () {
       requestAnimationFrame(function () { var sc = panelScroller(); if (sc) jumpTo(sc, w.top); });
@@ -2057,9 +2153,32 @@
       if (plate && fold) {
         var FOLD_KEY = 'labs.plateFolded', foldedNow = false;
         try { foldedNow = localStorage.getItem(FOLD_KEY) === '1'; } catch (e) {}
-        var paintFold = function () { plate.classList.toggle('is-folded', foldedNow); fold.setAttribute('aria-expanded', foldedNow ? 'false' : 'true'); fold.textContent = (foldedNow ? '▼ Show ' : '▲ Hide ') + fold.getAttribute('data-what'); };
+        /* Three things decide whether the strip is folded: the reader's own choice (remembered), a card that holds its own
+           picture (autoTo: folded while it is open, on a phone), and a card whose sentence brings its own view on the
+           plate (lentTo: opened for it, whatever the other two say). The Classification Lab's PlateFold. */
+        var lentTo = false, autoTo = false;
+        var isFolded = function () { return (foldedNow || autoTo) && !lentTo; };
+        var paintFold = function () { var f = isFolded(); plate.classList.toggle('is-folded', f); fold.setAttribute('aria-expanded', f ? 'false' : 'true'); fold.textContent = (f ? '\u25BC Show ' : '\u25B2 Hide ') + fold.getAttribute('data-what'); };
         paintFold();
-        fold.addEventListener('click', function () { foldedNow = !foldedNow; try { localStorage.setItem(FOLD_KEY, foldedNow ? '1' : '0'); } catch (e) {} paintFold(); });
+        /* the button does what it says on it (Hide folds, Show opens), and that choice is the one remembered */
+        fold.addEventListener('click', function () { foldedNow = !isFolded(); lentTo = false; autoTo = false; try { localStorage.setItem(FOLD_KEY, foldedNow ? '1' : '0'); } catch (e) {} paintFold(); });
+        window.PlateFold = {
+          /* a view arriving on the plate while the strip is folded away would be invisible: it opens itself, and folds
+             again afterwards, unless the reader has since made the choice themselves */
+          lend: function (on) {
+            if (on) { if (isFolded()) { lentTo = true; paintFold(); } }
+            else if (lentTo) { lentTo = false; paintFold(); }
+          },
+          /* Daniel, 9 Nov 2026 ("Yes, fold it", after the press audit): on a phone the strip covers about 40 % of the screen,
+             so a card's own picture was hidden under it. While a card that holds one is open, the strip folds away; when the
+             card closes, it comes back, unless the reader has pressed Hide or Show meanwhile. Only where the strip is a strip
+             (its fold button can be seen). */
+          auto: function (on) {
+            on = !!on && fold.getClientRects().length > 0;
+            if (on === autoTo) return;
+            autoTo = on; paintFold();
+          }
+        };
       }
       qStat.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); goQuestions(); } });
     }

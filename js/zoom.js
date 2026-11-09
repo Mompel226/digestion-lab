@@ -1,13 +1,14 @@
 /* ============================================================
-   zoom.js — the plate follows the text.
+   zoom.js — the plate follows the open card.
 
    When a station opens, the camera on the anatomical plate flies to the
    organ. As it arrives, a professional illustration of THAT organ fades in
    on the plate itself, registered over the organ's own outline — the way a
-   3-D viewer swaps in a higher-detail model as you get closer. As the reader
-   scrolls the Learn text, the illustration can give way to the next one (a
-   real photograph of the teeth, say), fading out and in on the plate: the
-   picture on the left is never static while the text on the right moves.
+   3-D viewer swaps in a higher-detail model as you get closer. When the reader
+   opens a card of the Learn text, the illustration can give way to that card's
+   own view (a real photograph of the teeth, say), fading out and in on the
+   plate; closing the card brings the organ back (9 Nov 2026: every station's
+   sentences are cards, and the plate no longer follows the scroll).
 
    Each step can carry its own labels (drawn by us, in plate coordinates, so
    the camera never cuts a word), a spotlight on the organ being read about,
@@ -62,7 +63,7 @@
   var defs = null, clipN = 0;                 /* for clipped paint copies, see applyStep */
   var cur = { x:VIEW.x, y:VIEW.y, w:VIEW.w, h:VIEW.h };
   var anim = null, station = null, detail = null, detailCam = null;
-  var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, lis = null, bound = false;
+  var steps = [], stepIdx = -1, fade = 1, fadeTimer = null, want = 0;
   var SPOT = null, spotLoading = false, hidden = [], spotted = [], arriving = false;
 
   function frameFor(cam) {
@@ -738,55 +739,13 @@
     if (pending) return;
   }
 
-  /* ---------- steps follow the reading position ---------- */
-  function readingLine() {
-    var panel = document.getElementById('panel');
-    var pr = panel.getBoundingClientRect();
-    var bc = document.querySelector('.bodycol'), bcr = bc ? bc.getBoundingClientRect() : { bottom:0 };
-    /* stacked (phone) layout: the sticky plate covers the top of the panel */
-    var stacked = global.matchMedia && global.matchMedia('(max-width:1000px)').matches;
-    var top = Math.max(pr.top, stacked ? bcr.bottom : 0, 0), bottom = Math.min(pr.bottom, global.innerHeight);
-    return top + Math.max(0, bottom - top) * 0.3;
-  }
-  function pickStep() {
-    if (steps.length < 2) return 0;
-    if (!lis || !lis.length) return Math.max(0, stepIdx);
-    var line = readingLine(), idx = -1, frac = 0;
-    for (var i = 0; i < lis.length; i++) {
-      var r = lis[i].getBoundingClientRect(), at = lis[i].getAttribute('data-i');
-      if (r.top > line) break;
-      /* a step is tied to a sentence's place in the master (data-i), not its place on the page: the
-         sentences that are not in the 2026–28 syllabus are drawn in a card of their own, further down,
-         and one of those brings on only a picture of its own; any other leaves the last picture up */
-      if (lis[i].parentNode.classList.contains('exam-list--off') && !steps.some(function (s) { return (s.at || 0) === +at; })) continue;
-      idx = at != null ? +at : i; frac = r.height ? (line - r.top) / r.height : 0;
-    }
-    var best = 0;
-    steps.forEach(function (s, j) { var at = s.at || 0, sub = s.sub || 0; if (at < idx || (at === idx && sub <= frac)) best = j; });
-    return best;
-  }
-  var holdUntil = 0, holdTimer = null, holdFrom = 0;
-  /* where the reader is, counting both the panel's own scrolling and the page's */
-  function scrollPos() {
-    /* Three boxes can be the one that moved: the panel above 1000px, .stage below it, and the
-       window. Counting only two of them made this read a constant on a phone. */
-    var p = document.getElementById('panel'), st = document.querySelector('.stage');
-    return (p ? p.scrollTop : 0) + (st ? st.scrollTop : 0) + (global.scrollY || 0);
-  }
-  function scheduleRecheck(ms) {
-    if (holdTimer) return;
-    holdTimer = setTimeout(function () { holdTimer = null; update(); }, Math.max(20, ms));
-  }
+  /* ---------- a view goes up ----------
+     The camera steps through one view at a time rather than jumping, and the old view fades out before the new one
+     fades up. `fade` lengthens a view's crossfade, so the folds, the villi and the microvilli each come up slowly
+     enough to be looked at. */
   function goStep(j, now) {
     stepIdx = j;
     var s = steps[j];
-    /* Each view holds for a moment before the next may take over, and the camera steps through
-       one view at a time rather than jumping. A view may also ask for a minimum amount of
-       scrolling before it gives way (`scroll`, in pixels), so a nudge of the wheel does not flip
-       the picture: the folds, the villi and the microvilli each stay long enough to be looked at.
-       `fade` lengthens the crossfade for the same reason. */
-    holdUntil = Date.now() + ((s && s.dwell) || 260);
-    holdFrom = scrollPos();
     if (layer) layer.style.transitionDuration = ((s && s.fade) || 350) + 'ms';
     var cam = s.cam || CAM[detail.organ];
     if (cam !== detailCam) { detailCam = cam; if (!now) flyTo(frameFor(cam), 700); }
@@ -795,42 +754,27 @@
     fade = 0; setBox(cur);
     fadeTimer = setTimeout(function () { fadeTimer = null; applyStep(s); fade = 1; setBox(cur); }, Math.round(((s && s.fade) || 350) * 0.85));
   }
-  /* Where the reader is, is where the plate goes: the view always jumps straight to the step the
-     reading line is on, so scrolling back to the top comes straight back to the whole organ. The
-     only thing held back is the single step forwards — a nudge of the wheel at the edge of a
-     bullet must not flip the picture — and even that gives way as soon as the reader has moved a
-     little further or waited a moment. Nothing ever queues up behind a hold. */
-  function update() {
-    if (!detail) return;
-    var j = pickStep();
-    if (j === stepIdx) return;
-    var here = steps[stepIdx];
-    var oneForward = stepIdx >= 0 && j === stepIdx + 1;
-    if (oneForward && here) {
-      var now = Date.now();
-      if (now < holdUntil) { scheduleRecheck(holdUntil - now + 20); return; }
-      if (here.scroll && Math.abs(scrollPos() - holdFrom) < here.scroll) { scheduleRecheck(160); return; }
-    }
+
+  /* ---------- a card shows its view (9 Nov 2026) ----------
+     Every station's sentences are cards (docs/LAB-STRUCTURE-PLAN.md section 6), and the plate follows the open card,
+     never the scroll: opening a card shows the view js/app.js chose for it (viewFor), closing it gives the station's
+     first view back. The camera, the fade and the preloading are goStep's. A view asked for while the camera is still
+     flying to the station goes up when it arrives. */
+  function ats(id) {
+    var d = (global.ZOOM_DETAIL || {})[id];
+    return d ? (d.steps || [d]).map(function (s) { return s.at || 0; }) : [];
+  }
+  function show(j) {
+    if (!detail || !steps.length) return;
+    j = Math.max(0, Math.min(steps.length - 1, j | 0));
+    want = j;
+    if (arriving || j === stepIdx) return;
     goStep(j, stepIdx < 0);
   }
-  function onScroll() { update(); }
-  function bindLearn(pane) {
-    lis = pane ? pane.querySelectorAll('.exam-list > li') : null;
-    if (!bound) {
-      bound = true;
-      var p = document.getElementById('panel'), st = document.querySelector('.stage');
-      if (p) p.addEventListener('scroll', onScroll, { passive:true });
-      if (st) st.addEventListener('scroll', onScroll, { passive:true });
-      global.addEventListener('scroll', onScroll, { passive:true });
-    }
-    update();
-    setTimeout(update, 60);                     /* once layout has settled */
-  }
-  function unbind() { lis = null; }
 
   /* Every picture the station's steps will use, fetched and decoded as soon as the station opens.
      Held in a list so the browser keeps them, which is what makes the next view appear at once
-     rather than a beat after the scroll. */
+     rather than a beat after its card opens. */
   var warmed = {}, warm = [];
   /* requestIdleCallback's second argument is an options dictionary, NOT a number: passing
      one throws, and this runs inside setStation before stepIdx and the fade timers are set,
@@ -856,14 +800,6 @@
       if (rest.length) idle(function () { rest.forEach(warmOne); });
     } catch (e) { console.error('preload', e); }   /* never take setStation down with it */
   }
-  /* how much room in the text each step wants, so a view is not scrolled past in one flick */
-  function rooms(id) {
-    var d = (global.ZOOM_DETAIL || {})[id], out = {};
-    if (!d) return out;
-    (d.steps || []).forEach(function (s) { if (s.room) out[s.at || 0] = s.room; });
-    return out;
-  }
-
   /* ---------- station ---------- */
   function setStation(id, opts) {
     var was = !!detail;
@@ -875,8 +811,7 @@
     var cam = (!quiet && CAM[detail ? detail.organ : id]) || null;
     detailCam = detail ? cam : null;
     steps = detail ? (detail.steps || [detail]) : [];
-    stepIdx = -1; lis = null; holdUntil = 0;
-    if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+    stepIdx = -1; want = 0;
     if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
     hidden.forEach(function (p) { p.style.display = ''; }); hidden = [];
     spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = [];
@@ -897,10 +832,10 @@
         fade = 0; setBox(cur);
         if (fadeTimer) { clearTimeout(fadeTimer); fadeTimer = null; }
         arriving = true;
-      } else goStep(0, true);
+      } else goStep(want, true);
     }
     else if (layer) { fade = 1; layer.style.opacity = 0; svg.classList.remove('keep-organ'); }
-    flyTo(frameFor(detailCam || cam), 800, arriving ? function () { arriving = false; goStep(0, true); } : null);
+    flyTo(frameFor(detailCam || cam), 800, arriving ? function () { arriving = false; goStep(want, !want); } : null);   /* a card's own view flies to its own camera */
   }
   function reset() { arriving = false; if (svg) svg.classList.remove('keep-organ'); detail = null; detailCam = null; steps = []; stepIdx = -1; hidden.forEach(function (p) { p.style.display = ''; }); hidden = []; spotted.forEach(function (p) { p.classList.remove('is-spot'); }); spotted = []; if (layer) layer.style.opacity = 0; if (strip) strip.classList.remove('is-on'); flyTo(frameFor(null), 650); }
   function init(svgEl) {
@@ -911,8 +846,8 @@
      reset). That wipes the detail layer, so it is put back here. */
   function refresh() { if (!svg) return; if (!layer || !layer.isConnected) build(); if (detail && steps[stepIdx]) applyStep(steps[stepIdx]); setBox(cur); }
   function setView(v) { global.PlateView = v; refresh(); }
-  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, setView:setView, flyTo:flyTo, frameFor:frameFor, CAM:CAM, rooms:rooms,
+  global.Zoom = { init:init, setStation:setStation, reset:reset, refresh:refresh, setView:setView, flyTo:flyTo, frameFor:frameFor, CAM:CAM,
                   outline:outlineFor, outlineIn:outlineIn, ppu:ppu,
-                  bindLearn:bindLearn, unbind:unbind, update:update, _spot:function () { return SPOT; },
+                  ats:ats, show:show, _spot:function () { return SPOT; },
                   _state:function () { return { cur:cur, station:station, step:stepIdx, steps:steps.length, detail:detail && (steps[stepIdx] || {}).img }; } };
 })(window);
