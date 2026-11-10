@@ -517,9 +517,9 @@
         'fill="#FFFFFF" stroke="#0F6E8C" stroke-width="1.6"/>' +
         '<text class="cardt" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 20) + '">' + o.t.replace('\n', ' ') + '</text>' +
         '<rect x="' + (CARD.x + CARD.w - (o.core ? 96 : 118)) + '" y="' + (CARD.y + 8) + '" width="' + (o.core ? 62 : 84) + '" height="15" rx="7.5" ' +
-        'fill="' + (o.core ? '#E4F1E8' : o.old ? '#FBF1E2' : '#F3EEE2') + '" stroke="' + (o.core ? '#2E7D46' : o.old ? '#DDBB85' : '#B9A87E') + '" stroke-width="1"/>' +
+        'fill="' + (o.core ? '#E4F1E8' : o.old ? '#FBF1E2' : '#EDE8FA') + '" stroke="' + (o.core ? '#2E7D46' : o.old ? '#DDBB85' : '#C9BAEE') + '" stroke-width="1"/>' +   /* beyond 0610 in the ONE extension violet (Daniel, 10 Nov 2026, "One violet"; it was tan) */
         '<text class="cardtag" x="' + (CARD.x + CARD.w - (o.core ? 65 : 76)) + '" y="' + (CARD.y + 19) + '" text-anchor="middle" ' +
-        'style="fill:' + (o.core ? '#2E7D46' : o.old ? '#7A4B12' : '#8A7647') + '">' + (o.core ? 'in 0610' : o.old ? 'until ' + o.old : 'beyond 0610') + '</text>' +   /* until 2022: an older syllabus had it */
+        'style="fill:' + (o.core ? '#2E7D46' : o.old ? '#7A4B12' : '#7243C0') + '">' + (o.core ? 'in 0610' : o.old ? 'until ' + o.old : 'beyond 0610') + '</text>' +   /* until 2022: an older syllabus had it */
         '<text class="cardb" x="' + (CARD.x + 14) + '" y="' + (CARD.y + 38) + '">' +
         body.map(function (l, i) { return '<tspan x="' + (CARD.x + 14) + '" dy="' + (i ? '15' : '0') + '">' + l + '</tspan>'; }).join('') +
         '</text>' +

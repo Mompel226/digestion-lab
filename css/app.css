@@ -8,6 +8,8 @@
   --amber:#A16207; --amber-tint:#FBF3E3;
   --teal:#0F6E8C;  --teal-tint:#E5F0F4;
   --purple:#6B3FA0;--purple-tint:#F1EBF8;
+  --ext:#7243C0; --ext-tint:#EDE8FA; --ext-wash:#F7F4FD; --ext-rule:#C9BAEE; --ext-on:#FFFFFF;
+  /* extension (Daniel, 10 Nov 2026, "One violet"): anything beyond what the reader's own course asks, IB content or beyond the syllabus, in ONE violet; a small word label says which (IB · D3.1.8, Beyond IB, beyond 0610). The summary notes' 7243C0 on EDE8FA; dark: the hub's B388FF, the same hue. Blue is IB only where IB is the reader's own level; grey is Supplement and cross-topic links. --ext-wash: a big box; --ext-tint: a tag or line. The extra pins' list rows double their class (.pins__item.pins__item--extra): the plain .pins__item rules further down painted them green before */
   --red:#B03A2E;   --red-tint:#FAECE9;
   --ink:#1A1A1A;   --grey:#6B6B6B; --line:#C4C4C4;
 
@@ -198,8 +200,8 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .lblg.is-active .lbl{fill:var(--green);font-weight:700}
 .lblg.is-active .lbl__lead{stroke:var(--green);opacity:1;stroke-width:1.8}
 .lblg.is-active .lbl__dot{fill:var(--green)}
-.lblg.beyond .lbl{font-style:italic;fill:#5D3E8C}
-.lblg.beyond:hover .lbl,.lblg.beyond.is-active .lbl{fill:var(--purple)}
+.lblg.beyond .lbl{font-style:italic;fill:var(--ext)}
+.lblg.beyond:hover .lbl,.lblg.beyond.is-active .lbl{fill:#5A2FA6}
 .lblg:focus-visible .lbl{fill:var(--green)}
 .lblg:focus-visible .lbl__hit{stroke:var(--green);stroke-width:1.4;stroke-dasharray:4 3}
 
@@ -225,7 +227,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .chip--egestion{background:var(--c-ege)}
 .chip__n{display:inline-block;min-width:1.1em;height:1.1em;line-height:1.1em;text-align:center;
   border-radius:50%;background:rgba(255,255,255,.28);margin-right:6px;font-size:.85em}
-.chip--beyond{background:#fff;color:#5A5A5A;border:1.5px dashed #9A9A9A;font-style:italic}
+.chip--beyond{background:var(--ext-tint);color:var(--ext);border:1.5px dashed var(--ext-rule);font-style:italic}
 
 /* tabs */
 /* The tab bar stays put while a long station scrolls. It is fully opaque so
@@ -759,7 +761,7 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 /* which tier a word belongs to, said plainly rather than left to be guessed */
 .tier{display:inline-block;vertical-align:middle;margin-left:6px;padding:1px 7px;border-radius:var(--r-pill);
       font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
-.tier--ext{background:#F1EDE3;color:#7A6B52;border:1px dashed #C3B69C}
+.tier--ext{background:var(--ext-tint);color:var(--ext);border:1px dashed var(--ext-rule)}
 .tier--sup{background:#EAF1F6;color:#3E6FA8;border:1px solid #C4D8E8}
 
 /* ---------- Key words, gathered ---------- */
@@ -925,10 +927,10 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .examfocus li{font-size:14.5px;color:#3A2E14;margin-bottom:7px;line-height:1.5}
 .examfocus li:last-child{margin-bottom:0}
 .examfocus__tag{color:#8A5A0E}
-/* going further: one list, three kinds of tag. IB in the IB blue of the practicals (--ib), beyond the syllabus in grey;
+/* going further: one list, three kinds of tag. IB and beyond the syllabus in the ONE extension violet (--ext, Daniel 10 Nov 2026; the tag's words say which, beyond in italics), replacing 4 Nov's IB blue and beyond grey;
    two classes, so the plain .later__ref rule further down cannot paint over them */
-.later__ref.later__ref--ib{background:#E7E9F7;color:#2E3A8C;border:1px solid #B9C0E8}
-.later__ref.later__ref--beyond{background:#F1F1EE;color:#5A5A5A;border:1px solid #C9C9C4;font-style:italic}
+.later__ref.later__ref--ib{background:var(--ext-tint);color:var(--ext);border:1px solid var(--ext-rule)}
+.later__ref.later__ref--beyond{background:var(--ext-tint);color:var(--ext);border:1px solid var(--ext-rule);font-style:italic}
 /* the zoom-in cue between an inset and the picture it is a piece of: a filled cone opening from
    the boxed piece to the enlarged view, every line drawn over a pale halo so it reads on a dark
    micrograph as clearly as on a pale illustration */
