@@ -1969,8 +1969,17 @@
     }
     var tip = e.target.closest ? e.target.closest('.tip') : null;
     Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { if (el !== tip) el.classList.remove('is-open'); });
-    if (tip) { e.preventDefault(); tip.classList.toggle('is-open'); }
+    if (tip) { e.preventDefault(); if (tip.classList.toggle('is-open')) showWholeNote(tip); }
   });
+  /* a long level-tag note can reach past the foot of a short glossary entry on a phone (23 Nov 2026): the box moves up just
+     enough to show all of it */
+  function showWholeNote(tip) {
+    var dt = tip.closest('#glossList dt'), box = dt && dt.closest('.modal__box');
+    if (!box) return;
+    var note = getComputedStyle(tip, '::after'), foot = Math.min(box.getBoundingClientRect().bottom, window.innerHeight);
+    var past = dt.getBoundingClientRect().top + parseFloat(note.top) + parseFloat(note.height) - foot;
+    if (past > 0) box.scrollTop += Math.ceil(past);
+  }
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') {
       Array.prototype.forEach.call(document.querySelectorAll('.tip.is-open'), function (el) { el.classList.remove('is-open'); });

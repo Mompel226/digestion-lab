@@ -961,10 +961,13 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
 .tip:focus{outline:none}
 .tip:focus-visible{box-shadow:0 0 0 2px var(--green)}
 /* in the glossary a badge can sit near the right edge, and its tooltip (hidden, but still 270 px wide) made the glossary
-   scroll sideways on a phone (9 Nov 2026): there the tooltip opens under the word line, never wider than the line */
+   scroll sideways on a phone (9 Nov 2026): there the tooltip takes no room until it opens (23 Nov 2026: its padding still
+   moved the box 1 px), then opens under the word line, never wider than the line, padding included */
 #glossList .gloss__row dt{position:relative}
 #glossList .tip{position:static}
-#glossList .tip::after{left:0;right:auto;width:max-content;max-width:min(300px,100%)}
+#glossList .tip::after{display:none;left:0;right:auto;width:max-content;max-width:min(300px,100%);box-sizing:border-box}
+#glossList .tip:hover::after,#glossList .tip:focus-visible::after,#glossList .tip.is-open::after{display:block}
+#glossList .tip.is-open::after{pointer-events:auto}   /* a press on the open note closes it, and never reaches an answer button under it */
 #glossList .tip::before{display:none}
 
 /* ---- a magnifying lens on a figure opens its close-up ---- */
