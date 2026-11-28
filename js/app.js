@@ -688,16 +688,16 @@
     Array.prototype.forEach.call(document.querySelectorAll('.is-waiting[data-fig]'), function (el) {
       var name = el.getAttribute('data-fig'), f = window.Figures.get(name);
       if (!f || !f.svg) return;
+      /* a figure on its own is drawn again whole, as figBox draws it when the art is already here: its caption
+         ("Diagram" and the words under it) and its animation held on its first frame come only from figBox, so a
+         late drawing had neither until the station was opened again (seen 28 Nov 2026) */
+      if (!el.classList.contains('pair__half')) { el.replaceWith(figBox(name)); return; }
       var wait = el.querySelector('.figwait');
       if (wait) wait.remove();
       el.classList.remove('is-waiting');
-      if (el.classList.contains('pair__half')) {
-        /* NOT innerHTML: pairBox appends the "The same structures, drawn" label to this same
-           cell after the figure, and innerHTML would delete it. */
-        el.insertAdjacentHTML('afterbegin', f.svg);
-      } else {
-        el.insertAdjacentHTML('afterbegin', f.svg);
-      }
+      /* NOT innerHTML: pairBox appends the "The same structures, drawn" label to this same
+         cell after the figure, and innerHTML would delete it. */
+      el.insertAdjacentHTML('afterbegin', f.svg);
       hidePlateParts(el);
       keepFigureReadable(el);          /* without this a 576-unit viewBox is squeezed into a
                                           340 px column and its labels shrink to ~5 px */

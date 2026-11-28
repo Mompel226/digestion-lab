@@ -1127,13 +1127,13 @@ u.syl-u{text-decoration:underline;text-decoration-thickness:1.5px;text-underline
    never cut; the IGCSE 0610 badge wraps to start the second row, beside the counts (14 Oct 2026) */
 @media (max-width:370px){ .hbtn--back + .hdr__mark{flex:1 1 calc(100% - 140px)} .hdr__stats{flex:1 1 0;min-width:0} .hbtn--back ~ .badge{align-self:flex-start;margin-top:8px} }
 
-/* a tablet held flat (1024px) and every narrower screen: no subtitle, and a smaller name up to 1000px, so the name is never cut short */
-@media (max-width:1100px){ .hdr__sub{display:none} }
+/* no topic line up to 1570px (it fits whole only above that), and a smaller name up to 1000px, so the name is never cut short */
+@media (max-width:1570px){ .hdr__sub{display:none} }   /* 1100px until 28 Nov 2026: from 1441 to 1551px the topic line showed cut short ("…") */
 @media (max-width:1000px){ .hdr__title{font-size:16px} }
 
-/* the compact header up to 1100px — a tablet held flat included — with the byline allowed onto a second line, so the name is never cut short.
+/* the compact header up to 1190px — a tablet held flat included — with the byline allowed onto a second line, so the name is never cut short.
    Last in the file on purpose: the base rule that hides the short labels would otherwise win. */
-@media (max-width:1100px){
+@media (max-width:1190px){   /* 1100px until 28 Nov 2026: from 1101 to 1171px the full header cut the lab's name and the byline */
   .badge{padding:1px 7px;font-size:10px;letter-spacing:.06em} .stat__lbl{display:none} .stat{padding:4px 10px 4px 5px} .stat--stations{display:none}
   .hbtn{padding:6px 11px} #btnHelp{width:32px;padding:0;display:grid;place-items:center;height:30px}
   .hbtn__long{display:none} .hbtn__short{display:inline;font-size:15px;font-weight:700}
