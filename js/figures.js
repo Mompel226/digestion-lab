@@ -332,7 +332,7 @@
       '</g>';
     return {
       svg: base.replace('</svg>', '<text class="fs" x="-150" y="6">lumen of the small intestine</text>' + flow + lens + cell + '</svg>'),
-      cap:'<b>The villus.</b> Four adaptations, each with a reason: villi and microvilli give a <b>large surface area</b>; the wall is <b>one cell thick</b> so the diffusion distance is short; a <b>dense capillary network</b> carries nutrients away and keeps the concentration gradient steep; a <b>lacteal</b> takes the fatty acids and glycerol. The little squares of the wall are the epithelial cells — <b>enterocytes</b>: click the lens to see one enlarged.'
+      cap:'<b>The villus.</b> The adaptations drawn here, each with a reason: villi and microvilli give a <b>large surface area</b>; the wall is <b>one cell thick</b> so the diffusion distance is short; a <b>dense capillary network</b> carries nutrients away and keeps the concentration gradient steep; a <b>lacteal</b> takes the fatty acids and glycerol. The little squares of the wall are the epithelial cells — <b>enterocytes</b>: click the lens to see one enlarged.'
     };
   }
 
@@ -917,7 +917,7 @@
         '</g>' +
         '<text class="fs" x="235" y="280" text-anchor="middle">Iodine goes blue-black because the triiodide ion</text>' +
         '<text class="fs" x="235" y="294" text-anchor="middle">slips inside the helix of amylose — not amylopectin.</text>'),
-      cap: 'Starch is not one molecule but two, both built only from <b>glucose</b>. <b>Amylose</b> is an unbranched chain that coils into a helix; ' +
+      cap: 'Starch is not one kind of molecule but two, both built only from <b>glucose</b>. <b>Amylose</b> is an unbranched chain that coils into a helix; ' +
            '<b>amylopectin</b> is branched. Either way the molecule is far too large to cross a membrane, which is why it has to be digested first. ' +
            'The colour in the iodine test comes from the <b>helix</b>: the triiodide ion sits inside the coil of amylose.'
     };
